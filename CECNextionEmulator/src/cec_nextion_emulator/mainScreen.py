@@ -103,7 +103,9 @@ class mainScreen(baseui.mainScreenUI):
 
 
         self.tuning_Preset_Selection_Frame.grid_remove()
-        self.tuning_Jogwheel.configure(scroll=True)
+        self.tuning_Jogwheel.configure(scroll=True, touchOptimized=gv.config.get_VFO_Touch_Optimized())
+        self.tuning_Jogwheel.grid_remove()
+        gv.config.register_observer("VFO Touch Optimized", self.switchVFO_Tuning_Optimization)
         self.baselineJogValue = 0
         self.saved_tuning_Preset_Selection = None       # This is a tristate variable.
                                                         # If None, this means we are in
@@ -246,6 +248,10 @@ class mainScreen(baseui.mainScreenUI):
         self.theRadio = radio
 
     def initUX(self):
+        if self.Tx_Freq_Alert_VAR.get() == "TX Freq":   #This indicates that we were in TX offset mode
+                                                        #Need to correct display because originally set with incorrect
+                                                        #Value for Tone. So need to redo it
+            self.offsetVFOforTX(True)
         self.updateRateMultiplier()
         self.updateLabelTuning_Multiplier()
         self.toggle_Digit_Highlight(self.rate_selection[self.currentDigitPos], True)
@@ -336,6 +342,7 @@ class mainScreen(baseui.mainScreenUI):
     def offsetVFOforTX (self, flag):
         if flag:            # indicates we need to offset VFO by the Tone and Tweak
             self.Tx_Freq_Alert_VAR.set("TX Freq")
+            self.RX_VFO_Visability(True)        # make the RX frequency frame visible
             if self.primary_Mode_VAR.get() == 'CWL':
                 self.freqOffset  = int(self.tone_value_VAR.get()) + self.cwTX_Tweak
 
@@ -344,13 +351,16 @@ class mainScreen(baseui.mainScreenUI):
         else:
             self.Tx_Freq_Alert_VAR.set("       ")
             self.freqOffset = 0
+            self.RX_VFO_Visability(False)       # Turn off the RX frequency window
 
         self.update_VFO_Display(self.primary_VFO_VAR.get(), self.freqOffset)
 
-    def update_VFO_Display (self, unformatted_VFO_String, offset=0 ):
-        freq = int(unformatted_VFO_String) + offset
+        self.updateJogTracking()                # Since changed flag, may need to reset jogwheel position
 
-        paddedVFO = str(freq).rjust(8)
+    def update_VFO_Display (self, unformatted_VFO_String, offset=0 ):
+        self.displayedVFO = int(unformatted_VFO_String) + offset
+
+        paddedVFO = str(self.displayedVFO).rjust(8)
 
         self.digit0_primary_VFO_VAR.set(paddedVFO[7])
         self.digit1_primary_VFO_VAR.set(paddedVFO[6])
@@ -360,6 +370,8 @@ class mainScreen(baseui.mainScreenUI):
         self.digit5_primary_VFO_VAR.set(paddedVFO[2])
         self.digit6_primary_VFO_VAR.set(paddedVFO[1])
         self.digit7_primary_VFO_VAR.set(paddedVFO[0])
+
+        self.RX_VFO_VAR.set(gv.formatFrequency(unformatted_VFO_String))     # Update RX freq reminder displayed if TX Freq displayed
 
 
 
@@ -636,10 +648,10 @@ class mainScreen(baseui.mainScreenUI):
             self.tuning_Preset_Selection_Frame.grid()
 
     def tuning_Jogwheel_CB(self):
-        newFreq =  int(self.primary_VFO_VAR.get()) - (self.currentVFO_Tuning_Rate * self.baselineJogValue)
+        newFreq =  self.displayedVFO - (self.currentVFO_Tuning_Rate * self.baselineJogValue)
+
         newFreq += self.currentVFO_Tuning_Rate * self.tuning_Jogwheel.get()
-        # if self.DeepDebug:
-        #     print("new freq from jog = ", newFreq)
+
         self.Radio_Set_New_Frequency(newFreq)
 
 
@@ -667,7 +679,7 @@ class mainScreen(baseui.mainScreenUI):
         #
         #   get the VFO currently displayed
         #
-        currentVFO = self.primary_VFO_VAR.get()
+        currentVFO = str(self.displayedVFO) #self.primary_VFO_VAR.get()
 
         #
         #   reverse it so that least significant is in position 0
@@ -690,6 +702,11 @@ class mainScreen(baseui.mainScreenUI):
             #   now we can just return the character of the selected rate
             #
             return int(reversedVFO[self.currentDigitPos])
+    def RX_VFO_Visability (self, RX_Frame_Visible = False):
+        if RX_Frame_Visible:
+            self.RX_VFO_Frame.pack(side="left")
+        else:
+            self.RX_VFO_Frame.pack_forget()
     #
     #   This routine handles switching between Direct and "Preset" tuning mode
     #   The complexity here comes from the original CEC software using the current
@@ -1901,17 +1918,23 @@ class mainScreen(baseui.mainScreenUI):
 
         self.primary_VFO_VAR.set(value)
         self.update_VFO_Display(self.primary_VFO_VAR.get(),self.freqOffset)
+        self.updateJogTracking()
 
         if self.channelsWindow != None:      #  Only update frequency if the channel window has been created once
             self.channelsWindow.update_Current_Frequency(gv.formatFrequency(self.primary_VFO_VAR.get()))
 
 
-        self.updateJogTracking()
+
 
     def reformatVFO(self, value):
         self.digit_delimiter_primary_VFO_VAR.set(gv.config.get_NUMBER_DELIMITER())
-        self.update_VFO_Display(self.primary_VFO_VAR.get(), self.freqOffset)
+        self.update_VFO_Display(str(self.displayedVFO))
+        # self.update_VFO_Display(self.primary_VFO_VAR.get(), self.freqOffset)
         self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(self.secondary_VFO_VAR.get(), self.freqOffset))
+        self.RX_VFO_VAR.set(gv.formatFrequency(self.RX_VFO_VAR.get().replace(gv.config.get_NUMBER_DELIMITER(),"")))
+
+    def switchVFO_Tuning_Optimization(self, value):
+        self.tuning_Jogwheel.configure(scroll=True, touchOptimized=value)
 
     #
     #   The "cc" command indicates a change to a new mode for primary (e.g. USB, LSB, etc.)
@@ -1926,6 +1949,8 @@ class mainScreen(baseui.mainScreenUI):
             self.offsetVFOforTX(True)
         else:
             self.offsetVFOforTX(False)
+
+        self.updateJogTracking()            # Since changed mode, may need to reset jogwheel to tx frequency
 
         if self.channelsWindow != None:
             # Only update frequency if the channel window has been created once

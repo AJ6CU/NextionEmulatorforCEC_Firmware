@@ -370,6 +370,32 @@ class mainScreenUI(ttk.Frame):
         self.vfo_display_Frame.grid(column=1, padx="0 0", row=0, sticky="ew")
         self.vfoA_Frame.grid(column=0, row=0, sticky="ew")
         self.vfoA_Frame.grid_anchor("w")
+        self.rx_vof_frame = ttk.Frame(frame2, name="rx_vof_frame")
+        self.rx_vof_frame.configure(
+            height=200, style="Normal.TFrame", width=200)
+        self.RX_VFO_Frame = ttk.Frame(self.rx_vof_frame, name="rx_vfo_frame")
+        self.RX_VFO_Frame.configure(
+            height=200, style="Normal.TFrame", width=200)
+        self.RX_Freq_Label = ttk.Label(self.RX_VFO_Frame, name="rx_freq_label")
+        self.RX_Freq_Label.configure(
+            style="Heading2bi.TLabel", text='RX Freq:')
+        self.RX_Freq_Label.pack(side="left")
+        self.RX_Freq_VFO_Label = ttk.Label(
+            self.RX_VFO_Frame, name="rx_freq_vfo_label")
+        self.RX_VFO_VAR = tk.StringVar(value='99.999.999')
+        self.RX_Freq_VFO_Label.configure(
+            style="Heading2bi.TLabel",
+            text='99.999.999',
+            textvariable=self.RX_VFO_VAR,
+            width=11)
+        self.RX_Freq_VFO_Label.pack(padx="10 0", side="left")
+        self.RX_VFO_Frame.pack(side="left")
+        self.RX_Freq_Place_Holder = ttk.Label(
+            self.rx_vof_frame, name="rx_freq_place_holder")
+        self.RX_Freq_Place_Holder.configure(
+            style="Heading2bi.TLabel", text='  ')
+        self.RX_Freq_Place_Holder.pack(side="right")
+        self.rx_vof_frame.grid(column=0, row=1, sticky="e")
         frame3 = ttk.Frame(frame2)
         frame3.configure(height=200, style="Normal.TFrame", width=200)
         self.tuning_Jogwheel = JogwheelCustom(
@@ -397,7 +423,7 @@ class mainScreenUI(ttk.Frame):
         self.tuning_Multiplier_Button.pack(anchor="n", pady=5, side="top")
         self.tuning_Multiplier_Button.configure(
             command=self.tuning_Multiplier_Button_CB)
-        frame3.grid(columnspan=3, row=1, rowspan=3, sticky="se")
+        frame3.grid(columnspan=3, row=2, rowspan=3, sticky="se")
         self.vfoB_Frame = ttk.Frame(frame2, name="vfob_frame")
         self.vfoB_Frame.configure(borderwidth=3, style="NormalOutline.TFrame")
         self.vfo_Frame = ttk.Frame(self.vfoB_Frame, name="vfo_frame")
@@ -464,7 +490,7 @@ class mainScreenUI(ttk.Frame):
             style="Heading1.TLabel", text='Hz')
         self.tuning_Preset_Units_Label.pack(padx=15, side="left")
         self.tuning_Step_Frame.pack(padx="5 0", pady="5 0", side="right")
-        self.vfoB_Frame.grid(column=0, ipadx=25, row=1, sticky="w")
+        self.vfoB_Frame.grid(column=0, ipadx=25, row=2, sticky="nw")
         self.control_Meter_Tuning_Frame = ttk.Frame(
             frame2, name="control_meter_tuning_frame")
         self.control_Meter_Tuning_Frame.configure(
@@ -596,7 +622,7 @@ class mainScreenUI(ttk.Frame):
             variable=self.s_meter_Progressbar_VAR)
         self.s_meter_Progressbar.grid(column=1, row=1, sticky="w")
         self.sMeter_Frame.grid(column=0, padx="20 0", row=1, sticky="w")
-        self.control_Meter_Tuning_Frame.grid(column=0, row=2, sticky="nw")
+        self.control_Meter_Tuning_Frame.grid(column=0, row=3, sticky="nw")
         frame2.pack(anchor="n", expand=True, fill="x", side="top")
         frame2.columnconfigure(0, weight=1)
         frame2.columnconfigure(1, weight=2)

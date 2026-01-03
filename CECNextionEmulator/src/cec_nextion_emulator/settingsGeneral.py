@@ -36,10 +36,14 @@ class settingsGeneral(baseui.settingsGeneralUI):
 
         gv.formatCombobox( self.Number_Delimiter_Combobox, "Arial", "24", "bold")
         gv.formatCombobox( self.Virtual_Keyboard_Combobox, "Arial", "24", "bold")
+        gv.formatCombobox(self.VFO_Touch_Optimized_Combobox, "Arial", "24", "bold")
         gv.formatCombobox(self.Time_On_Freq_Combobox, "Arial", "24", "bold")
 
         self.saveNUMBER_DELIMITER = gv.config.get_NUMBER_DELIMITER()
         self.NUMBER_DELIMITER_VAR.set(self.saveNUMBER_DELIMITER)
+
+        self.saveVFO_Touch_Optimized = gv.config.get_VFO_Touch_Optimized()
+        self.VFO_Touch_Optimized_VAR.set(self.saveVFO_Touch_Optimized)
 
         self.saveVirtual_Keyboard = gv.config.get_Virtual_Keyboard_Switch()
         self.Virtual_Keyboard_VAR.set(self.saveVirtual_Keyboard)
@@ -70,6 +74,9 @@ class settingsGeneral(baseui.settingsGeneralUI):
 
         if self.Virtual_Keyboard_VAR.get() != self.saveVirtual_Keyboard:
             gv.config.set_Virtual_Keyboard_Switch(self.Virtual_Keyboard_VAR.get())
+
+        if self.VFO_Touch_Optimized_VAR.get() != self.saveVFO_Touch_Optimized:
+            gv.config.set_VFO_Touch_Optimized(self.VFO_Touch_Optimized_VAR.get())
 
         if self.Time_On_Freq_VAR.get() != self.saveTime_On_Freq:
             gv.config.set_Scan_On_Station_Time(str(int(int(self.Time_On_Freq_VAR.get())*1000)))

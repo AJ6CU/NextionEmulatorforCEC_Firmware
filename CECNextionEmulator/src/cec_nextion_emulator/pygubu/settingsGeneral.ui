@@ -67,7 +67,7 @@
                 <property name="keyvariable">string:NUMBER_DELIMITER_VAR</property>
                 <property name="style">ComboBox1.TCombobox</property>
                 <property name="values">, .</property>
-                <property name="width">4</property>
+                <property name="width">5</property>
                 <layout manager="grid">
                   <property name="column">1</property>
                   <property name="padx">20 0</property>
@@ -80,7 +80,7 @@
               <object class="ttk.Label" id="Virtual_Keyboard_Label" named="True">
                 <property name="justify">right</property>
                 <property name="style">Heading1b.TLabel</property>
-                <property name="text" translatable="yes">Virtual Keyboard</property>
+                <property name="text" translatable="yes">Virtual Keyboard On</property>
                 <layout manager="grid">
                   <property name="column">0</property>
                   <property name="padx">10</property>
@@ -94,13 +94,42 @@
               <object class="pygubu.widgets.Combobox" id="Virtual_Keyboard_Combobox" named="True">
                 <property name="keyvariable">string:Virtual_Keyboard_VAR</property>
                 <property name="style">ComboBox1.TCombobox</property>
-                <property name="values">On Off</property>
-                <property name="width">4</property>
+                <property name="values">True False</property>
+                <property name="width">5</property>
                 <layout manager="grid">
                   <property name="column">1</property>
                   <property name="padx">20 0</property>
                   <property name="pady">40 20</property>
                   <property name="row">1</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="VFO_Touch_Optimized_Label" named="True">
+                <property name="justify">right</property>
+                <property name="style">Heading1b.TLabel</property>
+                <property name="text" translatable="yes">VFO Touch Optimized</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">10</property>
+                  <property name="pady">40 20</property>
+                  <property name="row">2</property>
+                  <property name="sticky">e</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="pygubu.widgets.Combobox" id="VFO_Touch_Optimized_Combobox" named="True">
+                <property name="keyvariable">string:VFO_Touch_Optimized_VAR</property>
+                <property name="style">ComboBox1.TCombobox</property>
+                <property name="values">True False</property>
+                <property name="width">5</property>
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="padx">20 0</property>
+                  <property name="pady">40 20</property>
+                  <property name="row">2</property>
                   <property name="sticky">w</property>
                 </layout>
               </object>
@@ -115,7 +144,7 @@ during Scan</property>
                   <property name="column">0</property>
                   <property name="padx">10</property>
                   <property name="pady">40 20</property>
-                  <property name="row">2</property>
+                  <property name="row">3</property>
                   <property name="sticky">e</property>
                 </layout>
               </object>
@@ -126,12 +155,12 @@ during Scan</property>
                 <property name="keyvariable">string:Time_On_Freq_VAR</property>
                 <property name="style">ComboBox1.TCombobox</property>
                 <property name="values">1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20</property>
-                <property name="width">4</property>
+                <property name="width">5</property>
                 <layout manager="grid">
                   <property name="column">1</property>
                   <property name="padx">20 0</property>
                   <property name="pady">40 20</property>
-                  <property name="row">2</property>
+                  <property name="row">3</property>
                   <property name="sticky">w</property>
                 </layout>
               </object>

@@ -73,7 +73,7 @@ class settingsGeneralUI(ttk.Labelframe):
             keyvariable=self.NUMBER_DELIMITER_VAR,
             style="ComboBox1.TCombobox",
             values=', .',
-            width=4)
+            width=5)
         self.Number_Delimiter_Combobox.grid(
             column=1, padx="20 0", row=0, sticky="w")
         self.Virtual_Keyboard_Label = ttk.Label(
@@ -82,7 +82,7 @@ class settingsGeneralUI(ttk.Labelframe):
         self.Virtual_Keyboard_Label.configure(
             justify="right",
             style="Heading1b.TLabel",
-            text='Virtual Keyboard')
+            text='Virtual Keyboard On')
         self.Virtual_Keyboard_Label.grid(
             column=0, padx=10, pady="40 20", row=1, sticky="e")
         self.Virtual_Keyboard_Combobox = Combobox(
@@ -92,10 +92,28 @@ class settingsGeneralUI(ttk.Labelframe):
         self.Virtual_Keyboard_Combobox.configure(
             keyvariable=self.Virtual_Keyboard_VAR,
             style="ComboBox1.TCombobox",
-            values='On Off',
-            width=4)
+            values='True False',
+            width=5)
         self.Virtual_Keyboard_Combobox.grid(
             column=1, padx="20 0", pady="40 20", row=1, sticky="w")
+        self.VFO_Touch_Optimized_Label = ttk.Label(
+            self.general_Settings_Frame, name="vfo_touch_optimized_label")
+        self.VFO_Touch_Optimized_Label.configure(
+            justify="right",
+            style="Heading1b.TLabel",
+            text='VFO Touch Optimized')
+        self.VFO_Touch_Optimized_Label.grid(
+            column=0, padx=10, pady="40 20", row=2, sticky="e")
+        self.VFO_Touch_Optimized_Combobox = Combobox(
+            self.general_Settings_Frame, name="vfo_touch_optimized_combobox")
+        self.VFO_Touch_Optimized_VAR = tk.StringVar()
+        self.VFO_Touch_Optimized_Combobox.configure(
+            keyvariable=self.VFO_Touch_Optimized_VAR,
+            style="ComboBox1.TCombobox",
+            values='True False',
+            width=5)
+        self.VFO_Touch_Optimized_Combobox.grid(
+            column=1, padx="20 0", pady="40 20", row=2, sticky="w")
         self.Time_On_Freq_Label = ttk.Label(
             self.general_Settings_Frame,
             name="time_on_freq_label")
@@ -104,7 +122,7 @@ class settingsGeneralUI(ttk.Labelframe):
             style="Heading1b.TLabel",
             text='Time on Frequency\nduring Scan')
         self.Time_On_Freq_Label.grid(
-            column=0, padx=10, pady="40 20", row=2, sticky="e")
+            column=0, padx=10, pady="40 20", row=3, sticky="e")
         self.Time_On_Freq_Combobox = Combobox(
             self.general_Settings_Frame,
             name="time_on_freq_combobox")
@@ -114,9 +132,9 @@ class settingsGeneralUI(ttk.Labelframe):
             keyvariable=self.Time_On_Freq_VAR,
             style="ComboBox1.TCombobox",
             values='1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20',
-            width=4)
+            width=5)
         self.Time_On_Freq_Combobox.grid(
-            column=1, padx="20 0", pady="40 20", row=2, sticky="w")
+            column=1, padx="20 0", pady="40 20", row=3, sticky="w")
         self.general_Settings_Frame.pack(padx=10, pady=10, side="top")
         self.closingFrame = ttk.Frame(self, name="closingframe")
         self.closingFrame.configure(

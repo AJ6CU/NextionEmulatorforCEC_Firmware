@@ -597,13 +597,65 @@ STOP!
           </object>
         </child>
         <child>
+          <object class="ttk.Frame" id="rx_vof_frame" named="True">
+            <property name="height">200</property>
+            <property name="style">Normal.TFrame</property>
+            <property name="width">200</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="row">1</property>
+              <property name="sticky">e</property>
+            </layout>
+            <child>
+              <object class="ttk.Frame" id="RX_VFO_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                </layout>
+                <child>
+                  <object class="ttk.Label" id="RX_Freq_Label" named="True">
+                    <property name="style">Heading2bi.TLabel</property>
+                    <property name="text" translatable="yes">RX Freq:</property>
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="RX_Freq_VFO_Label" named="True">
+                    <property name="style">Heading2bi.TLabel</property>
+                    <property name="text" translatable="yes">99.999.999</property>
+                    <property name="textvariable">string:RX_VFO_VAR</property>
+                    <property name="width">11</property>
+                    <layout manager="pack">
+                      <property name="padx">10 0</property>
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="RX_Freq_Place_Holder" named="True">
+                <property name="style">Heading2bi.TLabel</property>
+                <property name="text" translatable="yes">  </property>
+                <layout manager="pack">
+                  <property name="side">right</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
           <object class="ttk.Frame" id="frame3">
             <property name="height">200</property>
             <property name="style">Normal.TFrame</property>
             <property name="width">200</property>
             <layout manager="grid">
               <property name="columnspan">3</property>
-              <property name="row">1</property>
+              <property name="row">2</property>
               <property name="rowspan">3</property>
               <property name="sticky">se</property>
             </layout>
@@ -648,8 +700,8 @@ x 100mhz</property>
             <layout manager="grid">
               <property name="column">0</property>
               <property name="ipadx">25</property>
-              <property name="row">1</property>
-              <property name="sticky">w</property>
+              <property name="row">2</property>
+              <property name="sticky">nw</property>
             </layout>
             <child>
               <object class="ttk.Frame" id="vfo_Frame" named="True">
@@ -764,7 +816,7 @@ x 100mhz</property>
             <property name="width">200</property>
             <layout manager="grid">
               <property name="column">0</property>
-              <property name="row">2</property>
+              <property name="row">3</property>
               <property name="sticky">nw</property>
             </layout>
             <child>

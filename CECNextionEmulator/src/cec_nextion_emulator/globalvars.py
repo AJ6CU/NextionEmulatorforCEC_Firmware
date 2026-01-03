@@ -87,7 +87,6 @@ def formatVFO(VFO):
 def updateNUMBER_DELIMITER(value):
     global NUMBER_DELIMITER
     NUMBER_DELIMITER = value
-    print("update Number Delimiter, now = ", NUMBER_DELIMITER)
 
 
 def formatFrequency(frequency, freqOffset=0):

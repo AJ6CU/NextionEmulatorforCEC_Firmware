@@ -68,11 +68,9 @@ class configuration:
 
                             "MCU Command Headroom": .09,        # in seconds
                             "MCU Update Period": 500,            # in ms
-
                             "NUMBER DELIMITER": ".",
                             "TXOffset": "EEPROM",
-                            "VIRTUAL KEYBOARD": "True",
-
+                            "VFO Touch Optimized": "True",
                             "Master Cal": "",
                             "SSB BFO": "",
                             "CW BFO": "",
@@ -82,7 +80,7 @@ class configuration:
                             "CW Delay Before TX":"500",
                             "CW Delay Returning to RX":"5000",
                             "Callsign":"",
-                            "Virtual Keyboard Switch":"On"
+                            "Virtual Keyboard Switch":"True"
 
                             }
         self.saveConfig()
@@ -134,6 +132,14 @@ class configuration:
     def set_NUMBER_DELIMITER(self, value):
         self.config_data["NUMBER DELIMITER"] = value
         self._notify_observers("NUMBER DELIMITER", value)
+        self.saveConfig()
+
+    def get_VFO_Touch_Optimized(self):
+        return self.config_data["VFO Touch Optimized"]
+
+    def set_VFO_Touch_Optimized(self, value):
+        self.config_data["VFO Touch Optimized"] = value
+        self._notify_observers("VFO Touch Optimized", value)
         self.saveConfig()
 
 
