@@ -19,7 +19,7 @@ Installation requires you to install the cecNextion software and reroute the wir
 Using the original Nextion harness colors:
 
 - Black - Ground
-- Red - Power ( I left the jumper off)
+- Red - NC The device will use the USB power - May not be best idea, probably better to set jumper and connect power here
 - Blue -   TXD (Nextion) to  RX Pin (D8) (Raduino)
 - Yellow - RXD (Nextion) to  TX Pin (D9)  (Raduino)
 
