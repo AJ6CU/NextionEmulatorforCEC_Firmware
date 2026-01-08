@@ -649,11 +649,16 @@ class mainScreen(baseui.mainScreenUI):
     #         self.tuning_Preset_Selection_Frame.grid()
 
     def tuning_Jogwheel_CB(self):
+        # print("\n\nin tuning_Jogwheel_CB")
+        # print("intVFO =", self.theVFO_Object.getIntPrimaryVFO())
+        # print("tuning rate=", self.theVFO_Object.getCurrentVFO_Tuning_Rate())
+        # print("baselinejogvalue=",self.baselineJogValue )
+        # print("jogwheel valye=", self.tuning_Jogwheel.get() )
         newFreq =  (self.theVFO_Object.getIntPrimaryVFO()
                     - (self.theVFO_Object.getCurrentVFO_Tuning_Rate() * self.baselineJogValue))
 
         newFreq += self.theVFO_Object.getCurrentVFO_Tuning_Rate() * self.tuning_Jogwheel.get()
-
+        # print("newFreq=", newFreq)
         self.Radio_Set_New_Frequency(newFreq)
 
     #
@@ -1914,7 +1919,6 @@ class mainScreen(baseui.mainScreenUI):
     #
     def vc_UX_Set_Primary_VFO_Frequency(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-
         self.theVFO_Object.setPrimaryVFO(value)
 
         # self.primary_VFO_VAR.set(value)
@@ -2011,6 +2015,7 @@ class mainScreen(baseui.mainScreenUI):
 
 
         if (self.vfo_VAR.get()== self.VFO_B):       #update displayed frequency
+            print("vb_UX_Set_VFO_B_Frequency", value)
             self.theVFO_Object.setPrimaryVFO(value)
         else:
             self.theVFO_Object.setSecondaryVFO(value)       #need formatted here too

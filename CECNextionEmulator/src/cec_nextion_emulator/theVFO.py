@@ -187,7 +187,6 @@ class theVFO(baseui.theVFOUI):
                     #
                     #   save state prior to going into Direct Mode
                     #
-                    ####MJH need to change this to menubutton
                     self.saved_tuning_Preset_Selection = self.tuning_Preset_Label_VAR.get()
                     self.saved_tuning_Preset_VAR = self.tuning_Preset_Label_VAR.get()
                     #
@@ -566,7 +565,6 @@ class theVFO(baseui.theVFOUI):
             self.Tx_Freq_Alert_VAR.set("       ")
             self.TXfreqOffset = 0
             self.RX_VFO_Visability(False)       # Turn off the RX frequency window
-
         self.update_VFO_Display(self.PrimaryVFO, self.TXfreqOffset)
 
         self.updateJogTracking()                # Since changed flag, may need to reset jogwheel position
@@ -602,7 +600,7 @@ class theVFO(baseui.theVFOUI):
 
         self.virtualDial.set(self.getVFOdigit(), False)
         if(newBaseline):
-            self.baselineJogValue = self.virtualDial.get()
+            self.mainWindow.baselineJogValue = self.virtualDial.get()
 
     #
     #   this function returns a single digit integer that occupies the position
@@ -631,7 +629,6 @@ class theVFO(baseui.theVFOUI):
         #
         #   Actual function code begins here
         #
-
         currentVFO = str(
             self.intDisplayedPrimaryVFO)  # Get a string of the VFO currently displayed (including offsets)
 
