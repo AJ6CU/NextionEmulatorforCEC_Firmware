@@ -18,7 +18,9 @@ from tkinter import messagebox
 import sys
 
 class mainScreen(baseui.mainScreenUI):
+
     def __init__(self, master=None, **kw):
+        self.theVFO_Object = None  # pointer to the VFO Object
         super().__init__(
             master,
             translator=None,
@@ -30,10 +32,12 @@ class mainScreen(baseui.mainScreenUI):
         self.pack_forget()
 
         self.theRadio = None            # Object pointer for the Radio
+        self.theVFO_Object.attachMainWindow(self)
         self.cwSettingsWindow = None    # Object pointer for the CW Settinge Window
         self.settingsWindow = None      # Object pointer for the General Settings Window
         self.channelsWindow = None      # object pointer for the Memory-> VFO Window
-        self.vfoToMemWindow = None      # object pointer for the VFO->Memory Window
+        # self.vfoToMemWindow = None      # object pointer for the VFO->Memory Window
+
         self.classic_uBITX_ControlWindow = None
         self.classic_uBITX_ControlWindowObj = None
         self.DeepDebug = False
@@ -44,30 +48,30 @@ class mainScreen(baseui.mainScreenUI):
                                         # requested, the type of memory requested is added to the queue so when we take it
                                         # off the queue, we know where it goes.
 
-        self.rate_selection = {
-            0: self.tuning_Preset_Button,
-            1: self.digit1_Highlight_Label,
-            2: self.digit2_Highlight_Label,
-            3: self.digit3_Highlight_Label,
-            4: self.digit4_Highlight_Label,
-            5: self.digit5_Highlight_Label,
-            6: self.digit6_Highlight_Label,
-            7: self.digit7_Highlight_Label
-        }
+        # self.rate_selection = {
+        #     0: self.tuning_Preset_Button,
+        #     1: self.digit1_Highlight_Label,
+        #     2: self.digit2_Highlight_Label,
+        #     3: self.digit3_Highlight_Label,
+        #     4: self.digit4_Highlight_Label,
+        #     5: self.digit5_Highlight_Label,
+        #     6: self.digit6_Highlight_Label,
+        #     7: self.digit7_Highlight_Label
+        # }
+        #
+        # self.DigitPos_to_Powers_of_Ten = {
+        #     0: 0,
+        #     1: 10,
+        #     2: 100,
+        #     3: 1000,
+        #     4: 10000,
+        #     5: 100000,
+        #     6: 1000000,
+        #     7: 10000000
+        # }
 
-        self.DigitPos_to_Powers_of_Ten = {
-            0: 0,
-            1: 10,
-            2: 100,
-            3: 1000,
-            4: 10000,
-            5: 100000,
-            6: 1000000,
-            7: 10000000
-        }
-
-        self.currentDigitPos = 0
-        self.currentVFO_Tuning_Rate = 0
+        # self.currentDigitPos = 0
+        # self.currentVFO_Tuning_Rate = 0
 
 
         self.VFO_A = "VFO-A"                        # String used for label of VFO-A
@@ -77,7 +81,7 @@ class mainScreen(baseui.mainScreenUI):
 
         self.lock_Button_On = False                 #controls lock of console
         self.speaker_Button_On = False              #On means in Mute/SDR
-        self.stop_Button_On = False                 #Emergency stop all tx
+        # self.stop_Button_On = False                 #Emergency stop all tx
         self.split_Button_On = False                #Controls entry into split mode
         self.rit_Button_On = False                  #Controls RIT. On means in RIT mode
         self.ATT_Button_On = False                  #On allows onscreen control of signal attn
@@ -86,12 +90,12 @@ class mainScreen(baseui.mainScreenUI):
                                                     # The handling routine will set this flag to true so that when the default value
                                                     # is sent to the UX, the IFS setting and Jogwheel will be enabled.
 
-        self.primary_VFO_VAR = tk.StringVar()
-        self.secondary_VFO_VAR = tk.StringVar()
-        self.freqOffset = 0                         # used to save the offset on the main dial. Only non-zero for CWL/CWU
-
-        gv.config.register_observer("NUMBER DELIMITER", self.reformatVFO)
-        self.digit_delimiter_primary_VFO_VAR.set(gv.config.get_NUMBER_DELIMITER())
+        # self.primary_VFO_VAR = tk.StringVar()
+        # self.secondary_VFO_VAR = tk.StringVar()
+        # self.freqOffset = 0                         # used to save the offset on the main dial. Only non-zero for CWL/CWU
+        #
+        # gv.config.register_observer("NUMBER DELIMITER", self.reformatVFO)
+        # self.digit_delimiter_primary_VFO_VAR.set(gv.config.get_NUMBER_DELIMITER())
 
 
 
@@ -102,19 +106,15 @@ class mainScreen(baseui.mainScreenUI):
 
 
 
-        self.tuning_Preset_Selection_Frame.grid_remove()
+        # self.tuning_Preset_Selection_Frame.grid_remove()
         self.tuning_Jogwheel.configure(scroll=True, touchOptimized=gv.config.get_VFO_Touch_Optimized())
+        self.theVFO_Object.attachDial(self.tuning_Jogwheel)
         self.tuning_Jogwheel.grid_remove()
         gv.config.register_observer("VFO Touch Optimized", self.switchVFO_Tuning_Optimization)
         self.baselineJogValue = 0
-        self.saved_tuning_Preset_Selection = None       # This is a tristate variable.
-                                                        # If None, this means we are in
-                                                        # Preset mode.
-                                                        # When NOT None, this savesthe
-                                                        # Preset selection value from the
-                                                        # set of radiobuttons for the presets
-        self.saved_tuning_Preset_VAR = None
-        self.update_Tuning_Preset_Button_Label = True
+
+        # self.saved_tuning_Preset_VAR = None
+        # self.update_Tuning_Preset_Button_Label = True
 
 
 
@@ -248,13 +248,14 @@ class mainScreen(baseui.mainScreenUI):
         self.theRadio = radio
 
     def initUX(self):
-        if self.Tx_Freq_Alert_VAR.get() == "TX Freq":   #This indicates that we were in TX offset mode
-                                                        #Need to correct display because originally set with incorrect
-                                                        #Value for Tone. So need to redo it
-            self.offsetVFOforTX(True)
-        self.updateRateMultiplier()
-        self.updateLabelTuning_Multiplier()
-        self.toggle_Digit_Highlight(self.rate_selection[self.currentDigitPos], True)
+        self.theVFO_Object.initVFO(self.theRadio)
+        # if self.Tx_Freq_Alert_VAR.get() == "TX Freq":   #This indicates that we were in TX offset mode
+        #                                                 #Need to correct display because originally set with incorrect
+        #                                                 #Value for Tone. So need to redo it
+        #     self.offsetVFOforTX(True)
+        # self.updateRateMultiplier()
+        # self.updateLabelTuning_Multiplier()
+        # self.toggle_Digit_Highlight(self.rate_selection[self.currentDigitPos], True)
 
         self.place(x=0, y=0)  # place the mainWindow on the screen
         self.master.geometry(gv.trimAndLocateWindow(self, 5, 30))
@@ -339,41 +340,41 @@ class mainScreen(baseui.mainScreenUI):
             i +=1
         return returnBuffer.replace('"','')
 
-    def offsetVFOforTX (self, flag):
-        if flag:            # indicates we need to offset VFO by the Tone and Tweak
-            self.Tx_Freq_Alert_VAR.set("TX Freq")
-            self.RX_VFO_Visability(True)        # make the RX frequency frame visible
-            if self.primary_Mode_VAR.get() == 'CWL':
-                self.freqOffset  = int(self.tone_value_VAR.get()) + self.cwTX_Tweak
-
-            elif self.primary_Mode_VAR.get() == 'CWU':
-                self.freqOffset = - int(self.tone_value_VAR.get()) + self.cwTX_Tweak
-        else:
-            self.Tx_Freq_Alert_VAR.set("       ")
-            self.freqOffset = 0
-            self.RX_VFO_Visability(False)       # Turn off the RX frequency window
-
-        self.update_VFO_Display(self.primary_VFO_VAR.get(), self.freqOffset)
-
-        self.updateJogTracking()                # Since changed flag, may need to reset jogwheel position
-
-    def update_VFO_Display (self, unformatted_VFO_String, offset=0 ):
-        self.displayedVFO = int(unformatted_VFO_String) + offset
-
-        paddedVFO = str(self.displayedVFO).rjust(8)
-
-        self.digit0_primary_VFO_VAR.set(paddedVFO[7])
-        self.digit1_primary_VFO_VAR.set(paddedVFO[6])
-        self.digit2_primary_VFO_VAR.set(paddedVFO[5])
-        self.digit3_primary_VFO_VAR.set(paddedVFO[4])
-        self.digit4_primary_VFO_VAR.set(paddedVFO[3])
-        self.digit5_primary_VFO_VAR.set(paddedVFO[2])
-        self.digit6_primary_VFO_VAR.set(paddedVFO[1])
-        self.digit7_primary_VFO_VAR.set(paddedVFO[0])
-
-        self.RX_VFO_VAR.set(gv.formatFrequency(unformatted_VFO_String))     # Update RX freq reminder displayed if TX Freq displayed
-
-
+    # def offsetVFOforTX (self, flag):
+    #     if flag:            # indicates we need to offset VFO by the Tone and Tweak
+    #         self.Tx_Freq_Alert_VAR.set("TX Freq")
+    #         self.RX_VFO_Visability(True)        # make the RX frequency frame visible
+    #         if self.primary_Mode_VAR.get() == 'CWL':
+    #             self.freqOffset  = int(self.tone_value_VAR.get()) + self.cwTX_Tweak
+    #
+    #         elif self.primary_Mode_VAR.get() == 'CWU':
+    #             self.freqOffset = - int(self.tone_value_VAR.get()) + self.cwTX_Tweak
+    #     else:
+    #         self.Tx_Freq_Alert_VAR.set("       ")
+    #         self.freqOffset = 0
+    #         self.RX_VFO_Visability(False)       # Turn off the RX frequency window
+    #
+    #     self.update_VFO_Display(self.primary_VFO_VAR.get(), self.freqOffset)
+    #
+    #     self.updateJogTracking()                # Since changed flag, may need to reset jogwheel position
+    #
+    # def update_VFO_Display (self, unformatted_VFO_String, offset=0 ):
+    #     self.displayedVFO = int(unformatted_VFO_String) + offset
+    #
+    #     paddedVFO = str(self.displayedVFO).rjust(8)
+    #
+    #     self.digit0_primary_VFO_VAR.set(paddedVFO[7])
+    #     self.digit1_primary_VFO_VAR.set(paddedVFO[6])
+    #     self.digit2_primary_VFO_VAR.set(paddedVFO[5])
+    #     self.digit3_primary_VFO_VAR.set(paddedVFO[4])
+    #     self.digit4_primary_VFO_VAR.set(paddedVFO[3])
+    #     self.digit5_primary_VFO_VAR.set(paddedVFO[2])
+    #     self.digit6_primary_VFO_VAR.set(paddedVFO[1])
+    #     self.digit7_primary_VFO_VAR.set(paddedVFO[0])
+    #
+    #     self.RX_VFO_VAR.set(gv.formatFrequency(unformatted_VFO_String))     # Update RX freq reminder displayed if TX Freq displayed
+    #
+    #
 
 
 
@@ -616,285 +617,286 @@ class mainScreen(baseui.mainScreenUI):
        if (not self.lock_Button_On):
            self.displayCWSettingsWindow()
 
-    def tuning_Preset_5_CB(self):
-        self.Radio_Set_Tuning_Preset(5)
-        self.tuning_Preset_Selection_Frame.grid_remove()
+    # def tuning_Preset_5_CB(self):
+    #     self.Radio_Set_Tuning_Preset(5)
+    #     # self.tuning_Preset_Selection_Frame.grid_remove()
+    #
+    # def tuning_Preset_4_CB(self):
+    #     self.Radio_Set_Tuning_Preset(4)
+    #     # self.tuning_Preset_Selection_Frame.grid_remove()
+    #
+    # def tuning_Preset_3_CB(self):
+    #     self.Radio_Set_Tuning_Preset(3)
+    #     # self.tuning_Preset_Selection_Frame.grid_remove()
+    #
+    # def tuning_Preset_2_CB(self):
+    #     self.Radio_Set_Tuning_Preset(2)
+    #     # self.tuning_Preset_Selection_Frame.grid_remove()
+    #
+    # def tuning_Preset_1_CB(self):
+    #     self.Radio_Set_Tuning_Preset(1)
+    #     # self.tuning_Preset_Selection_Frame.grid_remove()
 
-    def tuning_Preset_4_CB(self):
-        self.Radio_Set_Tuning_Preset(4)
-        self.tuning_Preset_Selection_Frame.grid_remove()
 
-    def tuning_Preset_3_CB(self):
-        self.Radio_Set_Tuning_Preset(3)
-        self.tuning_Preset_Selection_Frame.grid_remove()
-
-    def tuning_Preset_2_CB(self):
-        self.Radio_Set_Tuning_Preset(2)
-        self.tuning_Preset_Selection_Frame.grid_remove()
-
-    def tuning_Preset_1_CB(self):
-        self.Radio_Set_Tuning_Preset(1)
-        self.tuning_Preset_Selection_Frame.grid_remove()
-
-
-    def tuning_Preset_Select_CB(self):
-        #
-        #   check if frame containing radiobuttons is displayed
-        #   if not, display it. If currently displayed, remove it
-        #
-        if (self.tuning_Preset_Selection_Frame.winfo_ismapped()):
-            self.tuning_Preset_Selection_Frame.grid_remove()
-        else:
-            self.tuning_Preset_Selection_Frame.grid()
+    # def tuning_Preset_Select_CB(self):
+    #     #
+    #     #   check if frame containing radiobuttons is displayed
+    #     #   if not, display it. If currently displayed, remove it
+    #     #
+    #     if (self.tuning_Preset_Selection_Frame.winfo_ismapped()):
+    #         self.tuning_Preset_Selection_Frame.grid_remove()
+    #     else:
+    #         self.tuning_Preset_Selection_Frame.grid()
 
     def tuning_Jogwheel_CB(self):
-        newFreq =  self.displayedVFO - (self.currentVFO_Tuning_Rate * self.baselineJogValue)
+        newFreq =  (self.theVFO_Object.getIntPrimaryVFO()
+                    - (self.theVFO_Object.getCurrentVFO_Tuning_Rate() * self.baselineJogValue))
 
-        newFreq += self.currentVFO_Tuning_Rate * self.tuning_Jogwheel.get()
+        newFreq += self.theVFO_Object.getCurrentVFO_Tuning_Rate() * self.tuning_Jogwheel.get()
 
         self.Radio_Set_New_Frequency(newFreq)
 
-
-    def find_msd_position(self, number_string):
-        # Finds the index of the most significant digit from the right in a string representation of a number.
-
-        # Returns:
-        #     int or None: The index of the most significant digit, or None if no non-zero digit is found.
-
-        reversed_number_string = number_string[::-1].strip()  # neat trick to reverse a string
-
-        for i, char in enumerate(reversed_number_string):
-            if char.isdigit() and char != '0':
-                return i
-        return None
-
     #
-    #   this function returns a single digit integer that occupies the position
-    #   corresponding to the current selected rate.
-    #   Conveniently, presets are allocated to position 0,
-    #   which is always zero in CEC and not setable
+    # def find_msd_position(self, number_string):
+    #     # Finds the index of the most significant digit from the right in a string representation of a number.
     #
-
-    def getVFOdigit(self):
-        #
-        #   get the VFO currently displayed
-        #
-        currentVFO = str(self.displayedVFO) #self.primary_VFO_VAR.get()
-
-        #
-        #   reverse it so that least significant is in position 0
-        #
-        reversedVFO = currentVFO[::-1].strip()      # neat trick to reverse a string
-
-        #
-        #   pad it on right with zeros so we have 8 characters
-        #
-        reversedVFO = reversedVFO.ljust(8,"0")
-
-        if (self.currentDigitPos == 0):
-            if (self.currentVFO_Tuning_Rate != 0):
-                pos=self.find_msd_position(str(self.currentVFO_Tuning_Rate))
-                return int(reversedVFO[pos])
-            else:
-                return int(reversedVFO[2])
-        else:
-            #
-            #   now we can just return the character of the selected rate
-            #
-            return int(reversedVFO[self.currentDigitPos])
-    def RX_VFO_Visability (self, RX_Frame_Visible = False):
-        if RX_Frame_Visible:
-            self.RX_VFO_Frame.pack(side="left")
-        else:
-            self.RX_VFO_Frame.pack_forget()
+    #     # Returns:
+    #     #     int or None: The index of the most significant digit, or None if no non-zero digit is found.
     #
-    #   This routine handles switching between Direct and "Preset" tuning mode
-    #   The complexity here comes from the original CEC software using the current
-    #   preset-1 (i.e. if Preset 3 was 100 and Preset 2 was 50, and we were on preset 3,
-    #   everything below Preset 3 would be zero'ed out. This means to allow direct
-    #   tune mode on the tens digit, we must first make the preset the lowest # (i.e. 1)
-    #   so that the tens digit is not masked out and turned to zero.
-    #   As a result, we need to save the state of the preset when we move to Direct Tune,
-    #   and then restore it as we exit Direct Tune and go into Preset mode.
-    #   Since the MCU can also force changes in preset, we must temporarily turn off
-    #   the updating of the label
+    #     reversed_number_string = number_string[::-1].strip()  # neat trick to reverse a string
     #
-    def toggle_Tuning_Mode(self, mode):
-        if (mode == "direct tune"):
-            if (self.saved_tuning_Preset_Selection == None):        #None value indicates we *were* in "direct tune" mode
-                #
-                #   save state prior to going into Direct Mode
-                #
-                self.saved_tuning_Preset_Selection = self.tuning_Preset_Selection_VAR.get()
-                self.saved_tuning_Preset_VAR = self.tuning_Preset_Label_VAR.get()
-                #
-                #   Sets label that displays current present with "Direct Tune" string
-                #
-                self.tuning_Preset_Label_VAR.set("Direct Tune")
-                #   turn off any changes in the label due to a change in preset coming from the radio
-                self.update_Tuning_Preset_Button_Label = False
-                #   Disable the tuning rate button so selected preset cannot be changed while in direct tune
-                self.tuning_Preset_Button.configure(state='disabled')
-                #
-                #   Select the lowest tuning rate of the presets. The need to do this is the result of the original
-                #   CEC software using the rate preselects to truncate digits below the preset. For example.
-                #   if a preset of 100 was selected, then it would be impossible to set the dial in increments of 20
-                #   or 10 because it would be truncated to lower 100.
-                #
-                self.Radio_Set_Tuning_Preset(1)
-
-        else:       # Switching into pre-set tuning mode and have to restore the state
-            if (self.saved_tuning_Preset_Selection != None):          # dont restore unless it was previously saved
-                #   Allow updating of the Label for the selected preset
-                self.update_Tuning_Preset_Button_Label = True
-                #   Restore the saved states
-                self.tuning_Preset_Label_VAR.set(self.saved_tuning_Preset_VAR)
-                self.Radio_Set_Tuning_Preset(int(self.saved_tuning_Preset_Selection))
-                #   Re-enable the button to select a preset
-                self.tuning_Preset_Button.configure(state='enabled')
-                #   indicate the saved states are now invalid
-                self.saved_tuning_Preset_Selection = None
-
-
-    def toggle_Digit_Highlight(self, light, Status):
-
-        if (Status):
-            if (isinstance(light, ttk.Button)):
-                light.configure(style='GreenButton2b.TButton')
-                self.toggle_Tuning_Mode("preset tune")      # go into preset tune mode
-
-            else:
-                light.configure(style='OnLED.TLabel')
-                self.toggle_Tuning_Mode("direct tune")      # go into direct tune mode
-
-        else:
-            if (isinstance(light, ttk.Button)):
-                light.configure(style='Button2b.TButton')
-            else:
-                light.configure(style='OffLED.TLabel')
-
-
+    #     for i, char in enumerate(reversed_number_string):
+    #         if char.isdigit() and char != '0':
+    #             return i
+    #     return None
     #
-    #   When the tuning_Multiplier is clicked, it cycles through the digits in the VFO to allow them to be
-    #   manually tuned. The initial case the use of the preset tuning cycles is used, much in the same
-    #   way it would be if you are adjusting the physical tuning knob.
+    # #
+    # #   this function returns a single digit integer that occupies the position
+    # #   corresponding to the current selected rate.
+    # #   Conveniently, presets are allocated to position 0,
+    # #   which is always zero in CEC and not setable
+    # #
     #
-    def tuning_Multiplier_Button_CB(self):
-        #
-        #   First turn off the old LED, turn on new LED indicator for tuning
-        #
-        self.updateLEDTuningHighlight()
-        #
-        #   Update rate multiplier for jogwheel
-        #
-        self.updateRateMultiplier()
-        #
-        #   set tracking variables for new rate change
-        #
-        self.updateJogTracking()
-        #
-        #   Update the label on the tuning button selector
-        #
-        self.updateLabelTuning_Multiplier()
+    # def getVFOdigit(self):
+    #     #
+    #     #   get the VFO currently displayed
+    #     #
+    #     currentVFO = str(self.displayedVFO) #self.primary_VFO_VAR.get()
+    #
+    #     #
+    #     #   reverse it so that least significant is in position 0
+    #     #
+    #     reversedVFO = currentVFO[::-1].strip()      # neat trick to reverse a string
+    #
+    #     #
+    #     #   pad it on right with zeros so we have 8 characters
+    #     #
+    #     reversedVFO = reversedVFO.ljust(8,"0")
+    #
+    #     if (self.currentDigitPos == 0):
+    #         if (self.currentVFO_Tuning_Rate != 0):
+    #             pos=self.find_msd_position(str(self.currentVFO_Tuning_Rate))
+    #             return int(reversedVFO[pos])
+    #         else:
+    #             return int(reversedVFO[2])
+    #     else:
+    #         #
+    #         #   now we can just return the character of the selected rate
+    #         #
+    #         return int(reversedVFO[self.currentDigitPos])
+    # def RX_VFO_Visability (self, RX_Frame_Visible = False):
+    #     if RX_Frame_Visible:
+    #         self.RX_VFO_Frame.pack(side="left")
+    #     else:
+    #         self.RX_VFO_Frame.pack_forget()
+    # #
+    # #   This routine handles switching between Direct and "Preset" tuning mode
+    # #   The complexity here comes from the original CEC software using the current
+    # #   preset-1 (i.e. if Preset 3 was 100 and Preset 2 was 50, and we were on preset 3,
+    # #   everything below Preset 3 would be zero'ed out. This means to allow direct
+    # #   tune mode on the tens digit, we must first make the preset the lowest # (i.e. 1)
+    # #   so that the tens digit is not masked out and turned to zero.
+    # #   As a result, we need to save the state of the preset when we move to Direct Tune,
+    # #   and then restore it as we exit Direct Tune and go into Preset mode.
+    # #   Since the MCU can also force changes in preset, we must temporarily turn off
+    # #   the updating of the label
+    # #
+    # def toggle_Tuning_Mode(self, mode):
+    #     if (mode == "direct tune"):
+    #         if (self.saved_tuning_Preset_Selection == None):        #None value indicates we *were* in "direct tune" mode
+    #             #
+    #             #   save state prior to going into Direct Mode
+    #             #
+    #             self.saved_tuning_Preset_Selection = self.tuning_Preset_Selection_VAR.get()
+    #             self.saved_tuning_Preset_VAR = self.tuning_Preset_Label_VAR.get()
+    #             #
+    #             #   Sets label that displays current present with "Direct Tune" string
+    #             #
+    #             self.tuning_Preset_Label_VAR.set("Direct Tune")
+    #             #   turn off any changes in the label due to a change in preset coming from the radio
+    #             self.update_Tuning_Preset_Button_Label = False
+    #             #   Disable the tuning rate button so selected preset cannot be changed while in direct tune
+    #             self.tuning_Preset_Button.configure(state='disabled')
+    #             #
+    #             #   Select the lowest tuning rate of the presets. The need to do this is the result of the original
+    #             #   CEC software using the rate preselects to truncate digits below the preset. For example.
+    #             #   if a preset of 100 was selected, then it would be impossible to set the dial in increments of 20
+    #             #   or 10 because it would be truncated to lower 100.
+    #             #
+    #             self.Radio_Set_Tuning_Preset(1)
+    #
+    #     else:       # Switching into pre-set tuning mode and have to restore the state
+    #         if (self.saved_tuning_Preset_Selection != None):          # dont restore unless it was previously saved
+    #             #   Allow updating of the Label for the selected preset
+    #             self.update_Tuning_Preset_Button_Label = True
+    #             #   Restore the saved states
+    #             self.tuning_Preset_Label_VAR.set(self.saved_tuning_Preset_VAR)
+    #             self.Radio_Set_Tuning_Preset(int(self.saved_tuning_Preset_Selection))
+    #             #   Re-enable the button to select a preset
+    #             self.tuning_Preset_Button.configure(state='enabled')
+    #             #   indicate the saved states are now invalid
+    #             self.saved_tuning_Preset_Selection = None
+    #
+    #
+    # def toggle_Digit_Highlight(self, light, Status):
+    #
+    #     if (Status):
+    #         if (isinstance(light, ttk.Button)):
+    #             light.configure(style='GreenButton2b.TButton')
+    #             self.toggle_Tuning_Mode("preset tune")      # go into preset tune mode
+    #
+    #         else:
+    #             light.configure(style='OnLED.TLabel')
+    #             self.toggle_Tuning_Mode("direct tune")      # go into direct tune mode
+    #
+    #     else:
+    #         if (isinstance(light, ttk.Button)):
+    #             light.configure(style='Button2b.TButton')
+    #         else:
+    #             light.configure(style='OffLED.TLabel')
 
 
-    def updateLEDTuningHighlight(self, tuning_Digit = None):
-        #
-        #   First turn off the old LED
-        #
-        self.toggle_Digit_Highlight(self.rate_selection[self.currentDigitPos], False)
-        #
-        #   IF increment mode (tuning_Digit == None)
-        #   Increment to the next slot and turn its LED on, check for rollover, otherwise go directly to the indicated
-        #   digit
-        #
-        if tuning_Digit == None:
-            self.currentDigitPos += 1
-            if self.currentDigitPos > len(self.rate_selection) - 1:
-                self.currentDigitPos = 0
-        else:
-            self.currentDigitPos = tuning_Digit
+    # #
+    # #   When the tuning_Multiplier is clicked, it cycles through the digits in the VFO to allow them to be
+    # #   manually tuned. The initial case the use of the preset tuning cycles is used, much in the same
+    # #   way it would be if you are adjusting the physical tuning knob.
+    # #
+    # def tuning_Multiplier_Button_CB(self):
+    #     #
+    #     #   First turn off the old LED, turn on new LED indicator for tuning
+    #     #
+    #     self.updateLEDTuningHighlight()
+    #     #
+    #     #   Update rate multiplier for jogwheel
+    #     #
+    #     self.updateRateMultiplier()
+    #     #
+    #     #   set tracking variables for new rate change
+    #     #
+    #     self.updateJogTracking()
+    #     #
+    #     #   Update the label on the tuning button selector
+    #     #
+    #     self.updateLabelTuning_Multiplier()
 
-        self.toggle_Digit_Highlight(self.rate_selection[self.currentDigitPos], True)
 
-    def updateRateMultiplier(self):
-        #
-        #   Set the frequency multiplier
-        #
-        self.currentVFO_Tuning_Rate = self.DigitPos_to_Powers_of_Ten[self.currentDigitPos]
-        #
-        #   Special case 0, which is the current value of the preset
-        #
-        if (self.currentVFO_Tuning_Rate == 0):
-           if self.tuning_Preset_Label_VAR.get() == "Direct Tune":
-               self.Radio_Set_Tuning_Preset(1)
-           else:
-               self.currentVFO_Tuning_Rate = int(self.tuning_Preset_Label_VAR.get())
+    # def updateLEDTuningHighlight(self, tuning_Digit = None):
+    #     #
+    #     #   First turn off the old LED
+    #     #
+    #     self.toggle_Digit_Highlight(self.rate_selection[self.currentDigitPos], False)
+    #     #
+    #     #   IF increment mode (tuning_Digit == None)
+    #     #   Increment to the next slot and turn its LED on, check for rollover, otherwise go directly to the indicated
+    #     #   digit
+    #     #
+    #     if tuning_Digit == None:
+    #         self.currentDigitPos += 1
+    #         if self.currentDigitPos > len(self.rate_selection) - 1:
+    #             self.currentDigitPos = 0
+    #     else:
+    #         self.currentDigitPos = tuning_Digit
+    #
+    #     self.toggle_Digit_Highlight(self.rate_selection[self.currentDigitPos], True)
 
-    def updateJogTracking(self,newBaseline=True):
-        # if self.DeepDebug:
-        #     print("updating jogwheel, digit=", self.getVFOdigit())
-        #     print("current jogwheel position =", self.tuning_Jogwheel.get())
+    # def updateRateMultiplier(self):
+    #     #
+    #     #   Set the frequency multiplier
+    #     #
+    #     self.currentVFO_Tuning_Rate = self.DigitPos_to_Powers_of_Ten[self.currentDigitPos]
+    #     #
+    #     #   Special case 0, which is the current value of the preset
+    #     #
+    #     if (self.currentVFO_Tuning_Rate == 0):
+    #        if self.tuning_Preset_Label_VAR.get() == "Direct Tune":
+    #            self.Radio_Set_Tuning_Preset(1)
+    #        else:
+    #            self.currentVFO_Tuning_Rate = int(self.tuning_Preset_Label_VAR.get())
+    #
+    # def updateJogTracking(self,newBaseline=True):
+    #     # if self.DeepDebug:
+    #     #     print("updating jogwheel, digit=", self.getVFOdigit())
+    #     #     print("current jogwheel position =", self.tuning_Jogwheel.get())
+    #
+    #     self.tuning_Jogwheel.set(self.getVFOdigit(), False)
+    #     if(newBaseline):
+    #         self.baselineJogValue = self.tuning_Jogwheel.get()
 
-        self.tuning_Jogwheel.set(self.getVFOdigit(), False)
-        if(newBaseline):
-            self.baselineJogValue = self.tuning_Jogwheel.get()
-
-    def updateLabelTuning_Multiplier(self):
-        if (self.currentVFO_Tuning_Rate < 1000):
-            multiplier_string = str(int(self.currentVFO_Tuning_Rate)) + "Hz"
-        elif (self.currentVFO_Tuning_Rate < 1000000):
-            multiplier_string = str(int(self.currentVFO_Tuning_Rate / 1000)) + "KHz"
-        else:
-            multiplier_string = str(int(self.currentVFO_Tuning_Rate / 1000000)) + "MHz"
-
-        #   Now set the text on the multiplier button to reflect the new rate
-        #
-        self.tuning_Multiplier_VAR.set("Tuning Factor\nx" + multiplier_string)
+    # def updateLabelTuning_Multiplier(self):
+    #     if (self.currentVFO_Tuning_Rate < 1000):
+    #         multiplier_string = str(int(self.currentVFO_Tuning_Rate)) + "Hz"
+    #     elif (self.currentVFO_Tuning_Rate < 1000000):
+    #         multiplier_string = str(int(self.currentVFO_Tuning_Rate / 1000)) + "KHz"
+    #     else:
+    #         multiplier_string = str(int(self.currentVFO_Tuning_Rate / 1000000)) + "MHz"
+    #
+    #     #   Now set the text on the multiplier button to reflect the new rate
+    #     #
+    #     self.tuning_Multiplier_VAR.set("Tuning Factor\nx" + multiplier_string)
 #
+    # #
+    # #   this callback allows a user to click on the 10hz digit and then use the tuning jogwheel
+    # #
+    # def primary_vfo_direct_digit_set(self, digit):
+    #     #
+    #     #   First turn off the old LED, turn on new LED indicator for tuning
+    #     #
+    #     self.updateLEDTuningHighlight(digit)
+    #     #
+    #     #   Update rate multiplier for jogwheel
+    #     #
+    #     self.updateRateMultiplier()
+    #     #
+    #     #   set tracking variables for new rate change
+    #     #
+    #     self.updateJogTracking()
+    #     #
+    #     #   Update the label on the tuning button selector
+    #     #
+    #     self.updateLabelTuning_Multiplier()
     #
-    #   this callback allows a user to click on the 10hz digit and then use the tuning jogwheel
     #
-    def primary_vfo_direct_digit_set(self, digit):
-        #
-        #   First turn off the old LED, turn on new LED indicator for tuning
-        #
-        self.updateLEDTuningHighlight(digit)
-        #
-        #   Update rate multiplier for jogwheel
-        #
-        self.updateRateMultiplier()
-        #
-        #   set tracking variables for new rate change
-        #
-        self.updateJogTracking()
-        #
-        #   Update the label on the tuning button selector
-        #
-        self.updateLabelTuning_Multiplier()
-
-
-
-    def primary_vfo_10mhz_CB(self, event=None):
-        self.primary_vfo_direct_digit_set(7)
-
-    def primary_vfo_1mhz_CB(self, event=None):
-        self.primary_vfo_direct_digit_set(6)
-
-    def primary_vfo_100khz_CB(self, event=None):
-        self.primary_vfo_direct_digit_set(5)
-
-    def primary_vfo_10khz_CB(self, event=None):
-        self.primary_vfo_direct_digit_set(4)
-
-    def primary_vfo_1khz_CB(self, event=None):
-        self.primary_vfo_direct_digit_set(3)
-
-    def primary_vfo_100hz_CB(self, event=None):
-        self.primary_vfo_direct_digit_set(2)
-
-    def primary_vfo_10hz_CB(self, event=None):
-        self.primary_vfo_direct_digit_set(1)
+    #
+    # def primary_vfo_10mhz_CB(self, event=None):
+    #     self.primary_vfo_direct_digit_set(7)
+    #
+    # def primary_vfo_1mhz_CB(self, event=None):
+    #     self.primary_vfo_direct_digit_set(6)
+    #
+    # def primary_vfo_100khz_CB(self, event=None):
+    #     self.primary_vfo_direct_digit_set(5)
+    #
+    # def primary_vfo_10khz_CB(self, event=None):
+    #     self.primary_vfo_direct_digit_set(4)
+    #
+    # def primary_vfo_1khz_CB(self, event=None):
+    #     self.primary_vfo_direct_digit_set(3)
+    #
+    # def primary_vfo_100hz_CB(self, event=None):
+    #     self.primary_vfo_direct_digit_set(2)
+    #
+    # def primary_vfo_10hz_CB(self, event=None):
+    #     self.primary_vfo_direct_digit_set(1)
 #
 #   This function sends to the Radio a notice that a screen lock has been requested
 #   The actual locking of the screen waits until the Radio sends back a commond
@@ -1400,7 +1402,7 @@ class mainScreen(baseui.mainScreenUI):
 
     def v1_UX_Set_Tuning_Preset_1(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.tuning_Preset_1_VAR.set(value)
+        self.theVFO_Object.set_Tuning_Preset_1(value)
 
 
     #
@@ -1408,21 +1410,21 @@ class mainScreen(baseui.mainScreenUI):
     #
     def v2_UX_Set_Tuning_Preset_2(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.tuning_Preset_2_VAR.set(value)
+        self.theVFO_Object.set_Tuning_Preset_2(value)
 
     #
     #   The "v3" command 1s used for the third (middle) tuning rate
     #
     def v3_UX_Set_Tuning_Preset_3(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.tuning_Preset_3_VAR.set(value)
+        self.theVFO_Object.set_Tuning_Preset_3(value)
 
     #
     #   The "v4" command 1s used for the next largest tuning rate
     #
     def v4_UX_Set_Tuning_Preset_4(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.tuning_Preset_4_VAR.set(value)
+        self.theVFO_Object.set_Tuning_Preset_4(value)
 
 
     #
@@ -1430,7 +1432,7 @@ class mainScreen(baseui.mainScreenUI):
     #
     def v5_UX_Set_Tuning_Preset_5(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.tuning_Preset_5_VAR.set(value)
+        self.theVFO_Object.set_Tuning_Preset_5(value)
 
     #
     #   The "cn" command indicates which tuning step is active (1(smallest) - 5(largest)
@@ -1438,39 +1440,40 @@ class mainScreen(baseui.mainScreenUI):
     def cn_UX_Set_Active_Tuning_Preset(self, buffer):
 
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.tuning_Preset_Selection_VAR.set(value)
-
-        match value:
-            case "5":
-                if (self.update_Tuning_Preset_Button_Label):
-                    self.tuning_Preset_Label_VAR.set(self.tuning_Preset_5_VAR.get())
-                self.tuning_Preset_Selection_VAR.set(5)
-                self.currentVFO_Tuning_Rate = int(self.tuning_Preset_5_VAR.get())
-
-            case "4":
-                if (self.update_Tuning_Preset_Button_Label):
-                    self.tuning_Preset_Label_VAR.set(self.tuning_Preset_4_VAR.get())
-                self.tuning_Preset_Selection_VAR.set(4)
-                self.currentVFO_Tuning_Rate = int(self.tuning_Preset_4_VAR.get())
-            case "3":
-                if (self.update_Tuning_Preset_Button_Label):
-                    self.tuning_Preset_Label_VAR.set(self.tuning_Preset_3_VAR.get())
-                self.tuning_Preset_Selection_VAR.set(3)
-                self.currentVFO_Tuning_Rate = int(self.tuning_Preset_3_VAR.get())
-            case "2":
-                if (self.update_Tuning_Preset_Button_Label):
-                    self.tuning_Preset_Label_VAR.set(self.tuning_Preset_2_VAR.get())
-                self.tuning_Preset_Selection_VAR.set(2)
-                self.currentVFO_Tuning_Rate = int(self.tuning_Preset_2_VAR.get())
-            case "1":
-                if (self.update_Tuning_Preset_Button_Label):
-                    self.tuning_Preset_Label_VAR.set(self.tuning_Preset_1_VAR.get())
-                self.tuning_Preset_Selection_VAR.set(1)
-                self.currentVFO_Tuning_Rate = int(self.tuning_Preset_1_VAR.get())
-
-        self.updateRateMultiplier()
-        self.updateJogTracking()
-        self.updateLabelTuning_Multiplier()
+        self.theVFO_Object.set_Active_Tuning_Preset(value)
+        # self.tuning_Preset_Selection_VAR.set(value)
+        #
+        # match value:
+        #     case "5":
+        #         if (self.update_Tuning_Preset_Button_Label):
+        #             self.tuning_Preset_Label_VAR.set(self.tuning_Preset_5_VAR.get())
+        #         self.tuning_Preset_Selection_VAR.set(5)
+        #         self.currentVFO_Tuning_Rate = int(self.tuning_Preset_5_VAR.get())
+        #
+        #     case "4":
+        #         if (self.update_Tuning_Preset_Button_Label):
+        #             self.tuning_Preset_Label_VAR.set(self.tuning_Preset_4_VAR.get())
+        #         self.tuning_Preset_Selection_VAR.set(4)
+        #         self.currentVFO_Tuning_Rate = int(self.tuning_Preset_4_VAR.get())
+        #     case "3":
+        #         if (self.update_Tuning_Preset_Button_Label):
+        #             self.tuning_Preset_Label_VAR.set(self.tuning_Preset_3_VAR.get())
+        #         self.tuning_Preset_Selection_VAR.set(3)
+        #         self.currentVFO_Tuning_Rate = int(self.tuning_Preset_3_VAR.get())
+        #     case "2":
+        #         if (self.update_Tuning_Preset_Button_Label):
+        #             self.tuning_Preset_Label_VAR.set(self.tuning_Preset_2_VAR.get())
+        #         self.tuning_Preset_Selection_VAR.set(2)
+        #         self.currentVFO_Tuning_Rate = int(self.tuning_Preset_2_VAR.get())
+        #     case "1":
+        #         if (self.update_Tuning_Preset_Button_Label):
+        #             self.tuning_Preset_Label_VAR.set(self.tuning_Preset_1_VAR.get())
+        #         self.tuning_Preset_Selection_VAR.set(1)
+        #         self.currentVFO_Tuning_Rate = int(self.tuning_Preset_1_VAR.get())
+        #
+        # self.updateRateMultiplier()
+        # self.updateJogTracking()
+        # self.updateLabelTuning_Multiplier()
 
 
     #
@@ -1527,11 +1530,9 @@ class mainScreen(baseui.mainScreenUI):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
         print("ct get called:", "buffer =", buffer)
         if value == "1":  #going into transmit mode
-            self.tx_Status_Light_Label.configure(state="normal")
-            self.rx_Status_Light_Label.configure(state="disabled")
+            self.theVFO_Object.setTXButtonState()
         else:
-            self.tx_Status_Light_Label.configure(state="disabled")
-            self.rx_Status_Light_Label.configure(state="normal")
+            self.theVFO_Object.setRXButtonState()
 
 
     #
@@ -1555,7 +1556,7 @@ class mainScreen(baseui.mainScreenUI):
     #
     def sv_UX_Set_SW_Version(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.firmwareVersion_VAR.set(value)
+        self.theVFO_Object.setFirmwareVersion(value)
 
 
 
@@ -1564,7 +1565,7 @@ class mainScreen(baseui.mainScreenUI):
     #
     def sc_UX_Set_User_Callsign(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.callSign_VAR.set(value)
+        self.theVFO_Object.setCallsign(value)
 
 
     #
@@ -1763,11 +1764,12 @@ class mainScreen(baseui.mainScreenUI):
         self.split_Button.configure(state="disabled")
         self.rit_Button.configure(state="disabled")
         self.channels_Button.configure(state="disabled")
-        self.tuning_Multiplier_Button.configure(state="disabled")
-        self.tuning_Preset_Button.configure(state="disabled")
+        # self.tuning_Multiplier_Button.configure(state="disabled")
+        # self.tuning_Preset_Button.configure(state="disabled")
         self.ATT_Jogwheel.setStateDisabled()
         self.IFS_Jogwheel.setStateDisabled()
         self.tuning_Jogwheel.setStateDisabled()
+        self.theVFO_Object.setVFOUXState("disabled")
 
 
     #
@@ -1783,13 +1785,14 @@ class mainScreen(baseui.mainScreenUI):
         self.split_Button.configure(state="normal")
         self.rit_Button.configure(state="normal")
         self.channels_Button.configure(state="normal")
-        self.tuning_Multiplier_Button.configure(state="normal")
-        self.tuning_Preset_Button.configure(state="normal")
+        # self.tuning_Multiplier_Button.configure(state="normal")
+        # self.tuning_Preset_Button.configure(state="normal")
         if (self.ATT_Button_On == True):
             self.ATT_Jogwheel.setStateNormal()
         if (self.IFS_Button_On == True):
             self.IFS_Jogwheel.setStateNormal()
         self.tuning_Jogwheel.setStateNormal()
+        self.theVFO_Object.setVFOUXState("normal")
 
 
     def cj_UX_Speaker_Toggle(self, buffer):
@@ -1903,12 +1906,8 @@ class mainScreen(baseui.mainScreenUI):
 
 
     def cx_UX_TX_Stop_Toggle(self, buffer):
-        if (self.stop_Button_On):
-            self.stop_Button_On = False
-            self.stop_Button.configure(style='Button2b.TButton', state="normal")
-        else:
-            self.stop_Button_On = True
-            self.stop_Button.configure(style='RedButton2b.TButton', state="pressed")
+        self.theVFO_Object.toggleStopButtonState()
+
 
     #
     #   The "vc" command indicates a new frequency for the Primary
@@ -1916,22 +1915,25 @@ class mainScreen(baseui.mainScreenUI):
     def vc_UX_Set_Primary_VFO_Frequency(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
 
-        self.primary_VFO_VAR.set(value)
-        self.update_VFO_Display(self.primary_VFO_VAR.get(),self.freqOffset)
-        self.updateJogTracking()
+        self.theVFO_Object.setPrimaryVFO(value)
+
+        # self.primary_VFO_VAR.set(value)
+        # self.update_VFO_Display(self.primary_VFO_VAR.get(),self.freqOffset)
+        # self.updateJogTracking()
 
         if self.channelsWindow != None:      #  Only update frequency if the channel window has been created once
-            self.channelsWindow.update_Current_Frequency(gv.formatFrequency(self.primary_VFO_VAR.get()))
+            self.channelsWindow.update_Current_Frequency(self.theVFO_Object.getFormattedPrimaryVFO)
+            # self.channelsWindow.update_Current_Frequency(gv.formatFrequency(self.primary_VFO_VAR.get()))
 
 
 
 
-    def reformatVFO(self, value):
-        self.digit_delimiter_primary_VFO_VAR.set(gv.config.get_NUMBER_DELIMITER())
-        self.update_VFO_Display(str(self.displayedVFO))
-        # self.update_VFO_Display(self.primary_VFO_VAR.get(), self.freqOffset)
-        self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(self.secondary_VFO_VAR.get(), self.freqOffset))
-        self.RX_VFO_VAR.set(gv.formatFrequency(self.RX_VFO_VAR.get().replace(gv.config.get_NUMBER_DELIMITER(),"")))
+    # def reformatVFO(self, value):
+    #     self.digit_delimiter_primary_VFO_VAR.set(gv.config.get_NUMBER_DELIMITER())
+    #     self.update_VFO_Display(str(self.displayedVFO))
+    #     # self.update_VFO_Display(self.primary_VFO_VAR.get(), self.freqOffset)
+    #     self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(self.secondary_VFO_VAR.get(), self.freqOffset))
+    #     self.RX_VFO_VAR.set(gv.formatFrequency(self.RX_VFO_VAR.get().replace(gv.config.get_NUMBER_DELIMITER(),"")))
 
     def switchVFO_Tuning_Optimization(self, value):
         self.tuning_Jogwheel.configure(scroll=True, touchOptimized=value)
@@ -1946,11 +1948,11 @@ class mainScreen(baseui.mainScreenUI):
             #
             #   We are showing the TX frequency on the VFO so need to offset it
             #
-            self.offsetVFOforTX(True)
+            self.theVFO_Object.offsetVFOforTX(True)
         else:
-            self.offsetVFOforTX(False)
+            self.theVFO_Object.offsetVFOforTX(False)
 
-        self.updateJogTracking()            # Since changed mode, may need to reset jogwheel to tx frequency
+        self.theVFO_Object.updateJogTracking()            # Since changed mode, may need to reset jogwheel to tx frequency
 
         if self.channelsWindow != None:
             # Only update frequency if the channel window has been created once
@@ -1968,12 +1970,11 @@ class mainScreen(baseui.mainScreenUI):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
 
         if (self.vfo_VAR.get()== self.VFO_A):       #update displayed frequency
-            self.primary_VFO_VAR.set(value)         #MJH dont we need to update vfoa and vfob directly?
-            self.update_VFO_Display(value,self.freqOffset)
+            self.theVFO_Object.setPrimaryVFO(value)         #MJH dont we need to update vfoa and vfob directly
 
         else:
-            self.secondary_VFO_VAR.set(value)
-            self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(value, self.freqOffset))
+            self.theVFO_Object.setSecondaryVFO(value)
+
 
 
 
@@ -1990,7 +1991,7 @@ class mainScreen(baseui.mainScreenUI):
         if (self.vfo_VAR.get()== self.VFO_A):       #update displayed frequency
             self.primary_Mode_VAR.set(self.modeNum_To_TextDict[value])
         else:
-            self.secondary_Mode_VAR.set(self.modeNum_To_TextDict[value])
+            self.theVFO_Object.setSecondaryMode(self.modeNum_To_TextDict[value])
 
 
         # print("***ca get called:***", "buffer =", buffer)
@@ -2010,11 +2011,9 @@ class mainScreen(baseui.mainScreenUI):
 
 
         if (self.vfo_VAR.get()== self.VFO_B):       #update displayed frequency
-            self.primary_VFO_VAR.set(value)
-            self.update_VFO_Display(value,self.freqOffset)
+            self.theVFO_Object.setPrimaryVFO(value)
         else:
-            self.secondary_VFO_VAR.set(value)       #need formatted here too
-            self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(value, self.freqOffset))
+            self.theVFO_Object.setSecondaryVFO(value)       #need formatted here too
 
         # print("***vb get called:***", "buffer =", buffer)
         # print("vb assign vfo b frequency")
@@ -2033,7 +2032,7 @@ class mainScreen(baseui.mainScreenUI):
         if (self.vfo_VAR.get()== self.VFO_B):       #update displayed frequency
             self.primary_Mode_VAR.set(self.modeNum_To_TextDict[value])
         else:
-            self.secondary_Mode_VAR.set(self.modeNum_To_TextDict[value])
+            self.theVFO_Object.secondary_Mode_VAR.set(self.modeNum_To_TextDict[value])
 
         # print("***cb get called:***", "buffer =", buffer)
         # print("cb assign mode for vfoB frequency")
@@ -2046,6 +2045,7 @@ class mainScreen(baseui.mainScreenUI):
     def vt_UX_SET_CW_Tone(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
         self.tone_value_VAR.set(value)
+        # self.theVFO_Object.setCWTone(value)
 
 
     #
@@ -2084,24 +2084,27 @@ class mainScreen(baseui.mainScreenUI):
     #
     def cv_UX_VFO_Toggle(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-
-        self.vfo_VAR.set(self.Text_To_VFO[value])
-
-        saveSecondary_VFO = self.secondary_VFO_VAR.get()
-        saveSecondary_Mode = self.secondary_Mode_VAR.get()
-
-        # self.secondary_VFO_VAR.set(gv.unformatFrequency(self.primary_VFO_Formatted_VAR))
-        self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(self.primary_VFO_VAR.get()))
-        # self.secondary_VFO_Formatted_VAR.set(self.primary_VFO_Formatted_VAR.get())
-        # self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(gv.unformatFrequency(self.primary_VFO_Formatted_VAR.get()), self.freqOffset))
-        self.secondary_Mode_VAR.set(self.primary_Mode_VAR.get())
-
-        self.primary_VFO_VAR.set(saveSecondary_VFO)
-
-        # self.primary_VFO_Formatted_VAR.set(gv.formatFrequency(saveSecondary_VFO, self.freqOffset))
-        self.update_VFO_Display(self.primary_VFO_VAR.get(), self.freqOffset)
-
-        self.primary_Mode_VAR.set(saveSecondary_Mode)
+        self.theVFO_Object.toggleVFO()
+        self.vfo_VAR.set(self.Text_To_VFO[value])           # Update Label on button
+        #
+        #
+        #
+        # saveSecondary_VFO = self.secondary_VFO_VAR.get()
+        # saveSecondary_Mode = self.secondary_Mode_VAR.get()
+        #
+        # # self.secondary_VFO_VAR.set(gv.unformatFrequency(self.primary_VFO_Formatted_VAR))
+        # self.theVFO_Object.setSecondayVFO(self.theVFO_Object.getFormattedPrimaryVFO())
+        # # self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(self.primary_VFO_VAR.get()))
+        # # self.secondary_VFO_Formatted_VAR.set(self.primary_VFO_Formatted_VAR.get())
+        # # self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(gv.unformatFrequency(self.primary_VFO_Formatted_VAR.get()), self.freqOffset))
+        # self.secondary_Mode_VAR.set(self.primary_Mode_VAR.get())
+        #
+        # self.theVFO_Object.setPrimaryVFO(saveSecondary_VFO)
+        #
+        # # self.primary_VFO_Formatted_VAR.set(gv.formatFrequency(saveSecondary_VFO, self.freqOffset))
+        # # self.update_VFO_Display(self.primary_VFO_VAR.get(), self.freqOffset)
+        #
+        # self.primary_Mode_VAR.set(saveSecondary_Mode)
 
 ########################################################################################
 #   End processing of commands sent by MCU to Screen

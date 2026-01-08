@@ -1,0 +1,1346 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.5" author="PygubuDesigner 0.41.4">
+  <project>
+    <settings>
+      <setting id="name">pi_Nextion_UX</setting>
+      <setting id="description">A Nextion GUI emulator for CEC</setting>
+      <setting id="module_name">mainScreen</setting>
+      <setting id="template">widget</setting>
+      <setting id="main_widget">main_window</setting>
+      <setting id="main_classname">mainScreen</setting>
+      <setting id="main_menu" />
+      <setting id="output_dir">..</setting>
+      <setting id="output_dir2">..</setting>
+      <setting id="import_tkvariables">False</setting>
+      <setting id="use_ttk_styledefinition_file">True</setting>
+      <setting id="use_i18n">False</setting>
+      <setting id="all_ids_attributes">False</setting>
+      <setting id="generate_code_onsave">False</setting>
+      <setting id="use_window_centering_code">False</setting>
+      <setting id="ttk_style_definition_file">../mystyles.py</setting>
+    </settings>
+    <customwidgets>
+      <customwidget path="../JogwheelCustom_UXbo.py" />
+    </customwidgets>
+    <resources />
+  </project>
+  <object class="ttk.Frame" id="main_window" named="True">
+    <property name="borderwidth">5</property>
+    <property name="height">800</property>
+    <property name="style">Normal.TFrame</property>
+    <property name="width">875</property>
+    <layout manager="pack">
+      <property name="anchor">w</property>
+      <property name="expand">True</property>
+      <property name="fill">both</property>
+      <property name="side">top</property>
+    </layout>
+    <child>
+      <object class="ttk.Frame" id="menuBar_Frame" named="True">
+        <property name="borderwidth">5</property>
+        <property name="height">50</property>
+        <property name="style">Normal.TFrame</property>
+        <property name="width">1250</property>
+        <layout manager="pack">
+          <property name="anchor">n</property>
+          <property name="expand">true</property>
+          <property name="fill">x</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="ttk.Button" id="settings_Button" named="True">
+            <property name="command" type="command" cbtype="simple">settings_CB</property>
+            <property name="style">Button2b.TButton</property>
+            <property name="text" translatable="yes">  
+SETTINGS
+  </property>
+            <property name="textvariable">string:settings_VAR</property>
+            <property name="width">12</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">0 2</property>
+              <property name="row">0</property>
+              <property name="sticky">ns</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Button" id="vfo_Button" named="True">
+            <property name="command" type="command" cbtype="simple">vfo_CB</property>
+            <property name="state">normal</property>
+            <property name="style">Button2b.TButton</property>
+            <property name="text" translatable="yes">
+VFO
+</property>
+            <property name="textvariable">string:vfo_VAR</property>
+            <property name="width">12</property>
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="padx">0 2</property>
+              <property name="row">0</property>
+              <property name="sticky">ns</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Menubutton" id="mode_select_Menubutton" named="True">
+            <property name="style">Heading2b.TMenubutton</property>
+            <property name="text" translatable="yes"> 
+Mode
+</property>
+            <property name="textvariable">string:primary_Mode_VAR</property>
+            <property name="width">9</property>
+            <layout manager="grid">
+              <property name="column">2</property>
+              <property name="padx">0 2</property>
+              <property name="row">0</property>
+              <property name="sticky">ns</property>
+            </layout>
+            <child>
+              <object class="tk.Menu" id="menu1">
+                <property name="tearoff">false</property>
+                <child>
+                  <object class="tk.Menuitem.Command" id="mode_lsb_Command" named="True">
+                    <property name="command" type="command" cbtype="simple">mode_lsb_CB</property>
+                    <property name="font">{Arial} 36 {}</property>
+                    <property name="label" translatable="yes">LSB</property>
+                    <property name="state">normal</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="tk.Menuitem.Command" id="mode_usb_Command" named="True">
+                    <property name="command" type="command" cbtype="simple">mode_usb_CB</property>
+                    <property name="font">{Arial} 36 {}</property>
+                    <property name="label" translatable="yes">USB</property>
+                    <property name="state">normal</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="tk.Menuitem.Command" id="mode_cwl_Command" named="True">
+                    <property name="command" type="command" cbtype="simple">mode_cwl_CB</property>
+                    <property name="font">{Arial} 36 {}</property>
+                    <property name="label" translatable="yes">CWL</property>
+                    <property name="state">normal</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="tk.Menuitem.Command" id="mode_cwu_Command" named="True">
+                    <property name="command" type="command" cbtype="simple">mode_cwu_CB</property>
+                    <property name="font">{Arial} 36 {}</property>
+                    <property name="label" translatable="yes">CWU</property>
+                    <property name="state">normal</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Button" id="band_up_Button" named="True">
+            <property name="command" type="command" cbtype="simple">band_up_CB</property>
+            <property name="style">Button2b.TButton</property>
+            <property name="text" translatable="yes">
+BAND UP
+</property>
+            <property name="textvariable">string:band_up_VAR</property>
+            <property name="width">12</property>
+            <layout manager="grid">
+              <property name="column">3</property>
+              <property name="padx">0 2</property>
+              <property name="row">0</property>
+              <property name="sticky">ns</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Button" id="band_down_Button" named="True">
+            <property name="command" type="command" cbtype="simple">band_down_CB</property>
+            <property name="style">Button2b.TButton</property>
+            <property name="text" translatable="yes">
+BAND DN
+</property>
+            <property name="textvariable">string:band_down_VAR</property>
+            <property name="width">12</property>
+            <layout manager="grid">
+              <property name="column">4</property>
+              <property name="padx">0 2</property>
+              <property name="row">0</property>
+              <property name="sticky">ns</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Button" id="lock_Button" named="True">
+            <property name="command" type="command" cbtype="simple">lock_CB</property>
+            <property name="style">Button2b.TButton</property>
+            <property name="text" translatable="yes">
+LOCK
+</property>
+            <property name="textvariable">string:lock_VAR</property>
+            <property name="width">12</property>
+            <layout manager="grid">
+              <property name="column">5</property>
+              <property name="padx">0 2</property>
+              <property name="row">0</property>
+              <property name="sticky">ns</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Button" id="speaker_Button" named="True">
+            <property name="command" type="command" cbtype="simple">speaker_CB</property>
+            <property name="style">Button2b.TButton</property>
+            <property name="text" translatable="yes">
+SPEAKER
+</property>
+            <property name="textvariable">string:speaker_VAR</property>
+            <property name="width">12</property>
+            <layout manager="grid">
+              <property name="column">6</property>
+              <property name="row">0</property>
+              <property name="sticky">ns</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Frame" id="frame2">
+        <property name="height">200</property>
+        <property name="style">Normal.TFrame</property>
+        <property name="width">1250</property>
+        <layout manager="pack">
+          <property name="anchor">n</property>
+          <property name="expand">true</property>
+          <property name="fill">x</property>
+          <property name="side">top</property>
+        </layout>
+        <containerlayout manager="grid">
+          <property type="col" id="0" name="weight">1</property>
+          <property type="col" id="1" name="weight">2</property>
+        </containerlayout>
+        <child>
+          <object class="ttk.Frame" id="vfoA_Frame" named="True">
+            <property name="borderwidth">3</property>
+            <property name="style">NormalOutline.TFrame</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="row">0</property>
+              <property name="sticky">ew</property>
+            </layout>
+            <containerlayout manager="grid">
+              <property name="anchor">w</property>
+            </containerlayout>
+            <child>
+              <object class="ttk.Frame" id="rxTX_Status_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">15</property>
+                  <property name="row">0</property>
+                  <property name="sticky">e</property>
+                </layout>
+                <child>
+                  <object class="ttk.Label" id="rx_Status_Light_Label" named="True">
+                    <property name="borderwidth">4</property>
+                    <property name="state">normal</property>
+                    <property name="style">GreenLED.TLabel</property>
+                    <property name="text" translatable="yes">  RX</property>
+                    <property name="width">5</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="pady">10</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="tx_Status_Light_Label" named="True">
+                    <property name="borderwidth">4</property>
+                    <property name="state">disabled</property>
+                    <property name="style">RedLED.TLabel</property>
+                    <property name="text" translatable="yes">  TX</property>
+                    <property name="width">5</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="pady">15</property>
+                      <property name="row">1</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Button" id="stop_Button" named="True">
+                    <property name="command" type="command" cbtype="simple">stop_CB</property>
+                    <property name="state">normal</property>
+                    <property name="style">RedButton2.TButton</property>
+                    <property name="text" translatable="yes">
+STOP!
+</property>
+                    <property name="width">6</property>
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="padx">20 10</property>
+                      <property name="row">0</property>
+                      <property name="rowspan">2</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Separator" id="separator2">
+                    <property name="orient">vertical</property>
+                    <layout manager="grid">
+                      <property name="column">2</property>
+                      <property name="row">0</property>
+                      <property name="rowspan">3</property>
+                      <property name="sticky">ns</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="vfo_display_Frame" named="True">
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="padx">0 0</property>
+                  <property name="row">0</property>
+                  <property name="sticky">ew</property>
+                </layout>
+                <child>
+                  <object class="ttk.Frame" id="VFO_Frame" named="True">
+                    <property name="height">200</property>
+                    <property name="style">Normal.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="row">4</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Label" id="digit7_primary_VFO_Label" named="True">
+                        <property name="anchor">e</property>
+                        <property name="style">VFO.TLabel</property>
+                        <property name="text" translatable="yes">7</property>
+                        <property name="textvariable">string:digit7_primary_VFO_VAR</property>
+                        <property name="width">1</property>
+                        <bind sequence="&lt;Button&gt;" handler="primary_vfo_10mhz_CB" add="" />
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                          <property name="sticky">e</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit7_Highlight_Label" named="True">
+                        <property name="style">OffLED.TLabel</property>
+                        <property name="width">7</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit6_primary_VFO_Label" named="True">
+                        <property name="anchor">e</property>
+                        <property name="style">VFO.TLabel</property>
+                        <property name="text" translatable="yes">6</property>
+                        <property name="textvariable">string:digit6_primary_VFO_VAR</property>
+                        <property name="width">1</property>
+                        <bind sequence="&lt;Button&gt;" handler="primary_vfo_1mhz_CB" add="" />
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="row">0</property>
+                          <property name="sticky">e</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit6_Highlight_Label" named="True">
+                        <property name="style">OffLED.TLabel</property>
+                        <property name="width">7</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit_delimiter_primary_VFO_1M_Label" named="True">
+                        <property name="style">VFO.TLabel</property>
+                        <property name="text" translatable="yes">.</property>
+                        <property name="textvariable">string:digit_delimiter_primary_VFO_VAR</property>
+                        <property name="width">0</property>
+                        <layout manager="grid">
+                          <property name="column">2</property>
+                          <property name="row">0</property>
+                          <property name="sticky">e</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digital_highlight_1M_Period" named="True">
+                        <property name="style">OffLED.TLabel</property>
+                        <property name="width">1</property>
+                        <layout manager="grid">
+                          <property name="column">2</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit5_primary_VFO_Label" named="True">
+                        <property name="anchor">e</property>
+                        <property name="style">VFO.TLabel</property>
+                        <property name="text" translatable="yes">5</property>
+                        <property name="textvariable">string:digit5_primary_VFO_VAR</property>
+                        <property name="width">1</property>
+                        <bind sequence="&lt;Button&gt;" handler="primary_vfo_100khz_CB" add="" />
+                        <layout manager="grid">
+                          <property name="column">3</property>
+                          <property name="row">0</property>
+                          <property name="sticky">e</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit5_Highlight_Label" named="True">
+                        <property name="style">OffLED.TLabel</property>
+                        <property name="width">7</property>
+                        <layout manager="grid">
+                          <property name="column">3</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit4_primary_VFO_Label" named="True">
+                        <property name="anchor">e</property>
+                        <property name="style">VFO.TLabel</property>
+                        <property name="text" translatable="yes">4</property>
+                        <property name="textvariable">string:digit4_primary_VFO_VAR</property>
+                        <property name="width">1</property>
+                        <bind sequence="&lt;Button&gt;" handler="primary_vfo_10khz_CB" add="" />
+                        <layout manager="grid">
+                          <property name="column">4</property>
+                          <property name="row">0</property>
+                          <property name="sticky">e</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit4_Highlight_Label" named="True">
+                        <property name="style">OffLED.TLabel</property>
+                        <property name="width">7</property>
+                        <layout manager="grid">
+                          <property name="column">4</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit3_primary_VFO_Label" named="True">
+                        <property name="style">VFO.TLabel</property>
+                        <property name="text" translatable="yes">3</property>
+                        <property name="textvariable">string:digit3_primary_VFO_VAR</property>
+                        <property name="width">1</property>
+                        <bind sequence="&lt;Button&gt;" handler="primary_vfo_1khz_CB" add="" />
+                        <layout manager="grid">
+                          <property name="column">5</property>
+                          <property name="row">0</property>
+                          <property name="sticky">e</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit3_Highlight_Label" named="True">
+                        <property name="style">OffLED.TLabel</property>
+                        <property name="width">7</property>
+                        <layout manager="grid">
+                          <property name="column">5</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit_delimiter_primary_VFO_1k_Label" named="True">
+                        <property name="style">VFO.TLabel</property>
+                        <property name="text" translatable="yes">.</property>
+                        <property name="textvariable">string:digit_delimiter_primary_VFO_VAR</property>
+                        <property name="width">0</property>
+                        <layout manager="grid">
+                          <property name="column">6</property>
+                          <property name="row">0</property>
+                          <property name="sticky">e</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digital_highlight1K_Period" named="True">
+                        <property name="anchor">e</property>
+                        <property name="style">OffLED.TLabel</property>
+                        <property name="width">1</property>
+                        <layout manager="grid">
+                          <property name="column">6</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit2_primary_VFO_Label" named="True">
+                        <property name="anchor">e</property>
+                        <property name="style">VFO.TLabel</property>
+                        <property name="text" translatable="yes">2</property>
+                        <property name="textvariable">string:digit2_primary_VFO_VAR</property>
+                        <property name="width">1</property>
+                        <bind sequence="&lt;Button&gt;" handler="primary_vfo_100hz_CB" add="" />
+                        <layout manager="grid">
+                          <property name="column">7</property>
+                          <property name="row">0</property>
+                          <property name="sticky">e</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit2_Highlight_Label" named="True">
+                        <property name="style">OffLED.TLabel</property>
+                        <property name="width">7</property>
+                        <layout manager="grid">
+                          <property name="column">7</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit1_primary_VFO_Label" named="True">
+                        <property name="anchor">e</property>
+                        <property name="style">VFO.TLabel</property>
+                        <property name="text" translatable="yes">1</property>
+                        <property name="textvariable">string:digit1_primary_VFO_VAR</property>
+                        <property name="width">1</property>
+                        <bind sequence="&lt;Button&gt;" handler="primary_vfo_10hz_CB" add="" />
+                        <layout manager="grid">
+                          <property name="column">8</property>
+                          <property name="row">0</property>
+                          <property name="sticky">e</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit1_Highlight_Label" named="True">
+                        <property name="style">OffLED.TLabel</property>
+                        <property name="width">7</property>
+                        <layout manager="grid">
+                          <property name="column">8</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit0_primary_VFO_Label" named="True">
+                        <property name="anchor">e</property>
+                        <property name="style">VFO.TLabel</property>
+                        <property name="text" translatable="yes">0</property>
+                        <property name="textvariable">string:digit0_primary_VFO_VAR</property>
+                        <property name="width">1</property>
+                        <layout manager="grid">
+                          <property name="column">9</property>
+                          <property name="row">0</property>
+                          <property name="sticky">e</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="digit0_Highlight_Label" named="True">
+                        <property name="style">OffLED.TLabel</property>
+                        <property name="width">7</property>
+                        <layout manager="grid">
+                          <property name="column">9</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Frame" id="VFO_TX_Offset_Frame" named="True">
+                    <property name="height">200</property>
+                    <property name="width">200</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="padx">0 10</property>
+                      <property name="row">4</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Label" id="Tx_Freq_Alert_Label" named="True">
+                        <property name="style">Heading2bi.TLabel</property>
+                        <property name="text" translatable="yes">       </property>
+                        <property name="textvariable">string:Tx_Freq_Alert_VAR</property>
+                        <property name="width">7</property>
+                        <layout manager="pack">
+                          <property name="anchor">w</property>
+                          <property name="expand">true</property>
+                          <property name="fill">x</property>
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="rx_vof_frame" named="True">
+            <property name="height">200</property>
+            <property name="style">Normal.TFrame</property>
+            <property name="width">200</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="row">1</property>
+              <property name="sticky">e</property>
+            </layout>
+            <child>
+              <object class="ttk.Frame" id="RX_VFO_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                </layout>
+                <child>
+                  <object class="ttk.Label" id="RX_Freq_Label" named="True">
+                    <property name="style">Heading2bi.TLabel</property>
+                    <property name="text" translatable="yes">RX Freq:</property>
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="RX_Freq_VFO_Label" named="True">
+                    <property name="style">Heading2bi.TLabel</property>
+                    <property name="text" translatable="yes">99.999.999</property>
+                    <property name="textvariable">string:RX_VFO_VAR</property>
+                    <property name="width">11</property>
+                    <layout manager="pack">
+                      <property name="padx">10 0</property>
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="RX_Freq_Place_Holder" named="True">
+                <property name="style">Heading2bi.TLabel</property>
+                <property name="text" translatable="yes">  </property>
+                <layout manager="pack">
+                  <property name="side">right</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="frame3">
+            <property name="height">200</property>
+            <property name="style">Normal.TFrame</property>
+            <property name="width">200</property>
+            <layout manager="grid">
+              <property name="columnspan">3</property>
+              <property name="row">2</property>
+              <property name="rowspan">3</property>
+              <property name="sticky">se</property>
+            </layout>
+            <child>
+              <object class="projectcustom.Jogwheel" id="tuning_Jogwheel" named="True">
+                <property name="button_radius">25</property>
+                <property name="command" type="command" cbtype="simple">tuning_Jogwheel_CB</property>
+                <property name="divisions">10</property>
+                <property name="end">9</property>
+                <property name="progress">False</property>
+                <property name="scroll">True</property>
+                <property name="scroll_steps">1</property>
+                <property name="start">0</property>
+                <property name="state">normal</property>
+                <property name="touchOptimized">True</property>
+                <property name="value">0</property>
+                <layout manager="pack">
+                  <property name="side">top</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Button" id="tuning_Multiplier_Button" named="True">
+                <property name="command" type="command" cbtype="simple">tuning_Multiplier_Button_CB</property>
+                <property name="style">Button2b.TButton</property>
+                <property name="text" translatable="yes">Tuning Factor
+x 100mhz</property>
+                <property name="textvariable">string:tuning_Multiplier_VAR</property>
+                <layout manager="pack">
+                  <property name="anchor">n</property>
+                  <property name="pady">5</property>
+                  <property name="side">top</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="vfoB_Frame" named="True">
+            <property name="borderwidth">3</property>
+            <property name="style">NormalOutline.TFrame</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="ipadx">25</property>
+              <property name="row">2</property>
+              <property name="sticky">nw</property>
+            </layout>
+            <child>
+              <object class="ttk.Frame" id="vfo_Frame" named="True">
+                <property name="style">Normal.TFrame</property>
+                <layout manager="pack">
+                  <property name="padx">10 0</property>
+                  <property name="side">left</property>
+                </layout>
+                <child>
+                  <object class="ttk.Label" id="secondary_VFO_Label" named="True">
+                    <property name="style">Heading1Fixed.TLabel</property>
+                    <property name="text" translatable="yes">99.999.999</property>
+                    <property name="textvariable">string:secondary_VFO_Formatted_VAR</property>
+                    <property name="width">10</property>
+                    <layout manager="pack">
+                      <property name="anchor">nw</property>
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="secondary_Mode_Label" named="True">
+                    <property name="style">Heading1.TLabel</property>
+                    <property name="text" translatable="yes">CWL</property>
+                    <property name="textvariable">string:secondary_Mode_VAR</property>
+                    <layout manager="pack">
+                      <property name="anchor">ne</property>
+                      <property name="padx">5 0</property>
+                      <property name="side">right</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="callsign_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="expand">false</property>
+                  <property name="fill">y</property>
+                  <property name="padx">40 0</property>
+                  <property name="pady">10</property>
+                  <property name="side">left</property>
+                </layout>
+                <child>
+                  <object class="ttk.Label" id="label5">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">AJ6CUxyz</property>
+                    <property name="textvariable">string:callSign_VAR</property>
+                    <property name="width">10</property>
+                    <layout manager="pack">
+                      <property name="anchor">nw</property>
+                      <property name="padx">0 10</property>
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="label6">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">V2.0 RCLxyz</property>
+                    <property name="textvariable">string:firmwareVersion_VAR</property>
+                    <layout manager="pack">
+                      <property name="anchor">nw</property>
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="tuning_Step_Frame" named="True">
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="padx">5 0</property>
+                  <property name="pady">5 0</property>
+                  <property name="side">right</property>
+                </layout>
+                <child>
+                  <object class="ttk.Button" id="tuning_Preset_Button" named="True">
+                    <property name="command" type="command" cbtype="simple">tuning_Preset_Select_CB</property>
+                    <property name="style">Button2b.TButton</property>
+                    <property name="text" translatable="yes">0</property>
+                    <property name="textvariable">string:tuning_Preset_Label_VAR</property>
+                    <property name="width">10</property>
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="tuning_Preset_Units_Label" named="True">
+                    <property name="style">Heading1.TLabel</property>
+                    <property name="text" translatable="yes">Hz</property>
+                    <layout manager="pack">
+                      <property name="padx">15</property>
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="control_Meter_Tuning_Frame" named="True">
+            <property name="height">200</property>
+            <property name="style">Normal.TFrame</property>
+            <property name="width">200</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="row">3</property>
+              <property name="sticky">nw</property>
+            </layout>
+            <child>
+              <object class="ttk.Frame" id="secondary_menu_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">65</property>
+                  <property name="row">0</property>
+                </layout>
+                <child>
+                  <object class="ttk.Frame" id="signal_Control_Frame" named="True">
+                    <property name="height">200</property>
+                    <property name="style">Normal.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="pady">10</property>
+                      <property name="row">0</property>
+                      <property name="sticky">n</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Button" id="split_Button" named="True">
+                        <property name="command" type="command" cbtype="simple">split_CB</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">
+SPLIT
+</property>
+                        <layout manager="pack">
+                          <property name="anchor">nw</property>
+                          <property name="padx">20 20</property>
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="rit_Button" named="True">
+                        <property name="command" type="command" cbtype="simple">rit_CB</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">
+RIT
+</property>
+                        <layout manager="pack">
+                          <property name="anchor">nw</property>
+                          <property name="padx">0 20</property>
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="channels_Button" named="True">
+                        <property name="command" type="command" cbtype="simple">channels_CB</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">
+CHANNELS
+</property>
+                        <layout manager="pack">
+                          <property name="anchor">nw</property>
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="tuning_Preset_Selection_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">50</property>
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="padx">20 0</property>
+                  <property name="row">0</property>
+                  <property name="rowspan">3</property>
+                  <property name="sticky">nw</property>
+                </layout>
+                <child>
+                  <object class="ttk.Radiobutton" id="tuning_Preset_5_Radiobutton" named="True">
+                    <property name="command" type="command" cbtype="simple">tuning_Preset_5_CB</property>
+                    <property name="style">RadioButton3.TRadiobutton</property>
+                    <property name="text" translatable="yes">50000</property>
+                    <property name="textvariable">string:tuning_Preset_5_VAR</property>
+                    <property name="value">5</property>
+                    <property name="variable">string:tuning_Preset_Selection_VAR</property>
+                    <property name="width">11</property>
+                    <layout manager="pack">
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Radiobutton" id="tuning_Preset_4_Radiobutton" named="True">
+                    <property name="command" type="command" cbtype="simple">tuning_Preset_4_CB</property>
+                    <property name="style">RadioButton3.TRadiobutton</property>
+                    <property name="text" translatable="yes">10000</property>
+                    <property name="textvariable">string:tuning_Preset_4_VAR</property>
+                    <property name="value">4</property>
+                    <property name="variable">string:tuning_Preset_Selection_VAR</property>
+                    <property name="width">11</property>
+                    <layout manager="pack">
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Radiobutton" id="tuning_Preset_3_Radiobutton" named="True">
+                    <property name="command" type="command" cbtype="simple">tuning_Preset_3_CB</property>
+                    <property name="style">RadioButton3.TRadiobutton</property>
+                    <property name="text" translatable="yes">5000</property>
+                    <property name="textvariable">string:tuning_Preset_3_VAR</property>
+                    <property name="value">3</property>
+                    <property name="variable">string:tuning_Preset_Selection_VAR</property>
+                    <property name="width">11</property>
+                    <layout manager="pack">
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Radiobutton" id="tuning_Preset_2_Radiobutton" named="True">
+                    <property name="command" type="command" cbtype="simple">tuning_Preset_2_CB</property>
+                    <property name="style">RadioButton3.TRadiobutton</property>
+                    <property name="text" translatable="yes">1000</property>
+                    <property name="textvariable">string:tuning_Preset_2_VAR</property>
+                    <property name="value">2</property>
+                    <property name="variable">string:tuning_Preset_Selection_VAR</property>
+                    <property name="width">11</property>
+                    <layout manager="pack">
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Radiobutton" id="tuning_Preset_1_Radiobutton" named="True">
+                    <property name="command" type="command" cbtype="simple">tuning_Preset_1_CB</property>
+                    <property name="style">RadioButton3.TRadiobutton</property>
+                    <property name="text" translatable="yes">100</property>
+                    <property name="textvariable">string:tuning_Preset_1_VAR</property>
+                    <property name="value">1</property>
+                    <property name="variable">string:tuning_Preset_Selection_VAR</property>
+                    <property name="width">11</property>
+                    <layout manager="pack">
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="sMeter_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">20 0</property>
+                  <property name="row">1</property>
+                  <property name="sticky">w</property>
+                </layout>
+                <child>
+                  <object class="ttk.Label" id="label7">
+                    <property name="font">{Arial} 14 {bold}</property>
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes"> ...................5................7..............8..........9........</property>
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="row">0</property>
+                      <property name="sticky">ew</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="s_meter_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">S Meter</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="padx">0 10</property>
+                      <property name="row">1</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Progressbar" id="s_meter_Progressbar" named="True">
+                    <property name="length">300</property>
+                    <property name="maximum">10</property>
+                    <property name="mode">determinate</property>
+                    <property name="orient">horizontal</property>
+                    <property name="style">Striped.Horizontal.TProgressbar</property>
+                    <property name="value">0</property>
+                    <property name="variable">string:s_meter_Progressbar_VAR</property>
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="row">1</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Frame" id="ATT_IFS_Adjust_Frame" named="True">
+        <property name="style">Normal.TFrame</property>
+        <property name="width">1250</property>
+        <layout manager="pack">
+          <property name="anchor">w</property>
+          <property name="expand">true</property>
+          <property name="fill">both</property>
+          <property name="pady">10 0</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="ttk.Frame" id="att_ifs_Frame" named="True">
+            <property name="height">200</property>
+            <property name="style">Normal.TFrame</property>
+            <property name="width">400</property>
+            <layout manager="pack">
+              <property name="anchor">nw</property>
+              <property name="expand">false</property>
+              <property name="fill">x</property>
+              <property name="padx">10</property>
+              <property name="side">left</property>
+            </layout>
+            <child>
+              <object class="ttk.Frame" id="ATT_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="padx">30</property>
+                  <property name="side">left</property>
+                </layout>
+                <child>
+                  <object class="projectcustom.Jogwheel" id="ATT_Jogwheel" named="True">
+                    <property name="button_radius">25</property>
+                    <property name="command" type="command" cbtype="simple">updateATTValue_CB</property>
+                    <property name="divisions">10</property>
+                    <property name="end">255</property>
+                    <property name="radius">200</property>
+                    <property name="scroll_steps">10</property>
+                    <property name="start">0</property>
+                    <property name="state">disabled</property>
+                    <property name="touchOptimized">False</property>
+                    <property name="value">70</property>
+                    <bind sequence="&lt;ButtonPress&gt;" handler="ATT_Jogwheel_ButtonPressed_CB" add="True" />
+                    <bind sequence="&lt;ButtonRelease&gt;" handler="ATT_Jogwheel_ButtonReleased_CB" add="True" />
+                    <layout manager="pack">
+                      <property name="anchor">center</property>
+                      <property name="padx">20 0</property>
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="ATT_Status_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">ATT (OFF)</property>
+                    <property name="textvariable">string:ATT_Status_VAR</property>
+                    <layout manager="pack">
+                      <property name="anchor">center</property>
+                      <property name="side">bottom</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="IFS_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                </layout>
+                <child>
+                  <object class="projectcustom.Jogwheel" id="IFS_Jogwheel" named="True">
+                    <property name="button_radius">25</property>
+                    <property name="command" type="command" cbtype="simple">updateIFSValue_CB</property>
+                    <property name="divisions">150</property>
+                    <property name="end">2000</property>
+                    <property name="radius">200</property>
+                    <property name="scroll_steps">150</property>
+                    <property name="start">-2000</property>
+                    <property name="state">disabled</property>
+                    <property name="touchOptimized">False</property>
+                    <property name="value">0</property>
+                    <bind sequence="&lt;ButtonPress&gt;" handler="IFS_Jogwheel_ButtonPressed_CB" add="True" />
+                    <bind sequence="&lt;ButtonRelease&gt;" handler="IFS_Jogwheel_ButtonReleased_CB" add="True" />
+                    <layout manager="pack">
+                      <property name="anchor">center</property>
+                      <property name="padx">20 0</property>
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="IFS_Status_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">IFS (OFF)</property>
+                    <property name="textvariable">string:IFS_Status_VAR</property>
+                    <layout manager="pack">
+                      <property name="anchor">center</property>
+                      <property name="side">bottom</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="cw_Info_Frame" named="True">
+            <property name="borderwidth">5</property>
+            <property name="height">200</property>
+            <property name="style">NormalOutline.TFrame</property>
+            <property name="width">200</property>
+            <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+            <layout manager="pack">
+              <property name="anchor">nw</property>
+              <property name="expand">false</property>
+              <property name="fill">x</property>
+              <property name="padx">25 0</property>
+              <property name="pady">20</property>
+              <property name="side">left</property>
+            </layout>
+            <child>
+              <object class="ttk.Label" id="cw_settings_title_Label" named="True">
+                <property name="style">Heading2b.TLabel</property>
+                <property name="text" translatable="yes">CW Settings</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="columnspan">3</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="tone_Label" named="True">
+                <property name="style">Heading3b.TLabel</property>
+                <property name="text" translatable="yes">Tone</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="row">1</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="tone_value_Label" named="True">
+                <property name="style">Heading3b.TLabel</property>
+                <property name="text" translatable="yes">799</property>
+                <property name="textvariable">string:tone_value_VAR</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="padx">0 2</property>
+                  <property name="row">1</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="tone_units_Label" named="True">
+                <property name="style">Heading3b.TLabel</property>
+                <property name="text" translatable="yes">Hz</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">2</property>
+                  <property name="row">1</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="key_type_Label" named="True">
+                <property name="style">Heading3b.TLabel</property>
+                <property name="text" translatable="yes">Key</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="row">2</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="key_type_value_Label" named="True">
+                <property name="style">Heading3b.TLabel</property>
+                <property name="text" translatable="yes">Straight</property>
+                <property name="textvariable">string:key_type_value_VAR</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="row">2</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="key_speed_label" named="True">
+                <property name="style">Heading3b.TLabel</property>
+                <property name="text" translatable="yes">Speed</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="row">3</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="key_speed_value_Label" named="True">
+                <property name="style">Heading3b.TLabel</property>
+                <property name="text" translatable="yes">1</property>
+                <property name="textvariable">string:key_speed_value_VAR</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="row">3</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="key_speed_units_Label" named="True">
+                <property name="style">Heading3b.TLabel</property>
+                <property name="text" translatable="yes">wpm</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">2</property>
+                  <property name="row">3</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="delay_returning_to_rx_Label" named="True">
+                <property name="style">Heading3b.TLabel</property>
+                <property name="text" translatable="yes">Delay-&gt;RX</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">0 3</property>
+                  <property name="row">5</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="delay_returning_to_rx_value_Label" named="True">
+                <property name="style">Heading3b.TLabel</property>
+                <property name="text" translatable="yes">199</property>
+                <property name="textvariable">string:delay_returning_to_rx_value_VAR</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="row">5</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="delay_returning_to_rx_units_Label" named="True">
+                <property name="style">Heading3b.TLabel</property>
+                <property name="text" translatable="yes">ms</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">2</property>
+                  <property name="row">5</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="delay_starting_tx_Label" named="True">
+                <property name="style">Heading3b.TLabel</property>
+                <property name="text" translatable="yes">Delay-&gt;TX</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="row">4</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="delay_starting_tx_value_Label" named="True">
+                <property name="style">Heading3b.TLabel</property>
+                <property name="text" translatable="yes">299</property>
+                <property name="textvariable">string:delay_starting_tx_value_VAR</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="row">4</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="delay_starting_tx_units_Label" named="True">
+                <property name="style">Heading3b.TLabel</property>
+                <property name="text" translatable="yes">ms</property>
+                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                <layout manager="grid">
+                  <property name="column">2</property>
+                  <property name="row">4</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
