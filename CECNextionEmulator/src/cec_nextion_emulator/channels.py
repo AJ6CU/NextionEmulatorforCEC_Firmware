@@ -6,7 +6,7 @@ from tkinter import messagebox
 from configuration import configuration
 import globalvars as gv
 
-
+import traceback
 #
 # Manual user code
 #
@@ -42,7 +42,9 @@ class channels(baseui.channelsUI):
         #   the smallest preset to avoid frequency being truncated. So capture it,
         #   reset it and late we will reset it.
         #
-        self.SaveAndSetPreset()
+        self.mainWindow.theVFO_Object.savePresetState()
+        self.mainWindow.Radio_Set_Tuning_Preset(1)
+
         #
         #   Since we display the frequency using the selected Delimiter, need
         #   to register interest in its value in case it changes while channel window
@@ -93,7 +95,7 @@ class channels(baseui.channelsUI):
     #
 
     def initChannelsUX(self):
-        self.update_Current_Frequency(self.mainWindow.theVFO.getFormattedPrimaryVFO())
+        self.update_Current_Frequency(self.mainWindow.theVFO_Object.getFormattedPrimaryVFO())
         self.update_Current_Mode(self.mainWindow.primary_Mode_VAR.get())
         self.mainWindow.Radio_Req_Channel_Freqs()
         self.mainWindow.Radio_Req_Channel_Labels()
@@ -133,9 +135,11 @@ class channels(baseui.channelsUI):
     #   the smallest preset to avoid frequency being truncated. SO this method capture it,
     #   reset it and late we will reset it.
     #
-    def SaveAndSetPreset(self):
-        self.savePreset = int(self.mainWindow.tuning_Preset_Selection_VAR.get())
-        self.mainWindow.Radio_Set_Tuning_Preset(1)
+    # def SaveAndSetPreset(self):
+    #     # if (self.mainWindow.theVFO_Object.saved_tuning_Preset_Selection == None):  # None value indicates we *were* in "preset tune" mode
+    #     #     self.mainWindow.theVFO_Object.savePresetState()
+    #     #     self.mainWindow.Radio_Set_Tuning_Preset(1)
+    #     self.mainWindow.theVFO_Object.set_Tuning_Mode("direct tune")
     #
     #   The following are just external visible methods to set/change various values
     #
@@ -192,8 +196,10 @@ class channels(baseui.channelsUI):
                                 parent=self)
             return
 
+        self.mainWindow.Radio_Set_Mode(
+            self.mainWindow.Text_To_ModeNum[channels.channelList[self.channelSlotSelection].Get_Mode()])
         self.mainWindow.Radio_Set_New_Frequency(channels.channelList[self.channelSlotSelection].Get_Freq())
-        self.mainWindow.Radio_Set_Mode(self.mainWindow.Text_To_ModeNum[channels.channelList[self.channelSlotSelection].Get_Mode()])
+        # self.mainWindow.Radio_Set_Mode(self.mainWindow.Text_To_ModeNum[channels.channelList[self.channelSlotSelection].Get_Mode()])
         self.current_Channel_VAR.set(channels.channelList[self.channelSlotSelection].Get_Label())
 
     #
@@ -283,7 +289,7 @@ class channels(baseui.channelsUI):
     #
     def close_Channel_CB(self):             # method called when window closed
         self.confirmExitorWriteDirty()
-        self.mainWindow.Radio_Set_Tuning_Preset(self.savePreset)
+        self.mainWindow.theVFO_Object.restorePresetState()
         self.stopScan()                 # Stop any scan that might be running
         self.master.withdraw()
 

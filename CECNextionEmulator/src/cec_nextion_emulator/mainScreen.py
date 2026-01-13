@@ -48,31 +48,6 @@ class mainScreen(baseui.mainScreenUI):
                                         # requested, the type of memory requested is added to the queue so when we take it
                                         # off the queue, we know where it goes.
 
-        # self.rate_selection = {
-        #     0: self.tuning_Preset_Button,
-        #     1: self.digit1_Highlight_Label,
-        #     2: self.digit2_Highlight_Label,
-        #     3: self.digit3_Highlight_Label,
-        #     4: self.digit4_Highlight_Label,
-        #     5: self.digit5_Highlight_Label,
-        #     6: self.digit6_Highlight_Label,
-        #     7: self.digit7_Highlight_Label
-        # }
-        #
-        # self.DigitPos_to_Powers_of_Ten = {
-        #     0: 0,
-        #     1: 10,
-        #     2: 100,
-        #     3: 1000,
-        #     4: 10000,
-        #     5: 100000,
-        #     6: 1000000,
-        #     7: 10000000
-        # }
-
-        # self.currentDigitPos = 0
-        # self.currentVFO_Tuning_Rate = 0
-
 
         self.VFO_A = "VFO-A"                        # String used for label of VFO-A
         self.VFO_B = "VFO-B"                        # String used for label of VFO-B
@@ -90,14 +65,6 @@ class mainScreen(baseui.mainScreenUI):
                                                     # The handling routine will set this flag to true so that when the default value
                                                     # is sent to the UX, the IFS setting and Jogwheel will be enabled.
 
-        # self.primary_VFO_VAR = tk.StringVar()
-        # self.secondary_VFO_VAR = tk.StringVar()
-        # self.freqOffset = 0                         # used to save the offset on the main dial. Only non-zero for CWL/CWU
-        #
-        # gv.config.register_observer("NUMBER DELIMITER", self.reformatVFO)
-        # self.digit_delimiter_primary_VFO_VAR.set(gv.config.get_NUMBER_DELIMITER())
-
-
 
         self.cwTX_OffsetFlag = False                # Controls whether the display shows the transmit freq when in CW
         self.cwTX_OffsetFlagOverride = None
@@ -106,19 +73,13 @@ class mainScreen(baseui.mainScreenUI):
 
 
 
-        # self.tuning_Preset_Selection_Frame.grid_remove()
+
         self.tuning_Jogwheel.configure(scroll=True, touchOptimized=gv.config.get_VFO_Touch_Optimized())
         self.theVFO_Object.attachDial(self.tuning_Jogwheel)
         self.tuning_Jogwheel.grid_remove()
         gv.config.register_observer("VFO Touch Optimized", self.switchVFO_Tuning_Optimization)
         self.baselineJogValue = 0
 
-        # self.saved_tuning_Preset_VAR = None
-        # self.update_Tuning_Preset_Button_Label = True
-
-
-
-        # self.channelSelection = None                    # assigned to channel number when selected in channels
 
 #   Constants
         #######################################################################################
@@ -186,17 +147,6 @@ class mainScreen(baseui.mainScreenUI):
             "1": "VFO-B"
         }
 
-        # self.CW_KeyType = {         # 0: straight, 1 : iambica, 2: iambicb
-        #     "0":"STRAIGHT",
-        #     "1":"IAMBICA",
-        #     "2":"IAMBICB"
-        # }
-        #
-        # self.CW_KeyValue = {
-        #     "STRAIGHT": 0x0,
-        #     "IAMBICA": 0x01,
-        #     "IAMBICB": 0x02
-        # }
         self.lsb = 0                    # index of least significant eeprom mem address in list below
         self.msb = 1                    # index of most significant eeprom emem address in list below
         self.memLength = 2
@@ -249,13 +199,6 @@ class mainScreen(baseui.mainScreenUI):
 
     def initUX(self):
         self.theVFO_Object.initVFO(self.theRadio)
-        # if self.Tx_Freq_Alert_VAR.get() == "TX Freq":   #This indicates that we were in TX offset mode
-        #                                                 #Need to correct display because originally set with incorrect
-        #                                                 #Value for Tone. So need to redo it
-        #     self.offsetVFOforTX(True)
-        # self.updateRateMultiplier()
-        # self.updateLabelTuning_Multiplier()
-        # self.toggle_Digit_Highlight(self.rate_selection[self.currentDigitPos], True)
 
         self.place(x=0, y=0)  # place the mainWindow on the screen
         self.master.geometry(gv.trimAndLocateWindow(self, 5, 30))
@@ -406,9 +349,16 @@ class mainScreen(baseui.mainScreenUI):
             self.channelsWindow.initChannelsUX()
 
         else:
-            self.channelsWindow.SaveAndSetPreset()
-            self.channelsWindow.popup.deiconify()
-            self.channelsWindow.current_Channel_VAR.set("Not Saved")
+            self.redisplayChannelWindow()
+
+    #
+    #   Initializes things when just deiconfying a prior channel window
+    #
+    def redisplayChannelWindow(self):
+        self.theVFO_Object.savePresetState()
+        self.Radio_Set_Tuning_Preset(1)
+        self.channelsWindow.popup.deiconify()
+        self.channelsWindow.current_Channel_VAR.set("Not Saved")
 
     def displayClassic_uBITXControlWindow(self):
         self.classic_uBITX_ControlWindow  = tk.Toplevel(self.master)
@@ -1926,7 +1876,7 @@ class mainScreen(baseui.mainScreenUI):
         # self.updateJogTracking()
 
         if self.channelsWindow != None:      #  Only update frequency if the channel window has been created once
-            self.channelsWindow.update_Current_Frequency(self.theVFO_Object.getFormattedPrimaryVFO)
+            self.channelsWindow.update_Current_Frequency(self.theVFO_Object.getFormattedPrimaryVFO())
             # self.channelsWindow.update_Current_Frequency(gv.formatFrequency(self.primary_VFO_VAR.get()))
 
 
