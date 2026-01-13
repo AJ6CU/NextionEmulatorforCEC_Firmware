@@ -6,7 +6,6 @@ from tkinter import messagebox
 from configuration import configuration
 import globalvars as gv
 
-import traceback
 #
 # Manual user code
 #
@@ -130,16 +129,6 @@ class channels(baseui.channelsUI):
 
         self.current_VFO_VAR.set(self.current_VFO_VAR.get().replace(prior_delimiter,new_delimiter))
 
-    #
-    #   Channels could have been created using any frequency. Need to use
-    #   the smallest preset to avoid frequency being truncated. SO this method capture it,
-    #   reset it and late we will reset it.
-    #
-    # def SaveAndSetPreset(self):
-    #     # if (self.mainWindow.theVFO_Object.saved_tuning_Preset_Selection == None):  # None value indicates we *were* in "preset tune" mode
-    #     #     self.mainWindow.theVFO_Object.savePresetState()
-    #     #     self.mainWindow.Radio_Set_Tuning_Preset(1)
-    #     self.mainWindow.theVFO_Object.set_Tuning_Mode("direct tune")
     #
     #   The following are just external visible methods to set/change various values
     #

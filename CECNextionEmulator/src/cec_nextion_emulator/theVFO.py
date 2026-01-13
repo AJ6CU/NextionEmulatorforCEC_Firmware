@@ -65,8 +65,6 @@ class theVFO(baseui.theVFOUI):
                                                     # for CW TX mode. It also does not contain any delimiters (it is an
                                                     # Integer!)
 
-        # self.strDisplayedSecondaryVFO = None        # This is the secondary VFO that currently appears on the screen.
-        #                                             # It includes any TX offsets as well as the current delimiter
         
         self.tone = 0                               # Current CW Tone value in HZ
         self.TXfreqOffset = 0                       # used to save the offset on the main dial. Only non-zero for CWL/CWU
@@ -86,7 +84,7 @@ class theVFO(baseui.theVFOUI):
         self.update_Tuning_Preset_Menubutton_Label = True
 
 
-        #
+    #
     #   This routine is called to finish some inits that have to be done after other values (e.g. current machine state, eeprom)
     #   have been read in
     #
@@ -198,10 +196,6 @@ class theVFO(baseui.theVFOUI):
                     #   save state prior to going into Direct Mode
                     #
                     self.savePresetState()
-                    # self.saved_tuning_Preset_Selection = self.tuning_Preset_Label_VAR.get()
-                    # self.saved_tuning_Preset_Label = self.tuning_Preset_Label_VAR.get()
-                    #
-                    #   Sets label that displays current present with "Direct Tune" string
                     #
                     self.tuning_Preset_Label_VAR.set("Direct Tune")
                     #   turn off any changes in the label due to a change in preset coming from the radio
@@ -221,8 +215,7 @@ class theVFO(baseui.theVFOUI):
                     #   Allow updating of the Label for the selected preset
                     self.update_Tuning_Preset_Menubutton_Label = True
                     #   Restore the saved states
-                    # self.tuning_Preset_Label_VAR.set(self.saved_tuning_Preset_Label)
-                    # self.mainWindow.Radio_Set_Tuning_Preset(int(self.saved_tuning_Preset_Selection))
+
                     self.restorePresetState()
                     #   Re-enable the button to select a preset
                     self.tuning_Preset_Menubutton.configure(state='enabled')
@@ -373,18 +366,10 @@ class theVFO(baseui.theVFOUI):
         saveSecondary_VFO = self.secondary_VFO
         saveSecondary_Mode = self.secondary_Mode_VAR.get()
 
-        # self.secondary_VFO_VAR.set(gv.unformatFrequency(self.primary_VFO_Formatted_VAR))
         self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(self.PrimaryVFO))
-        # self.secondary_VFO_Formatted_VAR.set(self.strDisplayedPrimaryVFO)
-        # self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(self.primary_VFO_VAR.get()))
-        # self.secondary_VFO_Formatted_VAR.set(self.primary_VFO_Formatted_VAR.get())
-        # self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(gv.unformatFrequency(self.primary_VFO_Formatted_VAR.get()), self.freqOffset))
         self.secondary_Mode_VAR.set(self.mainWindow.primary_Mode_VAR.get())
 
         self.setPrimaryVFO(saveSecondary_VFO)
-
-        # self.primary_VFO_Formatted_VAR.set(gv.formatFrequency(saveSecondary_VFO, self.freqOffset))
-        # self.update_VFO_Display(self.primary_VFO_VAR.get(), self.freqOffset)
 
         self.mainWindow.primary_Mode_VAR.set(saveSecondary_Mode)
 
@@ -469,10 +454,6 @@ class theVFO(baseui.theVFOUI):
 
             self.digit_delimiter_primary_VFO_VAR.set(value)
             self.update_VFO_Display(int(self.PrimaryVFO), self.TXfreqOffset)
-            # # self.update_VFO_Display(self.primary_VFO_VAR.get(), self.TXfreqOffset)
-            # self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(self.secondary_VFO_Formatted_VAR.get().replace(self.digit_delimiter_primary_VFO_VAR.get(),"")))
-            # self.RX_VFO_VAR.set(gv.formatFrequency(self.RX_VFO_VAR.get().replace(gv.config.get_NUMBER_DELIMITER(),"")))
-
 
 
     #   ****Start Callbacks****
