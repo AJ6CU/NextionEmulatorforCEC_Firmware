@@ -5,6 +5,7 @@ import channelsui as baseui
 from tkinter import messagebox
 from configuration import configuration
 import globalvars as gv
+import EEPROM as EEPROM
 
 #
 # Manual user code
@@ -42,7 +43,7 @@ class channels(baseui.channelsUI):
         #   reset it and late we will reset it.
         #
         self.mainWindow.theVFO_Object.savePresetState()
-        self.mainWindow.Radio_Set_Tuning_Preset(1)
+        self.mainWindow.theRadio.Set_Tuning_Preset(1)
 
         #
         #   Since we display the frequency using the selected Delimiter, need
@@ -96,9 +97,9 @@ class channels(baseui.channelsUI):
     def initChannelsUX(self):
         self.update_Current_Frequency(self.mainWindow.theVFO_Object.getFormattedPrimaryVFO())
         self.update_Current_Mode(self.mainWindow.primary_Mode_VAR.get())
-        self.mainWindow.Radio_Req_Channel_Freqs()
-        self.mainWindow.Radio_Req_Channel_Labels()
-        self.mainWindow.Radio_Req_Channel_Show_Labels()
+        self.mainWindow.theRadio.Req_Channel_Freqs()
+        self.mainWindow.theRadio.Req_Channel_Labels()
+        self.mainWindow.theRadio.Req_Channel_Show_Labels()
 
 
 
@@ -167,7 +168,7 @@ class channels(baseui.channelsUI):
 
         channels.channelList[channelNum].Set_Freq(str(freq))
 
-        channels.channelList[channelNum].Set_Mode(self.mainWindow.modeNum_To_TextDict[str(mode)])
+        channels.channelList[channelNum].Set_Mode(EEPROM.modeNum_To_TextDict[str(mode)])
 
     def EEPROM_SetChannelLabel(self, channelNum, label):
         channels.channelList[channelNum].Set_Label(label)
@@ -185,10 +186,10 @@ class channels(baseui.channelsUI):
                                 parent=self)
             return
 
-        self.mainWindow.Radio_Set_Mode(
-            self.mainWindow.Text_To_ModeNum[channels.channelList[self.channelSlotSelection].Get_Mode()])
-        self.mainWindow.Radio_Set_New_Frequency(channels.channelList[self.channelSlotSelection].Get_Freq())
-        # self.mainWindow.Radio_Set_Mode(self.mainWindow.Text_To_ModeNum[channels.channelList[self.channelSlotSelection].Get_Mode()])
+        self.mainWindow.theRadio.Set_Mode(
+            EEPROM.Text_To_ModeNum[channels.channelList[self.channelSlotSelection].Get_Mode()])
+        self.mainWindow.theRadio.Set_New_Frequency(channels.channelList[self.channelSlotSelection].Get_Freq())
+        # self.mainWindow.theRadio.Set_Mode(EEPROM.Text_To_ModeNum[channels.channelList[self.channelSlotSelection].Get_Mode()])
         self.current_Channel_VAR.set(channels.channelList[self.channelSlotSelection].Get_Label())
 
     #
@@ -328,16 +329,16 @@ class channels(baseui.channelsUI):
         if  (channels.channelList[channelNum].dirty):
             channels.channelList[channelNum].channel_Not_Dirty()
 
-            self.mainWindow.Radio_Write_EEPROM_Channel_FreqMode(
+            self.mainWindow.theRadio.Write_EEPROM_Channel_FreqMode(
                 channelNum,
                 channels.channelList[channelNum].Get_Freq(),
                 channels.channelList[channelNum].Get_Mode())
 
-            self.mainWindow.Radio_Write_EEPROM_Channel_Label(
+            self.mainWindow.theRadio.Write_EEPROM_Channel_Label(
                 channelNum,
                 channels.channelList[channelNum].Get_Label())
 
-            self.mainWindow.Radio_Write_EEPROM_Channel_ShowLabel(
+            self.mainWindow.theRadio.Write_EEPROM_Channel_ShowLabel(
                 channelNum,
                 channels.channelList[channelNum].Get_ShowLabel())
 

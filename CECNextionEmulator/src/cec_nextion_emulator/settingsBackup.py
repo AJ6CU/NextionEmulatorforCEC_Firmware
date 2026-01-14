@@ -66,14 +66,14 @@ class settingsBackup(baseui.settingsBackupUI):
         #   Following a little complex as we have to request that the radio perform EEPROM Memory reads
         #
 
-        mainWindow.Radio_Req_Master_Cal(self.load_Current_Master_Cal)
-        mainWindow.Radio_Req_SSB_BFO(self.load_Current_SSB_BFO)
-        mainWindow.Radio_Req_CW_BFO(self.load_Current_CW_BFO)
+        self.mainWindow.theRadio.Req_Master_Cal(self.load_Current_Master_Cal)
+        self.mainWindow.theRadio.Req_SSB_BFO(self.load_Current_SSB_BFO)
+        self.mainWindow.theRadio.Req_CW_BFO(self.load_Current_CW_BFO)
 
-        mainWindow.Radio_Req_Factory_Master_Cal(self.load_Factory_Master_Cal)
-        mainWindow.Radio_Req_Factory_SSB_BFO(self.load_Factory_SSB_BFO)
-        mainWindow.Radio_Req_Factory_CW_Speed(self.load_Factory_CW_Speed)
-        mainWindow.Radio_Req_Factory_CW_Sidetone(self.load_Factory_CW_Tone)
+        self.mainWindow.theRadio.Req_Factory_Master_Cal(self.load_Factory_Master_Cal)
+        self.mainWindow.theRadio.Req_Factory_SSB_BFO(self.load_Factory_SSB_BFO)
+        self.mainWindow.theRadio.Req_Factory_CW_Speed(self.load_Factory_CW_Speed)
+        self.mainWindow.theRadio.Req_Factory_CW_Sidetone(self.load_Factory_CW_Tone)
 
         self.reboot = False                 # Some settings require a reboot to take effect
         sleep(.5)                           # give the MCU some time to respond
@@ -108,7 +108,7 @@ class settingsBackup(baseui.settingsBackupUI):
     def set_Current_Master_Cal(self,value):
 
         if gv.validateNumber(value, gv.MASTER_CAL_BOUNDS['LOW'], gv.MASTER_CAL_BOUNDS['HIGH'], "Master Cal", self):
-            self.mainWindow.Radio_Set_Master_Cal(value)
+            self.mainWindow.theRadio.Set_Master_Cal(value)
             self.reboot = True
 
 
@@ -135,7 +135,7 @@ class settingsBackup(baseui.settingsBackupUI):
     def set_Current_SSB_BFO(self,value):
 
         if gv.validateNumber(value, gv.BFO_CAL_BOUNDS['LOW'], gv.BFO_CAL_BOUNDS['HIGH'], "SSB BFO", self):
-            self.mainWindow.Radio_Set_SSB_BFO(value)
+            self.mainWindow.theRadio.Set_SSB_BFO(value)
             self.reboot = True
 
     #       ConfigFile SSB_BFO Cal getters/setters
@@ -159,7 +159,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def set_Current_CW_BFO(self,value):
         if gv.validateNumber(value, gv.CW_CAL_BOUNDS['LOW'], gv.CW_CAL_BOUNDS['HIGH'], "CW BFO", self):
-            self.mainWindow.Radio_Set_CW_BFO(value)
+            self.mainWindow.theRadio.Set_CW_BFO(value)
             self.reboot = True
 
 
@@ -181,7 +181,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def set_Current_CW_Keytype(self, value):
         if gv.validateKeyInDict(gv.CW_KeyValue, value, "CW Keytype", self):
-            self.mainWindow.Radio_Set_CW_Keytype(value)
+            self.mainWindow.theRadio.Set_CW_Keytype(value)
 
     #       ConfigFile Key_Type getters/setters
     def get_ConfigFile_CW_Keytype(self):
@@ -228,7 +228,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def set_Current_CW_Speed(self,value):
         if gv.validateNumber(value, gv.CW_SPEED_WPM_BOUNDS['LOW'], gv.CW_SPEED_WPM_BOUNDS['HIGH'], "CW WPM", self):
-            self.mainWindow.Radio_Set_CW_Speed(value)
+            self.mainWindow.theRadio.Set_CW_Speed(value)
 
 
     def get_ConfigFile_CW_Speed(self):
@@ -256,7 +256,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def set_Current_CW_Tone(self, value):
         if gv.validateNumber(value, gv.CW_TONE_BOUNDS['LOW'], gv.CW_TONE_BOUNDS['HIGH'], "CW Sidetone", self):
-            self.mainWindow.Radio_Set_CW_Tone(value)
+            self.mainWindow.theRadio.Set_CW_Tone(value)
             self.reboot = True
 
     #       ConfigFile CW_Sidetone getters/setters
@@ -277,7 +277,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def set_Current_CW_Delay_Before_TX(self, value):
         if gv.validateNumber(value, gv.CW_START_TX_BOUNDS['LOW'], gv.CW_START_TX_BOUNDS['HIGH'], "Delay->TX", self):
-            self.mainWindow.Radio_Set_CW_Delay_Starting_TX(value)
+            self.mainWindow.theRadio.Set_CW_Delay_Starting_TX(value)
             self.reboot = True
 
     #       ConfigFile Delay_Before_TX_Value getters/setters
@@ -297,7 +297,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def set_Current_CW_Delay_Returning_To_RX(self, value):
         if gv.validateNumber(value, gv.CW_DELAY_Return_RX_BOUNDS['LOW'], gv.CW_DELAY_Return_RX_BOUNDS['HIGH'], "Delay->RX", self):
-            self.mainWindow.Radio_Set_CW_Delay_Returning_To_RX(value)
+            self.mainWindow.theRadio.Set_CW_Delay_Returning_To_RX(value)
             self.reboot = True
 
     #       ConfigFile Delay_Returning_To_RX_Value getters/setters

@@ -125,7 +125,7 @@ class theVFO(baseui.theVFOUI):
         #
         if (self.currentVFO_Tuning_Rate == 0):
             if self.tuning_Preset_Label_VAR.get() == "Direct Tune":
-                self.mainWindow.Radio_Set_Tuning_Preset(1)
+                self.theRadio.Set_Tuning_Preset(1)
             else:
                 self.currentVFO_Tuning_Rate = int(self.tuning_Preset_Label_VAR.get())
     #
@@ -208,7 +208,7 @@ class theVFO(baseui.theVFOUI):
                     #   if a preset of 100 was selected, then it would be impossible to set the dial in increments of 20
                     #   or 10 because it would be truncated to lower 100.
                     #
-                    self.mainWindow.Radio_Set_Tuning_Preset(1)
+                    self.theRadio.Set_Tuning_Preset(1)
 
             else:  # Switching into pre-set tuning mode and have to restore the state
                 if (self.saved_tuning_Preset_Selection != None):  # dont restore unless it was previously saved
@@ -270,7 +270,7 @@ class theVFO(baseui.theVFOUI):
 
     def restorePresetState(self):
         self.tuning_Preset_Label_VAR.set(self.saved_tuning_Preset_Label)
-        self.mainWindow.Radio_Set_Tuning_Preset(self.saved_tuning_Preset_Selection)
+        self.theRadio.Set_Tuning_Preset(self.saved_tuning_Preset_Selection)
         self.set_Active_Tuning_Preset(self.saved_tuning_Preset_Selection)
         self.saved_tuning_Preset_Selection = None
 
@@ -527,23 +527,23 @@ class theVFO(baseui.theVFOUI):
         self.primary_vfo_direct_digit_set(1)
 
     def tuning_Preset_5_CB(self):
-        self.mainWindow.Radio_Set_Tuning_Preset(5)
+        self.theRadio.Set_Tuning_Preset(5)
         self.tuning_Preset_Label_VAR.set(self.tuning_Preset_Menu.entrycget(0,"label"))
 
     def tuning_Preset_4_CB(self):
-        self.mainWindow.Radio_Set_Tuning_Preset(4)
+        self.theRadio.Set_Tuning_Preset(4)
         self.tuning_Preset_Label_VAR.set(self.tuning_Preset_Menu.entrycget(1,"label"))
 
     def tuning_Preset_3_CB(self):
-        self.mainWindow.Radio_Set_Tuning_Preset(3)
+        self.theRadio.Set_Tuning_Preset(3)
         self.tuning_Preset_Label_VAR.set(self.tuning_Preset_Menu.entrycget(2,"label"))
 
     def tuning_Preset_2_CB(self):
-        self.mainWindow.Radio_Set_Tuning_Preset(2)
+        self.theRadio.Set_Tuning_Preset(2)
         self.tuning_Preset_Label_VAR.set(self.tuning_Preset_Menu.entrycget(3,"label"))
 
     def tuning_Preset_1_CB(self):
-        self.mainWindow.Radio_Set_Tuning_Preset(1)
+        self.theRadio.Set_Tuning_Preset(1)
         self.tuning_Preset_Label_VAR.set(self.tuning_Preset_Menu.entrycget(4,"label"))
 
 

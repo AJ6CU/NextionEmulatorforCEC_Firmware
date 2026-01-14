@@ -16,6 +16,7 @@ from time import sleep
 import globalvars as gv
 from tkinter import messagebox
 import sys
+import EEPROM as EEPROM
 
 class mainScreen(baseui.mainScreenUI):
 
@@ -43,10 +44,10 @@ class mainScreen(baseui.mainScreenUI):
         self.DeepDebug = False
         self.CurrentDebug = True
 
-        self.memoryQueue =[]            # when a memory slot is requested, it later comes in without any indication of which
-                                        # memory slot it belong to. Fortunately, all in order. So everytime a memory slot is
-                                        # requested, the type of memory requested is added to the queue so when we take it
-                                        # off the queue, we know where it goes.
+        # self.memoryQueue =[]            # when a memory slot is requested, it later comes in without any indication of which
+        #                                 # memory slot it belong to. Fortunately, all in order. So everytime a memory slot is
+        #                                 # requested, the type of memory requested is added to the queue so when we take it
+        #                                 # off the queue, we know where it goes.
 
 
         self.VFO_A = "VFO-A"                        # String used for label of VFO-A
@@ -88,55 +89,22 @@ class mainScreen(baseui.mainScreenUI):
         #   a couple characters. These translations are collected here to avoid them being
         #   "codified" directly in the functions that use them.
         #######################################################################################
-
-
-        self.toRadioCommandDict = {
-            "TS_CMD_MODE":1,
-            "TS_CMD_FREQ":2,
-            "TS_CMD_BAND":3,
-            "TS_CMD_VFO":4,
-            "TS_CMD_SPLIT":5,
-            "TS_CMD_RIT":6,
-            "TS_CMD_TXSTOP":7,
-            "TS_CMD_SDR":8,
-            "TS_CMD_LOCK":9,            # Dial Lock
-            "TS_CMD_ATT":10,            # ATT
-            "TS_CMD_IFS":11,            # IFS Enabled
-            "TS_CMD_IFSVALUE":12,       # IFS VALUE
-            "TS_CMD_STARTADC":13,
-            "TS_CMD_STOPADC":14,
-            "TS_CMD_SPECTRUMOPT":15,    # Option for Spectrum
-            "TS_CMD_SPECTRUM":16,       # Get Spectrum Value
-            "TS_CMD_TUNESTEP":17,       # Get Spectrum Value
-            "TS_CMD_WPM":18,            # Set WPM
-            "TS_CMD_KEYTYPE":19,        # Set KeyType
-            "TS_CMD_SWTRIG":21,         # SW Action Trigger for WSPR and more
-            "TS_CMD_READMEM":31,        # Read EEProm
-            "TS_CMD_WRITEMEM":32,       # Write EEProm
-            "TS_CMD_LOOPBACK0":74,      # Loopback1 (Response to Loopback Channgel)
-            "TS_CMD_LOOPBACK1":75,      # Loopback2 (Response to Loopback Channgel)
-            "TS_CMD_LOOPBACK2":76,      # Loopback3 (Response to Loopback Channgel)
-            "TS_CMD_LOOPBACK3":77,      # Loopback4 (Response to Loopback Channgel)
-            "TS_CMD_LOOPBACK4":78,      # Loopback5 (Response to Loopback Channgel)
-            "TS_CMD_LOOPBACK5":79,      # Loopback6 (Response to Loopback Channgel)
-            "TS_CMD_FACTORYRESET":85,   # Factory Reset
-            "TS_CMD_UBITX_REBOOT":95    # Reboot
-        }
-        self.modeNum_To_TextDict = {
-            "0":"DFT",
-            "2":"LSB",
-            "3":"USB",
-            "4":"CWL",
-            "5":"CWU"
-        }
-
-        self.Text_To_ModeNum = {
-            "DFT":0,
-            "LSB":2,
-            "USB":3,
-            "CWL":4,
-            "CWU":5
-        }
+        
+        # EEPROM.modeNum_To_TextDict = {
+        #     "0":"DFT",
+        #     "2":"LSB",
+        #     "3":"USB",
+        #     "4":"CWL",
+        #     "5":"CWU"
+        # }
+        # 
+        # EEPROM.Text_To_ModeNum = {
+        #     "DFT":0,
+        #     "LSB":2,
+        #     "USB":3,
+        #     "CWL":4,
+        #     "CWU":5
+        # }
 
         self.Text_To_BandChange = {
             "UP": 2,
@@ -147,35 +115,9 @@ class mainScreen(baseui.mainScreenUI):
             "1": "VFO-B"
         }
 
-        self.lsb = 0                    # index of least significant eeprom mem address in list below
-        self.msb = 1                    # index of most significant eeprom emem address in list below
-        self.memLength = 2
-        self.charFlag = 3
-        self.memOffset = 4
-        self.totalSlots = 5
-        self.EEPROM_Mem_Address = {
-            "cw_key_type": [ 0x66, 0x01, 0x01, 0x0, 0x0, 0x1],
-            "cw_wpm": [ 0x1c, 0x0, 0x04, 0x0, 0x0, 0x1],
-            "cw_sidetone": [ 0x18, 0x0, 0x04, 0x0, 0x0, 0x1],
-            "cw_Delay_Returning_to_RX": [0x02, 0x1, 0x01, 0x0, 0x0, 0x1],  # eeprom value divided by 10
-            "cw_Delay_Starting_TX": [0x03, 0x1, 0x1, 0x0, 0x0,  0x1],  # eeprom saved valued divided by 2
-            "channel_freq_Mode": [0x76, 0x2, 0x4, 0x48, 0x4, 0x14], # 0x48 indicates a integer number
-            "channel_Label": [0xc7, 0x2, 0x5, 0x57, 0x6, 0x9],  # should be 0xa for total, but bug with v2 cec
-                                                                # 0x57 indicates it is a character
-            "channel_ShowLabel": [0xc6, 0x2, 0x1, 0x57, 0x6,  0x9], # should be 0xa for total, but bug with v2 cec
-                                                                # 0x57 indicates it is a character
-            "master_cal": [0x0, 0x0, 0x4, 0x48 ],
-            "ssb_bfo": [ 0x08, 0x0, 0x04, 0x48],
-            "cw_bfo":[ 0xfc, 0x0, 0x04, 0x48],
 
-            "factory_master_cal": [0x41, 0x0, 0x4, 0x48],
-            "factory_ssb_bfo": [0x49, 0x0, 0x04, 0x48],
-            "factory_cw_wpm":[0x5d, 0x0, 0x01, 0x0, 0x0, 0x1],
-            "factory_cw_sidetone":[0x59, 0x0, 0x04, 0x0, 0x0, 0x1]
 
-        }
-
-        self.memReadingState = "Freq"
+        # self.memReadingState = "Freq"
 
         #
         #   These three variables are used to track which memory location (or "slot")
@@ -312,7 +254,7 @@ class mainScreen(baseui.mainScreenUI):
     #
     def redisplayChannelWindow(self):
         self.theVFO_Object.savePresetState()
-        self.Radio_Set_Tuning_Preset(1)
+        self.theRadio.Set_Tuning_Preset(1)
         self.channelsWindow.popup.deiconify()
         self.channelsWindow.current_Channel_VAR.set("Not Saved")
 
@@ -343,181 +285,30 @@ class mainScreen(baseui.mainScreenUI):
         self.channelsWindow = None
         self.displayChannelWindow()
 
-    def Radio_Req_Channel_Freqs(self):
 
-        base = self.EEPROM_Mem_Address["channel_freq_Mode"][self.lsb]
-
-        for i in range(self.EEPROM_Mem_Address["channel_freq_Mode"][self.totalSlots]):
-            command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                       base,
-                       self.EEPROM_Mem_Address["channel_freq_Mode"][self.msb],
-                       self.EEPROM_Mem_Address["channel_freq_Mode"][self.memLength],
-                       self.EEPROM_Mem_Address["channel_freq_Mode"][self.charFlag]
-                       ]
-            self.memoryQueue.append("Freq")         # Add  it to queue to be processed when MCU responds
-            self.theRadio.sendCommandToMCU(bytes(command))
-            base += self.EEPROM_Mem_Address["channel_freq_Mode"][self.memOffset]
-
-
-        base = self.EEPROM_Mem_Address["channel_freq_Mode"][self.lsb]
-
-    def Radio_Req_Channel_Labels(self):
-        base = self.EEPROM_Mem_Address["channel_Label"][self.lsb]
-        for i in range(self.EEPROM_Mem_Address["channel_Label"][self.totalSlots]):
-            command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                       base,
-                       self.EEPROM_Mem_Address["channel_Label"][self.msb],
-                       self.EEPROM_Mem_Address["channel_Label"][self.memLength],
-                       self.EEPROM_Mem_Address["channel_Label"][self.charFlag]
-                       ]
-            self.memoryQueue.append("Label")
-            self.theRadio.sendCommandToMCU(bytes(command))
-            base += self.EEPROM_Mem_Address["channel_Label"][self.memOffset]
-
-        base = self.EEPROM_Mem_Address["channel_Label"][self.lsb]
-
-    def Radio_Req_Channel_Show_Labels(self):
-        base = self.EEPROM_Mem_Address["channel_ShowLabel"][self.lsb]
-        for i in range(self.EEPROM_Mem_Address["channel_ShowLabel"][self.totalSlots]):
-            command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                       base,
-                       self.EEPROM_Mem_Address["channel_ShowLabel"][self.msb],
-                       self.EEPROM_Mem_Address["channel_ShowLabel"][self.memLength],
-                       self.EEPROM_Mem_Address["channel_ShowLabel"][self.charFlag]
-                       ]
-            self.memoryQueue.append("ShowLabel")
-            self.theRadio.sendCommandToMCU(bytes(command))
-            base += self.EEPROM_Mem_Address["channel_ShowLabel"][self.memOffset]
-
-        base = self.EEPROM_Mem_Address["channel_ShowLabel"][self.lsb]
-
-
-    def Radio_Req_Master_Cal(self, setter_CB):
-
-        self.Master_Cal_Setter = setter_CB
-
-        command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                   self.EEPROM_Mem_Address["master_cal"][self.lsb],
-                   self.EEPROM_Mem_Address["master_cal"][self.msb],
-                   self.EEPROM_Mem_Address["master_cal"][self.memLength],
-                   self.EEPROM_Mem_Address["master_cal"][self.charFlag]
-                   ]
-
-
-        self.memoryQueue.append("MasterCal")         # tell the command that receives the data what is it for
-
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Req_SSB_BFO(self, setter_CB):
-
-        self.SSB_BFO_Setter = setter_CB
-
-        command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                   self.EEPROM_Mem_Address["ssb_bfo"][self.lsb],
-                   self.EEPROM_Mem_Address["ssb_bfo"][self.msb],
-                   self.EEPROM_Mem_Address["ssb_bfo"][self.memLength],
-                   self.EEPROM_Mem_Address["ssb_bfo"][self.charFlag]
-                   ]
-        self.memoryQueue.append("SSB_BFO")
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Req_CW_BFO(self,setter_CB):
-
-        self.CW_BFO_Setter = setter_CB
-
-        command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                   self.EEPROM_Mem_Address["cw_bfo"][self.lsb],
-                   self.EEPROM_Mem_Address["cw_bfo"][self.msb],
-                   self.EEPROM_Mem_Address["cw_bfo"][self.memLength],
-                   self.EEPROM_Mem_Address["cw_bfo"][self.charFlag]
-                   ]
-
-        self.memoryQueue.append("CW_BFO")
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Req_Factory_Master_Cal(self, setter_CB):
-
-        self.Factory_Master_Cal_Setter = setter_CB
-
-        command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                   self.EEPROM_Mem_Address["factory_master_cal"][self.lsb],
-                   self.EEPROM_Mem_Address["factory_master_cal"][self.msb],
-                   self.EEPROM_Mem_Address["factory_master_cal"][self.memLength],
-                   self.EEPROM_Mem_Address["factory_master_cal"][self.charFlag]
-                   ]
-
-
-        self.memoryQueue.append("Factory_MasterCal")         # tell the command that receives the data what is it for
-
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Req_Factory_SSB_BFO(self, setter_CB):
-
-        self.Factory_SSB_BFO_Setter = setter_CB
-
-        command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                   self.EEPROM_Mem_Address["factory_ssb_bfo"][self.lsb],
-                   self.EEPROM_Mem_Address["factory_ssb_bfo"][self.msb],
-                   self.EEPROM_Mem_Address["factory_ssb_bfo"][self.memLength],
-                   self.EEPROM_Mem_Address["factory_ssb_bfo"][self.charFlag]
-                   ]
-
-        self.memoryQueue.append("Factory_SSB_BFO")
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Req_Factory_CW_Speed(self, setter_CB):
-
-        self.Factory_CW_Speed_Setter = setter_CB
-
-        command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                   self.EEPROM_Mem_Address["factory_cw_wpm"][self.lsb],
-                   self.EEPROM_Mem_Address["factory_cw_wpm"][self.msb],
-                   self.EEPROM_Mem_Address["factory_cw_wpm"][self.memLength],
-                   self.EEPROM_Mem_Address["factory_cw_wpm"][self.charFlag]
-                   ]
-
-        self.memoryQueue.append("Factory_CW_Speed")
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Req_Factory_CW_Sidetone(self, setter_CB):
-
-        self.Factory_CW_Sidetone_Setter = setter_CB
-
-        command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                   self.EEPROM_Mem_Address["factory_cw_sidetone"][self.lsb],
-                   self.EEPROM_Mem_Address["factory_cw_sidetone"][self.msb],
-                   self.EEPROM_Mem_Address["factory_cw_sidetone"][self.memLength],
-                   self.EEPROM_Mem_Address["factory_cw_sidetone"][self.charFlag]
-                   ]
-
-        self.memoryQueue.append("Factory_CW_Sidetone")
-        self.theRadio.sendCommandToMCU(bytes(command))
 
     def vfo_CB(self):
-        self.Radio_Toggle_VFO()
+        self.theRadio.Toggle_VFO()
 
     def mode_lsb_CB(self):
-        self.Radio_Set_Mode(self.Text_To_ModeNum["LSB"])
+        self.theRadio.Set_Mode(EEPROM.Text_To_ModeNum["LSB"])
 
     def mode_usb_CB(self):
-        self.Radio_Set_Mode(self.Text_To_ModeNum["USB"])
+        self.theRadio.Set_Mode(EEPROM.Text_To_ModeNum["USB"])
 
 
     def mode_cwl_CB(self):
-        self.Radio_Set_Mode(self.Text_To_ModeNum["CWL"])
+        self.theRadio.Set_Mode(EEPROM.Text_To_ModeNum["CWL"])
 
 
     def mode_cwu_CB(self):
-        self.Radio_Set_Mode(self.Text_To_ModeNum["CWU"])
+        self.theRadio.Set_Mode(EEPROM.Text_To_ModeNum["CWU"])
 
     def band_up_CB(self):
-         self.Radio_Change_Band(self.Text_To_BandChange["UP"])
+         self.theRadio.Change_Band(self.Text_To_BandChange["UP"])
 
     def band_down_CB(self):
-         self.Radio_Change_Band(self.Text_To_BandChange["DOWN"])
+         self.theRadio.Change_Band(self.Text_To_BandChange["DOWN"])
 
     def cwSettings_CB(self, event=None):
        if (not self.lock_Button_On):
@@ -535,7 +326,7 @@ class mainScreen(baseui.mainScreenUI):
 
         newFreq += self.theVFO_Object.getCurrentVFO_Tuning_Rate() * self.tuning_Jogwheel.get()
         # print("newFreq=", newFreq)
-        self.Radio_Set_New_Frequency(newFreq)
+        self.theRadio.Set_New_Frequency(newFreq)
 
 #
 #   This function sends to the Radio a notice that a screen lock has been requested
@@ -546,19 +337,19 @@ class mainScreen(baseui.mainScreenUI):
 #
 
     def lock_CB(self):
-        self.Radio_Toggle_Lock()    # Inform  Radio that a screen lock has been requested
+        self.theRadio.Toggle_Lock()    # Inform  Radio that a screen lock has been requested
 
     def speaker_CB(self):           # Inform Radio that a request was made to mute speaker
-        self.Radio_Toggle_Speaker()
+        self.theRadio.Toggle_Speaker()
 
     def stop_CB(self):
-        self.Radio_Toggle_Stop()
+        self.theRadio.Toggle_Stop()
 
     def split_CB(self):
-        self.Radio_Toggle_Split()
+        self.theRadio.Toggle_Split()
 
     def rit_CB(self):
-        self.Radio_Toggle_RIT()
+        self.theRadio.Toggle_RIT()
 
 
 
@@ -574,7 +365,7 @@ class mainScreen(baseui.mainScreenUI):
     #   the jogwheel is released, a check is made on whether there was
     #   a change in value.
     #   The routines in this area just send a command to the Radio via the
-    #   self.Radio_Set_ATT (value) routine. Zero turns it off, any other value turns it on.
+    #   self.theRadio.Set_ATT (value) routine. Zero turns it off, any other value turns it on.
     #   Note that although the UX is updated as the jogwheel is moved, the real value is set
     #   self.vf_UX_ATT_Level routine which is kicked off when the Radio(MCU) sends a "vf"
     #   command to the screen
@@ -590,16 +381,16 @@ class mainScreen(baseui.mainScreenUI):
             if (self.ATT_Jogwheel.lastValue == currentValue) :
                 self.toggleATT_State()
             else:
-                self.Radio_Set_ATT(currentValue)
+                self.theRadio.Set_ATT(currentValue)
 
     #
     #   toggle ATT state to on if it was off, off it it was on
     #
     def toggleATT_State(self):
         if self.ATT_Jogwheel.state == "disabled":
-            self.Radio_Set_ATT(self.ATT_Jogwheel.lastValue)     # Signal radio ATT on and last value
+            self.theRadio.Set_ATT(self.ATT_Jogwheel.lastValue)     # Signal radio ATT on and last value
         else:
-            self.Radio_Set_ATT(self.ATT_Status_Off)             # Signal radio ATT turning off
+            self.theRadio.Set_ATT(self.ATT_Status_Off)             # Signal radio ATT turning off
 
     #
     #   Send Radio/MCU the updated value for the  ATT. Although the UX reflects the new
@@ -609,7 +400,7 @@ class mainScreen(baseui.mainScreenUI):
     #
     def updateATTValue_CB(self):
 
-        self.Radio_Set_ATT(self.ATT_Jogwheel.get())
+        self.theRadio.Set_ATT(self.ATT_Jogwheel.get())
 
 
     #
@@ -628,14 +419,14 @@ class mainScreen(baseui.mainScreenUI):
             if self.IFS_Jogwheel.lastValue == currentValue:
                 self.toggleIFS_State()
             else:
-                self.Radio_Set_IFS_Level(currentValue)
+                self.theRadio.Set_IFS_Level(currentValue)
 
 
     def toggleIFS_State(self):
-        self.Radio_Toggle_IFS()
+        self.theRadio.Toggle_IFS()
 
     def updateIFSValue_CB(self):
-        self.Radio_Set_IFS_Level(self.IFS_Jogwheel.get())
+        self.theRadio.Set_IFS_Level(self.IFS_Jogwheel.get())
 
 
 
@@ -649,386 +440,6 @@ class mainScreen(baseui.mainScreenUI):
 #   These routines are called to tell the MCU that an action has happened in the UX.
 #   Typically these should be used by the UX Callbacks
 ########################################################################################
-    def Radio_Freq_Encode(self, freq):
-        encodedBytes = bytearray()
-        intFreq = int(freq)
-        encodedBytes.append(intFreq & 0xff)
-
-        intFreq = (intFreq >> 8)
-        encodedBytes.append(intFreq & 0xff)
-
-        intFreq = (intFreq >> 8)
-        encodedBytes.append(intFreq & 0xff)
-
-        intFreq = (intFreq >> 8)
-        encodedBytes.append(intFreq & 0xff)
-
-        return encodedBytes
-
-    def Radio_Set_Master_Cal(self, cal):
-
-        #
-        #   Now have to write it to EEPROM as this is not one of the values that are automatically saved to EEPROM
-        #   This requires reboot to take effect
-        #
-
-        checksum = (self.EEPROM_Mem_Address["master_cal"][self.lsb] + self.EEPROM_Mem_Address["master_cal"][self.msb]
-                    + self.EEPROM_Mem_Address["master_cal"][self.memLength]) % 256
-
-        fourBytes = self.Radio_Freq_Encode(str(cal))
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["master_cal"][self.lsb],
-                   self.EEPROM_Mem_Address["master_cal"][self.msb],
-                   self.EEPROM_Mem_Address["master_cal"][self.memLength],
-                   checksum,
-                   fourBytes[0],
-                   fourBytes[1],
-                   fourBytes[2],
-                   fourBytes[3]
-                   ]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Set_SSB_BFO(self, cal):
-
-        #
-        #   Now have to write it to EEPROM as this is not one of the values that are automatically saved to EEPROM
-        #   This requires reboot to take effect
-        #
-
-        checksum = (self.EEPROM_Mem_Address["ssb_bfo"][self.lsb] + self.EEPROM_Mem_Address["ssb_bfo"][self.msb]
-                    + self.EEPROM_Mem_Address["ssb_bfo"][self.memLength]) % 256
-
-        fourBytes = self.Radio_Freq_Encode(str(cal))
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["ssb_bfo"][self.lsb],
-                   self.EEPROM_Mem_Address["ssb_bfo"][self.msb],
-                   self.EEPROM_Mem_Address["ssb_bfo"][self.memLength],
-                   checksum,
-                   fourBytes[0],
-                   fourBytes[1],
-                   fourBytes[2],
-                   fourBytes[3]
-                   ]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-
-    def Radio_Set_CW_BFO(self, cal):
-
-        #
-        #   Now have to write it to EEPROM as this is not one of the values that are automatically saved to EEPROM
-        #   This requires reboot to take effect
-        #
-
-        checksum = (self.EEPROM_Mem_Address["cw_bfo"][self.lsb] + self.EEPROM_Mem_Address["cw_bfo"][self.msb]
-                    + self.EEPROM_Mem_Address["cw_bfo"][self.memLength]) % 256
-
-        fourBytes = self.Radio_Freq_Encode(str(cal))
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["cw_bfo"][self.lsb],
-                   self.EEPROM_Mem_Address["cw_bfo"][self.msb],
-                   self.EEPROM_Mem_Address["cw_bfo"][self.memLength],
-                   checksum,
-                   fourBytes[0],
-                   fourBytes[1],
-                   fourBytes[2],
-                   fourBytes[3]
-                   ]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Set_Tuning_Preset(self, rate: bytes):
-        command = [self.toRadioCommandDict["TS_CMD_TUNESTEP"], rate, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Set_New_Frequency(self, value):
-        fourBytes = self.Radio_Freq_Encode(value)
-        command = [self.toRadioCommandDict["TS_CMD_FREQ"],fourBytes[0],fourBytes[1],fourBytes[2],fourBytes[3]]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    #
-    #   This function tells the Radio that a new mode has been selected for
-    #   the primary (displayed) VFO. After receiving the new mode, the
-    #   Radio will separately send back the mode to the UX
-    #
-    def Radio_Set_Mode(self, newMode):
-        command = [self.toRadioCommandDict["TS_CMD_MODE"], newMode, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    #
-    #   This function tells the Radio that a button up or down has been pushed
-    #   in the UX. After receiving this command the radio will send back a new frequency
-    #   and mode for the displayed VOF
-    #
-    def Radio_Change_Band(self, direction):
-        command = [self.toRadioCommandDict["TS_CMD_BAND"], direction, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Tuning_Rate(self,value: bytes):
-        command = [self.toRadioCommandDict["TS_CMD_TUNESTEP"], value, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Toggle_VFO(self):
-        command = [self.toRadioCommandDict["TS_CMD_VFO"], 0, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Toggle_Lock(self):
-        command = [self.toRadioCommandDict["TS_CMD_LOCK"], 0, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Toggle_Speaker(self):
-        command = [self.toRadioCommandDict["TS_CMD_SDR"], 0, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Toggle_Stop(self):
-        command = [self.toRadioCommandDict["TS_CMD_TXSTOP"], 0, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Toggle_Split(self):
-        command = [self.toRadioCommandDict["TS_CMD_SPLIT"], 0, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Toggle_RIT(self):
-        command = [self.toRadioCommandDict["TS_CMD_RIT"], 0, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Set_ATT(self, value: bytes):
-        command = [self.toRadioCommandDict["TS_CMD_ATT"], value, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Toggle_IFS(self):
-        command = [self.toRadioCommandDict["TS_CMD_IFS"], 0, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-
-    def Radio_Set_IFS_Level(self, level):
-        encodedBytes = self.Radio_Freq_Encode(str(level))
-
-        command = [self.toRadioCommandDict["TS_CMD_IFSVALUE"], encodedBytes[0], encodedBytes[1], encodedBytes[2], 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Set_CW_Tone(self, tone):
-
-        #
-        #   Now have to write it to EEPROM as this is not one of the values that are automatically saved to EEPROM
-        #   This requires reboot to take effect
-        #
-
-        checksum = (self.EEPROM_Mem_Address["cw_sidetone"][self.lsb] + self.EEPROM_Mem_Address["cw_sidetone"][self.msb]
-                    + self.EEPROM_Mem_Address["cw_sidetone"][self.memLength]) % 256
-
-
-        fourBytes = self.Radio_Freq_Encode(str(tone))
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["cw_sidetone"][self.lsb],
-                   self.EEPROM_Mem_Address["cw_sidetone"][self.msb],
-                   self.EEPROM_Mem_Address["cw_sidetone"][self.memLength],
-                   checksum,
-                   fourBytes[0],
-                   fourBytes[1],
-                   fourBytes[2],
-                   fourBytes[3]
-                   ]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Set_CW_Keytype(self, keyType):
-        #
-        #   first send command to officially change the keytype
-        #
-        command = [self.toRadioCommandDict["TS_CMD_KEYTYPE"], gv.CW_KeyValue[keyType], 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-        #
-        #   Now have to write it to EEPROM as this is not one of the values that are automatically saved to EEPROM
-        #
-
-        checksum = (self.EEPROM_Mem_Address["cw_key_type"][self.lsb] + self.EEPROM_Mem_Address["cw_key_type"][self.msb]
-                    + self.EEPROM_Mem_Address["cw_key_type"][self.memLength]) % 256
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["cw_key_type"][self.lsb],
-                   self.EEPROM_Mem_Address["cw_key_type"][self.msb],
-                   self.EEPROM_Mem_Address["cw_key_type"][self.memLength],
-                   checksum,
-                   gv.CW_KeyValue[keyType]
-                   ]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-
-
-    def Radio_Set_CW_Speed(self, keySpeed):
-
-        #
-        #
-        #   first send command to officially change the key speed
-        #   wpm directly saved. It is the dot length which is 1200/wpm
-        #
-
-        dotLength_ms = int(1200 / int(keySpeed))
-        command = [self.toRadioCommandDict["TS_CMD_WPM"], dotLength_ms, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-        #
-        #   Now have to write it to EEPROM as this is not one of the values that are automatically saved to EEPROM
-        #
-
-        checksum = (self.EEPROM_Mem_Address["cw_wpm"][self.lsb] + self.EEPROM_Mem_Address["cw_wpm"][self.msb]
-                    + self.EEPROM_Mem_Address["cw_wpm"][self.memLength]) % 256
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["cw_wpm"][self.lsb],
-                   self.EEPROM_Mem_Address["cw_wpm"][self.msb],
-                   self.EEPROM_Mem_Address["cw_wpm"][self.memLength],
-                   checksum,
-                   dotLength_ms,                # Eeprom allows up to two bytes for adjusted key,
-                                                    # but keychage without reboot only 1 byte
-                   0,0,0
-                   ]
-
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Set_CW_Delay_Starting_TX(self, startTXDelay):
-        #
-        #   Requires reboot to take effect
-        #
-        #
-        # adjust the wpm speed to format of EEPROM
-        #
-        adjustedStartTXDelay = int(int(startTXDelay)/2)
-
-        #
-        #   write it to EEPROM as will be picked up on next reboot
-        #
-
-        checksum = (self.EEPROM_Mem_Address["cw_Delay_Starting_TX"][self.lsb] + self.EEPROM_Mem_Address["cw_Delay_Starting_TX"][self.msb]
-                    + self.EEPROM_Mem_Address["cw_Delay_Starting_TX"][self.memLength]) % 256
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["cw_Delay_Starting_TX"][self.lsb],
-                   self.EEPROM_Mem_Address["cw_Delay_Starting_TX"][self.msb],
-                   self.EEPROM_Mem_Address["cw_Delay_Starting_TX"][self.memLength],
-                   checksum,
-                   adjustedStartTXDelay
-                   ]
-
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Set_CW_Delay_Returning_To_RX(self, returnRXDelay):
-        # value stored to eeprom needs to divided by 10
-        #
-        #   Requires reboot to take effect
-        #
-        #
-        # adjust the wpm speed to format of EEPROM
-        #
-        adjustedReturnToRXDelay = int(int(returnRXDelay) / 10)
-
-        #
-        #   write it to EEPROM as will be picked up on next reboot
-        #
-
-        checksum = (self.EEPROM_Mem_Address["cw_Delay_Returning_to_RX"][self.lsb] +
-                    self.EEPROM_Mem_Address["cw_Delay_Returning_to_RX"][self.msb]
-                    + self.EEPROM_Mem_Address["cw_Delay_Returning_to_RX"][self.memLength]) % 256
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["cw_Delay_Returning_to_RX"][self.lsb],
-                   self.EEPROM_Mem_Address["cw_Delay_Returning_to_RX"][self.msb],
-                   self.EEPROM_Mem_Address["cw_Delay_Returning_to_RX"][self.memLength],
-                   checksum,
-                   adjustedReturnToRXDelay
-                   ]
-
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Write_EEPROM_Channel_FreqMode (self, channelNum, freq, mode ):
-
-        encoded_data = (int(freq) & 0x1FFFFFFF) + ((int(self.Text_To_ModeNum[mode])& 0x7)<<29)
-
-        encodedBytes = self.Radio_Freq_Encode(str(encoded_data))
-
-        lsb = (channelNum*self.EEPROM_Mem_Address["channel_freq_Mode"][self.memOffset]) + self.EEPROM_Mem_Address["channel_freq_Mode"][self.lsb]
-        msb = self.EEPROM_Mem_Address["channel_freq_Mode"][self.msb]
-        totalBytes = self.EEPROM_Mem_Address["channel_freq_Mode"][self.memLength]
-
-
-        checksum = (lsb + msb + totalBytes) % 256
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   lsb,
-                   msb,
-                   totalBytes,
-                   checksum,
-                   encodedBytes[0], encodedBytes[1], encodedBytes[2], encodedBytes[3]
-                   ]
-
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Write_EEPROM_Channel_Label (self, channelNum, label ):
-
-        if channelNum > self.EEPROM_Mem_Address["channel_ShowLabel"][self.totalSlots]:
-            return
-
-        lsb = ((channelNum * self.EEPROM_Mem_Address["channel_Label"][self.memOffset]) +
-               self.EEPROM_Mem_Address["channel_Label"][self.lsb])
-        msb = self.EEPROM_Mem_Address["channel_Label"][self.msb]
-        totalBytes = self.EEPROM_Mem_Address["channel_Label"][self.memLength]
-
-        # strip blanks
-        noBlankLabel = label.strip()
-        labelBytes = bytes(noBlankLabel.ljust(totalBytes), 'utf-8')
-
-
-        checksum = (lsb + msb + totalBytes) % 256
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   lsb,
-                   msb,
-                   totalBytes,
-                   checksum,
-                   labelBytes[0], labelBytes[1], labelBytes[2], labelBytes[3], labelBytes[4]
-                   ]
-
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Write_EEPROM_Channel_ShowLabel (self, channelNum, showLabel ):
-
-        #
-        #   Don't write to EEPROMs showLabels 10+
-        #
-        if channelNum > self.EEPROM_Mem_Address["channel_ShowLabel"][self.totalSlots]:
-            return
-
-        lsb = (channelNum * self.EEPROM_Mem_Address["channel_ShowLabel"][self.memOffset]) + \
-              self.EEPROM_Mem_Address["channel_ShowLabel"][self.lsb]
-        msb = self.EEPROM_Mem_Address["channel_ShowLabel"][self.msb]
-        totalBytes = self.EEPROM_Mem_Address["channel_ShowLabel"][self.memLength]
-
-        checksum = (lsb + msb + totalBytes) % 256
-
-        if showLabel == 'Yes':
-            value = 0x3
-        else:
-            value = 0x0
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   lsb,
-                   msb,
-                   totalBytes,
-                   checksum,
-                   value
-                   ]
-
-        self.theRadio.sendCommandToMCU(bytes(command))
 
 
 #   MCU Commands
@@ -1223,11 +634,11 @@ class mainScreen(baseui.mainScreenUI):
     def sh_UX_Get_Memory(self, buffer):
         try:
             value = self.extractValue(buffer, 10, len(buffer) - 3)
-            if not self.memoryQueue:    # make sure something in queue, otherwise fatal error
+            if self.theRadio.lenMemoryQueue == 0:    # make sure something in queue, otherwise fatal error
                 messagebox.showerror("Application Error", "Memory Queue is empty, yet memory value delivered by MCU")
                 sys.exit("A fatal internal error occurred")
 
-            memoryCategory = self.memoryQueue.pop(0)
+            memoryCategory = self.theRadio.popMemoryQueue()
             match memoryCategory:
 
                 case "Freq":                # Got a channel frequency request
@@ -1239,7 +650,7 @@ class mainScreen(baseui.mainScreenUI):
                         mode)
                     self.EEPROM_Current_Slot_Freq += 1
                     if (self.EEPROM_Current_Slot_Freq ==
-                            self.EEPROM_Mem_Address["channel_freq_Mode"][self.totalSlots]):
+                            EEPROM.Mem_Address["channel_freq_Mode"][EEPROM.totalSlots]):
                         self.EEPROM_Current_Slot_Freq = 0
 
                 case "Label":               # have a label for a memory channel
@@ -1250,7 +661,7 @@ class mainScreen(baseui.mainScreenUI):
                     #         print("label slot=", self.EEPROM_Current_Slot_Label, "value=", value, sep='*', end='*')
                     self.EEPROM_Current_Slot_Label += 1
                     if (self.EEPROM_Current_Slot_Label ==
-                            self.EEPROM_Mem_Address["channel_Label"][self.totalSlots]):
+                            EEPROM.Mem_Address["channel_Label"][EEPROM.totalSlots]):
                         self.EEPROM_Current_Slot_Label = 0
 
                 case "ShowLabel":           # Reading switch on whether to show or not show the label
@@ -1266,24 +677,24 @@ class mainScreen(baseui.mainScreenUI):
 
                     self.EEPROM_Current_Slot_ShowLabel += 1
                     if (self.EEPROM_Current_Slot_ShowLabel ==
-                            self.EEPROM_Mem_Address["channel_ShowLabel"][self.totalSlots]):
+                            EEPROM.Mem_Address["channel_ShowLabel"][EEPROM.totalSlots]):
                         self.EEPROM_Current_Slot_ShowLabel = 0
 
                 case "MasterCal":          # Got a master cal value
-                    self.Master_Cal_Setter(str(int(value, 16)))
+                    self.theRadio.Master_Cal_Setter(str(int(value, 16)))
 
 
                 case "SSB_BFO":            # Got a SSB BFO value
-                    self.SSB_BFO_Setter(str(int(value, 16)))
+                    self.theRadio.SSB_BFO_Setter(str(int(value, 16)))
 
                 case "CW_BFO":             # Got a CW BFO Value
-                    self.CW_BFO_Setter(str(int(value, 16)))
+                    self.theRadio.CW_BFO_Setter(str(int(value, 16)))
 
                 case "Factory_MasterCal":   #Got a Factory_MasterCal memory value
-                    self.Factory_Master_Cal_Setter(str(int(value, 16)))
+                    self.theRadio.Factory_Master_Cal_Setter(str(int(value, 16)))
 
                 case "Factory_SSB_BFO":     # Got a Factory SSB BFO memory value
-                    self.Factory_SSB_BFO_Setter(str(int(value, 16)))
+                    self.theRadio.Factory_SSB_BFO_Setter(str(int(value, 16)))
 
                 case "Factory_CW_Speed":    # Got a CW Speed memory value
                     if int(value,16) != 0:
@@ -1291,10 +702,10 @@ class mainScreen(baseui.mainScreenUI):
                     else:
                         cw_speed = "0"
 
-                    self.Factory_CW_Speed_Setter(cw_speed)
+                    self.theRadio.Factory_CW_Speed_Setter(cw_speed)
 
                 case "Factory_CW_Sidetone":
-                    self.Factory_CW_Sidetone_Setter(str(int(value, 16)))
+                    self.theRadio.Factory_CW_Sidetone_Setter(str(int(value, 16)))
 
                 case _:
                     messagebox.showerror("Application Error", "Unknown Memory Request")
@@ -1411,9 +822,10 @@ class mainScreen(baseui.mainScreenUI):
     #   the current vfo setting anyway.
     #
     def vr_UX_Update_RIT_Freq(self, buffer):
-        if self.CurrentDebug:
-            print("vr called")  # command is rit related
-            print(buffer)
+        # if self.CurrentDebug:
+        #     print("vr called")  # command is rit related
+        #     print(buffer)
+        pass
 
 
     def cr_UX_RIT_Toggle(self, buffer):
@@ -1521,8 +933,8 @@ class mainScreen(baseui.mainScreenUI):
     #
     def cc_UX_Set_Primary_Mode(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.primary_Mode_VAR.set(self.modeNum_To_TextDict[value])
-        if self.cwTX_OffsetFlag and (self.modeNum_To_TextDict[value] == "CWL" or self.modeNum_To_TextDict[value] == "CWU"):
+        self.primary_Mode_VAR.set(EEPROM.modeNum_To_TextDict[value])
+        if self.cwTX_OffsetFlag and (EEPROM.modeNum_To_TextDict[value] == "CWL" or EEPROM.modeNum_To_TextDict[value] == "CWU"):
             #
             #   We are showing the TX frequency on the VFO so need to offset it
             #
@@ -1567,9 +979,9 @@ class mainScreen(baseui.mainScreenUI):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
 
         if (self.vfo_VAR.get()== self.VFO_A):       #update displayed frequency
-            self.primary_Mode_VAR.set(self.modeNum_To_TextDict[value])
+            self.primary_Mode_VAR.set(EEPROM.modeNum_To_TextDict[value])
         else:
-            self.theVFO_Object.setSecondaryMode(self.modeNum_To_TextDict[value])
+            self.theVFO_Object.setSecondaryMode(EEPROM.modeNum_To_TextDict[value])
 
 
     #
@@ -1600,9 +1012,9 @@ class mainScreen(baseui.mainScreenUI):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
 
         if (self.vfo_VAR.get()== self.VFO_B):       #update displayed frequency
-            self.primary_Mode_VAR.set(self.modeNum_To_TextDict[value])
+            self.primary_Mode_VAR.set(EEPROM.modeNum_To_TextDict[value])
         else:
-            self.theVFO_Object.secondary_Mode_VAR.set(self.modeNum_To_TextDict[value])
+            self.theVFO_Object.secondary_Mode_VAR.set(EEPROM.modeNum_To_TextDict[value])
 
 
     #
