@@ -49,12 +49,16 @@ class comportManager(baseui.comportManagerUI):
         #   Lets try the easy way first. Hopefully the comport in the configuration file will just work!
         #
         #
-        if self.validateComPort(gv.config.getComPort()):                #test if config port exists in list of ports
-            if (self.forceUseOfThisPort(gv.config.getComPort())):       #force it and try to open, if good, then we can start main
-                self.actionCallback(self.getSelectedComPort(),self.getComPortDesc())
-                return True
-
-        return False
+        # if self.validateComPort(gv.config.getComPort()):                #test if config port exists in list of ports
+        #     if (self.forceUseOfThisPort(gv.config.getComPort())):       #force it and try to open, if good, then we can start main
+        #         self.actionCallback(self.getSelectedComPort(),self.getComPortDesc())
+        #         return True
+        #
+        # return False
+        self.open_com_port = serial.serial_for_url('socket://192.168.21.1:9000', baudrate=9600, timeout=1)
+        self.actionCallback("testsocket", self.getComPortDesc())
+        gv.COMPORT = self.getComPortDesc()
+        return True
     #
     #   If we don't get the comport the easy way, this routing is called every 500ms. If a selection has been made, it is checked
     #   and if valid, we kick off the main window. Else, just try again in 500ms

@@ -144,8 +144,12 @@ class mainScreen(baseui.mainScreenUI):
 
         self.place(x=0, y=0)  # place the mainWindow on the screen
         self.master.geometry(gv.trimAndLocateWindow(self, 5, 30))
+        self.master.protocol("WM_DELETE_WINDOW", lambda: self.close_MainWindow())
 
-
+    def close_MainWindow (self):
+        print ("closing main window")
+        gv.COMPORT.close()
+        self.master.destroy()
 
     ######################################################################################
     #   This looks up the command processing routing to be called via a dictionary

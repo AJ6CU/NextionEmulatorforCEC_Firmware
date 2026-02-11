@@ -766,6 +766,7 @@ class piRadio:
 
         try:
             self.radioPort.write(self.tx_to_mcu_preamble + commandList + self.tx_to_mcu_postscript)
+            print("writing command=", self.tx_to_mcu_preamble + commandList + self.tx_to_mcu_postscript )
         except:
             messagebox.showerror(title="ERROR Communicating with uBITX",
                                                      message="Communication failed with uBITX.", parent=self,
