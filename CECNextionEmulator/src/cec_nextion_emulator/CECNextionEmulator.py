@@ -20,23 +20,23 @@ from tkinter import messagebox
 
 root = None
 mainWindow = None
-comPort = None
+radioPort = None
 myRadio = None
 
 
 #
 #   once a valid port is found, then we can start the main window.
 #
-def startMainWindow(comPortName, comPortID):
+def startMainWindow(radioPortName, radioPortHandle):
 
-    comPort.place_forget()
+    radioPort.place_forget()
 
-    comPort.place(relx=0.80, rely=1, anchor="s")
+    radioPort.place(relx=0.80, rely=1, anchor="s")
 
-    gv.config.setComPort(comPortName)  # update the config file if necessary because of comport selection
+    gv.config.setRadioPort(radioPortName)  # update the config file if necessary because of comport selection
     # print(" radio:", comPortName)
     # comPort.setComPort(comPortName)
-    myRadio = piRadio(comPortName, comPortID, mainWindow)  # Initialize the Radio object with selected port
+    myRadio = piRadio(radioPortName, radioPortHandle, mainWindow)  # Initialize the Radio object with selected port
 
 
 
@@ -68,18 +68,18 @@ gv.config = configuration(root)                    # Read in config data, if mis
 
 mainWindow = mainScreen(root)
 
-comPort = comportManager(root,startMainWindow)
+radioPort = comportManager(root, startMainWindow)
 
 
-if not comPort.getComPort():
+if not radioPort.getComPort():
     #
     #   Handles the case where the com port is not valid or not in .ini file.
     #   Have to open up  selection window.
     #
-    comPort.pack()
+    radioPort.pack()
 
-    root.geometry(gv.trimAndLocateWindow(comPort,5,30))
+    root.geometry(gv.trimAndLocateWindow(radioPort, 5, 30))
 
-    root.after(500, comPort.retry() )           # If we failed to get a comport the easy way, try again
+    root.after(500, radioPort.retry())           # If we failed to get a comport the easy way, try again
 
 root.mainloop()

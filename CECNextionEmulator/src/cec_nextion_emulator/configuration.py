@@ -85,9 +85,9 @@ class configuration:
                             }
         self.saveConfig()
 
-    def getComPort(self):
+    def getRadioPort(self):
         return self.config_data["Serial Port"]
-    def setComPort(self,port):
+    def setRadioPort(self, port):
         self.config_data ["Serial Port"] = port
         self.saveConfig()
 

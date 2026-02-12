@@ -23,7 +23,7 @@
     <resources />
   </project>
   <object class="ttk.Frame" id="selectComPortFrame" named="True">
-    <property name="height">275</property>
+    <property name="height">350</property>
     <property name="style">Normal.TFrame</property>
     <property name="width">400</property>
     <layout manager="pack">
@@ -61,13 +61,14 @@
             <property name="anchor">w</property>
             <property name="justify">left</property>
             <property name="style">Heading2b.TLabel</property>
-            <property name="text" translatable="yes">The serial port connecting your uBITX to
-this software is either unspecified or not
-working. You must specify the correct 
-port below before proceeding.</property>
+            <property name="text" translatable="yes">The connection to your uBITX to is either unspecified or not working. 
+
+You must specify the correct 
+connection below before proceeding.</property>
             <property name="width">35</property>
+            <property name="wraplength">380</property>
             <layout manager="pack">
-              <property name="pady">20</property>
+              <property name="pady">10</property>
               <property name="side">top</property>
             </layout>
           </object>
@@ -75,7 +76,57 @@ port below before proceeding.</property>
       </object>
     </child>
     <child>
-      <object class="ttk.Frame" id="frame1">
+      <object class="ttk.Frame" id="frame2">
+        <property name="height">200</property>
+        <property name="style">Normal.TFrame</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="ttk.Label" id="connectionTypeLabel" named="True">
+            <property name="anchor">w</property>
+            <property name="justify">left</property>
+            <property name="style">Heading2b.TLabel</property>
+            <property name="text" translatable="yes">Select Connection Type:</property>
+            <property name="wraplength">380</property>
+            <layout manager="pack">
+              <property name="expand">true</property>
+              <property name="fill">x</property>
+              <property name="padx">5</property>
+              <property name="pady">5</property>
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="frame6">
+            <property name="height">200</property>
+            <property name="style">Normal.TFrame</property>
+            <property name="width">200</property>
+            <layout manager="pack">
+              <property name="padx">10</property>
+              <property name="side">top</property>
+            </layout>
+            <child>
+              <object class="ttk.Combobox" id="connectionType_Combobox" named="True">
+                <property name="style">ComboBox1.TCombobox</property>
+                <property name="textvariable">string:radioConnectionType_VAR</property>
+                <property name="values">ComPort WiFi</property>
+                <property name="width">8</property>
+                <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="connectionTypeSelected_CB" add="True" />
+                <layout manager="pack">
+                  <property name="pady">10</property>
+                  <property name="side">top</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Frame" id="wifiPort_Frame" named="True">
         <property name="height">200</property>
         <property name="relief">raised</property>
         <property name="style">NormalOutline.TFrame</property>
@@ -84,8 +135,8 @@ port below before proceeding.</property>
           <property name="expand">false</property>
           <property name="fill">x</property>
           <property name="padx">10</property>
-          <property name="pady">0 20</property>
-          <property name="side">bottom</property>
+          <property name="pady">10</property>
+          <property name="side">top</property>
         </layout>
         <child>
           <object class="ttk.Label" id="selectComportTitle_Label" named="True">
@@ -101,6 +152,133 @@ port below before proceeding.</property>
         </child>
         <child>
           <object class="ttk.Frame" id="comportSelection_Frame" named="True">
+            <property name="height">200</property>
+            <property name="style">Normal.TFrame</property>
+            <property name="width">200</property>
+            <layout manager="pack">
+              <property name="expand">true</property>
+              <property name="fill">x</property>
+              <property name="padx">10</property>
+              <property name="pady">5</property>
+              <property name="side">top</property>
+            </layout>
+            <child>
+              <object class="ttk.Entry" id="IPv4_Octet1_Entry" named="True">
+                <property name="style">Entry1b.TEntry</property>
+                <property name="textvariable">string:IPv4_Octet1_VAR</property>
+                <property name="width">3</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="label5">
+                <property name="style">Heading2b.TLabel</property>
+                <property name="text" translatable="yes">.</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Entry" id="IPv4_Octet2_Entry" named="True">
+                <property name="style">Entry1b.TEntry</property>
+                <property name="textvariable">string:IPv4_Octet2_VAR</property>
+                <property name="width">3</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="label6">
+                <property name="style">Heading2b.TLabel</property>
+                <property name="text" translatable="yes">.</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Entry" id="IPv4_Octet3_Entry" named="True">
+                <property name="style">Entry1b.TEntry</property>
+                <property name="textvariable">string:IPv4_Octet3_VAR</property>
+                <property name="width">3</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="label7">
+                <property name="style">Heading2b.TLabel</property>
+                <property name="text" translatable="yes">.</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Entry" id="IPv4_Octet4_Entry" named="True">
+                <property name="style">Entry1b.TEntry</property>
+                <property name="textvariable">string:IPv4_Octet4_VAR</property>
+                <property name="width">3</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="label2">
+                <property name="style">Heading2b.TLabel</property>
+                <property name="text" translatable="yes">:</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Entry" id="IPv4_Port_Entry" named="True">
+                <property name="style">Entry1b.TEntry</property>
+                <property name="textvariable">string:IPv4_Port_VAR</property>
+                <property name="width">5</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Frame" id="comPort_Frame" named="True">
+        <property name="height">200</property>
+        <property name="relief">raised</property>
+        <property name="style">NormalOutline.TFrame</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="expand">false</property>
+          <property name="fill">x</property>
+          <property name="padx">10</property>
+          <property name="pady">10</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="ttk.Label" id="label4" named="True">
+            <property name="style">Heading2b.TLabel</property>
+            <property name="text" translatable="yes">Radio:</property>
+            <layout manager="pack">
+              <property name="anchor">w</property>
+              <property name="padx">10 0</property>
+              <property name="pady">5</property>
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="frame5" named="True">
             <property name="height">200</property>
             <property name="style">Normal.TFrame</property>
             <property name="width">200</property>

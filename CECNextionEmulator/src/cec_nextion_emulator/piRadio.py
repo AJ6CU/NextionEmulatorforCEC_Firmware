@@ -6,7 +6,7 @@ import globalvars as gv
 from tkinter import messagebox
 import EEPROM as EEPROM
 
-from comportManager import *
+# from comportManager import *
 
 
 class piRadio:

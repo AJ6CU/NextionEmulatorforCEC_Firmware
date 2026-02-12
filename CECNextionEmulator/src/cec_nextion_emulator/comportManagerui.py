@@ -64,39 +64,144 @@ class comportManagerUI(ttk.Frame):
             anchor="w",
             justify="left",
             style="Heading2b.TLabel",
-            text='The serial port connecting your uBITX to\nthis software is either unspecified or not\nworking. You must specify the correct \nport below before proceeding.',
-            width=35)
-        label3.pack(pady=20, side="top")
+            text='The connection to your uBITX to is either unspecified or not working. \n\nYou must specify the correct \nconnection below before proceeding.',
+            width=35,
+            wraplength=380)
+        label3.pack(pady=10, side="top")
         self.comportMessage_Frame.pack(
             expand=False, fill="both", padx=10, pady=10, side="top")
-        frame1 = ttk.Frame(self)
-        frame1.configure(
+        frame2 = ttk.Frame(self)
+        frame2.configure(height=200, style="Normal.TFrame", width=200)
+        self.connectionTypeLabel = ttk.Label(
+            frame2, name="connectiontypelabel")
+        self.connectionTypeLabel.configure(
+            anchor="w",
+            justify="left",
+            style="Heading2b.TLabel",
+            text='Select Connection Type:',
+            wraplength=380)
+        self.connectionTypeLabel.pack(
+            expand=True, fill="x", padx=5, pady=5, side="left")
+        frame6 = ttk.Frame(frame2)
+        frame6.configure(height=200, style="Normal.TFrame", width=200)
+        self.connectionType_Combobox = ttk.Combobox(
+            frame6, name="connectiontype_combobox")
+        self.radioConnectionType_VAR = tk.StringVar()
+        self.connectionType_Combobox.configure(
+            style="ComboBox1.TCombobox",
+            textvariable=self.radioConnectionType_VAR,
+            values='ComPort WiFi',
+            width=8)
+        self.connectionType_Combobox.pack(pady=10, side="top")
+        self.connectionType_Combobox.bind(
+            "<<ComboboxSelected>>",
+            self.connectionTypeSelected_CB,
+            add="+")
+        frame6.pack(padx=10, side="top")
+        frame2.pack(side="top")
+        self.wifiPort_Frame = ttk.Frame(self, name="wifiport_frame")
+        self.wifiPort_Frame.configure(
             height=200,
             relief="raised",
             style="NormalOutline.TFrame",
             width=200)
         self.selectComportTitle_Label = ttk.Label(
-            frame1, name="selectcomporttitle_label")
+            self.wifiPort_Frame, name="selectcomporttitle_label")
         self.selectComportTitle_Label.configure(
             style="Heading2b.TLabel", text='Radio:')
         self.selectComportTitle_Label.pack(
             anchor="w", padx="10 0", pady=5, side="left")
         self.comportSelection_Frame = ttk.Frame(
-            frame1, name="comportselection_frame")
+            self.wifiPort_Frame, name="comportselection_frame")
         self.comportSelection_Frame.configure(
             height=200, style="Normal.TFrame", width=200)
+        self.IPv4_Octet1_Entry = ttk.Entry(
+            self.comportSelection_Frame,
+            name="ipv4_octet1_entry")
+        self.IPv4_Octet1_VAR = tk.StringVar()
+        self.IPv4_Octet1_Entry.configure(
+            style="Entry1b.TEntry",
+            textvariable=self.IPv4_Octet1_VAR,
+            width=3)
+        self.IPv4_Octet1_Entry.pack(side="left")
+        label5 = ttk.Label(self.comportSelection_Frame)
+        label5.configure(style="Heading2b.TLabel", text='.')
+        label5.pack(side="left")
+        self.IPv4_Octet2_Entry = ttk.Entry(
+            self.comportSelection_Frame,
+            name="ipv4_octet2_entry")
+        self.IPv4_Octet2_VAR = tk.StringVar()
+        self.IPv4_Octet2_Entry.configure(
+            style="Entry1b.TEntry",
+            textvariable=self.IPv4_Octet2_VAR,
+            width=3)
+        self.IPv4_Octet2_Entry.pack(side="left")
+        label6 = ttk.Label(self.comportSelection_Frame)
+        label6.configure(style="Heading2b.TLabel", text='.')
+        label6.pack(side="left")
+        self.IPv4_Octet3_Entry = ttk.Entry(
+            self.comportSelection_Frame,
+            name="ipv4_octet3_entry")
+        self.IPv4_Octet3_VAR = tk.StringVar()
+        self.IPv4_Octet3_Entry.configure(
+            style="Entry1b.TEntry",
+            textvariable=self.IPv4_Octet3_VAR,
+            width=3)
+        self.IPv4_Octet3_Entry.pack(side="left")
+        label7 = ttk.Label(self.comportSelection_Frame)
+        label7.configure(style="Heading2b.TLabel", text='.')
+        label7.pack(side="left")
+        self.IPv4_Octet4_Entry = ttk.Entry(
+            self.comportSelection_Frame,
+            name="ipv4_octet4_entry")
+        self.IPv4_Octet4_VAR = tk.StringVar()
+        self.IPv4_Octet4_Entry.configure(
+            style="Entry1b.TEntry",
+            textvariable=self.IPv4_Octet4_VAR,
+            width=3)
+        self.IPv4_Octet4_Entry.pack(side="left")
+        label2 = ttk.Label(self.comportSelection_Frame)
+        label2.configure(style="Heading2b.TLabel", text=':')
+        label2.pack(side="left")
+        self.IPv4_Port_Entry = ttk.Entry(
+            self.comportSelection_Frame,
+            name="ipv4_port_entry")
+        self.IPv4_Port_VAR = tk.StringVar()
+        self.IPv4_Port_Entry.configure(
+            style="Entry1b.TEntry",
+            textvariable=self.IPv4_Port_VAR,
+            width=5)
+        self.IPv4_Port_Entry.pack(side="left")
+        self.comportSelection_Frame.pack(
+            expand=True, fill="x", padx=10, pady=5, side="top")
+        self.wifiPort_Frame.pack(
+            expand=False,
+            fill="x",
+            padx=10,
+            pady=10,
+            side="top")
+        self.comPort_Frame = ttk.Frame(self, name="comport_frame")
+        self.comPort_Frame.configure(
+            height=200,
+            relief="raised",
+            style="NormalOutline.TFrame",
+            width=200)
+        self.label4 = ttk.Label(self.comPort_Frame, name="label4")
+        self.label4.configure(style="Heading2b.TLabel", text='Radio:')
+        self.label4.pack(anchor="w", padx="10 0", pady=5, side="left")
+        self.frame5 = ttk.Frame(self.comPort_Frame, name="frame5")
+        self.frame5.configure(height=200, style="Normal.TFrame", width=200)
         self.availableComPorts_VAR = tk.StringVar(value='Select Serial Port')
         __values = ['Select Serial Port']
         self.comPortsOptionMenu = ttk.OptionMenu(
-            self.comportSelection_Frame,
+            self.frame5,
             self.availableComPorts_VAR,
             "Select Serial Port",
             *__values,
             command=self.radioSerialPortSelected_CB)
         self.comPortsOptionMenu.pack(side="left")
         self.comPortListRefresh = tk.Button(
-            self.comportSelection_Frame,
-            name="comportlistrefresh")
+            self.frame5, name="comportlistrefresh")
         self.comPortListRefresh.configure(
             bitmap="error",
             borderwidth=0,
@@ -104,16 +209,19 @@ class comportManagerUI(ttk.Frame):
             font="TkDefaultFont")
         self.comPortListRefresh.pack(padx=10, side="left")
         self.comPortListRefresh.configure(command=self.updateComPorts)
-        self.comportSelection_Frame.pack(
-            expand=True, fill="x", padx=10, pady=5, side="top")
-        frame1.pack(
+        self.frame5.pack(expand=True, fill="x", padx=10, pady=5, side="top")
+        self.comPort_Frame.pack(
             expand=False,
             fill="x",
             padx=10,
-            pady="0 20",
-            side="bottom")
-        self.configure(height=275, style="Normal.TFrame", width=400)
-        # Layout for 'selectComPortFrame' skipped in custom widget template.
+            pady=10,
+            side="top")
+        self.configure(height=350, style="Normal.TFrame", width=400)
+        self.pack(anchor="w", expand=True, fill="both", side="top")
+        self.pack_propagate(0)
+
+    def connectionTypeSelected_CB(self, event=None):
+        pass
 
     def radioSerialPortSelected_CB(self, option):
         pass

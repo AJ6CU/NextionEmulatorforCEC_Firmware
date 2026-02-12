@@ -27,17 +27,55 @@ class comportManager(baseui.comportManagerUI):
         super().__init__(master, **kw)
         self.master = master
         self.actionCallback = actionCallback
-        #
-        #   Using get_image to isolate difference between a "package" and direct all
-        #
-        self.reloadicon = gv.get_image(gv.RELOADICON)
-        self.comPortListRefresh.configure(image=self.reloadicon)
+
 
         self.open_com_port = None
         self.selectionMade = False
 
-        self.updateComPorts()               #preload the available com ports
-        self.comPortsOptionMenu.configure(width=15)
+        self.radioPortType = "ComPort"
+
+
+        gv.formatCombobox(self.connectionType_Combobox, "Arial", "14", "bold")
+        #
+        #   Determine existing type of connection from config file
+        #
+        if len(gv.config.getRadioPort()) > 3:
+            # print("port=",gv.config.getRadioPort()[:3] )
+            if gv.config.getRadioPort()[:3]=="soc":
+                self.setRadioPortType('WiFi')
+            #     print("found socket")
+            #     self.radioPortType = "WiFI"
+            #     self.comPort_Frame.pack_forget()
+            #     self.wifiPort_Frame.pack(
+            #         expand=False,
+            #         fill="x",
+            #         padx=10,
+            #         pady=10,
+            #         side="top")
+            else:
+                self.setRadioPortType( 'ComPort')
+                # self.radioPortType = "ComPort"
+                # #
+                # #   Using get_image to isolate difference between a "package" and direct all
+                # #
+                # self.reloadicon = gv.get_image(gv.RELOADICON)
+                #
+                # self.wifiPort_Frame.pack_forget()
+                # self.comPort_Frame.pack(
+                #     expand=False,
+                #     fill="x",
+                #     padx=10,
+                #     pady=10,
+                #     side="top")
+                # self.comPortListRefresh.configure(image=self.reloadicon)
+                # self.updateComPorts()  # preload the available com ports
+                # self.comPortsOptionMenu.configure(width=15)
+        else:
+            self.setRadioPortType(self, self.radioPortType)
+
+        self.radioConnectionType_VAR.set(self.radioPortType)
+
+
 
 
     #
@@ -50,13 +88,13 @@ class comportManager(baseui.comportManagerUI):
         #
         #
         # if self.validateComPort(gv.config.getComPort()):                #test if config port exists in list of ports
-        #     if (self.forceUseOfThisPort(gv.config.getComPort())):       #force it and try to open, if good, then we can start main
+        #     if (self.forceUseOfThisPort(gv.config.getRadioPort())):       #force it and try to open, if good, then we can start main
         #         self.actionCallback(self.getSelectedComPort(),self.getComPortDesc())
         #         return True
         #
         # return False
-        self.open_com_port = serial.serial_for_url('socket://192.168.21.1:9000', baudrate=9600, timeout=1)
-        self.actionCallback("testsocket", self.getComPortDesc())
+        self.open_com_port = serial.serial_for_url('socket://192.168.155.244:9000', baudrate=9600, timeout=1)
+        self.actionCallback("socket://192.168.155.244:9000", self.getComPortDesc())
         gv.COMPORT = self.getComPortDesc()
         return True
     #
@@ -119,8 +157,8 @@ class comportManager(baseui.comportManagerUI):
             self.comPortListRefresh.configure(state="disabled")
             self.comportMessage_Frame.pack_forget()  # Close the top half of the select comport frame
 
-            if comPort != gv.config.getComPort:                     # This handles the case where the config file existed with the wrong comport
-                gv.config.setComPort(comPort)
+            if comPort != gv.config.getRadioPort:                     # This handles the case where the config file existed with the wrong comport
+                gv.config.setRadioPort(comPort)
             return True
 
 
@@ -144,5 +182,49 @@ class comportManager(baseui.comportManagerUI):
 
     def getComPortDesc (self):
         return self.open_com_port
+
+    def connectionTypeSelected_CB(self, event=None):
+        if self.radioPortType == self.radioConnectionType_VAR.get():
+            print("same connection type selected")
+        else:
+            self.setRadioPortType (self.radioConnectionType_VAR.get())
+
+
+    def setRadioPortType(self, portType):
+        self.radioPortType = portType
+
+        if self.radioPortType == "WiFi":
+            self.comPort_Frame.pack_forget()
+            self.wifiPort_Frame.pack(
+                expand=False,
+                fill="x",
+                padx=10,
+                pady=10,
+                side="top")
+            self.ipAddress = gv.config.getRadioPort()
+            ipParts = self.ipAddress.replace(":",".").replace("/","").split(".")
+
+            self.IPv4_Octet1_VAR.set(ipParts[1])
+            self.IPv4_Octet2_VAR.set(ipParts[2])
+            self.IPv4_Octet3_VAR.set(ipParts[3])
+            self.IPv4_Octet4_VAR.set(ipParts[4])
+            self.IPv4_Port_VAR.set(ipParts[5])
+
+        else:
+            #
+            #   Using get_image to isolate difference between a "package" and direct all
+            #
+            self.reloadicon = gv.get_image(gv.RELOADICON)
+
+            self.wifiPort_Frame.pack_forget()
+            self.comPort_Frame.pack(
+                expand=False,
+                fill="x",
+                padx=10,
+                pady=10,
+                side="top")
+            self.comPortListRefresh.configure(image=self.reloadicon)
+            self.updateComPorts()  # preload the available com ports
+            self.comPortsOptionMenu.configure(width=15)
 
 
