@@ -23,7 +23,7 @@
     <resources />
   </project>
   <object class="ttk.Frame" id="selectComPortFrame" named="True">
-    <property name="height">350</property>
+    <property name="height">300</property>
     <property name="style">Normal.TFrame</property>
     <property name="width">400</property>
     <layout manager="pack">
@@ -32,9 +32,6 @@
       <property name="fill">both</property>
       <property name="side">top</property>
     </layout>
-    <containerlayout manager="pack">
-      <property name="propagate">false</property>
-    </containerlayout>
     <child>
       <object class="ttk.Frame" id="comportMessage_Frame" named="True">
         <property name="height">150</property>
@@ -73,52 +70,52 @@ connection below before proceeding.</property>
             </layout>
           </object>
         </child>
-      </object>
-    </child>
-    <child>
-      <object class="ttk.Frame" id="frame2">
-        <property name="height">200</property>
-        <property name="style">Normal.TFrame</property>
-        <property name="width">200</property>
-        <layout manager="pack">
-          <property name="side">top</property>
-        </layout>
         <child>
-          <object class="ttk.Label" id="connectionTypeLabel" named="True">
-            <property name="anchor">w</property>
-            <property name="justify">left</property>
-            <property name="style">Heading2b.TLabel</property>
-            <property name="text" translatable="yes">Select Connection Type:</property>
-            <property name="wraplength">380</property>
-            <layout manager="pack">
-              <property name="expand">true</property>
-              <property name="fill">x</property>
-              <property name="padx">5</property>
-              <property name="pady">5</property>
-              <property name="side">left</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="ttk.Frame" id="frame6">
+          <object class="ttk.Frame" id="frame2">
             <property name="height">200</property>
             <property name="style">Normal.TFrame</property>
             <property name="width">200</property>
             <layout manager="pack">
-              <property name="padx">10</property>
               <property name="side">top</property>
             </layout>
             <child>
-              <object class="ttk.Combobox" id="connectionType_Combobox" named="True">
-                <property name="style">ComboBox1.TCombobox</property>
-                <property name="textvariable">string:radioConnectionType_VAR</property>
-                <property name="values">ComPort WiFi</property>
-                <property name="width">8</property>
-                <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="connectionTypeSelected_CB" add="True" />
+              <object class="ttk.Label" id="connectionTypeLabel" named="True">
+                <property name="anchor">w</property>
+                <property name="justify">left</property>
+                <property name="style">Heading2b.TLabel</property>
+                <property name="text" translatable="yes">Select Connection Type:</property>
+                <property name="wraplength">380</property>
                 <layout manager="pack">
-                  <property name="pady">10</property>
+                  <property name="expand">true</property>
+                  <property name="fill">x</property>
+                  <property name="padx">5</property>
+                  <property name="pady">5</property>
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="frame6">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="padx">10</property>
                   <property name="side">top</property>
                 </layout>
+                <child>
+                  <object class="ttk.Combobox" id="connectionType_Combobox" named="True">
+                    <property name="style">ComboBox1.TCombobox</property>
+                    <property name="textvariable">string:radioConnectionType_VAR</property>
+                    <property name="values">ComPort Socket</property>
+                    <property name="width">20</property>
+                    <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="connectionTypeSelected_CB" add="True" />
+                    <layout manager="pack">
+                      <property name="pady">10</property>
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
@@ -132,7 +129,7 @@ connection below before proceeding.</property>
         <property name="style">NormalOutline.TFrame</property>
         <property name="width">200</property>
         <layout manager="pack">
-          <property name="expand">false</property>
+          <property name="expand">true</property>
           <property name="fill">x</property>
           <property name="padx">10</property>
           <property name="pady">10</property>
@@ -248,6 +245,17 @@ connection below before proceeding.</property>
                 </layout>
               </object>
             </child>
+            <child>
+              <object class="ttk.Button" id="wifi_Port_Test_Button" named="True">
+                <property name="command" type="command" cbtype="simple">test_Entered_IP_Address_CB</property>
+                <property name="style">Button3.TButton</property>
+                <property name="text" translatable="yes">Test</property>
+                <property name="width">5</property>
+                <layout manager="pack">
+                  <property name="side">top</property>
+                </layout>
+              </object>
+            </child>
           </object>
         </child>
       </object>
@@ -259,7 +267,7 @@ connection below before proceeding.</property>
         <property name="style">NormalOutline.TFrame</property>
         <property name="width">200</property>
         <layout manager="pack">
-          <property name="expand">false</property>
+          <property name="expand">true</property>
           <property name="fill">x</property>
           <property name="padx">10</property>
           <property name="pady">10</property>

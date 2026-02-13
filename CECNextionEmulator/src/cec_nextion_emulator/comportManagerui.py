@@ -68,9 +68,7 @@ class comportManagerUI(ttk.Frame):
             width=35,
             wraplength=380)
         label3.pack(pady=10, side="top")
-        self.comportMessage_Frame.pack(
-            expand=False, fill="both", padx=10, pady=10, side="top")
-        frame2 = ttk.Frame(self)
+        frame2 = ttk.Frame(self.comportMessage_Frame)
         frame2.configure(height=200, style="Normal.TFrame", width=200)
         self.connectionTypeLabel = ttk.Label(
             frame2, name="connectiontypelabel")
@@ -90,8 +88,8 @@ class comportManagerUI(ttk.Frame):
         self.connectionType_Combobox.configure(
             style="ComboBox1.TCombobox",
             textvariable=self.radioConnectionType_VAR,
-            values='ComPort WiFi',
-            width=8)
+            values='ComPort Socket',
+            width=20)
         self.connectionType_Combobox.pack(pady=10, side="top")
         self.connectionType_Combobox.bind(
             "<<ComboboxSelected>>",
@@ -99,6 +97,8 @@ class comportManagerUI(ttk.Frame):
             add="+")
         frame6.pack(padx=10, side="top")
         frame2.pack(side="top")
+        self.comportMessage_Frame.pack(
+            expand=False, fill="both", padx=10, pady=10, side="top")
         self.wifiPort_Frame = ttk.Frame(self, name="wifiport_frame")
         self.wifiPort_Frame.configure(
             height=200,
@@ -172,10 +172,17 @@ class comportManagerUI(ttk.Frame):
             textvariable=self.IPv4_Port_VAR,
             width=5)
         self.IPv4_Port_Entry.pack(side="left")
+        self.wifi_Port_Test_Button = ttk.Button(
+            self.comportSelection_Frame, name="wifi_port_test_button")
+        self.wifi_Port_Test_Button.configure(
+            style="Button3.TButton", text='Test', width=5)
+        self.wifi_Port_Test_Button.pack(side="top")
+        self.wifi_Port_Test_Button.configure(
+            command=self.test_Entered_IP_Address_CB)
         self.comportSelection_Frame.pack(
             expand=True, fill="x", padx=10, pady=5, side="top")
         self.wifiPort_Frame.pack(
-            expand=False,
+            expand=True,
             fill="x",
             padx=10,
             pady=10,
@@ -211,16 +218,18 @@ class comportManagerUI(ttk.Frame):
         self.comPortListRefresh.configure(command=self.updateComPorts)
         self.frame5.pack(expand=True, fill="x", padx=10, pady=5, side="top")
         self.comPort_Frame.pack(
-            expand=False,
+            expand=True,
             fill="x",
             padx=10,
             pady=10,
             side="top")
-        self.configure(height=350, style="Normal.TFrame", width=400)
+        self.configure(height=300, style="Normal.TFrame", width=400)
         self.pack(anchor="w", expand=True, fill="both", side="top")
-        self.pack_propagate(0)
 
     def connectionTypeSelected_CB(self, event=None):
+        pass
+
+    def test_Entered_IP_Address_CB(self):
         pass
 
     def radioSerialPortSelected_CB(self, option):

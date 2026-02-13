@@ -78,7 +78,8 @@ if not radioPort.getComPort():
     #
     radioPort.pack()
 
-    root.geometry(gv.trimAndLocateWindow(radioPort, 5, 30))
+    root.geometry("400x300+5+30")
+    # root.geometry(gv.trimAndLocateWindow(radioPort, 5, 30))
 
     root.after(500, radioPort.retry())           # If we failed to get a comport the easy way, try again
 
