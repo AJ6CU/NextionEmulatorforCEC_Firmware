@@ -59,7 +59,7 @@ def startMainWindow(radioPortName, radioPortHandle):
 #
 root = tk.Tk()
 
-root.geometry("400x275+5+30")           # necessary because latest Tixie put new windows in center
+root.geometry("400x300+5+30")           # necessary because latest Tixie put new windows in center
 root.title("CECNextionEmulator - A Nextion Emulator for CEC Firmware running on the uBITX")
 
 
@@ -78,8 +78,7 @@ if not radioPort.getComPort():
     #
     radioPort.pack()
 
-    root.geometry("400x300+5+30")
-    # root.geometry(gv.trimAndLocateWindow(radioPort, 5, 30))
+    root.geometry(gv.trimAndLocateWindow(radioPort, 5, 30))
 
     root.after(500, radioPort.retry())           # If we failed to get a comport the easy way, try again
 

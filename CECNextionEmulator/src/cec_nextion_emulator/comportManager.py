@@ -90,7 +90,11 @@ class comportManager(baseui.comportManagerUI):
     #   If we don't get the comport the easy way, this routing is called every 500ms. If a selection has been made, it is checked
     #   and if valid, we kick off the main window. Else, just try again in 500ms
     #
-
+#
+    #
+    #   need to change state on Test button to disabled while trying to open up an ip port. Turn it to enabled if failed
+    #   maybe with an error message popup like below
+    #
     def retry(self):
         if self.selectionMade:
             port = self.getSelectedComPort()
@@ -107,6 +111,8 @@ class comportManager(baseui.comportManagerUI):
                         self.wifi_Port_Test_Button.pack_forget()  # success open means we can remove test button
                         gv.COMPORT = self.getComPortDesc()
                     return
+                else:
+                    self.selectionMade = False
         self.master.after(500,self.retry)
 
 
