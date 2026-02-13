@@ -139,6 +139,9 @@ class mainScreen(baseui.mainScreenUI):
     def attachRadio(self, radio):
         self.theRadio = radio
 
+    def savePortHandle(self, portHandle):
+        self.portHandle = portHandle
+
     def initUX(self):
         self.theVFO_Object.initVFO(self.theRadio)
 
@@ -147,9 +150,8 @@ class mainScreen(baseui.mainScreenUI):
         self.master.protocol("WM_DELETE_WINDOW", lambda: self.close_MainWindow())
 
     def close_MainWindow (self):
-        print ("closing main window")
-        gv.COMPORT.close()
-        self.master.destroy()
+        self.portHandle.close()         # Close connection to Radio
+        self.master.destroy()           # Close Window
 
     ######################################################################################
     #   This looks up the command processing routing to be called via a dictionary

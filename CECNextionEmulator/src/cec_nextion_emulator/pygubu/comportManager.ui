@@ -111,6 +111,9 @@ connection below before proceeding.</property>
                     <property name="width">20</property>
                     <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="connectionTypeSelected_CB" add="True" />
                     <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">x</property>
+                      <property name="ipadx">6</property>
                       <property name="pady">10</property>
                       <property name="side">top</property>
                     </layout>

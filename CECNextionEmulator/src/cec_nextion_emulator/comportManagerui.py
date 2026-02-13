@@ -90,7 +90,8 @@ class comportManagerUI(ttk.Frame):
             textvariable=self.radioConnectionType_VAR,
             values='ComPort Socket',
             width=20)
-        self.connectionType_Combobox.pack(pady=10, side="top")
+        self.connectionType_Combobox.pack(
+            expand=True, fill="x", ipadx=6, pady=10, side="top")
         self.connectionType_Combobox.bind(
             "<<ComboboxSelected>>",
             self.connectionTypeSelected_CB,

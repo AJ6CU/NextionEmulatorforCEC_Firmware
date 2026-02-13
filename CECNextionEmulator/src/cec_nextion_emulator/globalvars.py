@@ -21,7 +21,6 @@ def get_image(filename):
         return tk.PhotoImage(file=imagepath)
 
 config = None
-COMPORT = None
 
 RELOADICON = "reloadicon.png"
 BAUD = 9600

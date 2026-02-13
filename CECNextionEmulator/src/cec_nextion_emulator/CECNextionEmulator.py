@@ -31,16 +31,16 @@ def startMainWindow(radioPortName, radioPortHandle):
 
     radioPort.place_forget()
 
-    radioPort.place(relx=0.80, rely=1, anchor="s")
+    radioPort.place(relx=0.85, rely=1, anchor="s")
 
     gv.config.setRadioPort(radioPortName)  # update the config file if necessary because of comport selection
-    # print(" radio:", comPortName)
-    # comPort.setComPort(comPortName)
+
     myRadio = piRadio(radioPortName, radioPortHandle, mainWindow)  # Initialize the Radio object with selected port
 
 
 
     mainWindow.attachRadio(myRadio)         # tell the mainWindow how to talk to the radio
+    mainWindow.savePortHandle (radioPortHandle) # Save pointer to port to close
 
     myRadio.rebootRadio()                   # We reboot the radio because it sends a bunch of initialization values on startup
                                             # to the Nextion screen. We need to capture them
@@ -61,6 +61,7 @@ root = tk.Tk()
 
 root.geometry("400x300+5+30")           # necessary because latest Tixie put new windows in center
 root.title("CECNextionEmulator - A Nextion Emulator for CEC Firmware running on the uBITX")
+root.protocol("WM_DELETE_WINDOW", lambda: root.destroy())
 
 
 gv.config = configuration(root)                    # Read in config data, if missing preload with defaults
@@ -71,12 +72,13 @@ mainWindow = mainScreen(root)
 radioPort = comportManager(root, startMainWindow)
 
 
-if not radioPort.getComPort():
+if not radioPort.getRadioPort():
     #
     #   Handles the case where the com port is not valid or not in .ini file.
     #   Have to open up  selection window.
     #
     radioPort.pack()
+
 
     root.geometry(gv.trimAndLocateWindow(radioPort, 5, 30))
 
