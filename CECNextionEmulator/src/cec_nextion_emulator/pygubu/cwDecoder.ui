@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.5" author="PygubuDesigner 0.41.4">
+  <project>
+    <settings>
+      <setting id="name">cwDecoder</setting>
+      <setting id="description">Manages decoding of CW.</setting>
+      <setting id="module_name">cwDecoder</setting>
+      <setting id="template">widget</setting>
+      <setting id="main_widget">cwDecoder_Window</setting>
+      <setting id="main_classname">cwDecoder</setting>
+      <setting id="main_menu" />
+      <setting id="output_dir">..</setting>
+      <setting id="output_dir2">..</setting>
+      <setting id="import_tkvariables">False</setting>
+      <setting id="use_ttk_styledefinition_file">True</setting>
+      <setting id="use_i18n">False</setting>
+      <setting id="all_ids_attributes">False</setting>
+      <setting id="generate_code_onsave">False</setting>
+      <setting id="use_window_centering_code">False</setting>
+      <setting id="ttk_style_definition_file">../mystyles.py</setting>
+    </settings>
+    <customwidgets />
+    <resources />
+  </project>
+  <object class="tk.Toplevel" id="cwDecoder_Window" named="True">
+    <property name="geometry">600x430</property>
+    <property name="height">200</property>
+    <property name="title" translatable="yes">CW Decode</property>
+    <property name="width">800</property>
+    <child>
+      <object class="ttk.Labelframe" id="cwDecoder_Labelframe" named="True">
+        <property name="height">200</property>
+        <property name="style">Heading2.TLabelframe</property>
+        <property name="text" translatable="yes">CW Decode</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="expand">true</property>
+          <property name="fill">both</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="ttk.Frame" id="frame1">
+            <property name="height">200</property>
+            <property name="style">Normal.TFrame</property>
+            <property name="width">200</property>
+            <layout manager="pack">
+              <property name="expand">true</property>
+              <property name="fill">both</property>
+              <property name="side">top</property>
+            </layout>
+            <child>
+              <object class="ttk.Labelframe" id="frequencySpectrumLabelframe" named="True">
+                <property name="height">150</property>
+                <property name="style">Heading3.TLabelframe</property>
+                <property name="text" translatable="yes">Frequency Spectrum
+</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="expand">true</property>
+                  <property name="fill">x</property>
+                  <property name="padx">5</property>
+                  <property name="side">top</property>
+                </layout>
+                <child>
+                  <object class="ttk.Frame" id="frequencySpectrumFrame" named="True">
+                    <property name="height">180</property>
+                    <property name="style">Normal.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">x</property>
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Button" id="test_button" named="True">
+                    <property name="command" type="command" cbtype="simple">testButton_cb</property>
+                    <property name="text" translatable="yes">button1</property>
+                    <layout manager="pack">
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Labelframe" id="cwDecodeLabelframe" named="True">
+                <property name="height">150</property>
+                <property name="style">Heading3.TLabelframe</property>
+                <property name="text" translatable="yes">CW Decode</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="expand">true</property>
+                  <property name="fill">x</property>
+                  <property name="padx">5</property>
+                  <property name="side">top</property>
+                </layout>
+                <child>
+                  <object class="ttk.Frame" id="cwDecodeFrame" named="True">
+                    <property name="height">100</property>
+                    <property name="style">Normal.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">x</property>
+                      <property name="side">top</property>
+                    </layout>
+                    <child>
+                      <object class="tk.Text" id="cwDecodedText" named="True">
+                        <property name="font">{Arial} 18 {}</property>
+                        <property name="height">3</property>
+                        <property name="spacing1">2</property>
+                        <property name="spacing2">5</property>
+                        <property name="spacing3">2</property>
+                        <property name="state">disabled</property>
+                        <property name="text" translatable="yes">123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678</property>
+                        <property name="width">50</property>
+                        <property name="wrap">char</property>
+                        <layout manager="pack">
+                          <property name="padx">5</property>
+                          <property name="pady">5</property>
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="closingFrame" named="True">
+                <property name="style">Normal.TFrame</property>
+                <layout manager="pack">
+                  <property name="expand">true</property>
+                  <property name="fill">x</property>
+                </layout>
+                <containerlayout manager="grid">
+                  <property name="anchor">center</property>
+                </containerlayout>
+                <child>
+                  <object class="ttk.Button" id="decodeToggle_Button" named="True">
+                    <property name="command" type="command" cbtype="simple">decodeToggle_CB</property>
+                    <property name="style">Button2b.TButton</property>
+                    <property name="text" translatable="yes">Start Decode</property>
+                    <property name="width">14</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Button" id="close_Button" named="True">
+                    <property name="command" type="command" cbtype="simple">close_cwDecode_Window_CB</property>
+                    <property name="style">Button2b.TButton</property>
+                    <property name="text" translatable="yes">Close</property>
+                    <layout manager="grid">
+                      <property name="column">3</property>
+                      <property name="padx">10 0</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

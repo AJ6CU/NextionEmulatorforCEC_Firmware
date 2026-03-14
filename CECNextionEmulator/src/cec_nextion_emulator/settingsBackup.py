@@ -19,7 +19,7 @@ from tkinter import messagebox
 
 class settingsBackup(baseui.settingsBackupUI):
     def __init__(self, master=None,mainWindow=None, **kw):
-        super().__init__(master, **kw)
+        # super().__init__(master, **kw)  # Is this necessary?
 
         self.master= master
         self.mainWindow = mainWindow

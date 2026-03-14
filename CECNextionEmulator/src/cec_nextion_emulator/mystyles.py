@@ -122,6 +122,9 @@ def setup_ttk_styles(master=None):
     style.configure('Heading2.TLabelframe.Label', background='gray', bd=4, font=fontList['Heading2'])
     style.configure('Heading2.TLabelframe', background='gray', bd=4)
 
+    style.configure('Heading3.TLabelframe.Label', background='gray', bd=4, font=fontList['Heading2b'])
+    style.configure('Heading3.TLabelframe', background='gray', bd=4)
+
     style.configure('GreenBox.TLabelframe', background='green', bd=4)
     style.configure('GreenBox.TLabelframe.Label', background='green', foreground='white', bd=4, font=fontList['Heading2'])
     style.configure('GreenBox.TLabel', font=('Fixed', 24, 'bold'), background='green', bd=0)
