@@ -27,13 +27,13 @@ class cwDecoder(baseui.cwDecoderUI):
         self.initUX()
 
     def initUX(self):
-        # self.master.title("CW Decode")
-        # self.master.geometry("600x430")
-        # self.master.wait_visibility()  # required on Linux
-        # self.master.grab_set()
-        # self.master.transient(self.mainWindow)
-        #
-        # # self.pack(expand=tk.YES, fill=tk.BOTH)
+        self.title("CW Decode")
+        self.geometry("600x430")
+        self.wait_visibility()  # required on Linux
+        self.grab_set()
+        self.transient(self.master)
+
+        # self.pack(expand=tk.YES, fill=tk.BOTH)
         # gv.trimAndLocateWindow(self.master, 0, 0)
 
         self.cwDecodeLabelframe.bind("<Enter>", self.bind_all("<Button-1>", self.cwDecode_bind_all))
@@ -88,8 +88,19 @@ class cwDecoder(baseui.cwDecoderUI):
         self.unbind_all("<Button-1>")   # Eliminate global catch of Button-1
         self.destroy()
 
+myroot=None
+mainWindow=None
+
+
+def launch_widget():
+    widget= cwDecoder(myroot,mainWindow)
+
 if __name__ == "__main__":
-    root = tk.Tk()
-    widget = cwDecoder(root)
-    # widget.pack(expand=True, fill="both")
-    root.mainloop()
+    myroot = tk.Tk()
+
+    Launch_Button = ttk.Button(myroot, text="Launch")
+    Launch_Button.configure(text='Launch')
+    Launch_Button.configure(command=cwDecoder)
+    Launch_Button.pack(side="top")
+
+    myroot.mainloop()
