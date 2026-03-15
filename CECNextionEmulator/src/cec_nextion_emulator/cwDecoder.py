@@ -22,7 +22,7 @@ class cwDecoder(baseui.cwDecoderUI):
         #
         #   Make sure that a close by the Window manager goes to the same close callback
         #
-        self.protocol("WM_DELETE_WINDOW", self.close_cwDecode_Window_CB)
+        self.protocol("WM_DELETE_WINDOW", self.close_CB)
 
         self.initUX()
 
@@ -40,6 +40,14 @@ class cwDecoder(baseui.cwDecoderUI):
         self.frequencySpectrumFrame.bind("<Enter>", self.bind_all("<Button-1>", self.frequency_bind_all))
 
         self.closingFrame.bind("<Enter>", self.close_frame_unbind_all)
+        #
+        #   set defaults for scale
+        #
+        self.frequencyPlotcwToneScale_VAR.set("10")
+        self.frequencyPlotcwToneValue_VAR.set("800")    # 10*50 + 300
+
+        self.frequencyDecodeScale_VAR.set("2")
+        self.frequencySigValue_VAR.set("20")            # 2*10
 
     #
     #   The following two "bind_all' functions ensures that any mouse clicks, regardless of which
@@ -74,19 +82,54 @@ class cwDecoder(baseui.cwDecoderUI):
     def enable_Frequency_Spectrum(self, event=None):
         # print("frequency spectrum clicked")
         self.unbind_all("<Button-1>")
+        self.cwDecodedText.configure(foreground="lightgray")
+
+        self.frequencyPlotcwToneValueLabel.configure(state="normal")
+        self.frequencyHighLabel.configure(state="normal")
+        self.frequencySigLabel.configure(state="normal")
+        self.frequencyLowLabel.configure(state="normal")
+
+        self.frequencyHighValueLabel.configure(state="normal")
+        self.frequencySigValueLabel.configure(state="normal")
+        self.frequencyLowValueLabel.configure(state="normal")
 
     def enable_CW_Decode(self, event=None):
         # print("cw decode clicked")
         self.unbind_all("<Button-1>")
+        self.cwDecodedText.configure(foreground="black")
+        self.frequencyPlotcwToneValueLabel.configure(state="disabled")
 
-    def testButton_cb(self):
-        print("testButton_cb")
+        self.frequencyHighLabel.configure(state="disabled")
+        self.frequencySigLabel.configure(state="disabled")
+        self.frequencyLowLabel.configure(state="disabled")
+
+        self.frequencyHighValueLabel.configure(state="disabled")
+        self.frequencySigValueLabel.configure(state="disabled")
+        self.frequencyLowValueLabel.configure(state="disabled")
 
 
-    def close_cwDecode_Window_CB(self):
+
+
+
+    def frequencyDecodeScale_CB(self, scale_value):
+        self.frequencySigValue_VAR.set(str(int(self.frequencyDecodeScale_VAR.get())*10))  # 2*10
+
+    def frequencyPlotcwToneScale_CB(self, scale_value):
+        self.frequencyPlotcwToneValue_VAR.set(str(((int(self.frequencyPlotcwToneScale_VAR.get())*50)+300)))
+
+    def startStopToggleButton_CB(self):
+        self.logCW_Character("S")
+
+
+    def close_CB(self):
         print("close_cwDecode_Window_CB")
         self.unbind_all("<Button-1>")   # Eliminate global catch of Button-1
         self.destroy()
+
+    def logCW_Character (self,newchar):
+        if len(self.cwDecodedText.get('1.0', 'end')) > 130:   # Not maximum, but close to it
+            self.cwDecodedText.delete('1.0')
+        self.cwDecodedText.insert('2.end',newchar)
 
 myroot=None
 mainWindow=None

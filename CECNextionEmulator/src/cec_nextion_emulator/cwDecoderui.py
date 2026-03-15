@@ -57,10 +57,8 @@ class cwDecoderUI(tk.Toplevel):
         # First object created
         on_first_object_cb(self.cwDecoder_Labelframe)
 
-        frame1 = ttk.Frame(self.cwDecoder_Labelframe)
-        frame1.configure(height=200, style="Normal.TFrame", width=200)
         self.frequencySpectrumLabelframe = ttk.Labelframe(
-            frame1, name="frequencyspectrumlabelframe")
+            self.cwDecoder_Labelframe, name="frequencyspectrumlabelframe")
         self.frequencySpectrumLabelframe.configure(
             height=150,
             style="Heading3.TLabelframe",
@@ -71,17 +69,135 @@ class cwDecoderUI(tk.Toplevel):
             name="frequencyspectrumframe")
         self.frequencySpectrumFrame.configure(
             height=180, style="Normal.TFrame", width=200)
+        frame2 = ttk.Frame(self.frequencySpectrumFrame)
+        frame2.configure(height=140, style="Normal.TFrame", width=200)
+        self.frequencyPlotFrame = ttk.Frame(frame2, name="frequencyplotframe")
+        self.frequencyPlotFrame.configure(
+            height=140, style="Normal.TFrame", width=430)
+        self.frequencyPlotFrame.pack(padx=5, pady=5, side="left")
+        self.frequencyPlotParameterFrame = ttk.Frame(
+            frame2, name="frequencyplotparameterframe")
+        self.frequencyPlotParameterFrame.configure(
+            height=200, style="Normal.TFrame", width=200)
+        self.frequencyDecodeScale = tk.Scale(
+            self.frequencyPlotParameterFrame,
+            name="frequencydecodescale")
+        self.frequencyDecodeScale_VAR = tk.StringVar()
+        self.frequencyDecodeScale.configure(
+            from_=10,
+            length=140,
+            orient="vertical",
+            relief="raised",
+            resolution=1,
+            showvalue=False,
+            sliderlength=50,
+            state="normal",
+            to=0,
+            variable=self.frequencyDecodeScale_VAR,
+            width=30)
+        self.frequencyDecodeScale.pack(side="left")
+        self.frequencyDecodeScale.configure(
+            command=self.frequencyDecodeScale_CB)
+        self.frequencyPlotSettingsFrame = ttk.Frame(
+            self.frequencyPlotParameterFrame,
+            name="frequencyplotsettingsframe")
+        self.frequencyPlotSettingsFrame.configure(
+            height=200, style="Normal.TFrame", width=200)
+        self.frequencyHighLabel = ttk.Label(
+            self.frequencyPlotSettingsFrame,
+            name="frequencyhighlabel")
+        self.frequencyHighLabel.configure(
+            style="Heading2b.TLabel", text='High')
+        self.frequencyHighLabel.grid(column=0, row=0, sticky="w")
+        self.frequencyHighValueLabel = ttk.Label(
+            self.frequencyPlotSettingsFrame,
+            name="frequencyhighvaluelabel")
+        self.frequencyHighValue_VAR = tk.StringVar(value='0')
+        self.frequencyHighValueLabel.configure(
+            anchor="e",
+            justify="right",
+            style="Heading2b.TLabel",
+            text='0',
+            textvariable=self.frequencyHighValue_VAR,
+            width=4)
+        self.frequencyHighValueLabel.grid(column=1, row=0, sticky="e")
+        self.frequencySigLabel = ttk.Label(
+            self.frequencyPlotSettingsFrame,
+            name="frequencysiglabel")
+        self.frequencySigLabel.configure(
+            style="Heading2b.TLabel", text='Signal')
+        self.frequencySigLabel.grid(column=0, pady="20 0", row=1, sticky="w")
+        self.frequencySigValueLabel = ttk.Label(
+            self.frequencyPlotSettingsFrame,
+            name="frequencysigvaluelabel")
+        self.frequencySigValue_VAR = tk.StringVar(value='20')
+        self.frequencySigValueLabel.configure(
+            anchor="e",
+            style="Heading2b.TLabel",
+            text='20',
+            textvariable=self.frequencySigValue_VAR,
+            width=4)
+        self.frequencySigValueLabel.grid(
+            column=1, pady="20 0", row=1, sticky="e")
+        self.frequencyLowLabel = ttk.Label(
+            self.frequencyPlotSettingsFrame,
+            name="frequencylowlabel")
+        self.frequencyLowLabel.configure(style="Heading2b.TLabel", text='Low')
+        self.frequencyLowLabel.grid(column=0, pady="20 0", row=2, sticky="w")
+        self.frequencyLowValueLabel = ttk.Label(
+            self.frequencyPlotSettingsFrame,
+            name="frequencylowvaluelabel")
+        self.frequencyLowValue_VAR = tk.StringVar(value='0')
+        self.frequencyLowValueLabel.configure(
+            anchor="e",
+            style="Heading2b.TLabel",
+            text='0',
+            textvariable=self.frequencyLowValue_VAR,
+            width=4)
+        self.frequencyLowValueLabel.grid(
+            column=1, pady="20 0", row=2, sticky="e")
+        self.frequencyPlotSettingsFrame.pack(pady="28 0", side="top")
+        self.frequencyPlotParameterFrame.pack(
+            expand=True, fill="both", padx="5 0", side="top")
+        frame2.pack(expand=True, fill="x", padx=10, side="top")
+        self.frequencyPlotcwToneFrame = ttk.Frame(
+            self.frequencySpectrumFrame, name="frequencyplotcwtoneframe")
+        self.frequencyPlotcwToneFrame.configure(
+            height=40, style="Normal.TFrame", width=200)
+        self.frequencyPlotcwToneScale = tk.Scale(
+            self.frequencyPlotcwToneFrame,
+            name="frequencyplotcwtonescale")
+        self.frequencyPlotcwToneScale_VAR = tk.StringVar()
+        self.frequencyPlotcwToneScale.configure(
+            from_=0,
+            length=440,
+            orient="horizontal",
+            relief="raised",
+            resolution=1,
+            showvalue=False,
+            sliderlength=50,
+            state="normal",
+            to=45,
+            variable=self.frequencyPlotcwToneScale_VAR,
+            width=30)
+        self.frequencyPlotcwToneScale.pack(side="left")
+        self.frequencyPlotcwToneScale.configure(
+            command=self.frequencyPlotcwToneScale_CB)
+        self.frequencyPlotcwToneValueLabel = ttk.Label(
+            self.frequencyPlotcwToneFrame, name="frequencyplotcwtonevaluelabel")
+        self.frequencyPlotcwToneValue_VAR = tk.StringVar(value='800')
+        self.frequencyPlotcwToneValueLabel.configure(
+            style="Heading2b.TLabel",
+            text='800',
+            textvariable=self.frequencyPlotcwToneValue_VAR)
+        self.frequencyPlotcwToneValueLabel.pack(padx=10, side="left")
+        self.frequencyPlotcwToneFrame.pack(
+            expand=True, fill="both", padx=10, pady="0 10", side="top")
         self.frequencySpectrumFrame.pack(expand=True, fill="x", side="top")
-        self.test_button = ttk.Button(
-            self.frequencySpectrumLabelframe,
-            name="test_button")
-        self.test_button.configure(text='button1')
-        self.test_button.pack(side="top")
-        self.test_button.configure(command=self.testButton_cb)
         self.frequencySpectrumLabelframe.pack(
             expand=True, fill="x", padx=5, side="top")
         self.cwDecodeLabelframe = ttk.Labelframe(
-            frame1, name="cwdecodelabelframe")
+            self.cwDecoder_Labelframe, name="cwdecodelabelframe")
         self.cwDecodeLabelframe.configure(
             height=150,
             style="Heading3.TLabelframe",
@@ -94,48 +210,57 @@ class cwDecoderUI(tk.Toplevel):
         self.cwDecodedText = tk.Text(self.cwDecodeFrame, name="cwdecodedtext")
         self.cwDecodedText.configure(
             font="{Arial} 18 {}",
+            foreground="lightgray",
             height=3,
             spacing1=2,
             spacing2=5,
             spacing3=2,
-            state="disabled",
+            state="normal",
             width=50,
             wrap="char")
-        _text_ = '123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678'
-        self.cwDecodedText.configure(state="normal")
+        _text_ = '1'
         self.cwDecodedText.insert("0.0", _text_)
-        self.cwDecodedText.configure(state="disabled")
         self.cwDecodedText.pack(padx=5, pady=5, side="top")
         self.cwDecodeFrame.pack(expand=True, fill="x", side="top")
         self.cwDecodeLabelframe.pack(expand=True, fill="x", padx=5, side="top")
-        self.closingFrame = ttk.Frame(frame1, name="closingframe")
+        self.closingFrame = ttk.Frame(
+            self.cwDecoder_Labelframe,
+            name="closingframe")
         self.closingFrame.configure(style="Normal.TFrame")
-        self.decodeToggle_Button = ttk.Button(
-            self.closingFrame, name="decodetoggle_button")
-        self.decodeToggle_Button.configure(
-            style="Button2b.TButton", text='Start Decode', width=14)
-        self.decodeToggle_Button.grid(column=0, row=0)
-        self.decodeToggle_Button.configure(command=self.decodeToggle_CB)
+        self.startStopToggleButton = ttk.Button(
+            self.closingFrame, name="startstoptogglebutton")
+        self.startStopToggleButton_VAR = tk.StringVar(value='Start')
+        self.startStopToggleButton.configure(
+            style="Button2b.TButton",
+            text='Start',
+            textvariable=self.startStopToggleButton_VAR,
+            width=10)
+        self.startStopToggleButton.grid(column=0, row=0)
+        self.startStopToggleButton.configure(
+            command=self.startStopToggleButton_CB)
         self.close_Button = ttk.Button(self.closingFrame, name="close_button")
-        self.close_Button.configure(style="Button2b.TButton", text='Close')
+        self.close_Button.configure(
+            style="Button2b.TButton", text='Close', width=10)
         self.close_Button.grid(column=3, padx="10 0", row=0)
-        self.close_Button.configure(command=self.close_cwDecode_Window_CB)
+        self.close_Button.configure(command=self.close_CB)
         self.closingFrame.pack(expand=True, fill="x")
         self.closingFrame.grid_anchor("center")
-        frame1.pack(expand=True, fill="both", side="top")
         self.cwDecoder_Labelframe.pack(expand=True, fill="both", side="top")
         self.configure(height=200, width=800)
         self.geometry("600x430")
         self.title("CW Decode")
         # Layout for 'cwDecoder_Window' skipped in custom widget template.
 
-    def testButton_cb(self):
+    def frequencyDecodeScale_CB(self, scale_value):
         pass
 
-    def decodeToggle_CB(self):
+    def frequencyPlotcwToneScale_CB(self, scale_value):
         pass
 
-    def close_cwDecode_Window_CB(self):
+    def startStopToggleButton_CB(self):
+        pass
+
+    def close_CB(self):
         pass
 
 
