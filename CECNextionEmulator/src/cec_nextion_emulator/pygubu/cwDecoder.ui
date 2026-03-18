@@ -82,6 +82,18 @@
                           <property name="pady">5</property>
                           <property name="side">left</property>
                         </layout>
+                        <child>
+                          <object class="tk.Canvas" id="frequencyPlotCanvas" named="True">
+                            <property name="background">#0432ff</property>
+                            <property name="height">140</property>
+                            <property name="width">430</property>
+                            <layout manager="pack">
+                              <property name="expand">true</property>
+                              <property name="fill">both</property>
+                              <property name="side">left</property>
+                            </layout>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -225,7 +237,7 @@
                       <object class="tk.Scale" id="frequencyPlotcwToneScale" named="True">
                         <property name="command" type="command" cbtype="scale">frequencyPlotcwToneScale_CB</property>
                         <property name="from_">0</property>
-                        <property name="length">440</property>
+                        <property name="length">435</property>
                         <property name="orient">horizontal</property>
                         <property name="relief">raised</property>
                         <property name="resolution">1</property>
@@ -236,6 +248,7 @@
                         <property name="variable">string:frequencyPlotcwToneScale_VAR</property>
                         <property name="width">30</property>
                         <layout manager="pack">
+                          <property name="padx">5 0</property>
                           <property name="side">left</property>
                         </layout>
                       </object>

@@ -5,6 +5,7 @@ from configuration import configuration
 import globalvars as gv
 from tkinter import messagebox
 import EEPROM as EEPROM
+import random
 
 # from comportManager import *
 
@@ -214,6 +215,21 @@ class piRadio:
 #   These routines are called to tell the MCU that an action has happened in the UX.
 #   Typically these should be used by the UX Callbacks
 ########################################################################################
+    #
+    #   This command sends a request via loopback to retrieve any stored settings for
+    #   DSP
+    #
+    def Req_DSP_EEPROM_Settings(self):
+
+        nMyAddr = random.randint(5,255).to_bytes(1, 'litle')
+        command = [self.toRadioCommandDict["TS_CMD_LOOPBACK0"],
+                   nMyAddr,             # Random number, probably no reason at moment
+                   2,                   # Command 2 is to retrieve all teh EEPROM
+                   0x6a,                # Indicates that this is for DSP
+                   (self.toRadioCommandDict["TS_CMD_LOOPBACK0"]+nMyAddr+2+0x6a)%256 #Checksum
+                   ]
+
+        self.sendCommandToMCU(bytes(command))
     
     def Req_Channel_Freqs(self):
 

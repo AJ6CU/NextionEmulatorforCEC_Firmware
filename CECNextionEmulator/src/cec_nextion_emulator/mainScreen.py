@@ -38,6 +38,8 @@ class mainScreen(baseui.mainScreenUI):
         self.settingsWindow = None      # Object pointer for the General Settings Window
         self.channelsWindow = None      # object pointer for the Memory-> VFO Window
         self.theDSPWindow = None        # object pointer to the DSP Window
+
+        self.UseDSP = False             # Flag, True indicating we are using a DSP
         # self.vfoToMemWindow = None      # object pointer for the VFO->Memory Window
 
         self.classic_uBITX_ControlWindow = None

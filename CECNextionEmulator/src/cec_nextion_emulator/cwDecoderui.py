@@ -74,6 +74,11 @@ class cwDecoderUI(tk.Toplevel):
         self.frequencyPlotFrame = ttk.Frame(frame2, name="frequencyplotframe")
         self.frequencyPlotFrame.configure(
             height=140, style="Normal.TFrame", width=430)
+        self.frequencyPlotCanvas = tk.Canvas(
+            self.frequencyPlotFrame, name="frequencyplotcanvas")
+        self.frequencyPlotCanvas.configure(
+            background="#0432ff", height=140, width=430)
+        self.frequencyPlotCanvas.pack(expand=True, fill="both", side="left")
         self.frequencyPlotFrame.pack(padx=5, pady=5, side="left")
         self.frequencyPlotParameterFrame = ttk.Frame(
             frame2, name="frequencyplotparameterframe")
@@ -170,7 +175,7 @@ class cwDecoderUI(tk.Toplevel):
         self.frequencyPlotcwToneScale_VAR = tk.StringVar()
         self.frequencyPlotcwToneScale.configure(
             from_=0,
-            length=440,
+            length=435,
             orient="horizontal",
             relief="raised",
             resolution=1,
@@ -180,7 +185,7 @@ class cwDecoderUI(tk.Toplevel):
             to=45,
             variable=self.frequencyPlotcwToneScale_VAR,
             width=30)
-        self.frequencyPlotcwToneScale.pack(side="left")
+        self.frequencyPlotcwToneScale.pack(padx="5 0", side="left")
         self.frequencyPlotcwToneScale.configure(
             command=self.frequencyPlotcwToneScale_CB)
         self.frequencyPlotcwToneValueLabel = ttk.Label(

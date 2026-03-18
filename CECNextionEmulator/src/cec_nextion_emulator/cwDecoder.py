@@ -70,12 +70,11 @@ class cwDecoder(baseui.cwDecoderUI):
         self.frequencyDecodeScale_VAR.set("2")
         self.frequencySigValue_VAR.set("20")            # 2*10
 
-    #
-    #   This is the main processing routine. Anytime there is new data from the DSP function
-    #   This routine is called to process the data.
-    #
-    def processDataFromDSP(self):
-        pass
+        #
+        #   Request existing saved data in EEPROM
+        #
+        self.request_DSP_EEPROM_Data()
+
 
     #
     #   The following two "bind_all' functions ensures that any mouse clicks, regardless of which
@@ -151,28 +150,94 @@ class cwDecoder(baseui.cwDecoderUI):
     #   EEPROM Variable load functions
     #
     def request_DSP_EEPROM_Data(self):
-        pass
+        self.mainWindow.theRadio.RequestDSP_EEPROM_Data()
 
     def process_DSP_EEPROM_Data(self, buffer):
-        self.fftDataAvailable = True
-        self.dataSource = self.fromDSP
-        self.spectrum_buffer_data = buffer
+        byteList = int(buffer).tobytes(3,'little')
+
+        self.frequencyDecodeScale_VAR.set(byteList[0]/10)
+
+        if byteList[1] == 1:
+            self.mainWindow.UseDSP =  True
+        else:
+            self.mainWindow.UseDSP = False
+
+        if byteList[2] == 95:       # This is the code for being in spectrum mode
+            self.spectrumMorseState = "FreqScan"      # Set state flag Frequency/Spectrum mode
+
+        #
+        #   in CWDecode mode, this byte is between 100 and < 146. The offset from 100
+        #   is the offset (*50 +300) within the SSB bandwidth. So the scan is limited to be
+        #   between 300(scale=0) and (50*45 + 300 = 2550)
+        #   So a very little room to scan the band, really just fine tuning within a frequency
+        #
+        elif ((byteList[2] >= 100) and (byteList[2] < 146)):
+            self.spectrumMorseState = "CWDecode"
+            self.frequencyPlotcwToneScale_VAR.set(str(byteList[2]-100))
+            self.frequencyPlotcwToneValue_VAR.set(
+                str((int(self.frequencyPlotcwToneScale_VAR.get())*50)+300))   # 10*50 + 300
 
     #
     #   Data processors
     #
     def process_Spectrum_Data(self, buffer):
-        self.fftDataAvailable = True
-        self.dataSource = self.fromDSP
-        self.spectrum_buffer_data = buffer
+
+        # sys1 = nDecodeFreq.val / 50
+        # sys1 = sys1 + 1
+        # vSelectMin.val = sys1 - 1
+        # vSelectMax.val = sys1 + 1
+        # sys1 = sys1 * 4
+        # sys2 = 0
+
+        # the variables below size the bar graph
+        # experiment with them to fit your needs
+        # highest y = max_data_value * y_stretch
+        y_stretch = 2
+        # gap between lower canvas edge and x axis
+        y_gap = 5
+        # stretch enough to get all data items in
+        x_stretch = 6
+        x_width = 4
+        # gap between left canvas edge and y axis
+        x_gap = 5
+
+
+        byteBuffer = bytearray.fromhex(buffer)          #This gives us an array of hex bytes
+
+        for x, y in enumerate(byteBuffer):
+            ymag = y.to_bytes(1, byteorder="little")/2
+            if ymag < 0:
+                ymag = 0
+            else:
+                if (ymag > 70):
+                    ymag = 70
+
+            # calculate reactangle coordinates (integers) for each bar
+            x0 = x * x_stretch + x * x_width + x_gap
+            y0 = c_height - (ymag * y_stretch + y_gap)
+            x1 = x * x_stretch + x * x_width + x_width + x_gap
+            y1 = c_height - y_gap
+            # draw the bar
+            c.create_rectangle(x0, y0, x1, y1, fill="lightgray", outline="lightgray")
+
+
+        # for (sys0 = 0; sys0 < 62; sys0++) {
+        #     substr pm.sp.txt, sTemp0.txt, sys0 * 2, 2 // From sys0 * 2, take 2 characters and store in sTemp0.txt
+        # covx sTemp0.txt, sys2, 2, 2 // Convert sTemp0.txt to number, 2 bytes, leading zeros 2
+        # sys2 /= 2
+        # if (sys2 < 0) {
+        # sys2 = 0
+        # }
+        # if (sys2 > 70) {
+        # sys2 = 70
+        # }
+
+
+
 
     def process_CWDecoded_Data(self, buffer):
-        if self.cwDataAvailable == True:
-            self.cwDecodedBuffer.append(buffer)
-        else:
-            self.cwDataAvailable = True
-            self.dataSource = self.fromDSP
-            self.cwDecodedBuffer = buffer
+        for char in buffer:
+            self.logCW_Character(char)
 
     #
     #   Get/Setters
