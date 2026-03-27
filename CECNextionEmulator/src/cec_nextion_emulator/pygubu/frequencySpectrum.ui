@@ -1,0 +1,419 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.5" author="PygubuDesigner 0.41.4">
+  <project>
+    <settings>
+      <setting id="name">Frequency Spectrum</setting>
+      <setting id="description">Displays an area of the Frequency showing signal strength</setting>
+      <setting id="template">widget</setting>
+      <setting id="main_widget">frequencySpectrum_Window</setting>
+      <setting id="module_namespace" />
+      <setting id="module_name">frequencySpectrum</setting>
+      <setting id="main_classname">frequencySpectrum</setting>
+      <setting id="output_dir">..</setting>
+      <setting id="builder_namespace">custom_widgets</setting>
+      <setting id="output_dir2">..</setting>
+      <setting id="generate_code_onsave">False</setting>
+      <setting id="use_i18n">False</setting>
+      <setting id="all_ids_attributes">False</setting>
+      <setting id="import_tkvariables">False</setting>
+      <setting id="use_ttk_styledefinition_file">True</setting>
+      <setting id="use_window_centering_code">False</setting>
+      <setting id="ttk_style_definition_file">../mystyles.py</setting>
+    </settings>
+    <customwidgets />
+    <resources />
+  </project>
+  <object class="tk.Toplevel" id="frequencySpectrum_Window" named="True">
+    <property name="geometry">750x550</property>
+    <property name="height">200</property>
+    <property name="title" translatable="yes">Frequency Spectrum</property>
+    <property name="width">800</property>
+    <child>
+      <object class="ttk.Labelframe" id="frequencySpectrum_Labelframe" named="True">
+        <property name="height">200</property>
+        <property name="style">Heading2.TLabelframe</property>
+        <property name="text" translatable="yes">Frequency Spectrum
+</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="expand">true</property>
+          <property name="fill">both</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="ttk.Frame" id="frequencySpectrumFrame" named="True">
+            <property name="height">180</property>
+            <property name="style">Normal.TFrame</property>
+            <property name="width">200</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">10 0</property>
+              <property name="row">0</property>
+              <property name="sticky">w</property>
+            </layout>
+            <child>
+              <object class="ttk.Labelframe" id="magnitudeLabelframe" named="True">
+                <property name="height">200</property>
+                <property name="style">Heading3.TLabelframe</property>
+                <property name="text" translatable="yes">Magnitude</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="row">0</property>
+                </layout>
+                <child>
+                  <object class="tk.Canvas" id="frequencyPlotCanvas" named="True">
+                    <property name="background">#0432ff</property>
+                    <property name="height">160</property>
+                    <property name="width">480</property>
+                    <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">both</property>
+                      <property name="padx">5 0</property>
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="freqTuneFrame" named="True">
+                <property name="height">140</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="row">1</property>
+                  <property name="sticky">w</property>
+                </layout>
+                <child>
+                  <object class="tk.Scale" id="frequencyTuning_Scale" named="True">
+                    <property name="command" type="command" cbtype="scale">frequencyTuning_CB</property>
+                    <property name="from_">0</property>
+                    <property name="length">500</property>
+                    <property name="orient">horizontal</property>
+                    <property name="relief">raised</property>
+                    <property name="resolution">1</property>
+                    <property name="showvalue">false</property>
+                    <property name="state">normal</property>
+                    <property name="to">100</property>
+                    <property name="variable">string:frequencyTuning_VAR</property>
+                    <property name="width">30</property>
+                    <layout manager="pack">
+                      <property name="pady">15 0</property>
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Frame" id="frequencyRange_Frame" named="True">
+                    <property name="height">40</property>
+                    <property name="style">Normal.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">x</property>
+                      <property name="pady">0 10</property>
+                      <property name="side">top</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Label" id="startFrequency_Label" named="True">
+                        <property name="style">Heading2b.TLabel</property>
+                        <property name="text" translatable="yes">0</property>
+                        <property name="textvariable">string:startFrequency_VAR</property>
+                        <layout manager="pack">
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="endFrequency_Label" named="True">
+                        <property name="style">Heading2b.TLabel</property>
+                        <property name="text" translatable="yes">120000</property>
+                        <property name="textvariable">string:endFrequency_VAR</property>
+                        <layout manager="pack">
+                          <property name="side">right</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Labelframe" id="waterfallLabelframe" named="True">
+                <property name="height">200</property>
+                <property name="style">Heading3.TLabelframe</property>
+                <property name="text" translatable="yes">Waterfall</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="row">2</property>
+                </layout>
+                <child>
+                  <object class="tk.Canvas" id="watefall_Canvas" named="True">
+                    <property name="background">#0432ff</property>
+                    <property name="height">160</property>
+                    <property name="width">480</property>
+                    <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">both</property>
+                      <property name="padx">10 0</property>
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="controlFrame" named="True">
+            <property name="height">140</property>
+            <property name="style">Normal.TFrame</property>
+            <property name="width">200</property>
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="padx">10 0</property>
+              <property name="row">0</property>
+              <property name="rowspan">3</property>
+              <property name="sticky">ne</property>
+            </layout>
+            <child>
+              <object class="ttk.Frame" id="optionFrame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="anchor">ne</property>
+                  <property name="expand">true</property>
+                  <property name="fill">x</property>
+                  <property name="side">top</property>
+                </layout>
+                <containerlayout manager="pack">
+                  <property name="anchor">e</property>
+                </containerlayout>
+                <child>
+                  <object class="ttk.Frame" id="repeatControlFrame" named="True">
+                    <property name="height">200</property>
+                    <property name="style">Normal.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="pack">
+                      <property name="anchor">nw</property>
+                      <property name="expand">true</property>
+                      <property name="fill">x</property>
+                      <property name="pady">20 0</property>
+                      <property name="side">top</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Label" id="repeat_Label" named="True">
+                        <property name="style">Heading2b.TLabel</property>
+                        <property name="text" translatable="yes">Repeat</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                          <property name="sticky">w</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="remaining_Label" named="True">
+                        <property name="anchor">e</property>
+                        <property name="style">Heading2b.TLabel</property>
+                        <property name="text" translatable="yes">Remaining</property>
+                        <property name="width">10</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="padx">5 0</property>
+                          <property name="row">0</property>
+                          <property name="sticky">e</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="pygubu.widgets.Combobox" id="repeat_Combobox" named="True">
+                        <property name="keyvariable">string:repeat_VAR</property>
+                        <property name="style">ComboBox1.TCombobox</property>
+                        <property name="values">1x 5x 10x 15x 20x 50x Cont.</property>
+                        <property name="width">7</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="row">1</property>
+                          <property name="sticky">w</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="remainingCount_Label" named="True">
+                        <property name="anchor">e</property>
+                        <property name="style">Heading2b.TLabel</property>
+                        <property name="text" translatable="yes">10</property>
+                        <property name="textvariable">string:remainingCount_VAR</property>
+                        <property name="width">8</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="padx">5 0</property>
+                          <property name="row">1</property>
+                          <property name="sticky">e</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Frame" id="bandwidthControlFrame" named="True">
+                    <property name="height">200</property>
+                    <property name="style">Normal.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="pack">
+                      <property name="anchor">nw</property>
+                      <property name="pady">50 0</property>
+                      <property name="side">top</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Label" id="bandwidth_Label" named="True">
+                        <property name="style">Heading2b.TLabel</property>
+                        <property name="text" translatable="yes">Bandwidth (kHz)</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                          <property name="sticky">w</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="pygubu.widgets.Combobox" id="bandwidth_Combobox" named="True">
+                        <property name="keyvariable">string:bandwidth_VAR</property>
+                        <property name="style">ComboBox1.TCombobox</property>
+                        <property name="values">1x 5x 10x 15x 20x 50x Cont.</property>
+                        <property name="width">7</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="row">1</property>
+                          <property name="sticky">w</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="sampleSize_Label" named="True">
+                        <property name="anchor">e</property>
+                        <property name="justify">right</property>
+                        <property name="style">Heading2b.TLabel</property>
+                        <property name="text" translatable="yes">Sample
+Size</property>
+                        <property name="width">10</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="padx">5 0</property>
+                          <property name="row">0</property>
+                          <property name="sticky">e</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="calculatedSampleSize_Label" named="True">
+                        <property name="anchor">e</property>
+                        <property name="style">Heading2b.TLabel</property>
+                        <property name="text" translatable="yes">2000</property>
+                        <property name="textvariable">string:calculatedSampleSize_VAR</property>
+                        <property name="width">8</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="padx">5 0</property>
+                          <property name="row">1</property>
+                          <property name="sticky">e</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="controlButtonFrame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="anchor">ne</property>
+                  <property name="expand">true</property>
+                  <property name="fill">x</property>
+                  <property name="pady">130 0</property>
+                  <property name="side">top</property>
+                </layout>
+                <containerlayout manager="pack">
+                  <property name="anchor">e</property>
+                </containerlayout>
+                <child>
+                  <object class="ttk.Button" id="recenter_Button" named="True">
+                    <property name="command" type="command" cbtype="simple">recenter_CB</property>
+                    <property name="style">Button2b.TButton</property>
+                    <property name="text" translatable="yes">Recenter</property>
+                    <property name="width">10</property>
+                    <layout manager="pack">
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Button" id="startStop_Button" named="True">
+                    <property name="command" type="command" cbtype="simple">startStopSpectrum_CB</property>
+                    <property name="style">Button2b.TButton</property>
+                    <property name="text" translatable="yes">Start</property>
+                    <property name="textvariable">string:startStopSpectrum_VAR</property>
+                    <property name="width">10</property>
+                    <layout manager="pack">
+                      <property name="pady">50 0</property>
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="closingFrame" named="True">
+            <property name="style">Normal.TFrame</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="columnspan">2</property>
+              <property name="pady">20 0</property>
+              <property name="row">1</property>
+            </layout>
+            <containerlayout manager="grid">
+              <property name="anchor">center</property>
+            </containerlayout>
+            <child>
+              <object class="ttk.Button" id="applyClose_Button" named="True">
+                <property name="command" type="command" cbtype="simple">applyClose_CB</property>
+                <property name="style">Button2b.TButton</property>
+                <property name="text" translatable="yes">Close</property>
+                <property name="textvariable">string:closeApply_Button_VAR</property>
+                <property name="width">10</property>
+                <layout manager="grid">
+                  <property name="column">2</property>
+                  <property name="padx">40 0</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Button" id="cancel_Button" named="True">
+                <property name="command" type="command" cbtype="simple">cancel_CB</property>
+                <property name="style">Button2b.TButton</property>
+                <property name="text" translatable="yes">Cancel</property>
+                <property name="width">10</property>
+                <layout manager="grid">
+                  <property name="column">3</property>
+                  <property name="padx">40 0</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
