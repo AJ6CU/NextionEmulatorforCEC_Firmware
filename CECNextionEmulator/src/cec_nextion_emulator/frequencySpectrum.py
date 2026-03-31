@@ -38,7 +38,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         #
         #   Plot related values
         #
-        self.frequencyLines = {}
+
         self.frequencyPlotParameters = {
             "y_stretch":2,            # how much to stretch the Y magnitude
             "y_gap":0,                  # gap between lower canvas edge and x axis
@@ -86,7 +86,12 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
         self.lastCenterFrequency = self.centerFrequency     # save current frequency
 
-        self.MaxADCCount = 120
+        self.MaxADCCount = 120      # needs to be adjusted to handle variable ADC slots
+        self.frequencyLineObj = [None]*self.MaxADCCount*1
+        self.frequencyLineYmag = [None] * self.MaxADCCount * 1
+        self.frequencyLineX0 = [None] * self.MaxADCCount * 1
+        self.frequencyLineX1 = [None] * self.MaxADCCount * 1
+
         self.repeat_VAR.set('10x')
         self.bandwidthSelected_VAR.set('120,000Hz')
 
@@ -150,12 +155,18 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
                                                    x_width, x_stretch, self.frequencyPlotParameters )
 
             # draw the bar
-            if x in self.frequencyLines:
-                self.frequencyPlotCanvas.coords(self.frequencyLines[x][0], x0, y0, x1, y1)
-                rectObj = self.frequencyLines[x][0]
+            if self.frequencyLineObj[x] != None:           # returns true if not = []
+                self.frequencyPlotCanvas.coords(self.frequencyLineObj[x], x0, y0, x1, y1)
             else:
-                rectObj=self.frequencyPlotCanvas.create_rectangle(x0, y0, x1, y1, fill="lightgray", outline="lightgray")
-            self.frequencyLines[x] = [rectObj, x, x0, x1, y0, y1, ymag]
+                self.frequencyLineObj[x] = self.frequencyPlotCanvas.create_rectangle(x0, y0, x1, y1, fill="lightgray",
+                                                                                     outline="lightgray")
+            #
+            #   Save y magnitude for resize event
+            #   Save x0,x1 for identifying location of a mouse click on the graph
+            #
+            self.frequencyLineYmag[x] = ymag
+            self.frequencyLineX0[x] = x0
+            self.frequencyLineX1[x] = x1
 
         if self.tuningLine == None:
             self.tuningLine=self.frequencyPlotCanvas.create_line(self.frequencyPlotCanvas_width/2,
@@ -210,12 +221,12 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
         scrollBarSpan = int(self.frequencyTuning_Scale["to"] - self.frequencyTuning_Scale["from"])
 
-        if event.x < self.frequencyLines[0][2]:  #  Check for click to far left outside graph
+        if event.x < self.frequencyLineX0[0]:  #  Check for click to far left outside graph
             pos = int(self.frequencyTuning_Scale["from"])
         else:
             pos = int(self.frequencyTuning_Scale["to"])  #  if we cant find it, must be far right click outside graph
             for i in range(self.MaxADCCount):
-                if (event.x >= self.frequencyLines[i][2]<= event.x) and (self.frequencyLines[i][3]>= event.x):
+                if (event.x >= self.frequencyLineX0[i] <= event.x) and (self.frequencyLineX1[i] >= event.x):
                     pos = int(scrollBarSpan * i/self.MaxADCCount) + int(self.frequencyTuning_Scale["from"])
                     break
         self.frequencyTuning_VAR.set(str(pos))
@@ -232,7 +243,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
 
     def refreshCanvas(self):
-        if 0 not in self.frequencyLines:
+        if self.frequencyLineObj[0] == None:
             return
 
         self.frequencyPlotCanvas_height = self.frequencyPlotCanvas.winfo_height()
@@ -242,18 +253,19 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
         for x in range(self.MaxADCCount):
 
-            ymag = self.frequencyLines[x][6]
+            ymag = self.frequencyLineYmag[x]
 
             x0, y0, x1, y1 = gv.calculatePlotBar(self.frequencyPlotCanvas_height, x, ymag,
                                                    x_width, x_stretch, self.frequencyPlotParameters)
 
             # draw the bar
-            if x in self.frequencyLines:
-                self.frequencyPlotCanvas.coords(self.frequencyLines[x][0], x0, y0, x1, y1)
-                rectObj = self.frequencyLines[x][0]
+            if x in self.frequencyLineObj:
+                self.frequencyPlotCanvas.coords(self.frequencyLineObj[x], x0, y0, x1, y1)
             else:
-                rectObj = self.frequencyPlotCanvas.create_rectangle(x0, y0, x1, y1, fill="lightgray", outline="lightgray")
-            self.frequencyLines[x] = [rectObj, x, x0, x1, y0, y1, ymag]
+                self.frequencyLineObj[x] = self.frequencyPlotCanvas.create_rectangle(x0, y0, x1, y1, fill="lightgray", outline="lightgray")
+            self.frequencyLineYmag[x] = ymag
+            self.frequencyLineX0[x] = x0
+            self.frequencyLineX1[x] = x1
 
         if self.tuningLine == None:
             self.tuningLine = self.frequencyPlotCanvas.create_line(canvasWidth / 2, canvasHeight, canvasWidth / 2, 0,
