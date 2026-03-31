@@ -67,8 +67,6 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         self.transient(self.master)
 
         gv.trimAndLocateWindow(self.master, 0, 0)
-        print("canvas size after init=", self.frequencyPlotCanvas.winfo_height(),
-              self.frequencyPlotCanvas.winfo_width())
 
         gv.formatCombobox(self.repeat_Combobox, "Arial", "24", "bold")
         gv.formatCombobox(self.bandwidth_Combobox, "Arial", "24", "bold")
@@ -98,9 +96,14 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
         self.frequencyTuning_VAR.set(250)                               # Set scrollbar in middle
         self.currentFrequency_VAR.set(str(self.lastCenterFrequency))    # Set frequency
-        print(self.frequencyPlotCanvas.winfo_height(), self.frequencyPlotCanvas.winfo_width())
+
+        self.frequencyPlotCanvas_height = self.frequencyPlotCanvas.winfo_height()
+        self.frequencyPlotCanvas_width = self.frequencyPlotCanvas.winfo_width()
 
     def updateScanParameters(self, newBandwidth):
+        #
+        #   Need to destroy canvas? and reset
+        #
         self.bandwidth = int(newBandwidth.replace(",","").replace(".","").replace("Hz",""))
 
         self.startFrequency=int(self.centerFrequency - self.bandwidth/2)
@@ -118,34 +121,33 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
             buffer.append(random.randint(0, 255))
         return bytearray(buffer).hex()
 
-    def calculatePlotParameters(self, canvasObj):
-        canvasWidth = canvasObj.winfo_width()
-        canvasHeight = canvasObj.winfo_height()
-        x_width = canvasWidth // 120
-        remainingWidth = canvasWidth - (x_width * 120) - 8
-        x_stretch = remainingWidth / 120
-
-        return canvasWidth, canvasHeight, remainingWidth, x_width, x_stretch
-
-    def calculatePlotBar (self, x, x_width, x_stretch, x_gap,   ymag, y_stretch, y_gap, canvasHeight):
-
-        x0 = x * x_stretch + x * x_width + x_gap
-        y0 = canvasHeight - (ymag * y_stretch + y_gap)
-        x1 = x * x_stretch + x * x_width + x_width + x_gap
-        y1 = canvasHeight - y_gap
-
-        return x0, y0, x1, y1
+    # def calculatePlotParameters(self, canvasWidth):
+    #     x_width = canvasWidth // self.MaxADCCount
+    #
+    #     # what is this fixed constant of "8"???
+    #     remainingWidth = canvasWidth - (x_width * self.MaxADCCount) - 8
+    #
+    #     x_stretch = remainingWidth / self.MaxADCCount
+    #
+    #     return x_width, x_stretch
+    #
+    # def calculatePlotBar(self, canvasHeight, x, ymag, x_width, x_stretch, fixedParams):
+    #     x0 = (x * x_stretch) + (x * x_width) + fixedParams['x_gap']
+    #     y0 = canvasHeight - (ymag * fixedParams['y_stretch'] + fixedParams['y_gap'])
+    #     x1 = (x * x_stretch) + (x * x_width) + x_width + fixedParams['x_gap']
+    #     y1 = canvasHeight - fixedParams['y_gap']
+    #
+    #     return x0, y0, x1, y1
 
     def plot(self, buffer):
 
-        canvasWidth, canvasHeight, remainingWidth, x_width, x_stretch =self.calculatePlotParameters(self.frequencyPlotCanvas)
+        x_width, x_stretch = gv.calculatePlotParameters(self.frequencyPlotCanvas_width, self.MaxADCCount)
 
-        for x in range(120):
+        for x in range(self.MaxADCCount):
             ymag = int(buffer[x*2:x*2+2],16)%70
 
-            x0, y0, x1, y1 = self.calculatePlotBar(x, x_width, x_stretch, self.frequencyPlotParameters["x_gap"],
-                                                   ymag, self.frequencyPlotParameters["y_stretch"],
-                                                   self.frequencyPlotParameters["y_gap"], canvasHeight)
+            x0, y0, x1, y1 = gv.calculatePlotBar(self.frequencyPlotCanvas_height, x,  ymag,
+                                                   x_width, x_stretch, self.frequencyPlotParameters )
 
             # draw the bar
             if x in self.frequencyLines:
@@ -156,26 +158,25 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
             self.frequencyLines[x] = [rectObj, x, x0, x1, y0, y1, ymag]
 
         if self.tuningLine == None:
-            self.tuningLine=self.frequencyPlotCanvas.create_line(canvasWidth/2, canvasHeight, canvasWidth/2, 0,
+            self.tuningLine=self.frequencyPlotCanvas.create_line(self.frequencyPlotCanvas_width/2,
+                                                                 self.frequencyPlotCanvas_height,
+                                                                 self.frequencyPlotCanvas_width/2, 0,
                                                                  fill="yellow", width=4,dash=(5, 3))
         else:
-            self.frequencyPlotCanvas.coords(self.tuningLine, canvasWidth/2, canvasHeight, canvasWidth/2, 0)
+            self.frequencyPlotCanvas.coords(self.tuningLine, self.frequencyPlotCanvas_width/2,
+                                            self.frequencyPlotCanvas_height, self.frequencyPlotCanvas_width/2, 0)
 
     def updateTuningLine(self,tuningLine,newPos):
         scrollBarSpan = int(self.frequencyTuning_Scale["to"] - self.frequencyTuning_Scale["from"])
-        pos = int((self.frequencyPlotCanvas.winfo_width()-4) * (newPos/scrollBarSpan))
-        if pos >= scrollBarSpan:
-            pos = scrollBarSpan -4
+        pos = int((self.frequencyPlotCanvas_width-4) * (newPos/scrollBarSpan))
+        if pos >= self.frequencyPlotCanvas_width:
+            pos = self.frequencyPlotCanvas_width -4
         elif pos <= 0:
             pos=4
-        print("pos:",pos)
-        self.frequencyPlotCanvas.coords(tuningLine, pos, self.frequencyPlotCanvas.winfo_height(), pos, 0)
+        self.frequencyPlotCanvas.coords(tuningLine, pos,self.frequencyPlotCanvas_height, pos, 0)
 
     def updateCurrentFrequency(self):
-        print("updateCurrentFrequency", self.frequencyTuning_VAR.get())
         scrollBarSpan = int(self.frequencyTuning_Scale["to"] - self.frequencyTuning_Scale["from"])
-        print("scrollBarSpan", scrollBarSpan)
-        print("frequencyTuning_VAR", self.frequencyTuning_VAR.get())
         self.currentFrequency = int((self.bandwidth * (int(self.frequencyTuning_VAR.get())/scrollBarSpan))+self.startFrequency)
         self.currentFrequency_VAR.set(str(self.currentFrequency))
 
@@ -202,14 +203,10 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         else:
             self.startStopSpectrum_VAR.set("Start")
             self.spectrumScanning = True
-        print("startStopSpectrum_CB")
 
-        print(self.frequencyPlotCanvas.winfo_height(), self.frequencyPlotCanvas.winfo_width())
         self.plotTestData()
-        print(self.frequencyPlotCanvas.winfo_height(), self.frequencyPlotCanvas.winfo_width())
 
     def frequencyPlotCanvas_CB(self, event=None):
-        print("frequencyPlotCanvas_CB, x=", event.x, ", y=", event.y)
 
         scrollBarSpan = int(self.frequencyTuning_Scale["to"] - self.frequencyTuning_Scale["from"])
 
@@ -217,19 +214,16 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
             pos = int(self.frequencyTuning_Scale["from"])
         else:
             pos = int(self.frequencyTuning_Scale["to"])  #  if we cant find it, must be far right click outside graph
-            for i in range(120):
-                # print(i, self.frequencyLines[i][2],self.frequencyLines[i][3])
+            for i in range(self.MaxADCCount):
                 if (event.x >= self.frequencyLines[i][2]<= event.x) and (self.frequencyLines[i][3]>= event.x):
-                    # print("found", i, "x=", event.x, self.frequencyLines[i][2], self.frequencyLines[i][3])
-                    pos = int(scrollBarSpan * i/120) + int(self.frequencyTuning_Scale["from"])
+                    pos = int(scrollBarSpan * i/self.MaxADCCount) + int(self.frequencyTuning_Scale["from"])
                     break
-        self.updateTuningLine(self.tuningLine, pos)
         self.frequencyTuning_VAR.set(str(pos))
+        self.updateTuningLine(self.tuningLine, pos)
         self.updateCurrentFrequency()
 
     def resizeCanvas_CB(self, event=None):
         if self.windowResized:
-            print("duplicate event")
             self.master.after_cancel(self.windowResizedObj)
         else:
             self.windowResized = True
@@ -241,25 +235,17 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         if 0 not in self.frequencyLines:
             return
 
-        canvasWidth, canvasHeight, remainingWidth, x_width, x_stretch = self.calculatePlotParameters(
-            self.frequencyPlotCanvas)
+        self.frequencyPlotCanvas_height = self.frequencyPlotCanvas.winfo_height()
+        self.frequencyPlotCanvas_width = self.frequencyPlotCanvas.winfo_width()
 
-        print(self.frequencyLines[0])
+        x_width, x_stretch = gv.calculatePlotParameters(self.frequencyPlotCanvas_width, self.MaxADCCount)
 
-        for x in range(120):
-            print("xdict=",x,self.frequencyLines[x])
-            print("x=",x,self.frequencyLines[x],"x_width=",x_width,",x_stretch=",x_stretch,
-                  "self.frequencyLines[x][6]=",self.frequencyLines[x][6],
-                  "self.frequencyPlotParameters['y_stretch']=",self.frequencyPlotParameters['y_stretch'],
-                  "self.frequencyPlotParameters['y_gap']=",self.frequencyPlotParameters['y_gap'],
-                  "canvasHeight=",canvasHeight)
+        for x in range(self.MaxADCCount):
+
             ymag = self.frequencyLines[x][6]
-            x0, y0, x1, y1 = self.calculatePlotBar(x, x_width, x_stretch, self.frequencyPlotParameters["x_gap"],
-                                                   ymag,
-                                                   self.frequencyPlotParameters["y_stretch"],
-                                                   self.frequencyPlotParameters["y_gap"], canvasHeight)
-            print("x=", x, x0, y0, x1, y1)
-            print("ymag=",self.frequencyLines[x][4] )
+
+            x0, y0, x1, y1 = gv.calculatePlotBar(self.frequencyPlotCanvas_height, x, ymag,
+                                                   x_width, x_stretch, self.frequencyPlotParameters)
 
             # draw the bar
             if x in self.frequencyLines:
@@ -277,7 +263,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
 
     def plotTestData(self):
-        buffer = self.genPlotData(120)
+        buffer = self.genPlotData(self.MaxADCCount)
         self.plot(buffer)
 
     def applyClose_CB(self):

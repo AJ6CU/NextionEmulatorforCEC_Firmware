@@ -136,4 +136,24 @@ def trimAndLocateWindow(window,x_offset,y_offset):
     height = window.winfo_height()
 
     return (f'{width}x{height}+{x_offset}+{y_offset}')
+#
+#   Shared plotting routines
+#
+def calculatePlotParameters(canvasWidth, numSamples):
+    x_width = canvasWidth // numSamples
+
+    # what is this fixed constant of "8"???
+    remainingWidth = canvasWidth - (x_width * numSamples) - 8
+
+    x_stretch = remainingWidth / numSamples
+
+    return x_width, x_stretch
+
+def calculatePlotBar(canvasHeight, x, ymag, x_width, x_stretch, fixedParams):
+    x0 = round((x * x_stretch) + (x * x_width) + fixedParams['x_gap'])
+    y0 = round(canvasHeight - (ymag * fixedParams['y_stretch'] + fixedParams['y_gap']))
+    x1 = round((x * x_stretch) + (x * x_width) + x_width + fixedParams['x_gap'])
+    y1 = round(canvasHeight - fixedParams['y_gap'])
+
+    return x0, y0, x1, y1
 
