@@ -139,21 +139,32 @@ def trimAndLocateWindow(window,x_offset,y_offset):
 #
 #   Shared plotting routines
 #
-def calculatePlotParameters(canvasWidth, numSamples):
-    x_width = canvasWidth // numSamples
+def calculatePlotParameters(canvasWidth, numBars,x_gap, canvasHeight, maxY, y_gap):
+    # canvasWidth = current width of canvas where all the bars must fit
+    # numBars = total number of bars that need to fit into the canvas
+    # x_gap = space on right/left sides between canvas edge and first (last) bar
+
+    x_width = canvasWidth // numBars
 
     # what is this fixed constant of "8"???
-    remainingWidth = canvasWidth - (x_width * numSamples) - 8
+    remainingWidth = canvasWidth - (x_width * numBars) - (2*x_gap)
 
-    x_stretch = remainingWidth / numSamples
+    x_stretch = remainingWidth / numBars
+    y_stretch = (canvasHeight - y_gap)/maxY
 
-    return x_width, x_stretch
+    return x_width, x_stretch, y_stretch
 
-def calculatePlotBar(canvasHeight, x, ymag, x_width, x_stretch, fixedParams):
-    x0 = round((x * x_stretch) + (x * x_width) + fixedParams['x_gap'])
-    y0 = round(canvasHeight - (ymag * fixedParams['y_stretch'] + fixedParams['y_gap']))
-    x1 = round((x * x_stretch) + (x * x_width) + x_width + fixedParams['x_gap'])
-    y1 = round(canvasHeight - fixedParams['y_gap'])
+def calculatePlotBar(canvasHeight, x, ymag, x_width, x_stretch, x_gap, y_stretch, y_gap):
+    # canvasHeight = the height of the canvas in pixels
+    # x = number of the bar being plotted
+    # ymag = actual magnitude of the bar
+    # x_width = width of the bar
+    # x_stretch = multiply factor to make total bars just fit on the canvas
+    # fixedParms = parameters that are "fixed" regardless of number of bars plotted
+    x0 = round((x * x_stretch) + (x * x_width) + x_gap)
+    y0 = round(canvasHeight - ((ymag * y_stretch) + y_gap))
+    x1 = round((x * x_stretch) + (x * x_width) + x_width + x_gap)
+    y1 = round(canvasHeight - y_gap)
 
     return x0, y0, x1, y1
 

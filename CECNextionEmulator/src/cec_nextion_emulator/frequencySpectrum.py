@@ -24,7 +24,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
     def __init__(self,  master=None, mainWindow=None, centerFrequency=None, **kw):
         self.master = master
         self.mainWindow = mainWindow
-        self.centerFrequency = centerFrequency
+        self.centerFrequency = centerFrequency          # the current (VFO) frequency is passed and saved
 
         self.startFrequency = None                      # starting frequency for scanning
         self.stopFrequency = None                       # stopping frequency for scanning
@@ -32,22 +32,39 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         self.stepSize = None                            # size of steps (frequency samples)
         self.lastCenterFrequency = None                 # tracks the last center frequency in case it has been changed
                                                         # between scans
-        self.MaxADCCount = None                         # Maximum number of times that the ADC can be read.
-                                                        # Machine dependent. About
-        self.spectrumScanning = None                    # If true, spectrum scanning is running
+        self.tuningLine = None                          # used to save the tuning line object
+
         #
-        #   Plot related values
+        #   DEFAULTS
         #
 
-        self.frequencyPlotParameters = {
-            "y_stretch":2,            # how much to stretch the Y magnitude
-            "y_gap":0,                  # gap between lower canvas edge and x axis
-            "x_gap":4,                  # gap between left canvas edge and y axis
-        }
-        self.tuningLine = None
+        self.lastCenterFrequency = self.centerFrequency     # save current frequency, need this to check if current
+                                                            # frequency has been changed
 
-        self.windowResized = False
-        self.windowResizedObj = None
+        self.MaxADCCount = 120  # Maximum number of times that the ADC can be read.
+                                # Machine dependent. About
+
+        self.FREQ_X_GAP = 4  # gap between left canvas edge and y axis
+        self.FREQ_Y_GAP = 0  # gap between lower canvas edge and x axis
+        self.FREQ_Y_MAX = 255  # maximum value of Y values
+
+        self.frequencyLineObj = [None] * self.MaxADCCount * 1
+        self.frequencyLineYmag = [None] * self.MaxADCCount * 1
+        self.frequencyLineX0 = [None] * self.MaxADCCount * 1
+        self.frequencyLineX1 = [None] * self.MaxADCCount * 1
+
+
+
+        self.spectrumScanning = False               # default to scanning off
+
+        self.windowResized = False                  # these two variables are used to handle resizing of screen
+        self.windowResizedObj = None                # while window is active. When the resized is detected,
+                                                    # the windowResized flag is set to true and a future
+                                                    # event is created to eventually update the window after 100ms
+                                                    # Each time the reseize event is called, the current future event
+                                                    # is deleted and a new one is scheduled. Only after 100 ms of no
+                                                    # new resize, is the scheduled event finally executed, the graph is
+                                                    # updated and the flag is set back to False.
 
         super().__init__(self.master, **kw)
 
@@ -57,7 +74,8 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         #
         self.protocol("WM_DELETE_WINDOW", self.cancel_CB)
 
-        self.initUX()
+        self.initUX()           # This deals with any initiation that needs to be done after the Object is fully
+                                # instantiated.
 
     def initUX(self):
         # self.title("Frequency Spectrum")
@@ -80,23 +98,9 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
                 localizedBandwidth.append(item.replace(',', gv.NUMBER_DELIMITER))
             self.bandwidth_Combobox['values']=localizedBandwidth
 
-        #
-        #   DEFAULTS
-        #
-
-        self.lastCenterFrequency = self.centerFrequency     # save current frequency
-
-        self.MaxADCCount = 120      # needs to be adjusted to handle variable ADC slots
-        self.frequencyLineObj = [None]*self.MaxADCCount*1
-        self.frequencyLineYmag = [None] * self.MaxADCCount * 1
-        self.frequencyLineX0 = [None] * self.MaxADCCount * 1
-        self.frequencyLineX1 = [None] * self.MaxADCCount * 1
 
         self.repeat_VAR.set('10x')
         self.bandwidthSelected_VAR.set('120,000Hz')
-
-        self.spectrumScanning = False           # default to scanning off
-
         self.updateScanParameters(self.bandwidthSelected_VAR.get())     # Can now format Frequency graphs
 
         self.frequencyTuning_VAR.set(250)                               # Set scrollbar in middle
@@ -107,7 +111,8 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
     def updateScanParameters(self, newBandwidth):
         #
-        #   Need to destroy canvas? and reset
+        #   When the bandwidth is changed, this routine is called to re-establish the scanning
+        #   TODO check if scan running, stop it, reset stuff, and then rerun
         #
         self.bandwidth = int(newBandwidth.replace(",","").replace(".","").replace("Hz",""))
 
@@ -120,44 +125,37 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         self.calculatedSampleSize_VAR.set(int((self.bandwidth / self.MaxADCCount) * 2))
 
     def genPlotData(self, count):
+        #
+        #   Test routine to just generate random data to plot
+        #
+
         buffer = []
 
         for i in range(count):
             buffer.append(random.randint(0, 255))
         return bytearray(buffer).hex()
 
-    # def calculatePlotParameters(self, canvasWidth):
-    #     x_width = canvasWidth // self.MaxADCCount
-    #
-    #     # what is this fixed constant of "8"???
-    #     remainingWidth = canvasWidth - (x_width * self.MaxADCCount) - 8
-    #
-    #     x_stretch = remainingWidth / self.MaxADCCount
-    #
-    #     return x_width, x_stretch
-    #
-    # def calculatePlotBar(self, canvasHeight, x, ymag, x_width, x_stretch, fixedParams):
-    #     x0 = (x * x_stretch) + (x * x_width) + fixedParams['x_gap']
-    #     y0 = canvasHeight - (ymag * fixedParams['y_stretch'] + fixedParams['y_gap'])
-    #     x1 = (x * x_stretch) + (x * x_width) + x_width + fixedParams['x_gap']
-    #     y1 = canvasHeight - fixedParams['y_gap']
-    #
-    #     return x0, y0, x1, y1
-
     def plot(self, buffer):
+        #
+        # This plots the frequency ADC values. Uses generic routines to figure out sizes of canvas and bar sizes
+        #
 
-        x_width, x_stretch = gv.calculatePlotParameters(self.frequencyPlotCanvas_width, self.MaxADCCount)
+        x_width, x_stretch, y_stretch = gv.calculatePlotParameters(self.frequencyPlotCanvas_width, self.MaxADCCount,
+                                                                      self.FREQ_X_GAP,
+                                                                      self.frequencyPlotCanvas_height,
+                                                                      self.FREQ_Y_MAX,
+                                                                      self.FREQ_Y_GAP)
 
         for x in range(self.MaxADCCount):
             ymag = int(buffer[x*2:x*2+2],16)%70
 
-            x0, y0, x1, y1 = gv.calculatePlotBar(self.frequencyPlotCanvas_height, x,  ymag,
-                                                   x_width, x_stretch, self.frequencyPlotParameters )
+            x0, y0, x1, y1 = gv.calculatePlotBar(self.frequencyPlotCanvas_height, x,  ymag, x_width, x_stretch,
+                                                 self.FREQ_X_GAP, y_stretch, self.FREQ_Y_GAP)
 
             # draw the bar
-            if self.frequencyLineObj[x] != None:           # returns true if not = []
+            if self.frequencyLineObj[x] != None:            # if bar exists, then adjust coordinates for new values
                 self.frequencyPlotCanvas.coords(self.frequencyLineObj[x], x0, y0, x1, y1)
-            else:
+            else:                                           # If this is the first time, then create the bar
                 self.frequencyLineObj[x] = self.frequencyPlotCanvas.create_rectangle(x0, y0, x1, y1, fill="lightgray",
                                                                                      outline="lightgray")
             #
@@ -167,7 +165,11 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
             self.frequencyLineYmag[x] = ymag
             self.frequencyLineX0[x] = x0
             self.frequencyLineX1[x] = x1
-
+        #
+        #   Need to set the tuning line. If it is the first time, create it and save a pointer to the object
+        #   If it is a second time, then can just use the existing line
+        #   TODO Is this if needed? I think this is always None here???
+        #
         if self.tuningLine == None:
             self.tuningLine=self.frequencyPlotCanvas.create_line(self.frequencyPlotCanvas_width/2,
                                                                  self.frequencyPlotCanvas_height,
@@ -178,6 +180,9 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
                                             self.frequencyPlotCanvas_height, self.frequencyPlotCanvas_width/2, 0)
 
     def updateTuningLine(self,tuningLine,newPos):
+        #
+        #   Used to update Tuning line when a change is detected by either the move of the scroll bar or click on graph
+        #
         scrollBarSpan = int(self.frequencyTuning_Scale["to"] - self.frequencyTuning_Scale["from"])
         pos = int((self.frequencyPlotCanvas_width-4) * (newPos/scrollBarSpan))
         if pos >= self.frequencyPlotCanvas_width:
@@ -233,6 +238,13 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         self.updateTuningLine(self.tuningLine, pos)
         self.updateCurrentFrequency()
 
+    #
+    #   resizeCanvas_CB and refreshCanvas work together to deal with any resizing of the canvas.
+    #   When a resize is detected, resizeCanvas_CB is called and it schedules a future execution of
+    #   refreshCanvas.  But resizing generates a lot of callbacks... So if the resize process is underway
+    #   each new event cancels the prior "after refreshCanvas" and creates a new one 100ms in the future
+    #   Eventually the events end, and the last refreshCanvas future event runs and replots the data
+    #
     def resizeCanvas_CB(self, event=None):
         if self.windowResized:
             self.master.after_cancel(self.windowResizedObj)
@@ -243,20 +255,27 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
 
     def refreshCanvas(self):
-        if self.frequencyLineObj[0] == None:
-            return
-
+        #
+        #   Update canvas size
+        #
         self.frequencyPlotCanvas_height = self.frequencyPlotCanvas.winfo_height()
         self.frequencyPlotCanvas_width = self.frequencyPlotCanvas.winfo_width()
 
-        x_width, x_stretch = gv.calculatePlotParameters(self.frequencyPlotCanvas_width, self.MaxADCCount)
+        if self.frequencyLineObj[0] == None:        # if nothing plotted, just return
+            return
 
+
+        x_width, x_stretch, y_stretch = gv.calculatePlotParameters(self.frequencyPlotCanvas_width, self.MaxADCCount,
+                                                                  self.FREQ_X_GAP,
+                                                                  self.frequencyPlotCanvas_height,
+                                                                  self.FREQ_Y_MAX,
+                                                                  self.FREQ_Y_GAP)
         for x in range(self.MaxADCCount):
 
             ymag = self.frequencyLineYmag[x]
 
-            x0, y0, x1, y1 = gv.calculatePlotBar(self.frequencyPlotCanvas_height, x, ymag,
-                                                   x_width, x_stretch, self.frequencyPlotParameters)
+            x0, y0, x1, y1 = gv.calculatePlotBar(self.frequencyPlotCanvas_height, x,  ymag, x_width, x_stretch,
+                                                 self.FREQ_X_GAP, y_stretch, self.FREQ_Y_GAP)
 
             # draw the bar
             if x in self.frequencyLineObj:
@@ -267,8 +286,13 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
             self.frequencyLineX0[x] = x0
             self.frequencyLineX1[x] = x1
 
+        #
+        #
+        #
         if self.tuningLine == None:
-            self.tuningLine = self.frequencyPlotCanvas.create_line(canvasWidth / 2, canvasHeight, canvasWidth / 2, 0,
+            self.tuningLine = self.frequencyPlotCanvas.create_line(self.frequencyPlotCanvas_width / 2,
+                                                                   self.frequencyPlotCanvas_height,
+                                                                   self.frequencyPlotCanvas_width / 2, 0,
                                                                    fill="yellow", width=4, dash=(5, 3))
         else:
             self.updateTuningLine(self.tuningLine, int(self.frequencyTuning_VAR.get()))
