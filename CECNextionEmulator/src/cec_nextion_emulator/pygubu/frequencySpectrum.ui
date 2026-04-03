@@ -73,17 +73,93 @@
                   <property name="row">0</property>
                   <property name="sticky">ew</property>
                 </layout>
+                <containerlayout manager="grid">
+                  <property type="col" id="0" name="weight">1</property>
+                </containerlayout>
+                <child>
+                  <object class="ttk.Frame" id="frame1">
+                    <property name="height">200</property>
+                    <property name="style">Normal.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="row">0</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                    <child>
+                      <object class="pygubu.widgets.Combobox" id="maxSignal_Combobox" named="True">
+                        <property name="justify">right</property>
+                        <property name="keyvariable">string:maxSignal_VAR</property>
+                        <property name="style">ComboBox1.TCombobox</property>
+                        <property name="values">255 225 200 175 150</property>
+                        <property name="width">4</property>
+                        <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="maxSignal_CB" add="" />
+                        <layout manager="pack">
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="label1">
+                        <property name="style">Heading2b.TLabel</property>
+                        <property name="text" translatable="yes">Max Signal</property>
+                        <layout manager="pack">
+                          <property name="padx">10 0</property>
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
                 <child>
                   <object class="tk.Canvas" id="frequencyPlotCanvas" named="True">
                     <property name="background">#0432ff</property>
                     <property name="height">160</property>
                     <property name="width">430</property>
-                    <bind sequence="&lt;1&gt;" handler="frequencyPlotCanvas_CB" add="" />
-                    <layout manager="pack">
-                      <property name="expand">true</property>
-                      <property name="fill">both</property>
-                      <property name="side">top</property>
+                    <bind sequence="&lt;1&gt;" handler="frequencyPlotCanvas_CB" add="True" />
+                    <bind sequence="&lt;Configure&gt;" handler="resizeCanvas_CB" add="True" />
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="columnspan">3</property>
+                      <property name="row">1</property>
+                      <property name="sticky">ew</property>
                     </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Frame" id="frame2">
+                    <property name="height">200</property>
+                    <property name="style">Normal.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="row">2</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                    <child>
+                      <object class="pygubu.widgets.Combobox" id="minSignal_Combobox" named="True">
+                        <property name="justify">right</property>
+                        <property name="style">ComboBox1.TCombobox</property>
+                        <property name="textvariable">string:minSignal_VAR</property>
+                        <property name="values">125 100 75 50 25 0</property>
+                        <property name="width">4</property>
+                        <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="minSignal_CB" add="" />
+                        <layout manager="pack">
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="label3">
+                        <property name="style">Heading2b.TLabel</property>
+                        <property name="text" translatable="yes">Min Signal</property>
+                        <property name="textvariable">string:minSigna</property>
+                        <layout manager="pack">
+                          <property name="padx">10 0</property>
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

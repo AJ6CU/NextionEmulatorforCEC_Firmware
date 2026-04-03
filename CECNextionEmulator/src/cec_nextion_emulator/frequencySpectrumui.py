@@ -77,16 +77,56 @@ class frequencySpectrumUI(tk.Toplevel):
             style="Heading3.TLabelframe",
             text='Magnitude',
             width=200)
+        frame1 = ttk.Frame(self.magnitudeLabelframe)
+        frame1.configure(height=200, style="Normal.TFrame", width=200)
+        self.maxSignal_Combobox = Combobox(frame1, name="maxsignal_combobox")
+        self.maxSignal_VAR = tk.StringVar()
+        self.maxSignal_Combobox.configure(
+            justify="right",
+            keyvariable=self.maxSignal_VAR,
+            style="ComboBox1.TCombobox",
+            values='255 225 200 175 150',
+            width=4)
+        self.maxSignal_Combobox.pack(side="left")
+        self.maxSignal_Combobox.bind(
+            "<<ComboboxSelected>>", self.maxSignal_CB, add="")
+        label1 = ttk.Label(frame1)
+        label1.configure(style="Heading2b.TLabel", text='Max Signal')
+        label1.pack(padx="10 0", side="left")
+        frame1.grid(column=0, row=0, sticky="w")
         self.frequencyPlotCanvas = tk.Canvas(
             self.magnitudeLabelframe, name="frequencyplotcanvas")
         self.frequencyPlotCanvas.configure(
             background="#0432ff", height=160, width=430)
-        self.frequencyPlotCanvas.pack(expand=True, fill="both", side="top")
+        self.frequencyPlotCanvas.grid(
+            column=0, columnspan=3, row=1, sticky="ew")
         self.frequencyPlotCanvas.bind(
             "<1>", self.frequencyPlotCanvas_CB, add="+")
         self.frequencyPlotCanvas.bind(
             "<Configure>", self.resizeCanvas_CB, add="+")
+        frame2 = ttk.Frame(self.magnitudeLabelframe)
+        frame2.configure(height=200, style="Normal.TFrame", width=200)
+        self.minSignal_Combobox = Combobox(frame2, name="minsignal_combobox")
+        self.minSignal_VAR = tk.StringVar()
+        self.minSignal_Combobox.configure(
+            justify="right",
+            style="ComboBox1.TCombobox",
+            textvariable=self.minSignal_VAR,
+            values='125 100 75 50 25 0',
+            width=4)
+        self.minSignal_Combobox.pack(side="left")
+        self.minSignal_Combobox.bind(
+            "<<ComboboxSelected>>", self.minSignal_CB, add="")
+        label3 = ttk.Label(frame2)
+        self.minSigna = tk.StringVar(value='Min Signal')
+        label3.configure(
+            style="Heading2b.TLabel",
+            text='Min Signal',
+            textvariable=self.minSigna)
+        label3.pack(padx="10 0", side="left")
+        frame2.grid(column=0, row=2, sticky="w")
         self.magnitudeLabelframe.grid(column=0, padx="8 0", row=0, sticky="ew")
+        self.magnitudeLabelframe.columnconfigure(0, weight=1)
         self.freqTuneFrame = ttk.Frame(
             self.frequencySpectrumFrame,
             name="freqtuneframe")
@@ -335,10 +375,16 @@ class frequencySpectrumUI(tk.Toplevel):
         # Layout for 'frequencySpectrum_Window' skipped in custom widget
         # template.
 
+    def maxSignal_CB(self, event=None):
+        pass
+
     def frequencyPlotCanvas_CB(self, event=None):
         pass
 
     def resizeCanvas_CB(self, event=None):
+        pass
+
+    def minSignal_CB(self, event=None):
         pass
 
     def frequencyTuning_CB(self, scale_value):
