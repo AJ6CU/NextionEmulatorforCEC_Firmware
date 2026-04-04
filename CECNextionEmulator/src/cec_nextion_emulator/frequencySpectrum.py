@@ -8,6 +8,8 @@ UI source file: frequencySpectrum.ui
 """
 import tkinter as tk
 import tkinter.ttk as ttk
+from unittest import case
+
 import frequencySpectrumui as baseui
 import random
 import time
@@ -89,6 +91,9 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         gv.formatCombobox(self.repeat_Combobox, "Arial", "24", "bold")
         gv.formatCombobox(self.bandwidth_Combobox, "Arial", "24", "bold")
 
+        gv.formatCombobox(self.minSignal_Combobox, "Arial", "24", "bold")
+        gv.formatCombobox(self.maxSignal_Combobox, "Arial", "24", "bold")
+
 
         # Update bandwidth to use selected delimiter
 
@@ -101,6 +106,11 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
         self.repeat_VAR.set('10x')
         self.bandwidthSelected_VAR.set('120,000Hz')
+        self.minSignal_VAR.set('0')
+        self.maxSignal_VAR.set('255')
+
+        self.bandwidthSelected_VAR.set('120,000Hz')
+
         self.updateScanParameters(self.bandwidthSelected_VAR.get())     # Can now format Frequency graphs
 
         self.frequencyTuning_VAR.set(250)                               # Set scrollbar in middle
@@ -143,13 +153,20 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         x_width, x_stretch, y_stretch = gv.calculatePlotParameters(self.frequencyPlotCanvas_width, self.MaxADCCount,
                                                                       self.FREQ_X_GAP,
                                                                       self.frequencyPlotCanvas_height,
-                                                                      self.FREQ_Y_MAX,
+                                                                      int(self.maxSignal_VAR.get())-int(self.minSignal_VAR.get()),
                                                                       self.FREQ_Y_GAP)
 
         for x in range(self.MaxADCCount):
-            ymag = int(buffer[x*2:x*2+2],16)%70
+            ymag = int(buffer[x*2:x*2+2],16)
+            yplot = ymag
 
-            x0, y0, x1, y1 = gv.calculatePlotBar(self.frequencyPlotCanvas_height, x,  ymag, x_width, x_stretch,
+            if yplot < int(self.minSignal_VAR.get()):
+                yplot = 0
+            # yplot = yplot + (self.FREQ_Y_MAX - int(self.maxSignal_VAR.get()))
+            if yplot > int(self.maxSignal_VAR.get()):
+                yplot = int(self.maxSignal_VAR.get())
+
+            x0, y0, x1, y1 = gv.calculatePlotBar(self.frequencyPlotCanvas_height, x,  yplot, x_width, x_stretch,
                                                  self.FREQ_X_GAP, y_stretch, self.FREQ_Y_GAP)
 
             # draw the bar
@@ -178,6 +195,20 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         else:
             self.frequencyPlotCanvas.coords(self.tuningLine, self.frequencyPlotCanvas_width/2,
                                             self.frequencyPlotCanvas_height, self.frequencyPlotCanvas_width/2, 0)
+        #
+        #   Track count received.  If continous, then generate a request for a new record
+        #
+        if self.repeat_VAR.get() == "Cont.":  # continous running until stopped
+            if self.spectrumScanning == True:
+                # self.runSpectrumScan(1)
+                self.master.after(100, self.runSpectrumScan, 1)
+            else:
+                self.scanningComplete()
+        else:
+            self.remainingCount_VAR.set(str(int(self.remainingCount_VAR.get())-1))
+            if int(self.remainingCount_VAR.get()) == 0:
+                self.scanningComplete()
+
 
     def updateTuningLine(self,tuningLine,newPos):
         #
@@ -204,23 +235,47 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
     def repeatValueChanged_CB(self, event=None):
         print("repeatValueChanged_CB, new value:", self.repeat_VAR.get())
         self.remainingCount_VAR.set(self.repeat_VAR.get().replace("X",""))
+        #
+        #   100 is step count when multiplied by 20 gets the jump on the scan
+        #
+        #self.mainWindow.theRadio.updateFrequencySpectrumOptions(int(self.repeat_VAR.get().replace("X","")),0,
+                                                                # self.MaxADCCount,100)
 
     def bandwidthValueChanged_CB(self, event=None):
         print("bandwidthValueChanged_CB, new value:", self.bandwidthSelected_VAR.get())
         self.updateScanParameters(self.bandwidthSelected_VAR.get())
+        self.mainWindow.theRadio.updateFrequencySpectrumOptions(int(self.repeat_VAR.get().replace("X", "")), 0,
+                                                                self.MaxADCCount, 100)
 
     def recenter_CB(self):
         print("recenter_CB")
 
+    def runSpectrumScan(self,count):
+        # self.mainWindow.theRadio.startFrequencySpectrumScan(count, 0, self.MaxADCCount, 100)
+        print("runSpectrumScan called, count:", count)
+        self.plotTestData()
+
     def startStopSpectrum_CB(self):
         if self.startStopSpectrum_VAR.get() == "Start":
-            self.startStopSpectrum_VAR.set("Stop")
-            self.spectrumScanning = False
+            self.spectrumScanning = True
+            if self.repeat_VAR.get() == "Cont.":        # continous running until stopped
+                self.startStopSpectrum_VAR.set("Stop")
+                self.runSpectrumScan(1)
+            else:
+                self.startStopSpectrum_VAR.set("Running")
+                self.startStop_Button.configure(state=tk.DISABLED)
+                self.remainingCount_VAR.set(int(self.repeat_VAR.get().replace("x", "")))
+                self.runSpectrumScan(int(self.repeat_VAR.get().replace("x", "")))
+
         else:
             self.startStopSpectrum_VAR.set("Start")
-            self.spectrumScanning = True
+            self.spectrumScanning = False
 
-        self.plotTestData()
+    def scanningComplete(self):
+       self.startStop_Button.configure(state=tk.NORMAL)
+       self.spectrumScanning = False
+       self.startStopSpectrum_VAR.set("Start")
+
 
     def frequencyPlotCanvas_CB(self, event=None):
 
@@ -255,6 +310,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
 
     def refreshCanvas(self):
+        print("refreshCanvas")
         #
         #   Update canvas size
         #
@@ -264,21 +320,30 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         if self.frequencyLineObj[0] == None:        # if nothing plotted, just return
             return
 
-
+        print("actual refreshing")
         x_width, x_stretch, y_stretch = gv.calculatePlotParameters(self.frequencyPlotCanvas_width, self.MaxADCCount,
                                                                   self.FREQ_X_GAP,
                                                                   self.frequencyPlotCanvas_height,
-                                                                  self.FREQ_Y_MAX,
+                                                                  int(self.maxSignal_VAR.get())-int(self.minSignal_VAR.get()),
                                                                   self.FREQ_Y_GAP)
         for x in range(self.MaxADCCount):
 
             ymag = self.frequencyLineYmag[x]
+            yplot = ymag
 
-            x0, y0, x1, y1 = gv.calculatePlotBar(self.frequencyPlotCanvas_height, x,  ymag, x_width, x_stretch,
+            if yplot < int(self.minSignal_VAR.get()):
+                yplot = 0
+
+
+            if yplot > int(self.maxSignal_VAR.get()):
+                yplot = int(self.maxSignal_VAR.get())
+            # yplot = yplot + (self.FREQ_Y_MAX - int(self.maxSignal_VAR.get()))
+
+            x0, y0, x1, y1 = gv.calculatePlotBar(self.frequencyPlotCanvas_height, x,  yplot, x_width, x_stretch,
                                                  self.FREQ_X_GAP, y_stretch, self.FREQ_Y_GAP)
 
             # draw the bar
-            if x in self.frequencyLineObj:
+            if self.frequencyLineObj[x] != None:
                 self.frequencyPlotCanvas.coords(self.frequencyLineObj[x], x0, y0, x1, y1)
             else:
                 self.frequencyLineObj[x] = self.frequencyPlotCanvas.create_rectangle(x0, y0, x1, y1, fill="lightgray", outline="lightgray")
@@ -301,6 +366,14 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
     def plotTestData(self):
         buffer = self.genPlotData(self.MaxADCCount)
         self.plot(buffer)
+
+    def maxSignal_CB(self, event=None):
+        print("maxSignal_CB", self.maxSignal_VAR.get())
+        self.refreshCanvas()
+
+    def minSignal_CB(self, event=None):
+        print("minSignal_CB", self.minSignal_VAR.get())
+        self.refreshCanvas()
 
     def applyClose_CB(self):
         print("applyClose_CB")

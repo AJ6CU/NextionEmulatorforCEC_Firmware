@@ -85,7 +85,7 @@ class frequencySpectrumUI(tk.Toplevel):
             justify="right",
             keyvariable=self.maxSignal_VAR,
             style="ComboBox1.TCombobox",
-            values='255 225 200 175 150',
+            values='255 250 245 240 235 230',
             width=4)
         self.maxSignal_Combobox.pack(side="left")
         self.maxSignal_Combobox.bind(
@@ -112,7 +112,7 @@ class frequencySpectrumUI(tk.Toplevel):
             justify="right",
             style="ComboBox1.TCombobox",
             textvariable=self.minSignal_VAR,
-            values='125 100 75 50 25 0',
+            values='40 35 30 25 20 15 10 5 0',
             width=4)
         self.minSignal_Combobox.pack(side="left")
         self.minSignal_Combobox.bind(

@@ -766,6 +766,21 @@ class piRadio:
         self.sendCommandToMCU(bytes(command))
 
 #
+#   Spectrum related instructions
+#
+    def updateFrequencySpectrumOptions(self, repeatCount, ADCoffset, ADCCount, scanStep):
+#
+#       create bytes
+#
+        b_repeatCount = repeatCount.to_bytes(1, 'litle')
+        b_ADCoffset = ADCoffset.to_bytes(1, 'little')
+        b_ADCCount = ADCCount.to_bytes(1, 'little')
+        b_scanStep = scanStep.to_bytes(1, 'little')
+
+
+        command = [self.toRadioCommandDict["TS_CMD_SPECTRUMOPT"], b_repeatCount, b_ADCoffset, b_ADCCount, b_scanStep]
+        self.sendCommandToMCU(bytes(command))
+#
 #   Send command to MCU
 #
     def sendCommandToMCU(self, commandList):

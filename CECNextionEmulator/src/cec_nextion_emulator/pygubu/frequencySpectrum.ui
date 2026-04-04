@@ -91,7 +91,7 @@
                         <property name="justify">right</property>
                         <property name="keyvariable">string:maxSignal_VAR</property>
                         <property name="style">ComboBox1.TCombobox</property>
-                        <property name="values">255 225 200 175 150</property>
+                        <property name="values">255 250 245 240 235 230</property>
                         <property name="width">4</property>
                         <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="maxSignal_CB" add="" />
                         <layout manager="pack">
@@ -141,7 +141,7 @@
                         <property name="justify">right</property>
                         <property name="style">ComboBox1.TCombobox</property>
                         <property name="textvariable">string:minSignal_VAR</property>
-                        <property name="values">125 100 75 50 25 0</property>
+                        <property name="values">40 35 30 25 20 15 10 5 0</property>
                         <property name="width">4</property>
                         <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="minSignal_CB" add="" />
                         <layout manager="pack">
