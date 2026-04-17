@@ -586,7 +586,12 @@ class mainScreen(baseui.mainScreenUI):
     def sp_UX_DSP_Spectrum_Values(self, buffer):
         print("Spectrum values from DSP", buffer)
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.theDSPWindow.process_Spectrum_Data(value)
+        if self.theDSPWindow == None:
+            print("no DSP window yet, data ignored")
+        elif self.theDSPWindow.get_spectrumMorseState() != None:
+            self.theDSPWindow.process_Spectrum_Data(value)
+        else:
+            print("dsp window exists but has been closed")
 
     def ct_UX_RX_TX_Mode(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)

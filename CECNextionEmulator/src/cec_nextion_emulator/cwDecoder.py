@@ -23,6 +23,7 @@ class cwDecoder(baseui.cwDecoderUI):
                                         # "FreqScan" = Frequency/Spectrum Mode
                                         # "CWDecode" = CW Decode Mode
 
+
         super().__init__(self.master, **kw)
         #
         #   Make sure that a close by the Window manager goes to the same close callback
@@ -52,6 +53,8 @@ class cwDecoder(baseui.cwDecoderUI):
 
         self.frequencyDecodeScale_VAR.set("2")
         self.frequencySigValue_VAR.set("20")            # 2*10
+
+        self.enable_Frequency_Spectrum()                # Start with the frequency scan
 
         #
         #   Request existing saved data in EEPROM
@@ -183,7 +186,7 @@ class cwDecoder(baseui.cwDecoderUI):
         # highest y = max_data_value * y_stretch
         y_stretch = 2
         # gap between lower canvas edge and x axis
-        y_gap = 5
+        y_gap = -15
         # stretch enough to get all data items in
         x_stretch = 6
         x_width = 4
@@ -195,7 +198,7 @@ class cwDecoder(baseui.cwDecoderUI):
         byteBuffer = bytearray.fromhex(buffer)          #This gives us an array of hex bytes
 
         for x, y in enumerate(byteBuffer):
-            ymag = y.to_bytes(1, byteorder="little")/2
+            ymag = y>>1
             if ymag < 0:
                 ymag = 0
             else:
@@ -244,6 +247,7 @@ class cwDecoder(baseui.cwDecoderUI):
 
 
     def close_CB(self):
+        self.spectrumMorseState = None
         self.unbind_all("<Button-1>")   # Eliminate global catch of Button-1
         self.destroy()
 
