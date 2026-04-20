@@ -86,6 +86,8 @@ class cwDecoderUI(tk.Toplevel):
         self.frequencyPlotCanvas.configure(
             background="#0432ff", height=160, width=430)
         self.frequencyPlotCanvas.pack(expand=True, fill="both", side="left")
+        self.frequencyPlotCanvas.bind(
+            "<Button-1>", self.enable_Frequency_Spectrum_CB, add="+")
         self.frequencyPlotFrame.pack(padx=5, pady=5, side="left")
         self.frequencyPlotParameterFrame = ttk.Frame(
             frame2, name="frequencyplotparameterframe")
@@ -221,6 +223,7 @@ class cwDecoderUI(tk.Toplevel):
             height=100, style="Normal.TFrame", width=200)
         self.cwDecodedText = tk.Text(self.cwDecodeFrame, name="cwdecodedtext")
         self.cwDecodedText.configure(
+            background="#0432ff",
             font="{Arial} 18 {}",
             foreground="lightgray",
             height=3,
@@ -233,6 +236,10 @@ class cwDecoderUI(tk.Toplevel):
         _text_ = '1'
         self.cwDecodedText.insert("0.0", _text_)
         self.cwDecodedText.pack(padx=5, pady=5, side="top")
+        self.cwDecodedText.bind(
+            "<Button-1>",
+            self.enable_CW_Decode_CB,
+            add="+")
         self.cwDecodeFrame.pack(expand=True, fill="x", side="top")
         self.cwDecodeLabelframe.pack(expand=True, fill="x", padx=5, side="top")
         self.closingFrame = ttk.Frame(
@@ -263,10 +270,16 @@ class cwDecoderUI(tk.Toplevel):
         self.title("CW Decode")
         # Layout for 'cwDecoder_Window' skipped in custom widget template.
 
+    def enable_Frequency_Spectrum_CB(self, event=None):
+        pass
+
     def frequencyDecodeScale_CB(self, scale_value):
         pass
 
     def frequencyPlotcwToneScale_CB(self, scale_value):
+        pass
+
+    def enable_CW_Decode_CB(self, event=None):
         pass
 
     def startStopToggleButton_CB(self):

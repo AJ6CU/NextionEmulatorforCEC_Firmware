@@ -88,6 +88,7 @@
                             <property name="background">#0432ff</property>
                             <property name="height">160</property>
                             <property name="width">430</property>
+                            <bind sequence="&lt;Button-1&gt;" handler="enable_Frequency_Spectrum_CB" add="True" />
                             <layout manager="pack">
                               <property name="expand">true</property>
                               <property name="fill">both</property>
@@ -295,6 +296,7 @@
                 </layout>
                 <child>
                   <object class="tk.Text" id="cwDecodedText" named="True">
+                    <property name="background">#0432ff</property>
                     <property name="font">{Arial} 18 {}</property>
                     <property name="foreground">lightgray</property>
                     <property name="height">3</property>
@@ -305,6 +307,7 @@
                     <property name="text" translatable="yes">1</property>
                     <property name="width">50</property>
                     <property name="wrap">char</property>
+                    <bind sequence="&lt;Button-1&gt;" handler="enable_CW_Decode_CB" add="True" />
                     <layout manager="pack">
                       <property name="padx">5</property>
                       <property name="pady">5</property>

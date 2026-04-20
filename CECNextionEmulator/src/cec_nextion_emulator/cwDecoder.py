@@ -41,10 +41,7 @@ class cwDecoder(baseui.cwDecoderUI):
 
         gv.trimAndLocateWindow(self.master, 0, 0)
 
-        self.cwDecodeLabelframe.bind("<Enter>", self.bind_all("<Button-1>", self.cwDecode_bind_all))
-        self.frequencyPlotFrame.bind("<Enter>", self.bind_all("<Button-1>", self.frequency_bind_all))
 
-        self.closingFrame.bind("<Enter>", self.close_frame_unbind_all)
         #
         #   set defaults for scale
         #
@@ -54,7 +51,7 @@ class cwDecoder(baseui.cwDecoderUI):
         self.frequencyDecodeScale_VAR.set("2")
         self.frequencySigValue_VAR.set("20")            # 2*10
 
-        self.enable_Frequency_Spectrum()                # Start with the frequency scan
+        self.enable_Frequency_Spectrum_CB()                # Start with the frequency scan
 
         #
         #   Request existing saved data in EEPROM
@@ -62,69 +59,42 @@ class cwDecoder(baseui.cwDecoderUI):
         self.request_DSP_EEPROM_Data()
 
 
-    #
-    #   The following two "bind_all' functions ensures that any mouse clicks, regardless of which
-    #   widget is clicked, results in a call to the enable either Spectrum(Frequency) or CW windows
-    #   This eliminates the needs for a radio button to select which mode the data is interpreted as
-    #   The Third function (unbind_all) ensures that clicks are not used to select between these two
-    #   modes when the pointer is moved outside the Spectrum/CW windows.
-    #
 
-    def frequency_bind_all(self):
-        # print("binding frequency spectrum")
-        #
-        # Deliver a Button-1 click to a function to enable Frequency/Spectrum
-        #
-        self.bind_all("<Button-1>", self.enable_Frequency_Spectrum)
-
-    def cwDecode_bind_all(self):
-        # self.unbind_all("<Button-1>")
-        # print("binding cw decoding spectrum")
-        #
-        # Deliver a Button-1 click to a function to enable CW processing
-        #
-        self.bind_all("<Button-1>", self.enable_CW_Decode)
-
-    def close_frame_unbind_all(self, event=None):
-        # print("unbinding frame")
-        #
-        #   Moved away from the Spectrum(Frequency) and CW frames, so unbind any clicks
-        self.unbind_all("<Button-1>")
-
-
-    def enable_Frequency_Spectrum(self, event=None):
+    def enable_Frequency_Spectrum_CB(self, event=None):
         #
         #   Executed when Button-1 clicked on Frequency/Spectrum Frame (or children)
         #
-        self.unbind_all("<Button-1>")
 
         self.spectrumMorseState = "FreqScan"      # Set state flag Frequency/Spectrum mode
 
         self.setcwDecodeState("disabled")
-        self.frequencyPlotFrame.state(['!disabled'])
+        self.setFrequencySpectrumState("normal")
         self.startStopToggleButton_VAR.set("Run Spectrum")
 
-    def enable_CW_Decode(self, event=None):
+    def enable_CW_Decode_CB(self, event=None):
         #
         #   Executed when Button-1 clicked on CW_Decode Frame (or children)
         #
-        self.unbind_all("<Button-1>")
 
         self.spectrumMorseState = "CWDecode"      # Set state flag to True = CW Decode Mode mode
 
         self.setcwDecodeState("normal")
-        self.frequencyPlotFrame.state(['disabled'])
+        self.setFrequencySpectrumState("disabled")
 
         self.startStopToggleButton_VAR.set("Run CW Decode")
 
     def setcwDecodeState(self, newState):
         if newState == "normal":
-            self.cwDecodedText.configure(foreground="black")
+            self.cwDecodedText.configure(foreground="white")
         else:
-            self.cwDecodedText.configure(foreground="lightgray")
+            self.cwDecodedText.configure(foreground="gray")
 
 
-    # def setFrequencySpectrumState(self, newState):
+    def setFrequencySpectrumState(self, newState):
+        if newState == "normal":
+            self.frequencyPlotFrame.state(['!disabled'])
+        else:
+            self.frequencyPlotFrame.state(['disabled'])
     #     self.frequencyPlotcwToneValueLabel.configure(state=newState)
     #
     #     self.frequencyHighLabel.configure(state=newState)
@@ -261,7 +231,6 @@ class cwDecoder(baseui.cwDecoderUI):
     def close_CB(self):
         self.spectrumMorseState = None
         self.mainWindow.consumerDSPdata = self.mainWindow
-        self.unbind_all("<Button-1>")   # Eliminate global catch of Button-1
         self.destroy()
 
     def logCW_Character (self,newchar):
