@@ -215,6 +215,7 @@ class mainScreen(baseui.mainScreenUI):
             case "vg": self.vg_UX_DSP_Flag(buffer)
             case "sb": self.sb_UX_CW_Decoded_Characters(buffer)
             case "sp": self.sp_UX_DSP_Spectrum_Values(buffer)
+            case "xt": self.sp_UX_DSP_Spectrum_Values(buffer)
             case _:
                 print("Command not recognized=", buffer,"*")
                 print("command:", command,"*",sep="*")
@@ -566,20 +567,25 @@ class mainScreen(baseui.mainScreenUI):
             print("another weird malformed command, buffer =", buffer)
 
     def vv_UX_Command_Data(self, buffer):
-        print("DSP data returned", buffer)
+
         #
         # saving this data because dont know what to do with it until next command
         # could be retrieving EEPROM DSP settings to screen dimming or ?
         #
+
         self.vv_Command_Buffer = self.extractValue(buffer, 10, len(buffer) - 3)
+        print("Received VV data", self.vv_Command_Buffer, "len=", len(self.vv_Command_Buffer))
 
 
     def vg_UX_DSP_Flag(self, buffer):
-        value = self.extractValue(buffer, 10, len(buffer) - 3)
-        if int(value, 16) == 106:  # 0x6a
-            self.consumerDSPdata.process_DSP_EEPROM_Data(self.vv_Command_Buffer)
-        else:
-            print("Unidentified DSP Data", value, buffer)
+        commandType = self.extractValue(buffer, 10, len(buffer) - 3)
+        print("vg_UX_DSP_Flag Received:", commandType)
+        #
+        #   Dsp data is weird. You get a "vv" command with the data followed by a "vg" with
+        #   the command to send the "vv" buffer that you received previously.
+        #
+        self.consumerDSPdata.process_DSP_Data(self.vv_Command_Buffer)
+
 
     def sb_UX_CW_Decoded_Characters(self, buffer):
         print("Decoded CW Characters", buffer)
@@ -588,14 +594,23 @@ class mainScreen(baseui.mainScreenUI):
 
 
     def sp_UX_DSP_Spectrum_Values(self, buffer):
-        value = self.extractValue(buffer, 10, len(buffer) - 3)
+        if buffer[3] == "x" and buffer[4] == "t":         #error catch for malformed spectrum responses
+            value = self.extractValue(buffer, 6, len(buffer) - 3)
+            # print("fixing malformed p., value =", value)
+        else:
+            value = self.extractValue(buffer, 10, len(buffer) - 3)
         self.consumerDSPdata.process_Spectrum_Data(value)
 
     def process_Spectrum_Data(self, buffer):
-        print("Processing Spectrum Data for main window", buffer)
+        # print("Processing Spectrum Data for main window", buffer)
+        pass
 
     def process_CWDecoded_Data(self, buffer):
-        print("Processing CW Data for main window")
+        print("Processing CW Data for main window", buffer)
+        pass
+
+    def process_DSP_Data(self, buffer ):
+        print("Processing DSP Data for main window", buffer)
 
     def ct_UX_RX_TX_Mode(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)

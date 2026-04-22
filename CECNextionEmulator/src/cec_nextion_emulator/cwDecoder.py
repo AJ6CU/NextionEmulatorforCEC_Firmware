@@ -56,7 +56,10 @@ class cwDecoder(baseui.cwDecoderUI):
         #
         #   Request existing saved data in EEPROM
         #
-        self.request_DSP_EEPROM_Data()
+        # self.request_DSP_EEPROM_Data()
+
+        self.frequencyHighValue_VAR.set('0')        # Reset min/max on entry
+        self.frequencyLowValue_VAR.set(self.frequencySigValue_VAR.get())
 
 
 
@@ -110,44 +113,54 @@ class cwDecoder(baseui.cwDecoderUI):
     #
     def request_DSP_EEPROM_Data(self):
         #
-        # Temp comment out
-        #
-        # self.mainWindow.theRadio.RequestDSP_EEPROM_Data()
-        #
-        # following just plugs to allow basic testing
-        #
-        self.mainWindow.UseDSP = True
-        self.spectrumMorseState = "FreqScan"
+        # Request DSP data stored in EEPROM
+        self.mainWindow.theRadio.Req_DSP_EEPROM_Settings()
 
-    def process_DSP_EEPROM_Data(self, buffer):
-        byteList = int(buffer).tobytes(3,'little')
 
-        self.frequencyDecodeScale_VAR.set(byteList[0]/10)
+    def process_DSP_Data(self, buffer):
+        byteList = int(buffer).to_bytes(4,'little')
+        # print("process_DSP_Data", byteList)
 
-        if byteList[1] == 1:
-            self.mainWindow.UseDSP =  True
+        if int(buffer) < 0xffffff:          # only a 3 hex byte number
+
+            print("eeprom values returned")
+            print("decodescale*10=", byteList[0])
+            print("useDSPFlag=", byteList[1])
+
+            self.frequencyDecodeScale_VAR.set(byteList[0]/10)
+            self.frequencySigValue_VAR.set(byteList[0])
+
+            if byteList[1] == 1:
+                self.mainWindow.UseDSP =  True
+            else:
+                self.mainWindow.UseDSP = False
+            # case 95:    # This is the code for being in spectrum mode
+            #     self.spectrumMorseState = "FreqScan"      # Set state flag Frequency/Spectrum mode
+            #
+            # #
+            # #   in CWDecode mode, this byte is between 100 and < 146. The offset from 100
+            # #   is the offset (*50 +300) within the SSB bandwidth. So the scan is limited to be
+            # #   between 300(scale=0) and (50*45 + 300 = 2550)
+            # #   So a very little room to scan the band, really just fine tuning within a frequency
+            # #
+            # case _:
+        # commandType if (commandType >= 106):
+        # elif ((byteList[2] >= 100) and (byteList[2] < 146)):
+        #     self.spectrumMorseState = "CWDecode"
+        #     self.frequencyPlotcwToneScale_VAR.set(str(byteList[2]-100))
+        #     self.frequencyPlotcwToneValue_VAR.set(
+        #         str((int(self.frequencyPlotcwToneScale_VAR.get())*50)+300))   # 10*50 + 300
+        # else:
         else:
-            self.mainWindow.UseDSP = False
-
-        if byteList[2] == 95:       # This is the code for being in spectrum mode
-            self.spectrumMorseState = "FreqScan"      # Set state flag Frequency/Spectrum mode
-
-        #
-        #   in CWDecode mode, this byte is between 100 and < 146. The offset from 100
-        #   is the offset (*50 +300) within the SSB bandwidth. So the scan is limited to be
-        #   between 300(scale=0) and (50*45 + 300 = 2550)
-        #   So a very little room to scan the band, really just fine tuning within a frequency
-        #
-        elif ((byteList[2] >= 100) and (byteList[2] < 146)):
-            self.spectrumMorseState = "CWDecode"
-            self.frequencyPlotcwToneScale_VAR.set(str(byteList[2]-100))
-            self.frequencyPlotcwToneValue_VAR.set(
-                str((int(self.frequencyPlotcwToneScale_VAR.get())*50)+300))   # 10*50 + 300
+            pass
+            # print("loopback DSP Data:", hex(int(buffer)))
 
     #
     #   Data processors
     #
     def process_Spectrum_Data(self, buffer):
+        currentMax = int(self.frequencyHighValue_VAR.get())
+        currentMin = int(self.frequencyLowValue_VAR.get())
 
         centerFreq = int(self.frequencyPlotcwToneValue_VAR.get()) / 50
         vSelectMin = centerFreq
@@ -178,6 +191,13 @@ class cwDecoder(baseui.cwDecoderUI):
                 if (ymag > 70):
                     ymag = 70
 
+            if ymag < currentMin:
+                currentMin = ymag
+                self.frequencyLowValue_VAR.set(str(currentMin))
+            elif ymag > currentMax:
+                currentMax = ymag
+                self.frequencyHighValue_VAR.set(str(currentMax))
+
             # calculate reactangle coordinates (integers) for each bar
             x0 = x * x_stretch + x * x_width + x_gap
             y0 = c_height - (ymag * y_stretch + y_gap)
@@ -195,6 +215,7 @@ class cwDecoder(baseui.cwDecoderUI):
 
 
     def process_CWDecoded_Data(self, buffer):
+        print("Processing CW Decoded in window", buffer)
         for char in buffer:
             self.logCW_Character(char)
 
@@ -210,21 +231,36 @@ class cwDecoder(baseui.cwDecoderUI):
 
 
     def frequencyDecodeScale_CB(self, scale_value):
-        self.frequencySigValue_VAR.set(str(int(self.frequencyDecodeScale_VAR.get())*10))  # 2*10
+        print("scale_value:", scale_value, type(scale_value))
+        self.frequencySigValue_VAR.set(str(int(scale_value)*10)) # 2*10
+        self.mainWindow.theRadio.Set_Signal_Value(scale_value)
 
     def frequencyPlotcwToneScale_CB(self, scale_value):
-        self.frequencyPlotcwToneValue_VAR.set(str(((int(self.frequencyPlotcwToneScale_VAR.get())*50)+300)))
+        self.frequencyPlotcwToneValue_VAR.set(str(((int(scale_value)*50)+300)))
 
     def startStopToggleButton_CB(self):
         match self.startStopToggleButton_VAR.get():
             case "Run Spectrum":
                 self.startStopToggleButton_VAR.set("Stop Spectrum")
+                self.mainWindow.theRadio.Set_Spectrum_Mode(95)              # Magic number indicating it is a spectrum scan
+                self.frequencyHighValue_VAR.set('0')                        # Reset min/max on entry
+                self.frequencyLowValue_VAR.set(self.frequencySigValue_VAR.get())
             case "Stop Spectrum":
                 self.startStopToggleButton_VAR.set("Run Spectrum")
+                self.mainWindow.theRadio.Set_Spectrum_Mode(94)              # Magic number indicating to stop scanning
             case "Run CW Decode":
                 self.startStopToggleButton_VAR.set("Stop CW Decode")
+                value = int(self.frequencyPlotcwToneValue_VAR.get()) - 300       # following code is just to convert a target
+                                                                            # byte
+                value = value//50
+
+                value = value + 100                                         # this maps the final byte to between 100-129
+                                                                            # which means decode morse
+
+                self.mainWindow.theRadio.Set_Spectrum_Mode(value)
             case "Stop CW Decode":
                 self.startStopToggleButton_VAR.set("Run CW Decode")
+                self.mainWindow.theRadio.Set_Spectrum_Mode(94)              # Magic number indicating to stop scanning
             case _:
                 print("unknown toggle button state=", self.startStopToggleButton_VAR.get())
 

@@ -221,12 +221,14 @@ class piRadio:
     #
     def Req_DSP_EEPROM_Settings(self):
 
-        nMyAddr = random.randint(5,255).to_bytes(1, 'litle')
-        command = [self.toRadioCommandDict["TS_CMD_LOOPBACK0"],
+        # nMyAddr = random.randint(5,255)
+        nMyAddr = 69
+        command = [self.toRadioCommandDict["TS_"
+                                           "CMD_LOOPBACK0"],
                    nMyAddr,             # Random number, probably no reason at moment
-                   2,                   # Command 2 is to retrieve all teh EEPROM
+                   2,                   # Command 2 is to retrieve all the EEPROM
                    0x6a,                # Indicates that this is for DSP
-                   (self.toRadioCommandDict["TS_CMD_LOOPBACK0"]+nMyAddr+2+0x6a)%256 #Checksum
+                   (nMyAddr+2+0x6a)%256 #Checksum
                    ]
 
         self.sendCommandToMCU(bytes(command))
@@ -780,6 +782,31 @@ class piRadio:
 
         command = [self.toRadioCommandDict["TS_CMD_SPECTRUMOPT"], b_repeatCount, b_ADCoffset, b_ADCCount, b_scanStep]
         self.sendCommandToMCU(bytes(command))
+
+    def Set_Spectrum_Mode(self, value):
+
+        # MyAddr = random.randint(5, 255)     # Not clear why a specific address is needed. Perhaps for future?
+        MyAddr = 66
+        DSPCode = 0x6A          # magic# indicating that this loop back result of DSP
+
+        checksum= ((MyAddr + DSPCode + value)%256)
+
+        command = [self.toRadioCommandDict["TS_CMD_LOOPBACK0"],MyAddr, value, DSPCode, checksum]
+        print("sending loopback command", "myaddr:", hex(MyAddr), "value passed:", hex(value), "dspcode:",hex(DSPCode), "checksum:", hex(checksum))
+
+        self.sendCommandToMCU(bytes(command))
+
+    def Set_Signal_Value(self, scale_value):
+        print("scale_value:", scale_value)
+        MyAddr  = 55
+        DSPCode = 0x6A
+        value = int(scale_value) + 146
+
+        checksum = ((MyAddr + DSPCode + value) % 256)
+        command = [self.toRadioCommandDict["TS_CMD_LOOPBACK0"], MyAddr, value, DSPCode, checksum]
+        print("sending loopback command for signal", "myaddr:", hex(MyAddr), "value passed:", hex(int(scale_value)), "adjusted value", hex(value), "dspcode:", hex(DSPCode),
+              "checksum:", hex(checksum))
+
 #
 #   Send command to MCU
 #
