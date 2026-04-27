@@ -43,7 +43,7 @@ class settingsMachine(baseui.settingsMachineUI):
         else:
             self.DSP_Enable_Label.configure(state="disabled")
             self.DSP_Enable_Combobox.configure(state="disabled")
-            self.DSP_Message_VAR.set("No DSP Found on startup. Option automatically disabled")
+            self.DSPMessage_VAR.set("No DSP Found on startup. Option automatically disabled")
 
         #
         #   Can now kickoff the UX

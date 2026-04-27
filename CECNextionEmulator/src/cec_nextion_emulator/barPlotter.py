@@ -1,6 +1,9 @@
+import tkinter as tk
+import tkinter.ttk as ttk
+
 class barPlotter:
     def __init__(self, parent, canvasObj, totalX, maxY, X_GAP=4, Y_GAP=0, currentMax=0, currentMin=0):
-        self.parent = parent_
+        self.parent = parent
         self.canvasObj = canvasObj
         self.totalX = totalX
         self.maxY = maxY
@@ -54,7 +57,7 @@ class barPlotter:
         # fixedParms = parameters that are "fixed" regardless of number of bars plotted
         x0 = round((x * self.xStretch) + (x * self.xWidth) + self.X_GAP)
         y0 = round(self.canvas_height - ((ymag * self.yStretch) + self.Y_GAP))
-        x1 = round((x * self.xStretch) + (x * self.xWidth) + x_width + self.X_GAP)
+        x1 = round((x * self.xStretch) + (x * self.xWidth) + self.xWidth + self.X_GAP)
         y1 = round(self.canvas_height - self.Y_GAP)
 
         return x0, y0, x1, y1
@@ -93,7 +96,7 @@ class barPlotter:
         # x1 = x * x_stretch + x * x_width + x_width + x_gap
         # y1 = c_height - y_gap
 
-        x0, y0, x1, y1 = self..calculatePlotBar(x,y)
+        x0, y0, x1, y1 = self.calculatePlotBar(x,y)
 
         # draw the bar
         if self.barObj[x] == None:  # if the bar doesn't yet exist, create it
@@ -113,30 +116,24 @@ class barPlotter:
 
 
 
-    def drawHighLightBars(self, x, scaleLength=1, scale=False ):
+    def drawHighLightBars(self, barPos):  #, scaleLength=1, scale=False ):
         #
         #   this calculation maps the scale (0-45) until the FFT Size (0-63)
         #   this allows us to draw two vertical lines that help target the apparent CW signal in the range
         #
-        if scale:
-            barPos = round((x / scaleLength) * self.totalX)
-        else:
-            barPos = x
+        # if scale:
+        #     barPos = round((x / scaleLength) * self.totalX)
+        # else:
+        #     barPos = x
+
+        if self.barX0[barPos] == None: return
 
         x0 = self.barX0[barPos]
         x1 = self.barX1[barPos]
 
         if self.tuningLine1 == None:
-            self.tuningLine1 = self.canvasObj.create_line(x0,
-                                                                    self.canvas_height,
-                                                                    x0,
-                                                                    0,
-                                                                    fill="red", width=2)
-            self.tuningLine2 = self.canvasObj.create_line(x1,
-                                                                    self.canvas_height,
-                                                                    x1,
-                                                                    0,
-                                                                    fill="red", width=2)
+            self.tuningLine1 = self.canvasObj.create_line(x0, self.canvas_height, x0, 0, fill="red", width=2)
+            self.tuningLine2 = self.canvasObj.create_line(x1,self.canvas_height,x1,0,fill="red", width=2)
         else:
 
             self.canvasObj.coords(self.tuningLine1, x0, self.canvas_height, x0, 0)

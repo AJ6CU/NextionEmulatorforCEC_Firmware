@@ -47,7 +47,8 @@ class mainScreen(baseui.mainScreenUI):
         self.frequencyPlotcwToneScale = 10          # default implies 10*50 + 300
         self.frequencyPlotcwToneValue = 800
 
-        self.frequencySpectrumMode = "FreqScan"
+        self.frequencySpectrumMode = "FreqScan"     # start with the frequency scan unless DSP EEPROM says otherwise when
+                                                    # the eeprome data for the dsp is fetched. See call in initUX
 
         self.DSPFound = False           # No DSP until proven by returning info at startup
 

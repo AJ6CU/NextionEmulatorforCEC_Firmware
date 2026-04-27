@@ -2,6 +2,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import cwDecoderui as baseui
+from barPlotter import barPlotter
 import globalvars as gv
 from tkinter import messagebox
 
@@ -45,6 +46,7 @@ class cwDecoder(baseui.cwDecoderUI):
     def initUX(self):
         self.title("CW Decode")
         self.geometry("600x430")
+        self.minsize(600,430)
         self.wait_visibility()  # required on Linux
         self.grab_set()
         self.transient(self.master)
@@ -53,53 +55,32 @@ class cwDecoder(baseui.cwDecoderUI):
 
 
         #
-        #   set defaults for scale
+        #   get defaults from mainwindow
         #
-        # self.frequencyPlotcwToneScale_VAR.set("10")
-        # self.frequencyPlotcwToneValue_VAR.set("800")    # 10*50 + 300
 
-
-
-
-        self.frequencyDecodeScale_VAR.set(self.mainWindow.frequencyDecodeScale)
+        self.frequencyDecodeScale_VAR.set(str(self.mainWindow.frequencyDecodeScale))
         self.frequencySigValue_VAR.set(str(self.mainWindow.frequencyDecodeScale*10))            # 2*10
 
         self.frequencyPlotcwToneScale_VAR.set(self.mainWindow.frequencyPlotcwToneScale)
         self.frequencyPlotcwToneValue_VAR.set(str(self.mainWindow.frequencyPlotcwToneValue))
 
-        if  self.mainWindow.frequencySpectrumMode == "FreqScan":
-            self.enable_Frequency_Spectrum_CB()  # Start with the frequency scan
-        else:
-            self.enable_CW_Decode_CB()
-
-        #
-        #   Request existing saved data in EEPROM
-        #
-        # self.request_DSP_EEPROM_Data()
-
         self.frequencyHighValue_VAR.set('0')        # Reset min/max on entry
         self.frequencyLowValue_VAR.set(self.frequencySigValue_VAR.get())
-
-        self.frequencyPlotCanvas_height = self.frequencyPlotCanvas.winfo_height()
-        self.frequencyPlotCanvas_width = self.frequencyPlotCanvas.winfo_width()
-        # print("self.frequencyPlotCanvas_width =", self.frequencyPlotCanvas.winfo_width(), "self.frequencyPlotCanvas_height =", self.frequencyPlotCanvas.winfo_height())
 
         self.FFTSIZE = 63   # Maximum number of times that the ADC can be read.
                             # Appears to be a bug in the DSP code. Suppose to be 64 elements (0-63) but only
                             # really sends 0-62
                                 # Machine dependent. About
 
-        self.FREQ_X_GAP = 4  # gap between left canvas edge and y axis
-        self.FREQ_Y_GAP = 0  # gap between lower canvas edge and x axis
         self.FREQ_Y_MAX = 70  # maximum value of Y values
-
-        self.frequencyLineObj = [None] * self.FFTSIZE * 1
-        self.frequencyLineYmag = [None] * self.FFTSIZE * 1
-        self.frequencyLineX0 = [None] * self.FFTSIZE * 1
-        self.frequencyLineX1 = [None] * self.FFTSIZE * 1
-
-        self.tuningLine1 = None  # used to save the tuning line object
-        self.tuningLine2 = None  # used to save the tuning line object
+        #
+        #   Create plotter object and bind it to the frequencyPlotCanvas of this window
+        #
+        self.plotter = barPlotter(self, self.frequencyPlotCanvas, self.FFTSIZE, self.FREQ_Y_MAX)
+        if  self.mainWindow.frequencySpectrumMode == "FreqScan":
+            self.enable_Frequency_Spectrum_CB()  # Start with the frequency scan
+        else:
+            self.enable_CW_Decode_CB()
 
 
 
@@ -179,88 +160,19 @@ class cwDecoder(baseui.cwDecoderUI):
                 self.mainWindow.UseDSP =  "True"
             else:
                 self.mainWindow.UseDSP = "False"
-            # case 95:    # This is the code for being in spectrum mode
-            #     self.spectrumMorseState = "FreqScan"      # Set state flag Frequency/Spectrum mode
-            #
-            # #
-            # #   in CWDecode mode, this byte is between 100 and < 146. The offset from 100
-            # #   is the offset (*50 +300) within the SSB bandwidth. So the scan is limited to be
-            # #   between 300(scale=0) and (50*45 + 300 = 2550)
-            # #   So a very little room to scan the band, really just fine tuning within a frequency
-            # #
-            # case _:
-        # commandType if (commandType >= 106):
-        # elif ((byteList[2] >= 100) and (byteList[2] < 146)):
-        #     self.spectrumMorseState = "CWDecode"
-        #     self.frequencyPlotcwToneScale_VAR.set(str(byteList[2]-100))
-        #     self.frequencyPlotcwToneValue_VAR.set(
-        #         str((int(self.frequencyPlotcwToneScale_VAR.get())*50)+300))   # 10*50 + 300
-        # else:
-        else:
-            pass
-            # print("loopback DSP Data:", hex(int(buffer)))
 
     #
     #   Data processors
     #
     def process_Spectrum_Data(self, buffer):
         # print("buffer size=", len(buffer))
-        currentMax = int(self.frequencyHighValue_VAR.get())
-        currentMin = int(self.frequencyLowValue_VAR.get())
-
-        x_width, x_stretch, y_stretch = gv.calculatePlotParameters(self.frequencyPlotCanvas_width, self.FFTSIZE,
-                                                                   self.FREQ_X_GAP,
-                                                                   self.frequencyPlotCanvas_height,
-                                                                   self.FREQ_Y_MAX,
-                                                                   self.FREQ_Y_GAP)
-
-        byteBuffer = bytearray.fromhex(buffer)          #This gives us an array of hex bytes
-
-        for x, y in enumerate(byteBuffer):
-
-            ymag = y>>1
-            if ymag < 0:
-                ymag = 0
-            else:
-                if (ymag > self.FREQ_Y_MAX):
-                    ymag = self.FREQ_Y_MAX
-
-            if ymag < currentMin:
-                currentMin = ymag
-                self.frequencyLowValue_VAR.set(str(currentMin))
-            elif ymag > currentMax:
-                currentMax = ymag
-                self.frequencyHighValue_VAR.set(str(currentMax))
-
-            self.drawBars(x, ymag, x_width, x_stretch, y_stretch)
-
+        self.plotter.process_Data(buffer)
+        self.frequencyLowValue_VAR.set(str( self.plotter.get_CurrentMin()))
+        self.frequencyHighValue_VAR.set(str( self.plotter.get_CurrentMax()))
         self.updateTargetFreqBars()
-
-    def drawBars(self,x,y, x_width, x_stretch, y_stretch):
-
-        # calculate rectangle coordinates (integers) for each bar
-        # x0 = x * x_stretch + x * x_width + x_gap
-        # y0 = c_height - (ymag * y_stretch + y_gap)
-        # x1 = x * x_stretch + x * x_width + x_width + x_gap
-        # y1 = c_height - y_gap
-
-        x0, y0, x1, y1 = gv.calculatePlotBar(self.frequencyPlotCanvas_height, x, y, x_width, x_stretch,
-                                             self.FREQ_X_GAP, y_stretch, self.FREQ_Y_GAP)
-
-        # draw the bar
-        if self.frequencyLineObj[x] != None:  # if bar exists, then adjust coordinates for new values
-            self.frequencyPlotCanvas.coords(self.frequencyLineObj[x], x0, y0, x1, y1)
-        else:  # If this is the first time, then create the bar
-            self.frequencyLineObj[x] = self.frequencyPlotCanvas.create_rectangle(x0, y0, x1, y1, fill="yellow",
-                                                                                 outline="yellow")
-
-        #
-        #   Save y magnitude for resize event
-        #   Save x0,x1 for beginning and end of every bar. This allows us to redraw the guide bars as the cw tuning bar is moved
-        #
-        self.frequencyLineYmag[x] = y
-        self.frequencyLineX0[x] = x0
-        self.frequencyLineX1[x] = x1
+    #
+    #   Update bars attached to a scroll bar that helps identify target frequency
+    #
 
     def updateTargetFreqBars(self):
         #   get the length of the scale and add 1 ("fence post rule")
@@ -270,38 +182,31 @@ class cwDecoder(baseui.cwDecoderUI):
         #   this allows us to draw two vertical lines that help target the apparent CW signal in the range
         #
         barPos = round((int(self.frequencyPlotcwToneScale_VAR.get()) / scaleLength) * self.FFTSIZE)
+        self.plotter.drawHighLightBars(barPos)
 
-        x0 = self.frequencyLineX0[barPos]
-        x1 = self.frequencyLineX1[barPos]
-
-        if self.tuningLine1 == None:
-            self.tuningLine1 = self.frequencyPlotCanvas.create_line(x0,
-                                                                    self.frequencyPlotCanvas_height,
-                                                                    x0,
-                                                                    0,
-                                                                    fill="red", width=2)
-            self.tuningLine2 = self.frequencyPlotCanvas.create_line(x1,
-                                                                    self.frequencyPlotCanvas_height,
-                                                                    x1,
-                                                                    0,
-                                                                    fill="red", width=2)
-        else:
-
-            self.frequencyPlotCanvas.coords(self.tuningLine1, x0, self.frequencyPlotCanvas_height, x0, 0)
-            self.frequencyPlotCanvas.coords(self.tuningLine2, x1, self.frequencyPlotCanvas_height, x1, 0)
-
+    #
+    #   Display CW in the target text box.
+    #   logCW does the work of managing the text box and rolling characters off display (FIFO)
+    #
     def process_CWDecoded_Data(self, buffer):
         print("Processing CW Decoded in window", buffer)
         for char in buffer:
             self.logCW_Character(char)
+
+    def logCW_Character (self,newchar):
+        if len(self.cwDecodedText.get('1.0', 'end')) > 190:   # Not maximum, but close to it
+            self.cwDecodedText.delete('1.0')
+        self.cwDecodedText.insert('2.end',newchar)
+
+
 
     #
     #   Callbacks
     #
 
     def frequencyDecodeScale_CB(self, scale_value):
-        print("scale_value:", scale_value, type(scale_value))
-        self.frequencySigValue_VAR.set(str(int(scale_value)*10)) # 2*10
+        # print("scale_value:", scale_value, type(scale_value))
+        self.frequencySigValue_VAR.set(str(int(scale_value)*10))
         self.mainWindow.theRadio.Set_Signal_Value(scale_value)
 
     def frequencyPlotcwToneScale_CB(self, scale_value):
@@ -309,20 +214,18 @@ class cwDecoder(baseui.cwDecoderUI):
         self.updateTargetFreqBars()
 
     def resetMinMax_CB(self):
-        self.frequencyHighValue_VAR.set('0')  # Reset min/max on entry
-        self.frequencyLowValue_VAR.set('0')
+        self.plotter.set_CurrentMax(0)
+        self.plotter.set_CurrentMin(0)
 
 
 
     def close_CB(self):
+        self.mainWindow.frequencySpectrumMode =  self.spectrumMorseState
         self.spectrumMorseState = None
         self.mainWindow.consumerDSPdata = self.mainWindow
         self.destroy()
 
-    def logCW_Character (self,newchar):
-        if len(self.cwDecodedText.get('1.0', 'end')) > 190:   # Not maximum, but close to it
-            self.cwDecodedText.delete('1.0')
-        self.cwDecodedText.insert('2.end',newchar)
+
 
 
 
@@ -346,23 +249,7 @@ class cwDecoder(baseui.cwDecoderUI):
         #
         #   Update canvas size
         #
-        self.frequencyPlotCanvas_height = self.frequencyPlotCanvas.winfo_height()
-        self.frequencyPlotCanvas_width = self.frequencyPlotCanvas.winfo_width()
+        self.plotter.refreshCanvas()
+        self.updateTargetFreqBars()
 
-        if self.frequencyLineObj[0] == None:  # if nothing plotted, just return
-            return
-
-        x_width, x_stretch, y_stretch = gv.calculatePlotParameters(self.frequencyPlotCanvas_width, self.FFTSIZE,
-                                                                   self.FREQ_X_GAP,
-                                                                   self.frequencyPlotCanvas_height,
-                                                                   self.FREQ_Y_MAX,
-                                                                   self.FREQ_Y_GAP)
-
-        for x in range(self.FFTSIZE):
-
-            ymag = self.frequencyLineYmag[x]
-
-            self.drawBars(x, ymag, x_width, x_stretch, y_stretch)
-
-            self.updateTargetFreqBars()
 

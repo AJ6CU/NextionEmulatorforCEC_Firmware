@@ -792,7 +792,7 @@ class piRadio:
         checksum= ((MyAddr + DSPCode + value)%256)
 
         command = [self.toRadioCommandDict["TS_CMD_LOOPBACK0"],MyAddr, value, DSPCode, checksum]
-        print("sending loopback command", "myaddr:", hex(MyAddr), "value passed:", hex(value), "dspcode:",hex(DSPCode), "checksum:", hex(checksum))
+        # print("sending loopback command", "myaddr:", hex(MyAddr), "value passed:", hex(value), "dspcode:",hex(DSPCode), "checksum:", hex(checksum))
 
         self.sendCommandToMCU(bytes(command))
 
@@ -804,8 +804,8 @@ class piRadio:
 
         checksum = ((MyAddr + DSPCode + value) % 256)
         command = [self.toRadioCommandDict["TS_CMD_LOOPBACK0"], MyAddr, value, DSPCode, checksum]
-        print("sending loopback command for signal", "myaddr:", hex(MyAddr), "value passed:", hex(int(scale_value)), "adjusted value", hex(value), "dspcode:", hex(DSPCode),
-              "checksum:", hex(checksum))
+        # print("sending loopback command for signal", "myaddr:", hex(MyAddr), "value passed:", hex(int(scale_value)), "adjusted value", hex(value), "dspcode:", hex(DSPCode),
+        #       "checksum:", hex(checksum))
         self.sendCommandToMCU(bytes(command))
 
     def Set_DSP_State(self, flag):
@@ -814,12 +814,12 @@ class piRadio:
             value = 51    # This turns the DSP on and sets it into Spectrum Mode
             self.mainWindow.frequencySpectrumMode == "FreqScan"
             gv.config.set_DSP_Switch(flag)
-            print("turning on DSP")
+            # print("turning on DSP")
 
         else:
             value = 50    # This turns off the DSP
             print("Turning off DSP")
-            gv.config.set_DSP_Switch(flag)
+            # gv.config.set_DSP_Switch(flag)
 
 
         # MyAddr = random.randint(5, 255)     # Not clear why a specific address is needed. Perhaps for future?
@@ -829,7 +829,7 @@ class piRadio:
         checksum= ((MyAddr + DSPCode + value)%256)
 
         command = [self.toRadioCommandDict["TS_CMD_LOOPBACK0"],MyAddr, value, DSPCode, checksum]
-        print("sending loopback command", "myaddr:", hex(MyAddr), "value passed:", hex(value), "dspcode:",hex(DSPCode), "checksum:", hex(checksum))
+        # print("sending loopback command", "myaddr:", hex(MyAddr), "value passed:", hex(value), "dspcode:",hex(DSPCode), "checksum:", hex(checksum))
 
         self.sendCommandToMCU(bytes(command))
 

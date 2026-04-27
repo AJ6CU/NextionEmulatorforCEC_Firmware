@@ -244,8 +244,6 @@ class cwDecoderUI(tk.Toplevel):
             state="normal",
             width=50,
             wrap="char")
-        _text_ = '1'
-        self.cwDecodedText.insert("0.0", _text_)
         self.cwDecodedText.pack(
             expand=True,
             fill="x",
