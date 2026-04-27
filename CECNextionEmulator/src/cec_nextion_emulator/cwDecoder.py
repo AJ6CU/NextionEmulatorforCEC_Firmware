@@ -143,23 +143,23 @@ class cwDecoder(baseui.cwDecoderUI):
         self.mainWindow.theRadio.Req_DSP_EEPROM_Settings()
 
 
-    def process_DSP_Data(self, buffer):
-        byteList = int(buffer).to_bytes(4,'little')
-        # print("process_DSP_Data", byteList)
-
-        if int(buffer) < 0xffffff:          # only a 3 hex byte number
-
-            print("eeprom values returned")
-            print("decodescale*10=", byteList[0])
-            print("useDSPFlag=", byteList[1])
-
-            self.frequencyDecodeScale_VAR.set(byteList[0]/10)
-            self.frequencySigValue_VAR.set(byteList[0])
-
-            if byteList[1] == 1:
-                self.mainWindow.UseDSP =  "True"
-            else:
-                self.mainWindow.UseDSP = "False"
+    # def process_DSP_EEPROM_Data(self, buffer):
+    #     byteList = int(buffer).to_bytes(4,'little')
+    #     # print("process_DSP_Data", byteList)
+    #
+    #     if int(buffer) < 0xffffff:          # only a 3 hex byte number
+    #
+    #         print("eeprom values returned")
+    #         print("decodescale*10=", byteList[0])
+    #         print("useDSPFlag=", byteList[1])
+    #
+    #         self.frequencyDecodeScale_VAR.set(byteList[0]/10)
+    #         self.frequencySigValue_VAR.set(byteList[0])
+    #
+    #         if byteList[1] == 1:
+    #             self.mainWindow.UseDSP =  "True"
+    #         else:
+    #             self.mainWindow.UseDSP = "False"
 
     #
     #   Data processors

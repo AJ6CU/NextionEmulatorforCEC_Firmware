@@ -235,7 +235,7 @@ class cwDecoderUI(tk.Toplevel):
         self.cwDecodedText = tk.Text(self.cwDecodeFrame, name="cwdecodedtext")
         self.cwDecodedText.configure(
             background="blue",
-            font="{Arial} 18 {}",
+            font="{Courier New} 18 {}",
             foreground="lightgray",
             height=3,
             spacing1=2,

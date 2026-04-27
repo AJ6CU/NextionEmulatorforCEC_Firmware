@@ -19,6 +19,7 @@ class barPlotter:
         
         self.canvas_height = self.canvasObj.winfo_height()
         self.canvas_width = self.canvasObj.winfo_width()
+        print("self.canvas_height=", self.canvas_height, "self.canvas_width=", self.canvas_width)
 
         #
         #   Following used to save object pointers to bars and lines drawn so we can just move them
@@ -59,10 +60,9 @@ class barPlotter:
         y0 = round(self.canvas_height - ((ymag * self.yStretch) + self.Y_GAP))
         x1 = round((x * self.xStretch) + (x * self.xWidth) + self.xWidth + self.X_GAP)
         y1 = round(self.canvas_height - self.Y_GAP)
-
         return x0, y0, x1, y1
 
-    def process_Data(self, buffer, yDivider=1):
+    def process_Data(self, buffer, yDivider=0):
         # print("buffer size=", len(buffer))
 
         self.calculatePlotParameters()              # calculate the fixed parameters of the chart
@@ -83,10 +83,9 @@ class barPlotter:
             elif ymag > self.currentMax:
                 self.currentMax = ymag
                 # self.frequencyHighValue_VAR.set(str(currentMax))
-
+            # print("Bar X=", x, "Y=", ymag)
             self.drawBars(x, ymag)
 
-        # self.updateTargetFreqBars()
 
     def drawBars(self,x,y):
 

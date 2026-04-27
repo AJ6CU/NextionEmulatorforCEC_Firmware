@@ -208,6 +208,7 @@ SPEAKER
     <child>
       <object class="ttk.Frame" id="frame2">
         <property name="height">200</property>
+        <property name="relief">sunken</property>
         <property name="style">Normal.TFrame</property>
         <property name="width">1250</property>
         <layout manager="pack">
@@ -263,6 +264,7 @@ SPEAKER
         </child>
         <child>
           <object class="ttk.Frame" id="control_Meter_Tuning_Frame" named="True">
+            <property name="borderwidth">0</property>
             <property name="height">200</property>
             <property name="style">Normal.TFrame</property>
             <property name="width">200</property>
@@ -408,6 +410,42 @@ CW DECODE
                 </child>
               </object>
             </child>
+            <child>
+              <object class="ttk.Frame" id="cwDecodeFrame" named="True">
+                <property name="height">100</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">400</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">10 0</property>
+                  <property name="pady">20 0</property>
+                  <property name="row">2</property>
+                  <property name="sticky">w</property>
+                </layout>
+                <child>
+                  <object class="tk.Text" id="decodedCWText" named="True">
+                    <property name="background">gray</property>
+                    <property name="borderwidth">2</property>
+                    <property name="font">{Courier New} 18 {}</property>
+                    <property name="foreground">white</property>
+                    <property name="height">4</property>
+                    <property name="highlightbackground">white</property>
+                    <property name="highlightcolor">white</property>
+                    <property name="highlightthickness">1</property>
+                    <property name="relief">sunken</property>
+                    <property name="spacing1">2</property>
+                    <property name="spacing2">5</property>
+                    <property name="spacing3">2</property>
+                    <property name="state">normal</property>
+                    <property name="width">25</property>
+                    <property name="wrap">char</property>
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
       </object>
@@ -523,204 +561,231 @@ CW DECODE
           </object>
         </child>
         <child>
-          <object class="ttk.Frame" id="cw_Info_Frame" named="True">
-            <property name="borderwidth">5</property>
+          <object class="ttk.Frame" id="cwInfoFrame" named="True">
             <property name="height">200</property>
-            <property name="style">NormalOutline.TFrame</property>
+            <property name="style">Normal.TFrame</property>
             <property name="width">200</property>
-            <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
             <layout manager="pack">
-              <property name="anchor">nw</property>
-              <property name="expand">false</property>
-              <property name="fill">x</property>
-              <property name="padx">25 0</property>
-              <property name="pady">20</property>
-              <property name="side">left</property>
+              <property name="side">top</property>
             </layout>
             <child>
-              <object class="ttk.Label" id="cw_settings_title_Label" named="True">
-                <property name="style">Heading2b.TLabel</property>
-                <property name="text" translatable="yes">CW Settings</property>
+              <object class="ttk.Frame" id="cw_Info_Frame" named="True">
+                <property name="borderwidth">5</property>
+                <property name="height">200</property>
+                <property name="style">NormalOutline.TFrame</property>
+                <property name="width">200</property>
                 <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">0</property>
-                  <property name="columnspan">3</property>
-                  <property name="row">0</property>
+                <layout manager="pack">
+                  <property name="anchor">nw</property>
+                  <property name="expand">false</property>
+                  <property name="fill">x</property>
+                  <property name="pady">0 10</property>
+                  <property name="side">top</property>
                 </layout>
+                <child>
+                  <object class="ttk.Label" id="cw_settings_title_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">CW Settings</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="columnspan">3</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="tone_Label" named="True">
+                    <property name="style">Heading3b.TLabel</property>
+                    <property name="text" translatable="yes">Tone</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="row">1</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="tone_value_Label" named="True">
+                    <property name="style">Heading3b.TLabel</property>
+                    <property name="text" translatable="yes">799</property>
+                    <property name="textvariable">string:tone_value_VAR</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="padx">0 2</property>
+                      <property name="row">1</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="tone_units_Label" named="True">
+                    <property name="style">Heading3b.TLabel</property>
+                    <property name="text" translatable="yes">Hz</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">2</property>
+                      <property name="row">1</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="key_type_Label" named="True">
+                    <property name="style">Heading3b.TLabel</property>
+                    <property name="text" translatable="yes">Key</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="row">2</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="key_type_value_Label" named="True">
+                    <property name="style">Heading3b.TLabel</property>
+                    <property name="text" translatable="yes">Straight</property>
+                    <property name="textvariable">string:key_type_value_VAR</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="row">2</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="key_speed_label" named="True">
+                    <property name="style">Heading3b.TLabel</property>
+                    <property name="text" translatable="yes">Speed</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="row">3</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="key_speed_value_Label" named="True">
+                    <property name="style">Heading3b.TLabel</property>
+                    <property name="text" translatable="yes">1</property>
+                    <property name="textvariable">string:key_speed_value_VAR</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="row">3</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="key_speed_units_Label" named="True">
+                    <property name="style">Heading3b.TLabel</property>
+                    <property name="text" translatable="yes">wpm</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">2</property>
+                      <property name="row">3</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="delay_returning_to_rx_Label" named="True">
+                    <property name="style">Heading3b.TLabel</property>
+                    <property name="text" translatable="yes">Delay-&gt;RX</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="padx">0 3</property>
+                      <property name="row">5</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="delay_returning_to_rx_value_Label" named="True">
+                    <property name="style">Heading3b.TLabel</property>
+                    <property name="text" translatable="yes">199</property>
+                    <property name="textvariable">string:delay_returning_to_rx_value_VAR</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="row">5</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="delay_returning_to_rx_units_Label" named="True">
+                    <property name="style">Heading3b.TLabel</property>
+                    <property name="text" translatable="yes">ms</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">2</property>
+                      <property name="row">5</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="delay_starting_tx_Label" named="True">
+                    <property name="style">Heading3b.TLabel</property>
+                    <property name="text" translatable="yes">Delay-&gt;TX</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="row">4</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="delay_starting_tx_value_Label" named="True">
+                    <property name="style">Heading3b.TLabel</property>
+                    <property name="text" translatable="yes">299</property>
+                    <property name="textvariable">string:delay_starting_tx_value_VAR</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="row">4</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="delay_starting_tx_units_Label" named="True">
+                    <property name="style">Heading3b.TLabel</property>
+                    <property name="text" translatable="yes">ms</property>
+                    <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
+                    <layout manager="grid">
+                      <property name="column">2</property>
+                      <property name="row">4</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
-              <object class="ttk.Label" id="tone_Label" named="True">
-                <property name="style">Heading3b.TLabel</property>
-                <property name="text" translatable="yes">Tone</property>
-                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">0</property>
-                  <property name="row">1</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="tone_value_Label" named="True">
-                <property name="style">Heading3b.TLabel</property>
-                <property name="text" translatable="yes">799</property>
-                <property name="textvariable">string:tone_value_VAR</property>
-                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">1</property>
-                  <property name="padx">0 2</property>
-                  <property name="row">1</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="tone_units_Label" named="True">
-                <property name="style">Heading3b.TLabel</property>
-                <property name="text" translatable="yes">Hz</property>
-                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">2</property>
-                  <property name="row">1</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="key_type_Label" named="True">
-                <property name="style">Heading3b.TLabel</property>
-                <property name="text" translatable="yes">Key</property>
-                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">0</property>
-                  <property name="row">2</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="key_type_value_Label" named="True">
-                <property name="style">Heading3b.TLabel</property>
-                <property name="text" translatable="yes">Straight</property>
-                <property name="textvariable">string:key_type_value_VAR</property>
-                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">1</property>
-                  <property name="row">2</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="key_speed_label" named="True">
-                <property name="style">Heading3b.TLabel</property>
-                <property name="text" translatable="yes">Speed</property>
-                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">0</property>
-                  <property name="row">3</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="key_speed_value_Label" named="True">
-                <property name="style">Heading3b.TLabel</property>
-                <property name="text" translatable="yes">1</property>
-                <property name="textvariable">string:key_speed_value_VAR</property>
-                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">1</property>
-                  <property name="row">3</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="key_speed_units_Label" named="True">
-                <property name="style">Heading3b.TLabel</property>
-                <property name="text" translatable="yes">wpm</property>
-                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">2</property>
-                  <property name="row">3</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="delay_returning_to_rx_Label" named="True">
-                <property name="style">Heading3b.TLabel</property>
-                <property name="text" translatable="yes">Delay-&gt;RX</property>
-                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">0</property>
-                  <property name="padx">0 3</property>
-                  <property name="row">5</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="delay_returning_to_rx_value_Label" named="True">
-                <property name="style">Heading3b.TLabel</property>
-                <property name="text" translatable="yes">199</property>
-                <property name="textvariable">string:delay_returning_to_rx_value_VAR</property>
-                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">1</property>
-                  <property name="row">5</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="delay_returning_to_rx_units_Label" named="True">
-                <property name="style">Heading3b.TLabel</property>
-                <property name="text" translatable="yes">ms</property>
-                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">2</property>
-                  <property name="row">5</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="delay_starting_tx_Label" named="True">
-                <property name="style">Heading3b.TLabel</property>
-                <property name="text" translatable="yes">Delay-&gt;TX</property>
-                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">0</property>
-                  <property name="row">4</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="delay_starting_tx_value_Label" named="True">
-                <property name="style">Heading3b.TLabel</property>
-                <property name="text" translatable="yes">299</property>
-                <property name="textvariable">string:delay_starting_tx_value_VAR</property>
-                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">1</property>
-                  <property name="row">4</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="delay_starting_tx_units_Label" named="True">
-                <property name="style">Heading3b.TLabel</property>
-                <property name="text" translatable="yes">ms</property>
-                <bind sequence="&lt;1&gt;" handler="cwSettings_CB" add="" />
-                <layout manager="grid">
-                  <property name="column">2</property>
-                  <property name="row">4</property>
-                  <property name="sticky">w</property>
+              <object class="tk.Canvas" id="spectrumCanvas" named="True">
+                <property name="background">gray</property>
+                <property name="height">50</property>
+                <property name="highlightbackground">white</property>
+                <property name="highlightcolor">white</property>
+                <property name="highlightthickness">2</property>
+                <property name="relief">sunken</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="anchor">sw</property>
+                  <property name="expand">false</property>
+                  <property name="fill">x</property>
+                  <property name="padx">10 0</property>
+                  <property name="side">left</property>
                 </layout>
               </object>
             </child>

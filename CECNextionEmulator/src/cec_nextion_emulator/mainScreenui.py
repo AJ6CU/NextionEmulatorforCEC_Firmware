@@ -1,21 +1,28 @@
 #!/usr/bin/python3
+"""
+pi_Nextion_UX
+
+A Nextion GUI emulator for CEC
+
+UI source file: mainScreen.ui
+"""
 import tkinter as tk
 import tkinter.ttk as ttk
 from JogwheelCustom import JogwheelCustom
 from theVFO import theVFO
 
 
-def i18n_translator_noop(value):
+def safe_i18n_translator(value):
     """i18n - Setup translator in derived class file"""
     return value
 
 
-def first_object_callback_noop(widget):
+def safe_fo_callback(widget):
     """on first objec callback - Setup callback in derived class file."""
     pass
 
 
-def image_loader_default(master, image_name: str):
+def safe_image_loader(master, image_name: str):
     """Image loader - Setup image_loader in derived class file."""
     img = None
     try:
@@ -40,12 +47,12 @@ class mainScreenUI(ttk.Frame):
         **kw
     ):
         if translator is None:
-            translator = i18n_translator_noop
+            translator = safe_i18n_translator
         _ = translator  # i18n string marker.
         if image_loader is None:
-            image_loader = image_loader_default
+            image_loader = safe_image_loader
         if on_first_object_cb is None:
-            on_first_object_cb = first_object_callback_noop
+            on_first_object_cb = safe_fo_callback
 
         super().__init__(master, **kw)
 
@@ -156,7 +163,11 @@ class mainScreenUI(ttk.Frame):
         self.speaker_Button.configure(command=self.speaker_CB)
         self.menuBar_Frame.pack(anchor="n", expand=True, fill="x", side="top")
         frame2 = ttk.Frame(self)
-        frame2.configure(height=200, style="Normal.TFrame", width=1250)
+        frame2.configure(
+            height=200,
+            relief="sunken",
+            style="Normal.TFrame",
+            width=1250)
         self.theVFO_Object = theVFO(frame2, name="thevfo_object")
         self.theVFO_Object.grid(column=0, row=0)
         frame3 = ttk.Frame(frame2)
@@ -179,7 +190,7 @@ class mainScreenUI(ttk.Frame):
         self.control_Meter_Tuning_Frame = ttk.Frame(
             frame2, name="control_meter_tuning_frame")
         self.control_Meter_Tuning_Frame.configure(
-            height=200, style="Normal.TFrame", width=200)
+            borderwidth=0, height=200, style="Normal.TFrame", width=200)
         self.secondary_menu_Frame = ttk.Frame(
             self.control_Meter_Tuning_Frame,
             name="secondary_menu_frame")
@@ -250,6 +261,51 @@ class mainScreenUI(ttk.Frame):
             variable=self.s_meter_Progressbar_VAR)
         self.s_meter_Progressbar.grid(column=1, row=1, sticky="w")
         self.sMeter_Frame.grid(column=0, padx="20 0", row=1, sticky="w")
+        self.cwDecodeFrame = ttk.Frame(
+            self.control_Meter_Tuning_Frame,
+            name="cwdecodeframe")
+        self.cwDecodeFrame.configure(
+            height=100, style="Normal.TFrame", width=400)
+        self.decodedCWText = tk.Text(self.cwDecodeFrame, name="decodedcwtext")
+        self.decodedCWText.configure(
+            background="gray",
+            borderwidth=2,
+            font="{Courier New} 18 {}",
+            foreground="white",
+            height=4,
+            highlightbackground="white",
+            highlightcolor="white",
+            highlightthickness=1,
+            relief="sunken",
+            spacing1=2,
+            spacing2=5,
+            spacing3=2,
+            state="normal",
+            width=25,
+            wrap="char")
+        self.decodedCWText.pack(side="left")
+        self.spectrumCanvas = tk.Canvas(
+            self.cwDecodeFrame, name="spectrumcanvas")
+        self.spectrumCanvas.configure(
+            background="gray",
+            height=100,
+            highlightbackground="white",
+            highlightcolor="white",
+            highlightthickness=2,
+            relief="sunken",
+            width=200)
+        self.spectrumCanvas.pack(
+            anchor="sw",
+            expand=False,
+            fill="x",
+            padx="10 0",
+            side="left")
+        self.cwDecodeFrame.grid(
+            column=0,
+            padx="10 0",
+            pady="20 0",
+            row=2,
+            sticky="w")
         self.control_Meter_Tuning_Frame.grid(column=0, row=1, sticky="nw")
         frame2.pack(anchor="n", expand=True, fill="x", side="top")
         frame2.columnconfigure(0, weight=1)
@@ -332,9 +388,12 @@ class mainScreenUI(ttk.Frame):
             fill="x",
             padx=10,
             side="left")
-        self.cw_Info_Frame = ttk.Frame(
+        self.cwInfoFrame = ttk.Frame(
             self.ATT_IFS_Adjust_Frame,
-            name="cw_info_frame")
+            name="cwinfoframe")
+        self.cwInfoFrame.configure(
+            height=200, style="Normal.TFrame", width=200)
+        self.cw_Info_Frame = ttk.Frame(self.cwInfoFrame, name="cw_info_frame")
         self.cw_Info_Frame.configure(
             borderwidth=5,
             height=200,
@@ -452,10 +511,10 @@ class mainScreenUI(ttk.Frame):
             anchor="nw",
             expand=False,
             fill="x",
-            padx="25 0",
-            pady=20,
-            side="left")
+            pady="0 10",
+            side="top")
         self.cw_Info_Frame.bind("<1>", self.cwSettings_CB, add="")
+        self.cwInfoFrame.pack(side="top")
         self.ATT_IFS_Adjust_Frame.pack(
             anchor="w",
             expand=True,

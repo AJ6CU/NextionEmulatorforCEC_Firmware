@@ -8,6 +8,7 @@ from cwSettings import cwSettings, cwSettings
 
 from channels import channels
 from cwDecoder import cwDecoder
+from barPlotter import barPlotter
 from Classic_uBITX_Control import Classic_uBITX_Control
 
 import mystyles  # Styles definition module
@@ -41,6 +42,7 @@ class mainScreen(baseui.mainScreenUI):
                                         # "self" in the case where the DSP graph is displayed in the main window
                                         # or could point to Spectrum, CW Decode or Band scan if those windows
                                         # are active
+        self.mainScreenPlotter = None   # Plot object for main window
 
         self.frequencyDecodeScale = None
         self.frequencySigValue = None
@@ -95,6 +97,7 @@ class mainScreen(baseui.mainScreenUI):
         self.tuning_Jogwheel.grid_remove()
         gv.config.register_observer("VFO Touch Optimized", self.switchVFO_Tuning_Optimization)
         self.baselineJogValue = 0
+
 
 
 
@@ -164,6 +167,7 @@ class mainScreen(baseui.mainScreenUI):
         self.place(x=0, y=0)  # place the mainWindow on the screen
         self.master.geometry(gv.trimAndLocateWindow(self, 5, 30))
         self.master.protocol("WM_DELETE_WINDOW", lambda: self.close_MainWindow())
+        self.mainScreenPlotter = barPlotter(self, self.spectrumCanvas, 63, 70)
         self.consumerDSPdata.request_DSP_EEPROM_Data()          # Request data. If we get some, then DSP will be marked as exists
 
     def close_MainWindow (self):
@@ -606,7 +610,7 @@ class mainScreen(baseui.mainScreenUI):
         #   Dsp data is weird. You get a "vv" command with the data followed by a "vg" with
         #   the command to send the "vv" buffer that you received previously.
         #
-        self.consumerDSPdata.process_DSP_Data(self.vv_Command_Buffer)
+        self.process_DSP_EEPROM_Data(self.vv_Command_Buffer)
 
 
     def sb_UX_CW_Decoded_Characters(self, buffer):
@@ -623,17 +627,21 @@ class mainScreen(baseui.mainScreenUI):
             value = self.extractValue(buffer, 10, len(buffer) - 3)
         # print("buffer=", buffer)
         # print("value=", value)
+        # if self.consumerDSPdata
         self.consumerDSPdata.process_Spectrum_Data(value)
 
     def process_Spectrum_Data(self, buffer):
-        # print("Processing Spectrum Data for main window", buffer)
+        if self.mainScreenPlotter != None:
+            self.mainScreenPlotter.process_Data(buffer)
         pass
 
     def process_CWDecoded_Data(self, buffer):
         print("Processing CW Data for main window", buffer)
+        if self.mainScreenPlotter != None:
+            pass
         pass
 
-    def process_DSP_Data(self, buffer ):
+    def process_DSP_EEPROM_Data(self, buffer):
         print("Processing DSP Data for main window", buffer)
         byteList = int(buffer).to_bytes(4, 'little')
         # print("process_DSP_Data", byteList)

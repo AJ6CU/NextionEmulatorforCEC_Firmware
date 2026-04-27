@@ -339,14 +339,13 @@ Min/Max</property>
                 <child>
                   <object class="tk.Text" id="cwDecodedText" named="True">
                     <property name="background">blue</property>
-                    <property name="font">{Arial} 18 {}</property>
+                    <property name="font">{Courier New} 18 {}</property>
                     <property name="foreground">lightgray</property>
                     <property name="height">3</property>
                     <property name="spacing1">2</property>
                     <property name="spacing2">5</property>
                     <property name="spacing3">2</property>
                     <property name="state">normal</property>
-                    <property name="text" translatable="yes">1</property>
                     <property name="width">50</property>
                     <property name="wrap">char</property>
                     <bind sequence="&lt;Button-1&gt;" handler="enable_CW_Decode_CB" add="True" />
