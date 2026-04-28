@@ -811,15 +811,16 @@ class piRadio:
     def Set_DSP_State(self, flag):
 
         if flag == "True":            # Turn DSP On
-            value = 51    # This turns the DSP on and sets it into Spectrum Mode
+            value = 95    # This turns the DSP on and sets it into Spectrum Mode
             self.mainWindow.frequencySpectrumMode == "FreqScan"
             gv.config.set_DSP_Switch(flag)
-            # print("turning on DSP")
+            print("turning on DSP")
 
         else:
-            value = 50    # This turns off the DSP
+            value = 94    # This turns off the DSP
             print("Turning off DSP")
             # gv.config.set_DSP_Switch(flag)
+            self.mainWindow.mainScreenPlotter.clearCanvas()
 
 
         # MyAddr = random.randint(5, 255)     # Not clear why a specific address is needed. Perhaps for future?

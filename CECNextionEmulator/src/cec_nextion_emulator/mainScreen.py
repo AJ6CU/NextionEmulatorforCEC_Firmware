@@ -9,6 +9,7 @@ from cwSettings import cwSettings, cwSettings
 from channels import channels
 from cwDecoder import cwDecoder
 from barPlotter import barPlotter
+from cwLogger import cwLogger
 from Classic_uBITX_Control import Classic_uBITX_Control
 
 import mystyles  # Styles definition module
@@ -43,6 +44,7 @@ class mainScreen(baseui.mainScreenUI):
                                         # or could point to Spectrum, CW Decode or Band scan if those windows
                                         # are active
         self.mainScreenPlotter = None   # Plot object for main window
+        self.mainScreenCW_logger = None # CW display for the main window
 
         self.frequencyDecodeScale = None
         self.frequencySigValue = None
@@ -168,6 +170,7 @@ class mainScreen(baseui.mainScreenUI):
         self.master.geometry(gv.trimAndLocateWindow(self, 5, 30))
         self.master.protocol("WM_DELETE_WINDOW", lambda: self.close_MainWindow())
         self.mainScreenPlotter = barPlotter(self, self.spectrumCanvas, 63, 70)
+        self.mainScreenCW_logger = cwLogger(self, self.decodedCWText, 100)
         self.consumerDSPdata.request_DSP_EEPROM_Data()          # Request data. If we get some, then DSP will be marked as exists
 
     def close_MainWindow (self):
@@ -630,16 +633,60 @@ class mainScreen(baseui.mainScreenUI):
         # if self.consumerDSPdata
         self.consumerDSPdata.process_Spectrum_Data(value)
 
+    def highlightCWorSpectrumBoxes(self, flag):
+        self.mainScreenCW_logger.clearLog()
+        self.mainScreenPlotter.clearCanvas()
+
+        if flag:
+            if self.frequencySpectrumMode == "FreqScan":
+                self.spectrumCanvas.configure(
+                    highlightbackground="white",
+                    highlightcolor="white")
+                self.decodedCWText.configure(
+                    highlightbackground="gray",
+                    highlightcolor="gray")
+                # self.mainScreenCW_logger.clearLog()
+                return
+            elif self.frequencySpectrumMode == "CWDecode":
+                self.spectrumCanvas.configure(
+                    highlightbackground="gray",
+                    highlightcolor="gray")
+                self.decodedCWText.configure(
+                    highlightbackground="white",
+                    highlightcolor="white")
+                # self.mainScreenPlotter.clearCanvas()
+                return
+
+        self.decodedCWText.configure(
+            highlightbackground="gray",
+            highlightcolor="gray")
+        self.spectrumCanvas.configure(
+            highlightbackground="gray",
+            highlightcolor="gray")
+        # self.mainScreenCW_logger.clearLog()
+        # self.mainScreenPlotter.clearCanvas()
+
     def process_Spectrum_Data(self, buffer):
+        #
+        #   If the DSP had been previously enabled, it can be generating data before
+        #   the "consumer" in the mainscreen has been started. This just throws this data
+        #   away until it is ready
+        #
+
         if self.mainScreenPlotter != None:
             self.mainScreenPlotter.process_Data(buffer)
-        pass
+
 
     def process_CWDecoded_Data(self, buffer):
         print("Processing CW Data for main window", buffer)
-        if self.mainScreenPlotter != None:
-            pass
-        pass
+        #
+        #   If the DSP had been previously enabled, it can be generating data before
+        #   the "consumer" in the mainscreen has been started. This just throws this data
+        #   away until it is ready
+        #
+
+        if self.mainScreenCW_logger!= None:
+            self.mainScreenCW_logger.process_CWDecoded_Data(buffer)
 
     def process_DSP_EEPROM_Data(self, buffer):
         print("Processing DSP Data for main window", buffer)
@@ -674,6 +721,12 @@ class mainScreen(baseui.mainScreenUI):
                 self.frequencyPlotcwToneScale = int(byteList[2] - 100)
                 self.frequencyPlotcwToneValue = ((byteList[2]-100)*50)+300
                 self.frequencySpectrumMode = "CWDecode"
+
+            #
+            #   Now that we know which mode we are in, set white boundaries around the cw or spectrum areas
+            #   appropriately and clear the areas to start fresh
+            #
+            self.highlightCWorSpectrumBoxes(True)
 
             print("eeprom fetch:", hex(int(buffer)))
 

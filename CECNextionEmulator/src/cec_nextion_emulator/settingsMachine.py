@@ -68,6 +68,11 @@ class settingsMachine(baseui.settingsMachineUI):
             gv.config.set_DSP_Switch(self.DSP_Enable_VAR.get())
             self.mainWindow.theRadio.Set_DSP_State(self.DSP_Enable_VAR.get())
 
+            if self.DSP_Enable_VAR.get() == "True":
+                self.mainWindow.highlightCWorSpectrumBoxes(True)
+            else:
+                self.mainWindow.highlightCWorSpectrumBoxes(False)
+
         if int(self.MCU_Command_Headroom_VAR.get()) != self.saveMCU_Command_Headroom:
             gv.config.set_MCU_Command_Headroom(int(self.MCU_Command_Headroom_VAR.get())/1000)
 

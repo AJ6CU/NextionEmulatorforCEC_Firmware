@@ -169,7 +169,7 @@ class mainScreenUI(ttk.Frame):
             style="Normal.TFrame",
             width=1250)
         self.theVFO_Object = theVFO(frame2, name="thevfo_object")
-        self.theVFO_Object.grid(column=0, row=0)
+        self.theVFO_Object.grid(column=0, pady="5 0", row=0)
         frame3 = ttk.Frame(frame2)
         frame3.configure(height=200, style="Normal.TFrame", width=200)
         self.tuning_Jogwheel = JogwheelCustom(
@@ -276,7 +276,7 @@ class mainScreenUI(ttk.Frame):
             highlightbackground="white",
             highlightcolor="white",
             highlightthickness=1,
-            relief="sunken",
+            relief="flat",
             spacing1=2,
             spacing2=5,
             spacing3=2,
@@ -291,13 +291,13 @@ class mainScreenUI(ttk.Frame):
             height=100,
             highlightbackground="white",
             highlightcolor="white",
-            highlightthickness=2,
-            relief="sunken",
+            highlightthickness=1,
+            relief="flat",
             width=200)
         self.spectrumCanvas.pack(
             anchor="sw",
             expand=False,
-            fill="x",
+            fill="y",
             padx="10 0",
             side="left")
         self.cwDecodeFrame.grid(
@@ -306,8 +306,15 @@ class mainScreenUI(ttk.Frame):
             pady="20 0",
             row=2,
             sticky="w")
-        self.control_Meter_Tuning_Frame.grid(column=0, row=1, sticky="nw")
-        frame2.pack(anchor="n", expand=True, fill="x", side="top")
+        self.control_Meter_Tuning_Frame.grid(
+            column=0, padx="5 0", row=1, sticky="nw")
+        frame2.pack(
+            anchor="n",
+            expand=True,
+            fill="x",
+            ipadx=5,
+            ipady=5,
+            side="top")
         frame2.columnconfigure(0, weight=1)
         frame2.columnconfigure(1, weight=2)
         self.ATT_IFS_Adjust_Frame = ttk.Frame(

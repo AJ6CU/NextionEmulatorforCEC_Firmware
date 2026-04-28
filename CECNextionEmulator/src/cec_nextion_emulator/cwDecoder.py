@@ -3,6 +3,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import cwDecoderui as baseui
 from barPlotter import barPlotter
+from cwLogger import cwLogger
 import globalvars as gv
 from tkinter import messagebox
 
@@ -77,6 +78,7 @@ class cwDecoder(baseui.cwDecoderUI):
         #   Create plotter object and bind it to the frequencyPlotCanvas of this window
         #
         self.plotter = barPlotter(self, self.frequencyPlotCanvas, self.FFTSIZE, self.FREQ_Y_MAX)
+        self.logger = cwLogger(self, self.cwDecodedText, 150)
         if  self.mainWindow.frequencySpectrumMode == "FreqScan":
             self.enable_Frequency_Spectrum_CB()  # Start with the frequency scan
         else:
@@ -190,13 +192,14 @@ class cwDecoder(baseui.cwDecoderUI):
     #
     def process_CWDecoded_Data(self, buffer):
         print("Processing CW Decoded in window", buffer)
-        for char in buffer:
-            self.logCW_Character(char)
-
-    def logCW_Character (self,newchar):
-        if len(self.cwDecodedText.get('1.0', 'end')) > 190:   # Not maximum, but close to it
-            self.cwDecodedText.delete('1.0')
-        self.cwDecodedText.insert('2.end',newchar)
+        self.logger.process_CWDecoded_Data(buffer)
+    #     for char in buffer:
+    #         self.logCW_Character(char)
+    #
+    # def logCW_Character (self,newchar):
+    #     if len(self.cwDecodedText.get('1.0', 'end')) > 100:   # Not maximum, but close to it
+    #         self.cwDecodedText.delete('1.0')
+    #     self.cwDecodedText.insert('2.end',newchar)
 
 
 
@@ -223,6 +226,7 @@ class cwDecoder(baseui.cwDecoderUI):
         self.mainWindow.frequencySpectrumMode =  self.spectrumMorseState
         self.spectrumMorseState = None
         self.mainWindow.consumerDSPdata = self.mainWindow
+        self.mainWindow.highlightCWorSpectrumBoxes(True)
         self.destroy()
 
 

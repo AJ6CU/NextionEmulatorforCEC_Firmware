@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+import globalvars as gv
 
 class barPlotter:
     def __init__(self, parent, canvasObj, totalX, maxY, X_GAP=4, Y_GAP=0, currentMax=0, currentMin=0):
@@ -64,27 +65,33 @@ class barPlotter:
 
     def process_Data(self, buffer, yDivider=0):
         # print("buffer size=", len(buffer))
+        #
+        #   Need to check on whether the Switch for DSP is still on.
+        #   Can get into a race condition on turning it off where you delete the bars on canvas
+        #   and there is still one more coming thru that turns them back on again
+        #
+        if gv.config.get_DSP_Switch() == "True":
 
-        self.calculatePlotParameters()              # calculate the fixed parameters of the chart
+            self.calculatePlotParameters()              # calculate the fixed parameters of the chart
 
 
-        byteBuffer = bytearray.fromhex(buffer)          #This gives us an array of hex bytes
-        for x, y in enumerate(byteBuffer):
+            byteBuffer = bytearray.fromhex(buffer)          #This gives us an array of hex bytes
+            for x, y in enumerate(byteBuffer):
 
-            ymag = y>>yDivider
-            if ymag < 0:
-                ymag = 0
-            elif (ymag > self.maxY):
-                    ymag = self.maxY
+                ymag = y>>yDivider
+                if ymag < 0:
+                    ymag = 0
+                elif (ymag > self.maxY):
+                        ymag = self.maxY
 
-            if ymag < self.currentMin:
-                self.currentMin = ymag
-                # self.frequencyLowValue_VAR.set(str(currentMin))
-            elif ymag > self.currentMax:
-                self.currentMax = ymag
-                # self.frequencyHighValue_VAR.set(str(currentMax))
-            # print("Bar X=", x, "Y=", ymag)
-            self.drawBars(x, ymag)
+                if ymag < self.currentMin:
+                    self.currentMin = ymag
+                    # self.frequencyLowValue_VAR.set(str(currentMin))
+                elif ymag > self.currentMax:
+                    self.currentMax = ymag
+                    # self.frequencyHighValue_VAR.set(str(currentMax))
+                # print("Bar X=", x, "Y=", ymag)
+                self.drawBars(x, ymag)
 
 
     def drawBars(self,x,y):
@@ -100,9 +107,10 @@ class barPlotter:
         # draw the bar
         if self.barObj[x] == None:  # if the bar doesn't yet exist, create it
             self.barObj[x] = self.canvasObj.create_rectangle(x0, y0, x1, y1, fill="yellow",
-                                                                   outline="yellow")
+                                                                   outline="yellow", tags="bars")
         else:                       # bar already exists, jut adjust coordinates
             self.canvasObj.coords(self.barObj[x], x0, y0, x1, y1)
+            self.canvasObj.itemconfig(self.barObj[x], fill="yellow", outline="yellow")
 
 
         #
@@ -131,12 +139,26 @@ class barPlotter:
         x1 = self.barX1[barPos]
 
         if self.tuningLine1 == None:
-            self.tuningLine1 = self.canvasObj.create_line(x0, self.canvas_height, x0, 0, fill="red", width=2)
-            self.tuningLine2 = self.canvasObj.create_line(x1,self.canvas_height,x1,0,fill="red", width=2)
+            self.tuningLine1 = self.canvasObj.create_line(x0, self.canvas_height, x0, 0, fill="red", width=2, tags="tuningLine")
+            self.tuningLine2 = self.canvasObj.create_line(x1,self.canvas_height,x1,0,fill="red", width=2, tags="tuningLine")
         else:
 
             self.canvasObj.coords(self.tuningLine1, x0, self.canvas_height, x0, 0)
+            self.canvasObj.itemconfig(self.tuningLine1, fill="red")
             self.canvasObj.coords(self.tuningLine2, x1, self.canvas_height, x1, 0)
+            self.canvasObj.itemconfig(self.tuningLine2, fill="red")
+
+    def clearCanvas(self):
+        print("clearCanvas")
+        self.canvasObj.delete("bars")
+        for x in range(self.totalX):
+            self.barObj[x] = None
+
+        if self.tuningLine1 != None:
+            self.canvasObj.delete("tuningLing")
+            self.tuningLine1 = None
+            self.tuningLine2 = None
+
 
     def refreshCanvas(self):
         self.canvas_height = self.canvasObj.winfo_height()

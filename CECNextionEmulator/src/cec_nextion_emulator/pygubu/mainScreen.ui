@@ -215,6 +215,8 @@ SPEAKER
           <property name="anchor">n</property>
           <property name="expand">true</property>
           <property name="fill">x</property>
+          <property name="ipadx">5</property>
+          <property name="ipady">5</property>
           <property name="side">top</property>
         </layout>
         <containerlayout manager="grid">
@@ -225,6 +227,7 @@ SPEAKER
           <object class="projectcustom.theVFO" id="theVFO_Object" named="True">
             <layout manager="grid">
               <property name="column">0</property>
+              <property name="pady">5 0</property>
               <property name="row">0</property>
             </layout>
           </object>
@@ -270,6 +273,7 @@ SPEAKER
             <property name="width">200</property>
             <layout manager="grid">
               <property name="column">0</property>
+              <property name="padx">5 0</property>
               <property name="row">1</property>
               <property name="sticky">nw</property>
             </layout>
@@ -432,7 +436,7 @@ CW DECODE
                     <property name="highlightbackground">white</property>
                     <property name="highlightcolor">white</property>
                     <property name="highlightthickness">1</property>
-                    <property name="relief">sunken</property>
+                    <property name="relief">flat</property>
                     <property name="spacing1">2</property>
                     <property name="spacing2">5</property>
                     <property name="spacing3">2</property>
@@ -440,6 +444,24 @@ CW DECODE
                     <property name="width">25</property>
                     <property name="wrap">char</property>
                     <layout manager="pack">
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="tk.Canvas" id="spectrumCanvas" named="True">
+                    <property name="background">gray</property>
+                    <property name="height">100</property>
+                    <property name="highlightbackground">white</property>
+                    <property name="highlightcolor">white</property>
+                    <property name="highlightthickness">1</property>
+                    <property name="relief">flat</property>
+                    <property name="width">200</property>
+                    <layout manager="pack">
+                      <property name="anchor">sw</property>
+                      <property name="expand">false</property>
+                      <property name="fill">y</property>
+                      <property name="padx">10 0</property>
                       <property name="side">left</property>
                     </layout>
                   </object>
@@ -769,24 +791,6 @@ CW DECODE
                     </layout>
                   </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="tk.Canvas" id="spectrumCanvas" named="True">
-                <property name="background">gray</property>
-                <property name="height">50</property>
-                <property name="highlightbackground">white</property>
-                <property name="highlightcolor">white</property>
-                <property name="highlightthickness">2</property>
-                <property name="relief">sunken</property>
-                <property name="width">200</property>
-                <layout manager="pack">
-                  <property name="anchor">sw</property>
-                  <property name="expand">false</property>
-                  <property name="fill">x</property>
-                  <property name="padx">10 0</property>
-                  <property name="side">left</property>
-                </layout>
               </object>
             </child>
           </object>
