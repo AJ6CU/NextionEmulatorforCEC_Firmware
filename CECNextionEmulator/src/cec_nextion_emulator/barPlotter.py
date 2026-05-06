@@ -74,8 +74,11 @@ class barPlotter:
 
             self.calculatePlotParameters()              # calculate the fixed parameters of the chart
 
-
-            byteBuffer = bytearray.fromhex(buffer)          #This gives us an array of hex bytes
+            # print("in plotter", buffer[0], type(buffer[0]))
+            if type(buffer[0]) == str:
+                byteBuffer = bytearray.fromhex(buffer)      #This gives us an array of hex bytes
+            else:
+                byteBuffer = buffer
             for x, y in enumerate(byteBuffer):
 
                 ymag = y>>yDivider

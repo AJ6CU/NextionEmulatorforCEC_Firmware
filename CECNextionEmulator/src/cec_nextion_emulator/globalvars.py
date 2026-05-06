@@ -23,7 +23,7 @@ def get_image(filename):
 config = None
 
 RELOADICON = "reloadicon.png"
-BAUD = 9600
+BAUD = 57600     #9600
 NUMBER_DELIMITER = ""               # Loaded with value from configuration file
 
 MASTER_CAL_BOUNDS = {'LOW': -500000, 'HIGH': 500000}

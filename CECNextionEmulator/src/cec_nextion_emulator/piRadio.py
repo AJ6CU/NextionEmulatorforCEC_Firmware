@@ -812,7 +812,7 @@ class piRadio:
         # for _ in range(count):
         #     self.memoryQueue.append("Spectrum_Scan")
 
-        print('queue lenght=',self.lenMemoryQueue())
+        # print('queue lenght=',self.lenMemoryQueue())
 
         fourBytes = self.Freq_Encode(str(freq))
 
@@ -823,7 +823,7 @@ class piRadio:
         for _ in range(count):
             self.memoryQueue.append("Spectrum_Scan")
 
-        print('queue lenght=', self.lenMemoryQueue())
+        # print('queue lenght=', self.lenMemoryQueue())
 
     def Set_Spectrum_Mode(self, value):
 

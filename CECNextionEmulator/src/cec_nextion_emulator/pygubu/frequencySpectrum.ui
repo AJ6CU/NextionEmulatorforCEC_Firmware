@@ -24,7 +24,7 @@
     <resources />
   </project>
   <object class="tk.Toplevel" id="frequencySpectrum_Window" named="True">
-    <property name="geometry">800x550</property>
+    <property name="geometry">800x650</property>
     <property name="height">200</property>
     <property name="title" translatable="yes">Frequency Spectrum</property>
     <property name="width">800</property>

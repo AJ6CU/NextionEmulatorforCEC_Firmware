@@ -234,7 +234,7 @@ class cwDecoder(baseui.cwDecoderUI):
 
 
         #
-        #   resizeCanvas_CB and refreshCanvas work together to deal with any resizing of the canvas.
+        #   resizeCanvas_CB and refreshCanvas work together to de2al with any resizing of the canvas.
         #   When a resize is detected, resizeCanvas_CB is called and it schedules a future execution of
         #   refreshCanvas.  But resizing generates a lot of callbacks... So if the resize process is underway
         #   each new event cancels the prior "after refreshCanvas" and creates a new one 100ms in the future

@@ -917,9 +917,11 @@ class mainScreen(baseui.mainScreenUI):
                     self.theRadio.Factory_CW_Sidetone_Setter(str(int(value, 16)))
 
                 case "Spectrum_Scan":
-                    print("Spectrum_Scan:", self.theRadio.lenMemoryQueue()+1,"\n",buffer, "\n", value)
+                    # print("Spectrum_Scan:", self.theRadio.lenMemoryQueue()+1,"\n",buffer, "\n", value)
+                    self.spectrumWindow.process_Spectrum_Data(value)
 
                 case _:
+                    # print("case=",memoryCategory)
                     messagebox.showerror("Application Error", "Unknown Memory Request")
                     sys.exit("A fatal internal error occurred")
         except TypeError:
