@@ -2,7 +2,8 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import cwDecoderui as baseui
-from barPlotter import barPlotter
+#
+from barPlotter import barPlotterBdata
 from cwLogger import cwLogger
 import globalvars as gv
 from tkinter import messagebox
@@ -77,7 +78,7 @@ class cwDecoder(baseui.cwDecoderUI):
         #
         #   Create plotter object and bind it to the frequencyPlotCanvas of this window
         #
-        self.plotter = barPlotter(self, self.frequencyPlotCanvas, self.FFTSIZE, self.FREQ_Y_MAX)
+        self.plotter = barPlotterBdata(self, self.frequencyPlotCanvas, self.FFTSIZE, self.FREQ_Y_MAX)
         self.logger = cwLogger(self, self.cwDecodedText, 150)
         if  self.mainWindow.frequencySpectrumMode == "FreqScan":
             self.enable_Frequency_Spectrum_CB()  # Start with the frequency scan

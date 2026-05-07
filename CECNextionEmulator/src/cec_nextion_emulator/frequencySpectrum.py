@@ -119,7 +119,9 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         self.frequencyTuning_VAR.set(250)                               # Set scrollbar in middle
         self.currentFrequency_VAR.set(str(self.lastCenterFrequency))    # Set frequency
 
-        self.plotter = barPlotter(self, self.frequencyPlotCanvas, self.MaxADCCount,self.FREQ_Y_MAX)
+        self.plotterAvg = barPlotter(self, self.frequencyPlotCanvas, self.MaxADCCount, self.FREQ_Y_MAX)
+        # self.plotterPeak = barPlotter(self, self.frequencyPlotCanvas, self.MaxADCCount, self.FREQ_Y_MAX, barColor="red")
+        self.plotterPeak = barPlotter(self, self.waterfall_Canvas, self.MaxADCCount, self.FREQ_Y_MAX, barColor="red")
 
         # self.frequencyPlotCanvas_height = self.frequencyPlotCanvas.winfo_height()
         # self.frequencyPlotCanvas_width = self.frequencyPlotCanvas.winfo_width()
@@ -157,36 +159,24 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         self.averageBuffer = bytearray(self.MaxADCCount)
 
     def updatePeak(self,buffer):
-        # print("input buffer=", buffer)
         byteBuffer =bytearray.fromhex(buffer)
-        # print(len(byteBuffer))
-        # print("byteBuffer=", byteBuffer)
-        # print("peakBuffer=", self.peakBuffer)
         for x, y in enumerate(byteBuffer):
             if y > self.peakBuffer[x]:
-                # print("new peak", self.peakBuffer[x], y)
                 self.peakBuffer[x] = y
-        # print("peakBuffer=", self.peakBuffer)
-        # for i in range (self.MaxADCCount):
-        #     if buffer[i] > self.peakBuffer[i]:
-        #         self.peakBuffer[i] = buffer[i]
+
 
     def updateAverage(self,buffer):
-        # print("in updateAverage")
         byteBuffer =bytearray.fromhex(buffer)
-        # print("calculating valueCOunt")
         valueCount = 1+int(self.repeat_VAR.get().replace("x","")) - int(self.remainingCount_VAR.get())
-        # print("valueCount=", valueCount)
 
         for x, y in enumerate(byteBuffer):
-            tmp = int(round(self.averageBuffer[x] +((self.averageBuffer[x]- y)/valueCount)))
-            # print("tmp=", tmp, type(tmp))
-            if tmp < 0:
-                tmp = -tmp
+
+            tmp = int(round(self.averageBuffer[x] +((y-self.averageBuffer[x])/valueCount)))
+
+            if tmp > 255:
+                print("tmp too big, tmp")
             self.averageBuffer[x] = tmp
-        # for i in range (self.MaxADCCount):
-        #     self.averageBuffer[i] = int(self.averageBuffer[i] +((self.averageBuffer[i]- int(buffer[i]))/valueCount)) % 255
-        # print("averageBuffer=", self.averageBuffer)
+
 
     def process_Spectrum_Data(self, buffer):
         #
@@ -195,7 +185,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         # print("in process_Spectrum_Data")
         self.updateAverage(buffer)
         # print("return from average")
-        # self.updatePeak(buffer)
+        self.updatePeak(buffer)
         # print("return from peak")
 
         self.remainingCount_VAR.set(str(int(self.remainingCount_VAR.get()) - 1))
@@ -204,7 +194,15 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
         if int(self.remainingCount_VAR.get())==0:
             # print("calling plotter", type(self.averageBuffer))
-            self.plotter.process_Data(self.averageBuffer)
+            self.plotterPeak.process_Data(self.peakBuffer)
+            self.plotterAvg.process_Data(self.averageBuffer)
+
+            for i in range(self.MaxADCCount):
+                if self.averageBuffer[i] > self.peakBuffer[i]:
+                    print("Average exceeds peak, position=", i, "average=", self.averageBuffer[i], "peak=", self.peakBuffer[i])
+                else:
+                    print("Peak exceeds average, position=", i, "average=", self.averageBuffer[i], " peak=", self.peakBuffer[i])
+
             self.updateTuningLine()
             self.scanningComplete()
 
@@ -217,7 +215,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         scaleLength = int(self.frequencyTuning_Scale["to"] - self.frequencyTuning_Scale["from"]) + 1
 
         barPos = round((int(self.frequencyTuning_VAR.get()) / scaleLength) * self.MaxADCCount)
-        self.plotter.drawHighLightBars(barPos)
+        self.plotterAvg.drawHighLightBars(barPos)
         #
         # x_width, x_stretch, y_stretch = gv.calculatePlotParameters(self.frequencyPlotCanvas_width, self.MaxADCCount,
         #                                                               self.FREQ_X_GAP,
@@ -403,7 +401,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         #
         #   Update canvas size
         #
-        self.plotter.refreshCanvas()
+        self.plotterAvg.refreshCanvas()
         self.updateTuningLine()
         # self.frequencyPlotCanvas_height = self.frequencyPlotCanvas.winfo_height()
         # self.frequencyPlotCanvas_width = self.frequencyPlotCanvas.winfo_width()

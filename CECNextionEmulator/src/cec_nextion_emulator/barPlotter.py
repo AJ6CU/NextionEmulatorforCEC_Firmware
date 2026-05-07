@@ -14,7 +14,7 @@ import globalvars as gv
 
 
 class barPlotter:
-    def __init__(self, parent, canvasObj, totalX, maxY, X_GAP=4, Y_GAP=0, currentMax=0, currentMin=0):
+    def __init__(self, parent, canvasObj, totalX, maxY, X_GAP=4, Y_GAP=0, currentMax=0, currentMin=0, barColor="yellow"):
         self.parent = parent
         self.canvasObj = canvasObj
         self.totalX = totalX
@@ -28,6 +28,8 @@ class barPlotter:
 
         self.currentMax = currentMax    # Max Y value seen
         self.currentMin = currentMin    # Smallest Y value seen
+
+        self.barColor = barColor
         
         self.canvas_height = self.canvasObj.winfo_height()
         self.canvas_width = self.canvasObj.winfo_width()
@@ -85,7 +87,6 @@ class barPlotter:
             self.calculatePlotParameters()              # calculate the fixed parameters of the chart
 
             for x, y in enumerate(byteBuffer):
-
                 ymag = y>>yDivider
                 if ymag < 0:
                     ymag = 0
@@ -114,11 +115,10 @@ class barPlotter:
 
         # draw the bar
         if self.barObj[x] == None:  # if the bar doesn't yet exist, create it
-            self.barObj[x] = self.canvasObj.create_rectangle(x0, y0, x1, y1, fill="yellow",
-                                                                   outline="yellow", tags="bars")
+            self.barObj[x] = self.canvasObj.create_rectangle(x0, y0, x1, y1, fill=self.barColor, outline=self.barColor, tags="bars")
         else:                       # bar already exists, jut adjust coordinates
             self.canvasObj.coords(self.barObj[x], x0, y0, x1, y1)
-            self.canvasObj.itemconfig(self.barObj[x], fill="yellow", outline="yellow")
+            self.canvasObj.itemconfig(self.barObj[x], fill=self.barColor, outline=self.barColor, tags="bars")
 
 
         #
