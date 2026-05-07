@@ -9,7 +9,8 @@ from cwSettings import cwSettings, cwSettings
 from channels import channels
 from cwDecoder import cwDecoder
 from frequencySpectrum import frequencySpectrum
-from barPlotter import barPlotter
+# from barPlotter import barPlotter
+from barPlotter import barPlotterBdata
 from cwLogger import cwLogger
 from Classic_uBITX_Control import Classic_uBITX_Control
 
@@ -174,7 +175,7 @@ class mainScreen(baseui.mainScreenUI):
         self.place(x=0, y=0)  # place the mainWindow on the screen
         self.master.geometry(gv.trimAndLocateWindow(self, 5, 30))
         self.master.protocol("WM_DELETE_WINDOW", lambda: self.close_MainWindow())
-        self.mainScreenPlotter = barPlotter(self, self.spectrumCanvas, 63, 70)
+        self.mainScreenPlotter = barPlotterBdata(self, self.spectrumCanvas, 63, 70)
         self.mainScreenCW_logger = cwLogger(self, self.decodedCWText, 100)
         self.consumerDSPdata.request_DSP_EEPROM_Data()          # Request data. If we get some, then DSP will be marked as exists
 

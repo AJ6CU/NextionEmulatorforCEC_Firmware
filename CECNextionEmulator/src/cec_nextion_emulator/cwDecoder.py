@@ -193,15 +193,6 @@ class cwDecoder(baseui.cwDecoderUI):
     def process_CWDecoded_Data(self, buffer):
         print("Processing CW Decoded in window", buffer)
         self.logger.process_CWDecoded_Data(buffer)
-    #     for char in buffer:
-    #         self.logCW_Character(char)
-    #
-    # def logCW_Character (self,newchar):
-    #     if len(self.cwDecodedText.get('1.0', 'end')) > 100:   # Not maximum, but close to it
-    #         self.cwDecodedText.delete('1.0')
-    #     self.cwDecodedText.insert('2.end',newchar)
-
-
 
     #
     #   Callbacks

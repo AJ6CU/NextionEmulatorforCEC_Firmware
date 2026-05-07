@@ -2,6 +2,17 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import globalvars as gv
 
+#
+#   This is the parent class whose process_Data method expects a series of hex bytes representating the
+#   ADC magnitude
+#
+#   There is also a child class, barPlotterBdata (defined at bottom of file) that expects a buffer
+#   of just binary data. It reformats the binary data into a bytearray of Hex values and then calls the
+#   parent classes process_Data method to do the actual work. This avoids having to check the type of
+#   the data passed and doing the conversion within the process_Data method
+#
+
+
 class barPlotter:
     def __init__(self, parent, canvasObj, totalX, maxY, X_GAP=4, Y_GAP=0, currentMax=0, currentMin=0):
         self.parent = parent
@@ -63,8 +74,7 @@ class barPlotter:
         y1 = round(self.canvas_height - self.Y_GAP)
         return x0, y0, x1, y1
 
-    def process_Data(self, buffer, yDivider=0):
-        # print("buffer size=", len(buffer))
+    def process_Data(self, byteBuffer, yDivider=0):
         #
         #   Need to check on whether the Switch for DSP is still on.
         #   Can get into a race condition on turning it off where you delete the bars on canvas
@@ -74,11 +84,6 @@ class barPlotter:
 
             self.calculatePlotParameters()              # calculate the fixed parameters of the chart
 
-            # print("in plotter", buffer[0], type(buffer[0]))
-            if type(buffer[0]) == str:
-                byteBuffer = bytearray.fromhex(buffer)      #This gives us an array of hex bytes
-            else:
-                byteBuffer = buffer
             for x, y in enumerate(byteBuffer):
 
                 ymag = y>>yDivider
@@ -193,4 +198,8 @@ class barPlotter:
 
     def get_CurrentMin(self):
         return(self.currentMin)
+
+class barPlotterBdata (barPlotter):
+    def process_Data(self, buffer, yDivider=0):
+        super().process_Data(bytearray.fromhex(buffer), yDivider)
 
