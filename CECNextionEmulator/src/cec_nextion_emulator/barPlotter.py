@@ -54,7 +54,7 @@ class barPlotter:
         #
         #   Routine calculates parameters of the bar chart based on various factors
         #
-        self.xWidth = self.canvas_width // self.totalX      # "//" divides and rounds down to the integrer
+        self.xWidth = self.canvas_width // self.totalX      # "//" divides and rounds down to the integer
 
         # what is this fixed constant of "8"???
         remainingWidth = self.canvas_width - (self.xWidth * self.totalX) - (2 * self.X_GAP)
@@ -140,6 +140,7 @@ class barPlotter:
         #     barPos = round((x / scaleLength) * self.totalX)
         # else:
         #     barPos = x
+
 
         if self.barX0[barPos] == None: return
 

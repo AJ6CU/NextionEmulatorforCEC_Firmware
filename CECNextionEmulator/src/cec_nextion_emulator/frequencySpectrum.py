@@ -28,6 +28,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         self.master = master
         self.mainWindow = mainWindow
         self.centerFrequency = centerFrequency          # the current (VFO) frequency is passed and saved
+        self.originalFrequency = centerFrequency        # Save frequency at entry so can restore if cancel
 
         self.startFrequency = None                      # starting frequency for scanning
         self.stopFrequency = None                       # stopping frequency for scanning
@@ -71,6 +72,8 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
                                                     # new resize, is the scheduled event finally executed, the graph is
                                                     # updated and the flag is set back to False.
 
+        self.initUXComplete = False
+
         super().__init__(self.master, **kw)
 
 
@@ -84,12 +87,13 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
     def initUX(self):
         # self.title("Frequency Spectrum")
-        # self.geometry("800x550")
+        self.geometry("800x650")
+
         self.wait_visibility()  # required on Linux
         self.grab_set()
         self.transient(self.master)
 
-        gv.trimAndLocateWindow(self.master, 0, 0)
+        # gv.trimAndLocateWindow(self.master, 0, 0)     # causes annoying resizing on initialization of window
 
         gv.formatCombobox(self.repeat_Combobox, "Arial", "24", "bold")
         gv.formatCombobox(self.bandwidth_Combobox, "Arial", "24", "bold")
@@ -107,56 +111,50 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
             self.bandwidth_Combobox['values']=localizedBandwidth
 
 
-        self.repeat_VAR.set('10x')
-        self.bandwidthSelected_VAR.set('120,000Hz')
+        self.repeat_VAR.set('10')
+        self.bandwidthSelected_VAR.set('120,000')
         self.minSignal_VAR.set('0')
         self.maxSignal_VAR.set('255')
 
-        self.bandwidthSelected_VAR.set('120,000Hz')
+        print("before call to updatescanparameters",self.bandwidthSelected_VAR.get(),self.bandwidthSelected_VAR.get().replace(",","").replace(".",""))
 
-        self.updateScanParameters(self.bandwidthSelected_VAR.get())     # Can now format Frequency graphs
 
-        self.frequencyTuning_VAR.set(250)                               # Set scrollbar in middle
+        self.updateScanParameters()     # Can now format Frequency graphs
+
+        self.frequencyTuning_VAR.set(250.5)                               # Set scrollbar in middle
         self.currentFrequency_VAR.set(str(self.lastCenterFrequency))    # Set frequency
 
         self.plotterAvg = barPlotter(self, self.frequencyPlotCanvas, self.MaxADCCount, self.FREQ_Y_MAX)
         # self.plotterPeak = barPlotter(self, self.frequencyPlotCanvas, self.MaxADCCount, self.FREQ_Y_MAX, barColor="red")
         self.plotterPeak = barPlotter(self, self.waterfall_Canvas, self.MaxADCCount, self.FREQ_Y_MAX, barColor="red")
 
-        # self.frequencyPlotCanvas_height = self.frequencyPlotCanvas.winfo_height()
-        # self.frequencyPlotCanvas_width = self.frequencyPlotCanvas.winfo_width()
-
-        # self.mainWindow.theRadio.Set_Spectrum_Mode(94)
         self.repeatValueChanged_CB()
 
-    def updateScanParameters(self, newBandwidth):
+        self.initUXComplete = True
+
+    def reinitializeValues(self):
+        self.peakBuffer = bytearray(self.MaxADCCount)
+        self.averageBuffer = bytearray(self.MaxADCCount)
+
+    def updateScanParameters(self):
         #
         #   When the bandwidth is changed, this routine is called to re-establish the scanning
         #   TODO check if scan running, stop it, reset stuff, and then rerun
         #
-        self.bandwidth = int(newBandwidth.replace(",","").replace(".","").replace("Hz",""))
-
-        self.startFrequency=int(self.centerFrequency - self.bandwidth/2)
-        self.startFrequency_VAR.set(str(self.startFrequency))
-
-        self.stopFrequency = int(self.centerFrequency + self.bandwidth/2)
-        self.stopFrequency_VAR.set(str(self.stopFrequency))
-
+        print(self.bandwidthSelected_VAR.get(),self.bandwidthSelected_VAR.get().replace(",","").replace(".",""))
+        self.bandwidth = int(self.bandwidthSelected_VAR.get().replace(",","").replace(".",""))
         self.calculatedSampleSize_VAR.set(int((self.bandwidth / self.MaxADCCount) * 2))
 
-    # def genPlotData(self, count):
-    #     #
-    #     #   Test routine to just generate random data to plot
-    #     #
-    #
-    #     buffer = []
-    #
-    #     for i in range(count):
-    #         buffer.append(random.randint(0, 255))
-    #     return bytearray(buffer).hex()
-    def reinitializeValues(self):
-        self.peakBuffer = bytearray(self.MaxADCCount)
-        self.averageBuffer = bytearray(self.MaxADCCount)
+        self.startFrequency=self.roundToNearest((self.centerFrequency - self.bandwidth/2),int(self.calculatedSampleSize_VAR.get()))
+        self.startFrequency_VAR.set(str(self.startFrequency))
+
+        self.stopFrequency = self.roundToNearest((self.centerFrequency + self.bandwidth/2),int(self.calculatedSampleSize_VAR.get()))
+        self.stopFrequency_VAR.set(str(self.stopFrequency))
+
+        self.mainWindow.theRadio.updateFrequencySpectrumOptions(int(self.repeat_VAR.get()), 0, self.MaxADCCount, 100)
+
+
+
 
     def updatePeak(self,buffer):
         byteBuffer =bytearray.fromhex(buffer)
@@ -167,7 +165,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
     def updateAverage(self,buffer):
         byteBuffer =bytearray.fromhex(buffer)
-        valueCount = 1+int(self.repeat_VAR.get().replace("x","")) - int(self.remainingCount_VAR.get())
+        valueCount = 1+int(self.repeat_VAR.get()) - int(self.remainingCount_VAR.get())
 
         for x, y in enumerate(byteBuffer):
 
@@ -182,203 +180,161 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         #
         # This plots the frequency ADC values. Uses generic routines to figure out sizes of canvas and bar sizes
         #
-        # print("in process_Spectrum_Data")
-        self.updateAverage(buffer)
-        # print("return from average")
-        self.updatePeak(buffer)
-        # print("return from peak")
+        self.updateAverage(buffer)          # Process buffer to update the Average of each bar
+        self.updatePeak(buffer)             # Process buffer to look for a higher peak
 
-        self.remainingCount_VAR.set(str(int(self.remainingCount_VAR.get()) - 1))
+        self.remainingCount_VAR.set(str(int(self.remainingCount_VAR.get()) - 1))        # reduce the count remaining
 
-        # print("remainingCount_VAR:", self.remainingCount_VAR.get())
 
-        if int(self.remainingCount_VAR.get())==0:
-            # print("calling plotter", type(self.averageBuffer))
+        if int(self.remainingCount_VAR.get())==0:               #   if zero remaining, then we can plot average and peak
+
             self.plotterPeak.process_Data(self.peakBuffer)
             self.plotterAvg.process_Data(self.averageBuffer)
 
-            for i in range(self.MaxADCCount):
-                if self.averageBuffer[i] > self.peakBuffer[i]:
-                    print("Average exceeds peak, position=", i, "average=", self.averageBuffer[i], "peak=", self.peakBuffer[i])
-                else:
-                    print("Peak exceeds average, position=", i, "average=", self.averageBuffer[i], " peak=", self.peakBuffer[i])
-
+            # for i in range(self.MaxADCCount):
+            #     if self.averageBuffer[i] > self.peakBuffer[i]:
+            #         print("Average exceeds peak, position=", i, "average=", self.averageBuffer[i], "peak=", self.peakBuffer[i])
+            #     else:
+            #         print("Peak exceeds average, position=", i, "average=", self.averageBuffer[i], " peak=", self.peakBuffer[i])
+            for x in range(self.MaxADCCount):
+                print("x=", x, self.peakBuffer[x])
             self.updateTuningLine()
             self.scanningComplete()
 
+    def calculateBarPosition(self):
+        #
+        #   get the length of the scale and add 1 ("fence post rule")
+        #   return weighted position on scale
+        #
+        scaleLength = int(self.frequencyTuning_Scale["to"] - self.frequencyTuning_Scale["from"]) + 1
 
+        return(round((float(self.frequencyTuning_VAR.get()) / scaleLength) * (self.MaxADCCount-1)))
 
 
 
     def updateTuningLine(self):
-        #   get the length of the scale and add 1 ("fence post rule")
-        scaleLength = int(self.frequencyTuning_Scale["to"] - self.frequencyTuning_Scale["from"]) + 1
-
-        barPos = round((int(self.frequencyTuning_VAR.get()) / scaleLength) * self.MaxADCCount)
+        #
+        #   Updates the location of the tuning bars
+        #
+        barPos = self.calculateBarPosition()
         self.plotterAvg.drawHighLightBars(barPos)
-        #
-        # x_width, x_stretch, y_stretch = gv.calculatePlotParameters(self.frequencyPlotCanvas_width, self.MaxADCCount,
-        #                                                               self.FREQ_X_GAP,
-        #                                                               self.frequencyPlotCanvas_height,
-        #                                                               int(self.maxSignal_VAR.get())-int(self.minSignal_VAR.get()),
-        #                                                               self.FREQ_Y_GAP)
-        #
-        # for x in range(self.MaxADCCount):
-        #     ymag = int(buffer[x*2:x*2+2],16)
-        #     yplot = ymag
-        #
-        #     if yplot < int(self.minSignal_VAR.get()):
-        #         yplot = 0
-        #     # yplot = yplot + (self.FREQ_Y_MAX - int(self.maxSignal_VAR.get()))
-        #     if yplot > int(self.maxSignal_VAR.get()):
-        #         yplot = int(self.maxSignal_VAR.get())
-        #
-        #     x0, y0, x1, y1 = gv.calculatePlotBar(self.frequencyPlotCanvas_height, x,  yplot, x_width, x_stretch,
-        #                                          self.FREQ_X_GAP, y_stretch, self.FREQ_Y_GAP)
-        #
-        #     # draw the bar
-        #     if self.frequencyLineObj[x] != None:            # if bar exists, then adjust coordinates for new values
-        #         self.frequencyPlotCanvas.coords(self.frequencyLineObj[x], x0, y0, x1, y1)
-        #     else:                                           # If this is the first time, then create the bar
-        #         self.frequencyLineObj[x] = self.frequencyPlotCanvas.create_rectangle(x0, y0, x1, y1, fill="lightgray",
-        #                                                                              outline="lightgray")
-        #     #
-        #     #   Save y magnitude for resize event
-        #     #   Save x0,x1 for identifying location of a mouse click on the graph
-        #     #
-        #     self.frequencyLineYmag[x] = ymag
-        #     self.frequencyLineX0[x] = x0
-        #     self.frequencyLineX1[x] = x1
-        # #
-        # #   Need to set the tuning line. If it is the first time, create it and save a pointer to the object
-        # #   If it is a second time, then can just use the existing line
-        # #   TODO Is this if needed? I think this is always None here???
-        # #
-        # if self.tuningLine == None:
-        #     self.tuningLine=self.frequencyPlotCanvas.create_line(self.frequencyPlotCanvas_width/2,
-        #                                                          self.frequencyPlotCanvas_height,
-        #                                                          self.frequencyPlotCanvas_width/2, 0,
-        #                                                          fill="yellow", width=4,dash=(5, 3))
-        # else:
-        #     self.frequencyPlotCanvas.coords(self.tuningLine, self.frequencyPlotCanvas_width/2,
-        #                                     self.frequencyPlotCanvas_height, self.frequencyPlotCanvas_width/2, 0)
-        # #
-        # #   Track count received.  If continous, then generate a request for a new record
-        # #
-        # if self.repeat_VAR.get() == "Cont.":  # continous running until stopped
-        #     if self.spectrumScanning == True:
-        #         # self.runSpectrumScan(1)
-        #         # self.master.after(100, self.runSpectrumScan, 1)
-        #         pass
-        #     else:
-        #         self.scanningComplete()
-        # else:
-        #     self.remainingCount_VAR.set(str(int(self.remainingCount_VAR.get())-1))
-        #     if int(self.remainingCount_VAR.get()) == 0:
-        #         self.scanningComplete()
+        self.plotterPeak.drawHighLightBars(barPos)
 
+    def roundToNearest(self,n,base):
+        return base * round(n/base)
 
-    # def updateTuningLine(self,tuningLine,newPos):
-    #     #
-    #     #   Used to update Tuning line when a change is detected by either the move of the scroll bar or click on graph
-    #     #
-    #     scrollBarSpan = int(self.frequencyTuning_Scale["to"] - self.frequencyTuning_Scale["from"])
-    #     pos = int((self.frequencyPlotCanvas_width-4) * (newPos/scrollBarSpan))
-    #     if pos >= self.frequencyPlotCanvas_width:
-    #         pos = self.frequencyPlotCanvas_width -4
-    #     elif pos <= 0:
-    #         pos=4
-    #     self.frequencyPlotCanvas.coords(tuningLine, pos,self.frequencyPlotCanvas_height, pos, 0)
 
     def updateCurrentFrequency(self):
-        scrollBarSpan = int(self.frequencyTuning_Scale["to"] - self.frequencyTuning_Scale["from"])
-        self.currentFrequency = int((self.bandwidth * (int(self.frequencyTuning_VAR.get())/scrollBarSpan))+self.startFrequency)
-        self.currentFrequency_VAR.set(str(self.currentFrequency))
+        #
+        #   updates the current frequency of the tuning bar as displayed in the middle below the scroll bar
+        #
+        print("in update currentFrequency=", self.centerFrequency)
+        barPos = self.calculateBarPosition()
+        # print("updateCurrentFrequency, position=", barPos)
+        # self.currentFrequency = int((self.bandwidth * (int(self.frequencyTuning_VAR.get())/scrollBarSpan))+self.startFrequency)
+        roundedToSampleSize = self.roundToNearest((self.bandwidth/(self.MaxADCCount-1)) * barPos, int(self.calculatedSampleSize_VAR.get()))
+        self.centerFrequency =  self.startFrequency + roundedToSampleSize
+
+        # print("currentFrequency=", self.centerFrequency)
+        self.currentFrequency_VAR.set(str(self.centerFrequency))
 
     def frequencyTuning_CB(self,event=None):
+        #
+        #   called when the tuning scroll bar is moved
+        #
         self.updateCurrentFrequency()
         self.updateTuningLine()
 
 
     def repeatValueChanged_CB(self, event=None):
-        print("repeatValueChanged_CB, new value:", self.repeat_VAR.get())
-        self.remainingCount_VAR.set(self.repeat_VAR.get().replace("x",""))
         #
-        #   100 is step count when multiplied by 20 gets the jump on the scan
+        #   Changing the "repeat" count results in this value being changed
         #
-        self.mainWindow.theRadio.updateFrequencySpectrumOptions(int(self.repeat_VAR.get().replace("x","")),0,
-                                                                self.MaxADCCount,100)
-        # self.mainWindow.theRadio.updateFrequencySpectrumOptions(1,0, self.MaxADCCount,100)
+        # print("repeatValueChanged_CB, new value:", self.repeat_VAR.get())
+        self.remainingCount_VAR.set(self.repeat_VAR.get())
+
+        self.updateScanParameters()
+
 
     def bandwidthValueChanged_CB(self, event=None):
         print("bandwidthValueChanged_CB, new value:", self.bandwidthSelected_VAR.get())
-        self.updateScanParameters(self.bandwidthSelected_VAR.get())
-        self.mainWindow.theRadio.updateFrequencySpectrumOptions(int(self.repeat_VAR.get().replace("x", "")), 0,
-                                                                self.MaxADCCount, 100)
-        # self.mainWindow.theRadio.updateFrequencySpectrumOptions(1, 0,
-        #                                                         self.MaxADCCount, 100)
+        self.updateScanParameters()
 
     def recenter_CB(self):
+        #
+        #   When the recenter button is pressed, the frequency is changed to the button position and the start/end frequencies
+        #   are modified to recognize a new center frequency
+        #
         print("recenter_CB")
 
-    def scan(self):
-        self.mainWindow.theRadio.startFrequencySpectrumScan(self.startFrequency, 1)
-        self.remainingCount_VAR.set(str(int(self.remainingCount_VAR.get()) - 1))
-        if self.remainingCount_VAR.get() == "0":
-            self.scanningComplete()
-        else:
-            self.master.after(50 , self.scan)
+        self.lastCenterFrequency = self.centerFrequency
+        self.centerFrequency = int(self.currentFrequency_VAR.get())
+        print("new Frequency=", self.centerFrequency)
+        self.mainWindow.theRadio.Set_New_Frequency(self.centerFrequency)
+        self.frequencyTuning_VAR.set(250.5)
+        self.updateScanParameters()
+
+        self.updateTuningLine()
+
 
     def runSpectrumScan(self):
-        print("runSpectrumScan called, startFreq", self.startFrequency, "count=", self.repeat_VAR.get().replace("x", ""))
-        # for i in range(int(self.repeat_VAR.get().replace("x", ""))):
-        #     self.mainWindow.theRadio.startFrequencySpectrumScan(self.startFrequency,1)
-        #     self.remainingCount_VAR.set(str(int(self.remainingCount_VAR.get()) - 1))
-        #     if self.remainingCount_VAR.get() == "0":
-        #         self.scanningComplete()
-        # self.scan()
-        self.reinitializeValues()
-        self.mainWindow.theRadio.startFrequencySpectrumScan(self.startFrequency,
-                                                    int(self.repeat_VAR.get().replace("x", "")))
+        #
+        #   kicks off a scan by telling the radio to talk to the DSP and ask for data according
+        #   to the previously set parameters
+        #
+        print("runSpectrumScan called, startFreq", self.startFrequency, "count=", self.repeat_VAR.get())
+
+        self.reinitializeValues()       # set peak and average values back to zero
+        self.mainWindow.theRadio.startFrequencySpectrumScan(self.startFrequency, int(self.repeat_VAR.get()))
+
+    def parameterStatus(self, status):
+        #
+        #   Convenience routine to turn all the buttons on or off. When Start button is called, all these
+        #   buttons are "disabled". When the scan is done, they are re-enabled.
+        #
+
+        self.maxSignal_Combobox.configure(state=status)
+        self.minSignal_Combobox.configure(state=status)
+
+        self.bandwidth_Combobox.configure(state=status)
+        self.repeat_Combobox.configure(state=status)
+
+        self.recenter_Button.configure(state=status)
+        self.startStop_Button.configure(state=status)
+
+        self.applyClose_Button.configure(state=status)
+        self.cancel_Button.configure(state=status)
+
+        self.frequencyTuning_Scale.configure(state=status)
+
+        if self.spectrumScanning:
+            self.startStopSpectrum_VAR.set("Running")
+        else:
+            self.startStopSpectrum_VAR.set("Start")
+
+
 
 
     def startStopSpectrum_CB(self):
-        if self.startStopSpectrum_VAR.get() == "Start":
-            self.spectrumScanning = True
-            if self.repeat_VAR.get() == "Cont.":        # continous running until stopped
-                self.startStopSpectrum_VAR.set("Stop")
-                self.runSpectrumScan()
-            else:
-                self.startStopSpectrum_VAR.set("Running")
-                self.startStop_Button.configure(state=tk.DISABLED)
-                self.remainingCount_VAR.set(int(self.repeat_VAR.get().replace("x", "")))
-                self.runSpectrumScan()
+        #
+        #   run when start button is pressed
+        #
 
-        else:
-            self.startStopSpectrum_VAR.set("Start")
-            self.spectrumScanning = False
+        self.spectrumScanning = True
+
+        self.remainingCount_VAR.set(int(self.repeat_VAR.get()))
+        self.parameterStatus("disabled")
+        self.runSpectrumScan()
+
 
     def scanningComplete(self):
-       self.startStop_Button.configure(state=tk.NORMAL)
-       self.spectrumScanning = False
-       self.startStopSpectrum_VAR.set("Start")
+        #
+        #   Run after all scanning runs have been completed
+        #
+        self.spectrumScanning = False
+        self.parameterStatus("normal")
 
 
-    def frequencyPlotCanvas_CB(self, event=None):
-
-        scrollBarSpan = int(self.frequencyTuning_Scale["to"] - self.frequencyTuning_Scale["from"])+1
-
-        if event.x < self.frequencyLineX0[0]:  #  Check for click to far left outside graph
-            pos = int(self.frequencyTuning_Scale["from"])
-        else:
-            pos = int(self.frequencyTuning_Scale["to"])  #  if we cant find it, must be far right click outside graph
-            for i in range(self.MaxADCCount):
-                if (event.x >= self.frequencyLineX0[i] <= event.x) and (self.frequencyLineX1[i] >= event.x):
-                    pos = int(scrollBarSpan * i/self.MaxADCCount) + int(self.frequencyTuning_Scale["from"])
-                    break
-        self.frequencyTuning_VAR.set(str(pos))
-        self.updateTuningLine(self.tuningLine, pos)
-        self.updateCurrentFrequency()
 
     #
     #   resizeCanvas_CB and refreshCanvas work together to deal with any resizing of the canvas.
@@ -398,63 +354,14 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
     def refreshCanvas(self):
         print("refreshCanvas")
-        #
-        #   Update canvas size
-        #
-        self.plotterAvg.refreshCanvas()
-        self.updateTuningLine()
-        # self.frequencyPlotCanvas_height = self.frequencyPlotCanvas.winfo_height()
-        # self.frequencyPlotCanvas_width = self.frequencyPlotCanvas.winfo_width()
-        #
-        # if self.frequencyLineObj[0] == None:        # if nothing plotted, just return
-        #     return
-        #
-        # print("actual refreshing")
-        # x_width, x_stretch, y_stretch = gv.calculatePlotParameters(self.frequencyPlotCanvas_width, self.MaxADCCount,
-        #                                                           self.FREQ_X_GAP,
-        #                                                           self.frequencyPlotCanvas_height,
-        #                                                           int(self.maxSignal_VAR.get())-int(self.minSignal_VAR.get()),
-        #                                                           self.FREQ_Y_GAP)
-        # for x in range(self.MaxADCCount):
-        #
-        #     ymag = self.frequencyLineYmag[x]
-        #     yplot = ymag
-        #
-        #     if yplot < int(self.minSignal_VAR.get()):
-        #         yplot = 0
-        #
-        #
-        #     if yplot > int(self.maxSignal_VAR.get()):
-        #         yplot = int(self.maxSignal_VAR.get())
-        #     # yplot = yplot + (self.FREQ_Y_MAX - int(self.maxSignal_VAR.get()))
-        #
-        #     x0, y0, x1, y1 = gv.calculatePlotBar(self.frequencyPlotCanvas_height, x,  yplot, x_width, x_stretch,
-        #                                          self.FREQ_X_GAP, y_stretch, self.FREQ_Y_GAP)
-        #
-        #     # draw the bar
-        #     if self.frequencyLineObj[x] != None:
-        #         self.frequencyPlotCanvas.coords(self.frequencyLineObj[x], x0, y0, x1, y1)
-        #     else:
-        #         self.frequencyLineObj[x] = self.frequencyPlotCanvas.create_rectangle(x0, y0, x1, y1, fill="lightgray", outline="lightgray")
-        #     self.frequencyLineYmag[x] = ymag
-        #     self.frequencyLineX0[x] = x0
-        #     self.frequencyLineX1[x] = x1
-        #
-        # #
-        # #
-        # #
-        # if self.tuningLine == None:
-        #     self.tuningLine = self.frequencyPlotCanvas.create_line(self.frequencyPlotCanvas_width / 2,
-        #                                                            self.frequencyPlotCanvas_height,
-        #                                                            self.frequencyPlotCanvas_width / 2, 0,
-        #                                                            fill="yellow", width=4, dash=(5, 3))
-        # else:
-        #     self.updateTuningLine(self.tuningLine, int(self.frequencyTuning_VAR.get()))
+        if self.initUXComplete:
+            #
+            #   Update canvas size
+            #
+            self.plotterAvg.refreshCanvas()
+            self.plotterPeak.refreshCanvas()
+            self.updateTuningLine()
 
-
-    # def plotTestData(self):
-    #     buffer = self.genPlotData(self.MaxADCCount)
-    #     self.plot(buffer)
 
     def maxSignal_CB(self, event=None):
         print("maxSignal_CB", self.maxSignal_VAR.get())
@@ -478,6 +385,10 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
     def cancel_CB(self):
         print("cancel_CB")
+        #
+        # self.originalFrequency = centerFrequency
+        # need to reset frequency to original if user cancels
+        #
 
         self.mainWindow.frequencySpectrumMode = "FreqScan"
         self.mainWindow.consumerDSPdata = self.mainWindow
@@ -485,31 +396,4 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         self.mainWindow.theRadio.Set_Spectrum_Mode(95)
         self.destroy()
 
-#
-#
-#
-# myroot=None
-# mainWindow=None
-
-# def updatePlot(root, widget):
-#     widget.plotTestData()
-#     myroot.after(100, updatePlot,root, widget)
-
-# def launch_widget():
-#     global myroot
-#     widget= frequencySpectrum(myroot,mainWindow, 14150000)
-#     # myroot.after(50, updatePlot, myroot, widget)
-#
-#
-# if __name__ == "__main__":
-#     myroot = tk.Tk()
-#     mystyles.setup_ttk_styles(myroot)
-#
-#     Launch_Button = ttk.Button(myroot, text="Launch")
-#     Launch_Button.configure(text='Launch')
-#     Launch_Button.configure(command=launch_widget)
-#     Launch_Button.pack(side="top")
-#
-#
-#     myroot.mainloop()
 

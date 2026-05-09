@@ -188,13 +188,38 @@ class mainScreen(baseui.mainScreenUI):
     #   based on the command type (characters 3,4 in the buffer after prelogue stripped
     ######################################################################################
 
-    def delegate_command_processing(self,command, buffer):
-        # print(command, buffer)
+    def validateKey(self, command, buffer):
+        validateFlag = False
         if len(command) != 2:
             print("invalid command", command)
-            return
         elif len(buffer) == 0:
             print("empty buffer", buffer)
+        elif command.isalnum() == False:
+            print("invalid command", command)
+        elif buffer[0] != 'p' or buffer[1] != 'm':
+            print("invalid command - doesnt start pm", command)
+        elif buffer[2] != '.' or buffer[5] != '.':
+            print("invalid command - periods in wrong place ")
+        elif ((buffer[6] != 'v') or (buffer[7] != 'a') or (buffer[8] != 'l')) and ((buffer[6] != 't') or (buffer[7] != 'x') or  (buffer[8] != 't')):
+            print("invalid command - not txt or val")
+        elif buffer[9] != '=':
+            print("invalid command format, no =")
+        elif len(self.extractValue(buffer, 10, len(buffer) - 3)) < 1:
+            print("invalid value format, empty")
+        elif 'val' in self.extractValue(buffer, 10, len(buffer) - 3):
+            print("invalid value format, looks like val")
+        else:
+            validateFlag = True
+
+        return validateFlag
+
+
+
+    def delegate_command_processing(self,command, buffer):
+        # print(command, buffer)
+
+        if self.validateKey(command, buffer) == False:
+            print(buffer)
             return
         match command:
             case "v1": self.v1_UX_Set_Tuning_Preset_1(buffer)
@@ -918,7 +943,8 @@ class mainScreen(baseui.mainScreenUI):
                     self.theRadio.Factory_CW_Sidetone_Setter(str(int(value, 16)))
 
                 case "Spectrum_Scan":
-                    # print("Spectrum_Scan:", self.theRadio.lenMemoryQueue()+1,"\n",buffer, "\n", value)
+                    print("Spectrum_Scan:", self.theRadio.lenMemoryQueue()+1,"\n",buffer, "\n", value)
+                    print(bytearray.fromhex(buffer))
                     self.spectrumWindow.process_Spectrum_Data(value)
 
                 case _:
@@ -1155,6 +1181,9 @@ class mainScreen(baseui.mainScreenUI):
     #
     def cc_UX_Set_Primary_Mode(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
+
+        if value == '':
+            print("cc_UX_Set_Primary_Mode key error, buffer=", buffer)
         self.primary_Mode_VAR.set(EEPROM.modeNum_To_TextDict[value])
         if self.cwTX_OffsetFlag and (EEPROM.modeNum_To_TextDict[value] == "CWL" or EEPROM.modeNum_To_TextDict[value] == "CWU"):
             #
@@ -1199,6 +1228,10 @@ class mainScreen(baseui.mainScreenUI):
             return  # ignore the VFO A command during scanning  as it can be out of order
 
         value = self.extractValue(buffer, 10, len(buffer) - 3)
+
+        if value == '4pm.vb.val=100980':
+            print("ca_UX_Set_VFO_A_Mode error 4pm.vb.val=100980, buffer:", buffer)
+
 
         if (self.vfo_VAR.get()== self.VFO_A):       #update displayed frequency
             self.primary_Mode_VAR.set(EEPROM.modeNum_To_TextDict[value])
@@ -1253,6 +1286,8 @@ class mainScreen(baseui.mainScreenUI):
     #
     def ck_UX_Set_CW_Key_Type(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
+        if value == '':
+            print("ck_UX_Set_CW_Key_Type error, buffer:", buffer)
         self.key_type_value_VAR.set(gv.CW_KeyType[value])
 
     #

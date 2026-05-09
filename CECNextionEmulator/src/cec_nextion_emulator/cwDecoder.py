@@ -172,12 +172,13 @@ class cwDecoder(baseui.cwDecoderUI):
         self.plotter.process_Data(buffer)
         self.frequencyLowValue_VAR.set(str( self.plotter.get_CurrentMin()))
         self.frequencyHighValue_VAR.set(str( self.plotter.get_CurrentMax()))
-        self.updateTargetFreqBars()
+
     #
     #   Update bars attached to a scroll bar that helps identify target frequency
     #
 
     def updateTargetFreqBars(self):
+        print("Updating Target Frequency Bars")
         #   get the length of the scale and add 1 ("fence post rule")
         scaleLength = int(self.frequencyPlotcwToneScale["to"] - self.frequencyPlotcwToneScale["from"]) + 1
         #

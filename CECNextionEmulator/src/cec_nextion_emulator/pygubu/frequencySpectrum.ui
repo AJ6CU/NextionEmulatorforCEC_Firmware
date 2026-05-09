@@ -48,7 +48,7 @@
           <object class="ttk.Frame" id="frequencySpectrumFrame" named="True">
             <property name="height">180</property>
             <property name="style">Normal.TFrame</property>
-            <property name="width">200</property>
+            <property name="width">450</property>
             <layout manager="grid">
               <property name="column">0</property>
               <property name="padx">10 0</property>
@@ -56,16 +56,16 @@
               <property name="sticky">ew</property>
             </layout>
             <containerlayout manager="grid">
-              <property name="anchor">w</property>
+              <property name="anchor">e</property>
               <property type="col" id="0" name="weight">1</property>
               <property type="row" id="0" name="weight">1</property>
               <property type="row" id="2" name="weight">1</property>
             </containerlayout>
             <child>
-              <object class="ttk.Labelframe" id="magnitudeLabelframe" named="True">
+              <object class="ttk.Labelframe" id="average_Labelframe" named="True">
                 <property name="height">200</property>
                 <property name="style">Heading3.TLabelframe</property>
-                <property name="text" translatable="yes">Magnitude</property>
+                <property name="text" translatable="yes">Average</property>
                 <property name="width">200</property>
                 <layout manager="grid">
                   <property name="column">0</property>
@@ -116,7 +116,6 @@
                     <property name="background">#0432ff</property>
                     <property name="height">160</property>
                     <property name="width">430</property>
-                    <bind sequence="&lt;1&gt;" handler="frequencyPlotCanvas_CB" add="True" />
                     <bind sequence="&lt;Configure&gt;" handler="resizeCanvas_CB" add="True" />
                     <layout manager="grid">
                       <property name="column">0</property>
@@ -184,7 +183,6 @@
                     <property name="resolution">1</property>
                     <property name="showvalue">false</property>
                     <property name="sliderlength">50</property>
-                    <property name="state">normal</property>
                     <property name="to">500</property>
                     <property name="variable">string:frequencyTuning_VAR</property>
                     <property name="width">30</property>
@@ -246,10 +244,10 @@
               </object>
             </child>
             <child>
-              <object class="ttk.Labelframe" id="waterfallLabelframe" named="True">
+              <object class="ttk.Labelframe" id="peak_Labelframe" named="True">
                 <property name="height">200</property>
                 <property name="style">Heading3.TLabelframe</property>
-                <property name="text" translatable="yes">Waterfall</property>
+                <property name="text" translatable="yes">Peak</property>
                 <property name="width">200</property>
                 <layout manager="grid">
                   <property name="column">0</property>
@@ -324,11 +322,12 @@
                         <property name="justify">right</property>
                         <property name="style">ComboBox1.TCombobox</property>
                         <property name="textvariable">string:bandwidthSelected_VAR</property>
-                        <property name="values">10,000Hz 20,000Hz 50,000Hz 100,000Hz 120,000Hz</property>
-                        <property name="width">9</property>
+                        <property name="values">10,000 20,000 50,000 100,000 120,000</property>
+                        <property name="width">7</property>
                         <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="bandwidthValueChanged_CB" add="" />
                         <layout manager="grid">
                           <property name="column">0</property>
+                          <property name="padx">20 0</property>
                           <property name="row">1</property>
                           <property name="sticky">w</property>
                         </layout>
@@ -406,12 +405,12 @@ Size(Hz)</property>
                         <property name="justify">right</property>
                         <property name="keyvariable">string:repeat_VAR</property>
                         <property name="style">ComboBox1.TCombobox</property>
-                        <property name="values">1x 5x 10x 15x 20x 50x Cont.</property>
+                        <property name="values">1 5 10 15 20 50 100</property>
                         <property name="width">5</property>
                         <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="repeatValueChanged_CB" add="" />
                         <layout manager="grid">
                           <property name="column">0</property>
-                          <property name="padx">55 0</property>
+                          <property name="padx">50 0</property>
                           <property name="row">1</property>
                           <property name="sticky">e</property>
                         </layout>

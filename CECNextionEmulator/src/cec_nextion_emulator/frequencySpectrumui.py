@@ -69,15 +69,15 @@ class frequencySpectrumUI(tk.Toplevel):
             self.frequencySpectrum_Labelframe,
             name="frequencyspectrumframe")
         self.frequencySpectrumFrame.configure(
-            height=180, style="Normal.TFrame", width=200)
-        self.magnitudeLabelframe = ttk.Labelframe(
-            self.frequencySpectrumFrame, name="magnitudelabelframe")
-        self.magnitudeLabelframe.configure(
+            height=180, style="Normal.TFrame", width=450)
+        self.average_Labelframe = ttk.Labelframe(
+            self.frequencySpectrumFrame, name="average_labelframe")
+        self.average_Labelframe.configure(
             height=200,
             style="Heading3.TLabelframe",
-            text='Magnitude',
+            text='Average',
             width=200)
-        frame1 = ttk.Frame(self.magnitudeLabelframe)
+        frame1 = ttk.Frame(self.average_Labelframe)
         frame1.configure(height=200, style="Normal.TFrame", width=200)
         self.maxSignal_Combobox = Combobox(frame1, name="maxsignal_combobox")
         self.maxSignal_VAR = tk.StringVar()
@@ -95,16 +95,14 @@ class frequencySpectrumUI(tk.Toplevel):
         label1.pack(padx="10 0", side="left")
         frame1.grid(column=0, row=0, sticky="w")
         self.frequencyPlotCanvas = tk.Canvas(
-            self.magnitudeLabelframe, name="frequencyplotcanvas")
+            self.average_Labelframe, name="frequencyplotcanvas")
         self.frequencyPlotCanvas.configure(
             background="#0432ff", height=160, width=430)
         self.frequencyPlotCanvas.grid(
             column=0, columnspan=3, row=1, sticky="ew")
         self.frequencyPlotCanvas.bind(
-            "<1>", self.frequencyPlotCanvas_CB, add="+")
-        self.frequencyPlotCanvas.bind(
             "<Configure>", self.resizeCanvas_CB, add="+")
-        frame2 = ttk.Frame(self.magnitudeLabelframe)
+        frame2 = ttk.Frame(self.average_Labelframe)
         frame2.configure(height=200, style="Normal.TFrame", width=200)
         self.minSignal_Combobox = Combobox(frame2, name="minsignal_combobox")
         self.minSignal_VAR = tk.StringVar()
@@ -125,8 +123,8 @@ class frequencySpectrumUI(tk.Toplevel):
             textvariable=self.minSigna)
         label3.pack(padx="10 0", side="left")
         frame2.grid(column=0, row=2, sticky="w")
-        self.magnitudeLabelframe.grid(column=0, padx="8 0", row=0, sticky="ew")
-        self.magnitudeLabelframe.columnconfigure(0, weight=1)
+        self.average_Labelframe.grid(column=0, padx="8 0", row=0, sticky="ew")
+        self.average_Labelframe.columnconfigure(0, weight=1)
         self.freqTuneFrame = ttk.Frame(
             self.frequencySpectrumFrame,
             name="freqtuneframe")
@@ -143,7 +141,6 @@ class frequencySpectrumUI(tk.Toplevel):
             resolution=1,
             showvalue=False,
             sliderlength=50,
-            state="normal",
             to=500,
             variable=self.frequencyTuning_VAR,
             width=30)
@@ -190,22 +187,22 @@ class frequencySpectrumUI(tk.Toplevel):
             pady="0 10",
             side="top")
         self.freqTuneFrame.grid(column=0, row=1, sticky="ew")
-        self.waterfallLabelframe = ttk.Labelframe(
-            self.frequencySpectrumFrame, name="waterfalllabelframe")
-        self.waterfallLabelframe.configure(
+        self.peak_Labelframe = ttk.Labelframe(
+            self.frequencySpectrumFrame, name="peak_labelframe")
+        self.peak_Labelframe.configure(
             height=200,
             style="Heading3.TLabelframe",
-            text='Waterfall',
+            text='Peak',
             width=200)
         self.waterfall_Canvas = tk.Canvas(
-            self.waterfallLabelframe, name="waterfall_canvas")
+            self.peak_Labelframe, name="waterfall_canvas")
         self.waterfall_Canvas.configure(
             background="#0432ff", height=160, width=430)
         self.waterfall_Canvas.pack(expand=True, fill="both", side="top")
-        self.waterfallLabelframe.grid(column=0, padx="8 0", row=2, sticky="ew")
+        self.peak_Labelframe.grid(column=0, padx="8 0", row=2, sticky="ew")
         self.frequencySpectrumFrame.grid(
             column=0, padx="10 0", row=0, sticky="ew")
-        self.frequencySpectrumFrame.grid_anchor("w")
+        self.frequencySpectrumFrame.grid_anchor("e")
         self.frequencySpectrumFrame.rowconfigure(0, weight=1)
         self.frequencySpectrumFrame.rowconfigure(2, weight=1)
         self.frequencySpectrumFrame.columnconfigure(0, weight=1)
@@ -236,9 +233,9 @@ class frequencySpectrumUI(tk.Toplevel):
             justify="right",
             style="ComboBox1.TCombobox",
             textvariable=self.bandwidthSelected_VAR,
-            values='10,000Hz 20,000Hz 50,000Hz 100,000Hz 120,000Hz',
-            width=9)
-        self.bandwidth_Combobox.grid(column=0, row=1, sticky="w")
+            values='10,000 20,000 50,000 100,000 120,000',
+            width=7)
+        self.bandwidth_Combobox.grid(column=0, padx="20 0", row=1, sticky="w")
         self.bandwidth_Combobox.bind(
             "<<ComboboxSelected>>",
             self.bandwidthValueChanged_CB,
@@ -287,9 +284,9 @@ class frequencySpectrumUI(tk.Toplevel):
             justify="right",
             keyvariable=self.repeat_VAR,
             style="ComboBox1.TCombobox",
-            values='1x 5x 10x 15x 20x 50x Cont.',
+            values='1 5 10 15 20 50 100',
             width=5)
-        self.repeat_Combobox.grid(column=0, padx="55 0", row=1, sticky="e")
+        self.repeat_Combobox.grid(column=0, padx="50 0", row=1, sticky="e")
         self.repeat_Combobox.bind(
             "<<ComboboxSelected>>",
             self.repeatValueChanged_CB,
@@ -376,9 +373,6 @@ class frequencySpectrumUI(tk.Toplevel):
         # template.
 
     def maxSignal_CB(self, event=None):
-        pass
-
-    def frequencyPlotCanvas_CB(self, event=None):
         pass
 
     def resizeCanvas_CB(self, event=None):
