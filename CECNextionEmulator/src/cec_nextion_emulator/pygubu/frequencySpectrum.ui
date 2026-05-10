@@ -115,8 +115,8 @@
                     <property name="to">119</property>
                     <property name="variable">string:frequencyTuning_VAR</property>
                     <property name="width">30</property>
-                    <bind sequence="&lt;ButtonPress-1&gt;" handler="frequencyTuningPress_CB" add="" />
-                    <bind sequence="&lt;ButtonRelease-1&gt;" handler="frequencyTuningRelease_CB" add="" />
+                    <bind sequence="&lt;ButtonPress-1&gt;" handler="frequencyTuningPress_CB" add="True" />
+                    <bind sequence="&lt;ButtonRelease-1&gt;" handler="frequencyTuningRelease_CB" add="True" />
                     <layout manager="pack">
                       <property name="anchor">w</property>
                       <property name="expand">true</property>
