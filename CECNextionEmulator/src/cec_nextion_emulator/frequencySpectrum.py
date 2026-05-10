@@ -38,6 +38,8 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
                                                         # between scans
         self.tuningLine = None                          # used to save the tuning line object
 
+        self.frequencyScrolling = False                 # tracks when the scrollbar is being used to adjust frequency
+
         #
         #   DEFAULTS
         #
@@ -71,6 +73,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
                                                     # is deleted and a new one is scheduled. Only after 100 ms of no
                                                     # new resize, is the scheduled event finally executed, the graph is
                                                     # updated and the flag is set back to False.
+        self.frequencyChangeCheckPtr = None         # used to track the routine that checks for frequency changes from the knob
 
         self.initUXComplete = False
 
@@ -253,6 +256,10 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
     def frequencyTuningRelease_CB(self, event=None):
         self.mainWindow.theRadio.Set_New_Frequency(self.centerFrequency)
+        self.frequencyScrolling = False
+
+    def frequencyTuningPress_CB(self, event=None):
+        self.frequencyScrolling = True
 
 
     def repeatValueChanged_CB(self, event=None):
@@ -268,6 +275,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
     def bandwidthValueChanged_CB(self, event=None):
         print("bandwidthValueChanged_CB, new value:", self.bandwidthSelected_VAR.get())
         self.updateScanParameters()
+        self.recenter_CB()
 
     def recenter_CB(self):
         #
@@ -371,7 +379,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
             self.updateTuningLine()
 
     def checkForFrequencyChange(self):
-        if self.mainWindow.theVFO_Object.getIntPrimaryVFO() != int(self.currentFrequency_VAR.get()):
+        if (self.mainWindow.theVFO_Object.getIntPrimaryVFO() != int(self.currentFrequency_VAR.get())) and (self.frequencyScrolling == False):
             self.lastCenterFrequency = self.centerFrequency
             self.centerFrequency = self.mainWindow.theVFO_Object.getIntPrimaryVFO()
             self.currentFrequency_VAR.set(str(self.centerFrequency))
@@ -382,7 +390,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
             self.frequencyTuning_VAR.set(barPos)
             self.updateTuningLine()
 
-        self.master.after(250,self.checkForFrequencyChange)
+        self.frequencyChangeCheckPtr = self.master.after(250,self.checkForFrequencyChange)
 
 
 
@@ -403,6 +411,8 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         self.mainWindow.highlightCWorSpectrumBoxes(True)
         self.mainWindow.theRadio.Set_Spectrum_Mode(95)
         self.mainWindow.theRadio.Set_New_Frequency(self.centerFrequency)
+        if self.frequencyChangeCheckPtr != None:
+            self.master.after_cancel(self.frequencyChangeCheckPtr)
         self.destroy()
 
 
@@ -417,6 +427,8 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         self.mainWindow.highlightCWorSpectrumBoxes(True)
         self.mainWindow.theRadio.Set_Spectrum_Mode(95)
         self.mainWindow.theRadio.Set_New_Frequency(self.originalFrequency)
+        if self.frequencyChangeCheckPtr != None:
+            self.master.after_cancel(self.frequencyChangeCheckPtr)
         self.destroy()
 
 

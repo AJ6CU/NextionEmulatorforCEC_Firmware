@@ -210,6 +210,11 @@ class mainScreen(baseui.mainScreenUI):
             print("invalid value format, looks like val")
         else:
             validateFlag = True
+        #
+        #   Need to figure out how to recover from this type of bad data
+        #
+        # if validateFlag == False:
+        #     self.theRadio.rebootRadio()
 
         return validateFlag
 

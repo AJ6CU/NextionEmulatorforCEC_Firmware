@@ -153,6 +153,8 @@ class frequencySpectrumUI(tk.Toplevel):
             side="top")
         self.frequencyTuning_Scale.configure(command=self.frequencyTuning_CB)
         self.frequencyTuning_Scale.bind(
+            "<ButtonPress-1>", self.frequencyTuningPress_CB, add="")
+        self.frequencyTuning_Scale.bind(
             "<ButtonRelease-1>",
             self.frequencyTuningRelease_CB,
             add="")
@@ -237,7 +239,7 @@ class frequencySpectrumUI(tk.Toplevel):
             justify="right",
             style="ComboBox1.TCombobox",
             textvariable=self.bandwidthSelected_VAR,
-            values='10,000 20,000 50,000 100,000 120,000 240,000',
+            values='60,000 120,000 240,000 360,000 480,000',
             width=7)
         self.bandwidth_Combobox.grid(column=0, padx="20 0", row=1, sticky="w")
         self.bandwidth_Combobox.bind(
@@ -388,6 +390,9 @@ class frequencySpectrumUI(tk.Toplevel):
         pass
 
     def frequencyTuning_CB(self, scale_value):
+        pass
+
+    def frequencyTuningPress_CB(self, event=None):
         pass
 
     def frequencyTuningRelease_CB(self, event=None):
