@@ -823,7 +823,7 @@ class piRadio:
         for _ in range(count):
             self.memoryQueue.append("Spectrum_Scan")
 
-        # print('queue lenght=', self.lenMemoryQueue())
+        # print('queue length=', self.lenMemoryQueue())
 
     def Set_Spectrum_Mode(self, value):
 

@@ -1,0 +1,528 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.5" author="PygubuDesigner 0.41.4">
+  <project>
+    <settings>
+      <setting id="name">Band Scanner</setting>
+      <setting id="description">Scans up to three selected bands for signals.</setting>
+      <setting id="template">widget</setting>
+      <setting id="main_widget">bandScanner_Toplevel</setting>
+      <setting id="module_namespace">bandScanner</setting>
+      <setting id="module_name">bandScanner</setting>
+      <setting id="main_classname">bandScanner</setting>
+      <setting id="output_dir">..</setting>
+      <setting id="builder_namespace">custom_widgets</setting>
+      <setting id="output_dir2">..</setting>
+      <setting id="generate_code_onsave">False</setting>
+      <setting id="use_i18n">False</setting>
+      <setting id="all_ids_attributes">False</setting>
+      <setting id="import_tkvariables">False</setting>
+      <setting id="use_ttk_styledefinition_file">True</setting>
+      <setting id="use_window_centering_code">False</setting>
+      <setting id="ttk_style_definition_file">../mystyles.py</setting>
+    </settings>
+    <customwidgets />
+    <resources />
+  </project>
+  <object class="tk.Toplevel" id="bandScanner_Toplevel" named="True">
+    <property name="geometry">800x625</property>
+    <property name="height">200</property>
+    <property name="title" translatable="yes">Frequency Spectrum</property>
+    <property name="width">800</property>
+    <child>
+      <object class="ttk.Labelframe" id="bandScanner_Labelframe" named="True">
+        <property name="height">200</property>
+        <property name="style">Heading2.TLabelframe</property>
+        <property name="text" translatable="yes">Band Scanner
+</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="expand">true</property>
+          <property name="fill">both</property>
+          <property name="side">top</property>
+        </layout>
+        <containerlayout manager="grid">
+          <property type="col" id="0" name="weight">1</property>
+          <property type="row" id="0" name="uniform">1</property>
+        </containerlayout>
+        <child>
+          <object class="ttk.Frame" id="frequencySpectrumFrame" named="True">
+            <property name="height">180</property>
+            <property name="style">Normal.TFrame</property>
+            <property name="width">450</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">10 0</property>
+              <property name="row">0</property>
+              <property name="sticky">ew</property>
+            </layout>
+            <containerlayout manager="grid">
+              <property name="anchor">e</property>
+              <property type="col" id="0" name="weight">1</property>
+              <property type="row" id="0" name="weight">1</property>
+              <property type="row" id="2" name="weight">1</property>
+            </containerlayout>
+            <child>
+              <object class="ttk.Labelframe" id="band1_Labelframe" named="True">
+                <property name="height">200</property>
+                <property name="style">Heading3.TLabelframe</property>
+                <property name="text" translatable="yes">Select Band...</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">8 0</property>
+                  <property name="row">0</property>
+                  <property name="sticky">ew</property>
+                </layout>
+                <containerlayout manager="grid">
+                  <property type="col" id="0" name="weight">1</property>
+                </containerlayout>
+                <child>
+                  <object class="tk.Canvas" id="band1Plot_Canvas" named="True">
+                    <property name="background">#0432ff</property>
+                    <property name="height">100</property>
+                    <property name="width">430</property>
+                    <bind sequence="&lt;Configure&gt;" handler="resizeCanvas_CB" add="True" />
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="columnspan">3</property>
+                      <property name="row">1</property>
+                      <property name="sticky">ew</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Labelframe" id="band2_LabelFrame" named="True">
+                <property name="height">200</property>
+                <property name="style">Heading3.TLabelframe</property>
+                <property name="text" translatable="yes">Select Band...</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">8 0</property>
+                  <property name="row">1</property>
+                  <property name="sticky">ew</property>
+                </layout>
+                <child>
+                  <object class="tk.Canvas" id="band2Plot_Canvas" named="True">
+                    <property name="background">#0432ff</property>
+                    <property name="height">100</property>
+                    <property name="width">430</property>
+                    <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">both</property>
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Labelframe" id="band3_Labelframe" named="True">
+                <property name="height">200</property>
+                <property name="style">Heading3.TLabelframe</property>
+                <property name="text" translatable="yes">Select Band...</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">8 0</property>
+                  <property name="row">3</property>
+                  <property name="sticky">ew</property>
+                </layout>
+                <child>
+                  <object class="tk.Canvas" id="band3Plot_Canvas" named="True">
+                    <property name="background">#0432ff</property>
+                    <property name="height">100</property>
+                    <property name="width">430</property>
+                    <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">both</property>
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="freqTuneFrame" named="True">
+                <property name="height">140</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="row">4</property>
+                  <property name="sticky">ew</property>
+                </layout>
+                <child>
+                  <object class="tk.Scale" id="frequencyTuning_Scale" named="True">
+                    <property name="command" type="command" cbtype="scale">frequencyTuning_CB</property>
+                    <property name="from_">0</property>
+                    <property name="length">500</property>
+                    <property name="orient">horizontal</property>
+                    <property name="relief">raised</property>
+                    <property name="resolution">1</property>
+                    <property name="showvalue">false</property>
+                    <property name="sliderlength">50</property>
+                    <property name="to">119</property>
+                    <property name="variable">string:frequencyTuning_VAR</property>
+                    <property name="width">30</property>
+                    <bind sequence="&lt;ButtonPress-1&gt;" handler="frequencyTuningPress_CB" add="True" />
+                    <bind sequence="&lt;ButtonRelease-1&gt;" handler="frequencyTuningRelease_CB" add="True" />
+                    <layout manager="pack">
+                      <property name="anchor">w</property>
+                      <property name="expand">true</property>
+                      <property name="fill">x</property>
+                      <property name="padx">10 0</property>
+                      <property name="pady">15 0</property>
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="controlFrame" named="True">
+            <property name="height">140</property>
+            <property name="style">Normal.TFrame</property>
+            <property name="width">200</property>
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="padx">10 0</property>
+              <property name="row">0</property>
+              <property name="rowspan">3</property>
+              <property name="sticky">ew</property>
+            </layout>
+            <child>
+              <object class="ttk.Frame" id="bandStatus_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="anchor">ne</property>
+                  <property name="expand">true</property>
+                  <property name="fill">x</property>
+                  <property name="side">top</property>
+                </layout>
+                <containerlayout manager="pack">
+                  <property name="anchor">e</property>
+                </containerlayout>
+                <child>
+                  <object class="ttk.Frame" id="band1Select_Frame" named="True">
+                    <property name="height">200</property>
+                    <property name="style">Normal.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="pack">
+                      <property name="anchor">w</property>
+                      <property name="pady">70 0</property>
+                      <property name="side">top</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Label" id="band1Select_Label" named="True">
+                        <property name="style">Heading2b.TLabel</property>
+                        <property name="text" translatable="yes">14.000.000</property>
+                        <layout manager="pack">
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="band1GO_Button" named="True">
+                        <property name="command" type="command" cbtype="with_wid">bandGo_CB</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">Go</property>
+                        <layout manager="pack">
+                          <property name="padx">10 0</property>
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Frame" id="band2Select_Frame" named="True">
+                    <property name="height">200</property>
+                    <property name="style">Normal.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="pack">
+                      <property name="anchor">w</property>
+                      <property name="pady">100 0</property>
+                      <property name="side">top</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Label" id="band2Select_Label" named="True">
+                        <property name="style">Heading2b.TLabel</property>
+                        <property name="text" translatable="yes">14.000.000</property>
+                        <layout manager="pack">
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="band2GO_Button" named="True">
+                        <property name="command" type="command" cbtype="with_wid">bandGo_CB</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">Go</property>
+                        <layout manager="pack">
+                          <property name="padx">10 0</property>
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Frame" id="band3Select_Frame" named="True">
+                    <property name="height">200</property>
+                    <property name="style">Normal.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="pack">
+                      <property name="anchor">w</property>
+                      <property name="pady">100 0</property>
+                      <property name="side">top</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Label" id="band3Select_Label" named="True">
+                        <property name="style">Heading2b.TLabel</property>
+                        <property name="text" translatable="yes">14.000.000</property>
+                        <layout manager="pack">
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="band3GO_Button" named="True">
+                        <property name="command" type="command" cbtype="with_wid">bandGo_CB</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">Go</property>
+                        <layout manager="pack">
+                          <property name="padx">10 0</property>
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="bandSelectFrame" named="True">
+                <property name="height">200</property>
+                <property name="style">NormalOutline.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="anchor">ne</property>
+                  <property name="expand">true</property>
+                  <property name="fill">both</property>
+                  <property name="ipadx">5</property>
+                  <property name="ipady">5</property>
+                  <property name="padx">0 10</property>
+                  <property name="pady">55 10</property>
+                  <property name="side">left</property>
+                </layout>
+                <containerlayout manager="pack">
+                  <property name="anchor">e</property>
+                </containerlayout>
+                <child>
+                  <object class="ttk.Label" id="label3">
+                    <property name="justify">center</property>
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">Select Bands (max 3)</property>
+                    <layout manager="pack">
+                      <property name="pady">10</property>
+                      <property name="side">top</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Frame" id="bandCheckbox_Frame" named="True">
+                    <property name="height">200</property>
+                    <property name="style">Normal.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="pack">
+                      <property name="side">top</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Checkbutton" id="band160m_checkbox" named="True">
+                        <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
+                        <property name="offvalue">0</property>
+                        <property name="onvalue">1</property>
+                        <property name="style">Checkbox2b.TCheckbutton</property>
+                        <property name="text" translatable="yes">160M</property>
+                        <property name="variable">string:band160m_Checked_VAR</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Checkbutton" id="band80m_checkbox" named="True">
+                        <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
+                        <property name="offvalue">0</property>
+                        <property name="onvalue">1</property>
+                        <property name="style">Checkbox2b.TCheckbutton</property>
+                        <property name="text" translatable="yes">80M</property>
+                        <property name="variable">string:ban80m_Checked_VAR</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="pady">15 0</property>
+                          <property name="row">1</property>
+                          <property name="sticky">w</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Checkbutton" id="band40m_checkbox" named="True">
+                        <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
+                        <property name="offvalue">0</property>
+                        <property name="onvalue">1</property>
+                        <property name="style">Checkbox2b.TCheckbutton</property>
+                        <property name="text" translatable="yes">40M</property>
+                        <property name="variable">string:band40m_Checked_VAR</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="pady">15 10</property>
+                          <property name="row">2</property>
+                          <property name="sticky">w</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Checkbutton" id="band30m_checkbox" named="True">
+                        <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
+                        <property name="offvalue">0</property>
+                        <property name="onvalue">1</property>
+                        <property name="style">Checkbox2b.TCheckbutton</property>
+                        <property name="text" translatable="yes">30M</property>
+                        <property name="variable">string:band30m_Checked_VAR</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="padx">10 0</property>
+                          <property name="row">0</property>
+                          <property name="sticky">w</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Checkbutton" id="band20m_checkbox" named="True">
+                        <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
+                        <property name="offvalue">0</property>
+                        <property name="onvalue">1</property>
+                        <property name="style">Checkbox2b.TCheckbutton</property>
+                        <property name="text" translatable="yes">20M</property>
+                        <property name="variable">string:band20m_Checked_VAR</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="padx">10 0</property>
+                          <property name="pady">15 0</property>
+                          <property name="row">1</property>
+                          <property name="sticky">w</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Checkbutton" id="band17m_checkbox" named="True">
+                        <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
+                        <property name="offvalue">0</property>
+                        <property name="onvalue">1</property>
+                        <property name="style">Checkbox2b.TCheckbutton</property>
+                        <property name="text" translatable="yes">17M</property>
+                        <property name="variable">string:band17m_Checked_VAR</property>
+                        <layout manager="grid">
+                          <property name="column">2</property>
+                          <property name="padx">10 0</property>
+                          <property name="row">0</property>
+                          <property name="sticky">w</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Checkbutton" id="band15m_checkbox" named="True">
+                        <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
+                        <property name="offvalue">0</property>
+                        <property name="onvalue">1</property>
+                        <property name="style">Checkbox2b.TCheckbutton</property>
+                        <property name="text" translatable="yes">15M</property>
+                        <property name="variable">string:band15m_Checked_VAR</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="padx">10 0</property>
+                          <property name="pady">15 10</property>
+                          <property name="row">2</property>
+                          <property name="sticky">w</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Checkbutton" id="band12m_checkbox" named="True">
+                        <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
+                        <property name="offvalue">0</property>
+                        <property name="onvalue">1</property>
+                        <property name="style">Checkbox2b.TCheckbutton</property>
+                        <property name="text" translatable="yes">12M</property>
+                        <property name="variable">string:band12m_Checked_VAR</property>
+                        <layout manager="grid">
+                          <property name="column">2</property>
+                          <property name="padx">10 0</property>
+                          <property name="pady">15 0</property>
+                          <property name="row">1</property>
+                          <property name="sticky">w</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Checkbutton" id="band10m_checkbox" named="True">
+                        <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
+                        <property name="offvalue">0</property>
+                        <property name="onvalue">1</property>
+                        <property name="style">Checkbox2b.TCheckbutton</property>
+                        <property name="text" translatable="yes">10M</property>
+                        <property name="variable">string:band10m_Checked_VAR</property>
+                        <layout manager="grid">
+                          <property name="column">2</property>
+                          <property name="padx">10 0</property>
+                          <property name="pady">15 10</property>
+                          <property name="row">2</property>
+                          <property name="sticky">w</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="closingFrame" named="True">
+            <property name="style">Normal.TFrame</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="columnspan">2</property>
+              <property name="pady">20 0</property>
+              <property name="row">1</property>
+            </layout>
+            <containerlayout manager="grid">
+              <property name="anchor">center</property>
+            </containerlayout>
+            <child>
+              <object class="ttk.Button" id="close_Button" named="True">
+                <property name="command" type="command" cbtype="simple">close_CB</property>
+                <property name="style">Button2b.TButton</property>
+                <property name="text" translatable="yes">Close</property>
+                <property name="width">10</property>
+                <layout manager="grid">
+                  <property name="column">3</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
