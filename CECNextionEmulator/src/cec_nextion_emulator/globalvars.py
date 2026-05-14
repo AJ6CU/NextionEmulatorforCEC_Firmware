@@ -66,13 +66,16 @@ Frequency_To_Run_UX_loop = ["250","300","350","400","425","450","475","500","550
 
 #
 #   Band limits. Probably should be retrieved from eeprom. Perhaps later...
-#user = {"name": "Alice", "age": 25, "city": "Seattle"}
-bandStart = {"band_160m":1800000,"band_80m":3500000,"band_40m":7000000,"band_30m":10100000,
-             "band_20m":14000000, "band_17m":18068000, "band_15m":21000000, "band_12m":24890000,
-             "band_10m":28000000}
-bandEnd =   {"band_160m":2000000,"band_80m":4000000,"band_40m":7300000,"band_30m":10150000,
-             "band_20m":14350000, "band_17m":18168000, "band_15m":21450000, "band_12m":24990000,
-             "band_10m":29700000}
+#
+bandStart = {"Band160m":1800000,"Band80m":3500000,"Band40m":7000000,"Band30m":10100000,
+             "Band20m":14000000, "Band17m":18068000, "Band15m":21000000, "Band12m":24890000,
+             "Band10m":28000000}
+bandEnd =   {"Band160m":2000000,"Band80m":4000000,"Band40m":7300000,"Band30m":10150000,
+             "Band20m":14350000, "Band17m":18168000, "Band15m":21450000, "Band12m":24990000,
+             "Band10m":29700000}
+bandSampleSize =   {"Band160m":1660,"Band80m":4160,"Band40m":2500,"Band30m":410,
+             "Band20m":2910, "Band17m":830, "Band15m":3750, "Band12m":830,
+             "Band10m":14160}
 
 
 

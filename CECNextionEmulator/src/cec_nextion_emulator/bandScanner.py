@@ -28,7 +28,7 @@ class bandScanner(baseui.bandScannerUI):
     #   all communication is via class get/set/query methods
     #
     class graphObject:
-        def __init__(self, targetLabelFrame, targetCanvas=None  **kw):
+        def __init__(self, targetLabelFrame, targetCanvas=None, **kw):
 
             self.targetLabelFrame = targetLabelFrame
             self.targetCanvas = targetCanvas
@@ -40,7 +40,7 @@ class bandScanner(baseui.bandScannerUI):
             self.activateFlag = False
             self.scrollbarSize = None
 
-            self.plotterAvg = barPlotter(self, self.tartgetCanvas, 120, 70)
+            self.plotterAvg = barPlotter(self, self.targetCanvas, 120, 70)
 
         def deactivate(self):
             self.bandID = None
@@ -51,13 +51,19 @@ class bandScanner(baseui.bandScannerUI):
             self.targetLabelFrame.configure(text="Select Band...")
 
 
-        def activate(self, bandID, bandStart, bandEnd):
+        def activate(self, bandID, bandStart, bandSampleSize, maxY=70, scrollbarSize=120):
             self.bandID = bandID
             self.bandStart = bandStart
-            self.bandEnd = bandEnd
+            self.bandSampleSize = bandSampleSize
+            self.maxY = maxY
+            self.scrollbarSize = scrollbarSize
+
+            self.bandEnd = self.bandStart + (self.bandSampleSize*scrollbarSize)
+
+            print ("band:", self.bandStart, gv.bandEnd[bandID], "actual end", self.bandStart + (self.bandSampleSize*120))
 
             self.activateFlag = True
-            self.targetLabelFrame.configure(text=self.bandID)
+            self.targetLabelFrame.configure(text=self.bandID.replace("Band","Band: "))
 
         def get_bandID(self):
             return self.bandID
@@ -66,10 +72,8 @@ class bandScanner(baseui.bandScannerUI):
             pass
 
         def setFrequency(self,scrollbarPosition):
-            pass
+            return self.bandStart + (self.bandSampleSize * scrollbarPosition)
 
-        def setScrollbarSize(self, size):
-            self.scrollbarSize = size
 
         def available(self):
             return not self.activateFlag
@@ -99,7 +103,7 @@ class bandScanner(baseui.bandScannerUI):
 
         self.numberBandsChecked = 0     # Total number of bands checked
 
-        self.targetGraph[] = None * 3
+        self.targetGraph = [None]  * 3
         self.averageBuffer = bytearray(self.MaxADCCount)    # Tracks the current average of a frequency
 
 
@@ -173,7 +177,13 @@ class bandScanner(baseui.bandScannerUI):
         pass
 
     def frequencyTuning_CB(self, scale_value):
-        pass
+        for i in range(len(self.targetGraph)):
+            if self.targetGraph[i].available():
+                return
+            else:
+                f=self.targetGraph[i].setFrequency(int(scale_value))
+                getattr(self, "band"+str(i)+"Frequency_VAR").set(str(f))
+
 
     def frequencyTuningPress_CB(self, event=None):
         pass
@@ -184,10 +194,10 @@ class bandScanner(baseui.bandScannerUI):
     def bandGo_CB(self, widget_id):
         print("bandGo_CB: widget_id=", widget_id)
 
-    def allocateGraphObj(self, bandid, bandStart=None, bandEnd=None):
+    def allocateGraphObj(self, bandID, bandStart, bandSampleSize, maxY=70, scrollbarSize=120):
         for i in range(len(self.targetGraph)):
-            if(self.targetGraph[i].available():
-                self.activate(self, bandID, bandStart, bandEnd)
+            if self.targetGraph[i].available():
+                self.targetGraph[i].activate(bandID, bandStart, bandSampleSize, self.FREQ_Y_MAX, scrollbarSize)
                 return True
 
         #
@@ -196,16 +206,16 @@ class bandScanner(baseui.bandScannerUI):
 
         messagebox.showwarning(title="No Available Graph Areas",
             message="Attempt to allocate more than 3 bands for scanning", parent=self,
-            DETAILS="You must first free up a band and then try again.")
+            detail="You must first free up a band and then try again.")
         return False
 
-    def releaseGraphObj(self, bandid):
+    def releaseGraphObj(self, bandID):
         for i in range(len(self.targetGraph)):
-            if self.targetGraph[i].get_bandid == bandid:
+            if self.targetGraph[i].get_bandID() == bandID:
                 self.targetGraph[i].deactivate()
                 return True
         #
-        #   If it dropped thru, tried to deactivate a bandid that was not found.
+        #   If it dropped thru, tried to deactivate a bandID that was not found.
         #
         return False
 
@@ -213,11 +223,12 @@ class bandScanner(baseui.bandScannerUI):
     def band_Checked_CB(self, widget_id):
         print("band checked callback, widget_id=", widget_id)
 
-        if getattr(self,widget_id+"_Checked_VAR").get() == 1:
+        if getattr(self,widget_id+"_Checked_VAR").get() == '1':
             #
             #   Trying to allocate this band. Allocate it. If True, success
             #
-            if(self.allocateGraphObj("band_160m",gv.bandStart["band_160m"], gv.bandEnd["band_160m"])):
+            if self.allocateGraphObj(widget_id,gv.bandStart[widget_id], gv.bandSampleSize[widget_id],
+                                     self.FREQ_Y_MAX, self.MaxADCCount):
                 #
                 #   True indicates successful allocation. Can just return
                 #
@@ -232,7 +243,7 @@ class bandScanner(baseui.bandScannerUI):
             #
             #   Trying to deactivate a graphobject
             #
-            if self.releaseGraphObj("band_160m"):
+            if self.releaseGraphObj(widget_id):
                 return
             else:
                 print("trying to release a band that is not allocated, band=", widget_id)

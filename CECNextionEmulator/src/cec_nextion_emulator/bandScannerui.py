@@ -1,19 +1,26 @@
 #!/usr/bin/python3
+"""
+Band Scanner
+
+Scans up to three selected bands for signals.
+
+UI source file: bandScanner.ui
+"""
 import tkinter as tk
 import tkinter.ttk as ttk
 
 
-def i18n_translator_noop(value):
+def safe_i18n_translator(value):
     """i18n - Setup translator in derived class file"""
     return value
 
 
-def first_object_callback_noop(widget):
+def safe_fo_callback(widget):
     """on first objec callback - Setup callback in derived class file."""
     pass
 
 
-def image_loader_default(master, image_name: str):
+def safe_image_loader(master, image_name: str):
     """Image loader - Setup image_loader in derived class file."""
     img = None
     try:
@@ -38,12 +45,12 @@ class bandScannerUI(tk.Toplevel):
         **kw
     ):
         if translator is None:
-            translator = i18n_translator_noop
+            translator = safe_i18n_translator
         _ = translator  # i18n string marker.
         if image_loader is None:
-            image_loader = image_loader_default
+            image_loader = safe_image_loader
         if on_first_object_cb is None:
-            on_first_object_cb = first_object_callback_noop
+            on_first_object_cb = safe_fo_callback
 
         super().__init__(master, **kw)
 
@@ -85,11 +92,11 @@ class bandScannerUI(tk.Toplevel):
             style="Heading3.TLabelframe",
             text='Select Band...',
             width=200)
-        self.band1Plot_Canv = tk.Canvas(
-            self.band1_Labelframe, name="band1plot_canv")
-        self.band1Plot_Canv.configure(
+        self.band1Plot_Canvas = tk.Canvas(
+            self.band1_Labelframe, name="band1plot_canvas")
+        self.band1Plot_Canvas.configure(
             background="#0432ff", height=100, width=430)
-        self.band1Plot_Canv.pack(expand=True, fill="both", side="top")
+        self.band1Plot_Canvas.pack(expand=True, fill="both", side="top")
         self.band1_Labelframe.grid(column=0, padx="8 0", row=1, sticky="ew")
         self.band2_Labelframe = ttk.Labelframe(
             self.frequencySpectrumFrame, name="band2_labelframe")
@@ -98,11 +105,11 @@ class bandScannerUI(tk.Toplevel):
             style="Heading3.TLabelframe",
             text='Select Band...',
             width=200)
-        self.band2Plot_Canv = tk.Canvas(
-            self.band2_Labelframe, name="band2plot_canv")
-        self.band2Plot_Canv.configure(
+        self.band2Plot_Canvas = tk.Canvas(
+            self.band2_Labelframe, name="band2plot_canvas")
+        self.band2Plot_Canvas.configure(
             background="#0432ff", height=100, width=430)
-        self.band2Plot_Canv.pack(expand=True, fill="both", side="top")
+        self.band2Plot_Canvas.pack(expand=True, fill="both", side="top")
         self.band2_Labelframe.grid(column=0, padx="8 0", row=3, sticky="ew")
         self.freqTuneFrame = ttk.Frame(
             self.frequencySpectrumFrame,
@@ -159,8 +166,11 @@ class bandScannerUI(tk.Toplevel):
             height=200, style="Normal.TFrame", width=200)
         self.band1Select_Label = ttk.Label(
             self.band1Select_Frame, name="band1select_label")
+        self.band0Frequency_VAR = tk.StringVar(value='14.000.000')
         self.band1Select_Label.configure(
-            style="Heading2b.TLabel", text='14.000.000')
+            style="Heading2b.TLabel",
+            text='14.000.000',
+            textvariable=self.band0Frequency_VAR)
         self.band1Select_Label.pack(side="left")
         self.band1GO_Button = ttk.Button(
             self.band1Select_Frame, name="band1go_button")
@@ -176,8 +186,11 @@ class bandScannerUI(tk.Toplevel):
             height=200, style="Normal.TFrame", width=200)
         self.band2Select_Label = ttk.Label(
             self.band2Select_Frame, name="band2select_label")
+        self.band1Frequency_VAR = tk.StringVar(value='14.000.000')
         self.band2Select_Label.configure(
-            style="Heading2b.TLabel", text='14.000.000')
+            style="Heading2b.TLabel",
+            text='14.000.000',
+            textvariable=self.band1Frequency_VAR)
         self.band2Select_Label.pack(side="left")
         self.band2GO_Button = ttk.Button(
             self.band2Select_Frame, name="band2go_button")
@@ -193,8 +206,11 @@ class bandScannerUI(tk.Toplevel):
             height=200, style="Normal.TFrame", width=200)
         self.band3Select_Label = ttk.Label(
             self.band3Select_Frame, name="band3select_label")
+        self.band2Frequency_VAR = tk.StringVar(value='14.000.000')
         self.band3Select_Label.configure(
-            style="Heading2b.TLabel", text='14.000.000')
+            style="Heading2b.TLabel",
+            text='14.000.000',
+            textvariable=self.band2Frequency_VAR)
         self.band3Select_Label.pack(side="left")
         self.band3GO_Button = ttk.Button(
             self.band3Select_Frame, name="band3go_button")
@@ -220,147 +236,139 @@ class bandScannerUI(tk.Toplevel):
             self.bandSelectFrame, name="bandcheckbox_frame")
         self.bandCheckbox_Frame.configure(
             height=200, style="Normal.TFrame", width=200)
-        self.band160m_checkbox = ttk.Checkbutton(
-            self.bandCheckbox_Frame, name="band160m_checkbox")
-        self.band160m_Checked_VAR = tk.StringVar()
-        self.band160m_checkbox.configure(
+        self.Band160m = ttk.Checkbutton(
+            self.bandCheckbox_Frame, name="band160m")
+        self.Band160m_Checked_VAR = tk.StringVar()
+        self.Band160m.configure(
             offvalue=0,
             onvalue=1,
             style="Checkbox2b.TCheckbutton",
             text='160M',
-            variable=self.band160m_Checked_VAR)
-        self.band160m_checkbox.grid(column=0, row=0)
-        def band160m_checkbox_cmd_(): self.band_Checked_CB("band160m_checkbox")
+            variable=self.Band160m_Checked_VAR)
+        self.Band160m.grid(column=0, row=0)
+        def Band160m_cmd_(): self.band_Checked_CB("Band160m")
 
-        self.band160m_checkbox.configure(command=band160m_checkbox_cmd_)
-        self.band80m_checkbox = ttk.Checkbutton(
-            self.bandCheckbox_Frame, name="band80m_checkbox")
-        self.ban80m_Checked_VAR = tk.StringVar()
-        self.band80m_checkbox.configure(
+        self.Band160m.configure(command=Band160m_cmd_)
+        self.Band80m = ttk.Checkbutton(self.bandCheckbox_Frame, name="band80m")
+        self.Band80m_Checked_VAR = tk.StringVar()
+        self.Band80m.configure(
             offvalue=0,
             onvalue=1,
             style="Checkbox2b.TCheckbutton",
             text='80M',
-            variable=self.ban80m_Checked_VAR)
-        self.band80m_checkbox.grid(column=0, pady="15 0", row=1, sticky="w")
-        def band80m_checkbox_cmd_(): self.band_Checked_CB("band80m_checkbox")
+            variable=self.Band80m_Checked_VAR)
+        self.Band80m.grid(column=0, pady="15 0", row=1, sticky="w")
+        def Band80m_cmd_(): self.band_Checked_CB("Band80m")
 
-        self.band80m_checkbox.configure(command=band80m_checkbox_cmd_)
-        self.band40m_checkbox = ttk.Checkbutton(
-            self.bandCheckbox_Frame, name="band40m_checkbox")
-        self.band40m_Checked_VAR = tk.StringVar()
-        self.band40m_checkbox.configure(
+        self.Band80m.configure(command=Band80m_cmd_)
+        self.Band40m = ttk.Checkbutton(self.bandCheckbox_Frame, name="band40m")
+        self.Band40m_Checked_VAR = tk.StringVar()
+        self.Band40m.configure(
             offvalue=0,
             onvalue=1,
             style="Checkbox2b.TCheckbutton",
             text='40M',
-            variable=self.band40m_Checked_VAR)
-        self.band40m_checkbox.grid(column=0, pady="15 10", row=2, sticky="w")
-        def band40m_checkbox_cmd_(): self.band_Checked_CB("band40m_checkbox")
+            variable=self.Band40m_Checked_VAR)
+        self.Band40m.grid(column=0, pady="15 10", row=2, sticky="w")
+        def Band40m_cmd_(): self.band_Checked_CB("Band40m")
 
-        self.band40m_checkbox.configure(command=band40m_checkbox_cmd_)
-        self.band30m_checkbox = ttk.Checkbutton(
-            self.bandCheckbox_Frame, name="band30m_checkbox")
-        self.band30m_Checked_VAR = tk.StringVar()
-        self.band30m_checkbox.configure(
+        self.Band40m.configure(command=Band40m_cmd_)
+        self.Band30m = ttk.Checkbutton(self.bandCheckbox_Frame, name="band30m")
+        self.Band30m_Checked_VAR = tk.StringVar()
+        self.Band30m.configure(
             offvalue=0,
             onvalue=1,
             style="Checkbox2b.TCheckbutton",
             text='30M',
-            variable=self.band30m_Checked_VAR)
-        self.band30m_checkbox.grid(column=1, padx="10 0", row=0, sticky="w")
-        def band30m_checkbox_cmd_(): self.band_Checked_CB("band30m_checkbox")
+            variable=self.Band30m_Checked_VAR)
+        self.Band30m.grid(column=1, padx="10 0", row=0, sticky="w")
+        def Band30m_cmd_(): self.band_Checked_CB("Band30m")
 
-        self.band30m_checkbox.configure(command=band30m_checkbox_cmd_)
-        self.band20m_checkbox = ttk.Checkbutton(
-            self.bandCheckbox_Frame, name="band20m_checkbox")
-        self.band20m_Checked_VAR = tk.StringVar()
-        self.band20m_checkbox.configure(
+        self.Band30m.configure(command=Band30m_cmd_)
+        self.Band20m = ttk.Checkbutton(self.bandCheckbox_Frame, name="band20m")
+        self.Band20m_Checked_VAR = tk.StringVar()
+        self.Band20m.configure(
             offvalue=0,
             onvalue=1,
             style="Checkbox2b.TCheckbutton",
             text='20M',
-            variable=self.band20m_Checked_VAR)
-        self.band20m_checkbox.grid(
+            variable=self.Band20m_Checked_VAR)
+        self.Band20m.grid(
             column=1,
             padx="10 0",
             pady="15 0",
             row=1,
             sticky="w")
 
-        def band20m_checkbox_cmd_(): self.band_Checked_CB("band20m_checkbox")
+        def Band20m_cmd_(): self.band_Checked_CB("Band20m")
 
-        self.band20m_checkbox.configure(command=band20m_checkbox_cmd_)
-        self.band17m_checkbox = ttk.Checkbutton(
-            self.bandCheckbox_Frame, name="band17m_checkbox")
-        self.band17m_Checked_VAR = tk.StringVar()
-        self.band17m_checkbox.configure(
+        self.Band20m.configure(command=Band20m_cmd_)
+        self.Band17m = ttk.Checkbutton(self.bandCheckbox_Frame, name="band17m")
+        self.Band17m_Checked_VAR = tk.StringVar()
+        self.Band17m.configure(
             offvalue=0,
             onvalue=1,
             style="Checkbox2b.TCheckbutton",
             text='17M',
-            variable=self.band17m_Checked_VAR)
-        self.band17m_checkbox.grid(
+            variable=self.Band17m_Checked_VAR)
+        self.Band17m.grid(
             column=1,
             padx="10 0",
             pady="15 10",
             row=2,
             sticky="w")
 
-        def band17m_checkbox_cmd_(): self.band_Checked_CB("band17m_checkbox")
+        def Band17m_cmd_(): self.band_Checked_CB("Band17m")
 
-        self.band17m_checkbox.configure(command=band17m_checkbox_cmd_)
-        self.band15m_checkbox = ttk.Checkbutton(
-            self.bandCheckbox_Frame, name="band15m_checkbox")
-        self.band15m_Checked_VAR = tk.StringVar()
-        self.band15m_checkbox.configure(
+        self.Band17m.configure(command=Band17m_cmd_)
+        self.Band15m = ttk.Checkbutton(self.bandCheckbox_Frame, name="band15m")
+        self.Band15m_Checked_VAR = tk.StringVar()
+        self.Band15m.configure(
             offvalue=0,
             onvalue=1,
             style="Checkbox2b.TCheckbutton",
             text='15M',
-            variable=self.band15m_Checked_VAR)
-        self.band15m_checkbox.grid(column=2, padx="10 0", row=0, sticky="w")
-        def band15m_checkbox_cmd_(): self.band_Checked_CB("band15m_checkbox")
+            variable=self.Band15m_Checked_VAR)
+        self.Band15m.grid(column=2, padx="10 0", row=0, sticky="w")
+        def Band15m_cmd_(): self.band_Checked_CB("Band15m")
 
-        self.band15m_checkbox.configure(command=band15m_checkbox_cmd_)
-        self.band12m_checkbox = ttk.Checkbutton(
-            self.bandCheckbox_Frame, name="band12m_checkbox")
-        self.band12m_Checked_VAR = tk.StringVar()
-        self.band12m_checkbox.configure(
+        self.Band15m.configure(command=Band15m_cmd_)
+        self.Band12m = ttk.Checkbutton(self.bandCheckbox_Frame, name="band12m")
+        self.Band12m_Checked_VAR = tk.StringVar()
+        self.Band12m.configure(
             offvalue=0,
             onvalue=1,
             style="Checkbox2b.TCheckbutton",
             text='12M',
-            variable=self.band12m_Checked_VAR)
-        self.band12m_checkbox.grid(
+            variable=self.Band12m_Checked_VAR)
+        self.Band12m.grid(
             column=2,
             padx="10 0",
             pady="15 0",
             row=1,
             sticky="w")
 
-        def band12m_checkbox_cmd_(): self.band_Checked_CB("band12m_checkbox")
+        def Band12m_cmd_(): self.band_Checked_CB("Band12m")
 
-        self.band12m_checkbox.configure(command=band12m_checkbox_cmd_)
-        self.band10m_checkbox = ttk.Checkbutton(
-            self.bandCheckbox_Frame, name="band10m_checkbox")
-        self.band10m_Checked_VAR = tk.StringVar()
-        self.band10m_checkbox.configure(
+        self.Band12m.configure(command=Band12m_cmd_)
+        self.Band10m = ttk.Checkbutton(self.bandCheckbox_Frame, name="band10m")
+        self.Band10m_Checked_VAR = tk.StringVar()
+        self.Band10m.configure(
             offvalue=0,
             onvalue=1,
             style="Checkbox2b.TCheckbutton",
             text='10M',
-            variable=self.band10m_Checked_VAR)
-        self.band10m_checkbox.grid(
+            variable=self.Band10m_Checked_VAR)
+        self.Band10m.grid(
             column=2,
             padx="10 0",
             pady="15 10",
             row=2,
             sticky="w")
 
-        def band10m_checkbox_cmd_(): self.band_Checked_CB("band10m_checkbox")
+        def Band10m_cmd_(): self.band_Checked_CB("Band10m")
 
-        self.band10m_checkbox.configure(command=band10m_checkbox_cmd_)
+        self.Band10m.configure(command=Band10m_cmd_)
         self.bandCheckbox_Frame.pack(side="top")
         self.bandSelectFrame.pack(
             anchor="ne",
@@ -398,6 +406,7 @@ class bandScannerUI(tk.Toplevel):
         self.configure(height=200, width=800)
         self.geometry("800x625")
         self.title("Frequency Spectrum")
+        # Layout for 'bandScanner_Toplevel' skipped in custom widget template.
 
     def resizeCanvas_CB(self, event=None):
         pass
@@ -427,5 +436,4 @@ class bandScannerUI(tk.Toplevel):
 if __name__ == "__main__":
     root = tk.Tk()
     widget = bandScannerUI(root)
-    widget.pack(expand=True, fill="both")
     root.mainloop()

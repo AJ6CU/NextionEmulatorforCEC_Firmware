@@ -105,7 +105,7 @@
                   <property name="sticky">ew</property>
                 </layout>
                 <child>
-                  <object class="tk.Canvas" id="band1Plot_Canv" named="True">
+                  <object class="tk.Canvas" id="band1Plot_Canvas" named="True">
                     <property name="background">#0432ff</property>
                     <property name="height">100</property>
                     <property name="width">430</property>
@@ -131,7 +131,7 @@
                   <property name="sticky">ew</property>
                 </layout>
                 <child>
-                  <object class="tk.Canvas" id="band2Plot_Canv" named="True">
+                  <object class="tk.Canvas" id="band2Plot_Canvas" named="True">
                     <property name="background">#0432ff</property>
                     <property name="height">100</property>
                     <property name="width">430</property>
@@ -223,6 +223,7 @@
                       <object class="ttk.Label" id="band1Select_Label" named="True">
                         <property name="style">Heading2b.TLabel</property>
                         <property name="text" translatable="yes">14.000.000</property>
+                        <property name="textvariable">string:band0Frequency_VAR</property>
                         <layout manager="pack">
                           <property name="side">left</property>
                         </layout>
@@ -255,6 +256,7 @@
                       <object class="ttk.Label" id="band2Select_Label" named="True">
                         <property name="style">Heading2b.TLabel</property>
                         <property name="text" translatable="yes">14.000.000</property>
+                        <property name="textvariable">string:band1Frequency_VAR</property>
                         <layout manager="pack">
                           <property name="side">left</property>
                         </layout>
@@ -287,6 +289,7 @@
                       <object class="ttk.Label" id="band3Select_Label" named="True">
                         <property name="style">Heading2b.TLabel</property>
                         <property name="text" translatable="yes">14.000.000</property>
+                        <property name="textvariable">string:band2Frequency_VAR</property>
                         <layout manager="pack">
                           <property name="side">left</property>
                         </layout>
@@ -345,13 +348,13 @@
                       <property name="side">top</property>
                     </layout>
                     <child>
-                      <object class="ttk.Checkbutton" id="band160m_checkbox" named="True">
+                      <object class="ttk.Checkbutton" id="Band160m" named="True">
                         <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
                         <property name="offvalue">0</property>
                         <property name="onvalue">1</property>
                         <property name="style">Checkbox2b.TCheckbutton</property>
                         <property name="text" translatable="yes">160M</property>
-                        <property name="variable">string:band160m_Checked_VAR</property>
+                        <property name="variable">string:Band160m_Checked_VAR</property>
                         <layout manager="grid">
                           <property name="column">0</property>
                           <property name="row">0</property>
@@ -359,13 +362,13 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Checkbutton" id="band80m_checkbox" named="True">
+                      <object class="ttk.Checkbutton" id="Band80m" named="True">
                         <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
                         <property name="offvalue">0</property>
                         <property name="onvalue">1</property>
                         <property name="style">Checkbox2b.TCheckbutton</property>
                         <property name="text" translatable="yes">80M</property>
-                        <property name="variable">string:ban80m_Checked_VAR</property>
+                        <property name="variable">string:Band80m_Checked_VAR</property>
                         <layout manager="grid">
                           <property name="column">0</property>
                           <property name="pady">15 0</property>
@@ -375,13 +378,13 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Checkbutton" id="band40m_checkbox" named="True">
+                      <object class="ttk.Checkbutton" id="Band40m" named="True">
                         <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
                         <property name="offvalue">0</property>
                         <property name="onvalue">1</property>
                         <property name="style">Checkbox2b.TCheckbutton</property>
                         <property name="text" translatable="yes">40M</property>
-                        <property name="variable">string:band40m_Checked_VAR</property>
+                        <property name="variable">string:Band40m_Checked_VAR</property>
                         <layout manager="grid">
                           <property name="column">0</property>
                           <property name="pady">15 10</property>
@@ -391,13 +394,13 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Checkbutton" id="band30m_checkbox" named="True">
+                      <object class="ttk.Checkbutton" id="Band30m" named="True">
                         <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
                         <property name="offvalue">0</property>
                         <property name="onvalue">1</property>
                         <property name="style">Checkbox2b.TCheckbutton</property>
                         <property name="text" translatable="yes">30M</property>
-                        <property name="variable">string:band30m_Checked_VAR</property>
+                        <property name="variable">string:Band30m_Checked_VAR</property>
                         <layout manager="grid">
                           <property name="column">1</property>
                           <property name="padx">10 0</property>
@@ -407,13 +410,13 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Checkbutton" id="band20m_checkbox" named="True">
+                      <object class="ttk.Checkbutton" id="Band20m" named="True">
                         <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
                         <property name="offvalue">0</property>
                         <property name="onvalue">1</property>
                         <property name="style">Checkbox2b.TCheckbutton</property>
                         <property name="text" translatable="yes">20M</property>
-                        <property name="variable">string:band20m_Checked_VAR</property>
+                        <property name="variable">string:Band20m_Checked_VAR</property>
                         <layout manager="grid">
                           <property name="column">1</property>
                           <property name="padx">10 0</property>
@@ -424,13 +427,13 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Checkbutton" id="band17m_checkbox" named="True">
+                      <object class="ttk.Checkbutton" id="Band17m" named="True">
                         <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
                         <property name="offvalue">0</property>
                         <property name="onvalue">1</property>
                         <property name="style">Checkbox2b.TCheckbutton</property>
                         <property name="text" translatable="yes">17M</property>
-                        <property name="variable">string:band17m_Checked_VAR</property>
+                        <property name="variable">string:Band17m_Checked_VAR</property>
                         <layout manager="grid">
                           <property name="column">1</property>
                           <property name="padx">10 0</property>
@@ -441,13 +444,13 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Checkbutton" id="band15m_checkbox" named="True">
+                      <object class="ttk.Checkbutton" id="Band15m" named="True">
                         <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
                         <property name="offvalue">0</property>
                         <property name="onvalue">1</property>
                         <property name="style">Checkbox2b.TCheckbutton</property>
                         <property name="text" translatable="yes">15M</property>
-                        <property name="variable">string:band15m_Checked_VAR</property>
+                        <property name="variable">string:Band15m_Checked_VAR</property>
                         <layout manager="grid">
                           <property name="column">2</property>
                           <property name="padx">10 0</property>
@@ -457,13 +460,13 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Checkbutton" id="band12m_checkbox" named="True">
+                      <object class="ttk.Checkbutton" id="Band12m" named="True">
                         <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
                         <property name="offvalue">0</property>
                         <property name="onvalue">1</property>
                         <property name="style">Checkbox2b.TCheckbutton</property>
                         <property name="text" translatable="yes">12M</property>
-                        <property name="variable">string:band12m_Checked_VAR</property>
+                        <property name="variable">string:Band12m_Checked_VAR</property>
                         <layout manager="grid">
                           <property name="column">2</property>
                           <property name="padx">10 0</property>
@@ -474,13 +477,13 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Checkbutton" id="band10m_checkbox" named="True">
+                      <object class="ttk.Checkbutton" id="Band10m" named="True">
                         <property name="command" type="command" cbtype="with_wid">band_Checked_CB</property>
                         <property name="offvalue">0</property>
                         <property name="onvalue">1</property>
                         <property name="style">Checkbox2b.TCheckbutton</property>
                         <property name="text" translatable="yes">10M</property>
-                        <property name="variable">string:band10m_Checked_VAR</property>
+                        <property name="variable">string:Band10m_Checked_VAR</property>
                         <layout manager="grid">
                           <property name="column">2</property>
                           <property name="padx">10 0</property>
