@@ -69,6 +69,22 @@ class bandScannerUI(tk.Toplevel):
             name="frequencyspectrumframe")
         self.frequencySpectrumFrame.configure(
             height=180, style="Normal.TFrame", width=450)
+        self.band0_Labelframe = ttk.Labelframe(
+            self.frequencySpectrumFrame, name="band0_labelframe")
+        self.band0_Labelframe.configure(
+            height=200,
+            style="Heading3.TLabelframe",
+            text='Select Band...',
+            width=200)
+        self.band0Plot_Canvas = tk.Canvas(
+            self.band0_Labelframe, name="band0plot_canvas")
+        self.band0Plot_Canvas.configure(
+            background="#0432ff", height=100, width=430)
+        self.band0Plot_Canvas.grid(column=0, columnspan=3, row=1, sticky="ew")
+        self.band0Plot_Canvas.bind(
+            "<Configure>", self.resizeCanvas_CB, add="+")
+        self.band0_Labelframe.grid(column=0, padx="8 0", row=0, sticky="ew")
+        self.band0_Labelframe.columnconfigure(0, weight=1)
         self.band1_Labelframe = ttk.Labelframe(
             self.frequencySpectrumFrame, name="band1_labelframe")
         self.band1_Labelframe.configure(
@@ -76,41 +92,25 @@ class bandScannerUI(tk.Toplevel):
             style="Heading3.TLabelframe",
             text='Select Band...',
             width=200)
-        self.band1Plot_Canvas = tk.Canvas(
-            self.band1_Labelframe, name="band1plot_canvas")
-        self.band1Plot_Canvas.configure(
+        self.band1Plot_Canv = tk.Canvas(
+            self.band1_Labelframe, name="band1plot_canv")
+        self.band1Plot_Canv.configure(
             background="#0432ff", height=100, width=430)
-        self.band1Plot_Canvas.grid(column=0, columnspan=3, row=1, sticky="ew")
-        self.band1Plot_Canvas.bind(
-            "<Configure>", self.resizeCanvas_CB, add="+")
-        self.band1_Labelframe.grid(column=0, padx="8 0", row=0, sticky="ew")
-        self.band1_Labelframe.columnconfigure(0, weight=1)
-        self.band2_LabelFrame = ttk.Labelframe(
+        self.band1Plot_Canv.pack(expand=True, fill="both", side="top")
+        self.band1_Labelframe.grid(column=0, padx="8 0", row=1, sticky="ew")
+        self.band2_Labelframe = ttk.Labelframe(
             self.frequencySpectrumFrame, name="band2_labelframe")
-        self.band2_LabelFrame.configure(
+        self.band2_Labelframe.configure(
             height=200,
             style="Heading3.TLabelframe",
             text='Select Band...',
             width=200)
-        self.band2Plot_Canvas = tk.Canvas(
-            self.band2_LabelFrame, name="band2plot_canvas")
-        self.band2Plot_Canvas.configure(
+        self.band2Plot_Canv = tk.Canvas(
+            self.band2_Labelframe, name="band2plot_canv")
+        self.band2Plot_Canv.configure(
             background="#0432ff", height=100, width=430)
-        self.band2Plot_Canvas.pack(expand=True, fill="both", side="top")
-        self.band2_LabelFrame.grid(column=0, padx="8 0", row=1, sticky="ew")
-        self.band3_Labelframe = ttk.Labelframe(
-            self.frequencySpectrumFrame, name="band3_labelframe")
-        self.band3_Labelframe.configure(
-            height=200,
-            style="Heading3.TLabelframe",
-            text='Select Band...',
-            width=200)
-        self.band3Plot_Canvas = tk.Canvas(
-            self.band3_Labelframe, name="band3plot_canvas")
-        self.band3Plot_Canvas.configure(
-            background="#0432ff", height=100, width=430)
-        self.band3Plot_Canvas.pack(expand=True, fill="both", side="top")
-        self.band3_Labelframe.grid(column=0, padx="8 0", row=3, sticky="ew")
+        self.band2Plot_Canv.pack(expand=True, fill="both", side="top")
+        self.band2_Labelframe.grid(column=0, padx="8 0", row=3, sticky="ew")
         self.freqTuneFrame = ttk.Frame(
             self.frequencySpectrumFrame,
             name="freqtuneframe")

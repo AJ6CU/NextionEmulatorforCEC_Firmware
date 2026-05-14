@@ -62,7 +62,7 @@
               <property type="row" id="2" name="weight">1</property>
             </containerlayout>
             <child>
-              <object class="ttk.Labelframe" id="band1_Labelframe" named="True">
+              <object class="ttk.Labelframe" id="band0_Labelframe" named="True">
                 <property name="height">200</property>
                 <property name="style">Heading3.TLabelframe</property>
                 <property name="text" translatable="yes">Select Band...</property>
@@ -77,7 +77,7 @@
                   <property type="col" id="0" name="weight">1</property>
                 </containerlayout>
                 <child>
-                  <object class="tk.Canvas" id="band1Plot_Canvas" named="True">
+                  <object class="tk.Canvas" id="band0Plot_Canvas" named="True">
                     <property name="background">#0432ff</property>
                     <property name="height">100</property>
                     <property name="width">430</property>
@@ -93,7 +93,7 @@
               </object>
             </child>
             <child>
-              <object class="ttk.Labelframe" id="band2_LabelFrame" named="True">
+              <object class="ttk.Labelframe" id="band1_Labelframe" named="True">
                 <property name="height">200</property>
                 <property name="style">Heading3.TLabelframe</property>
                 <property name="text" translatable="yes">Select Band...</property>
@@ -105,7 +105,7 @@
                   <property name="sticky">ew</property>
                 </layout>
                 <child>
-                  <object class="tk.Canvas" id="band2Plot_Canvas" named="True">
+                  <object class="tk.Canvas" id="band1Plot_Canv" named="True">
                     <property name="background">#0432ff</property>
                     <property name="height">100</property>
                     <property name="width">430</property>
@@ -119,7 +119,7 @@
               </object>
             </child>
             <child>
-              <object class="ttk.Labelframe" id="band3_Labelframe" named="True">
+              <object class="ttk.Labelframe" id="band2_Labelframe" named="True">
                 <property name="height">200</property>
                 <property name="style">Heading3.TLabelframe</property>
                 <property name="text" translatable="yes">Select Band...</property>
@@ -131,7 +131,7 @@
                   <property name="sticky">ew</property>
                 </layout>
                 <child>
-                  <object class="tk.Canvas" id="band3Plot_Canvas" named="True">
+                  <object class="tk.Canvas" id="band2Plot_Canv" named="True">
                     <property name="background">#0432ff</property>
                     <property name="height">100</property>
                     <property name="width">430</property>

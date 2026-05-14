@@ -10,6 +10,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 
 from barPlotter import barPlotter
+from tkinter import messagebox
 
 import bandScannerui as baseui
 
@@ -25,9 +26,50 @@ class bandScanner(baseui.bandScannerUI):
     #   all communication is via class get/set/query methods
     #
     class graphObject:
-        def __init__(self, mycanvas=None, **kw):
-            print("I am an inner class")
-            self.plotterAvg = barPlotter(self, mycanvas, 120, 70)
+        def __init__(self, targetLabelFrame, targetCanvas=None  **kw):
+
+            self.targetLabelFrame = targetLabelFrame
+            self.targetCanvas = targetCanvas
+
+
+            self.bandID = None
+            self.bandStart = None
+            self.bandEnd = None
+            self.activateFlag = False
+            self.plotterAvg = barPlotter(self, self.tartgetCanvas, 120, 70)
+
+        def deactivate(self):
+            self.bandID = None
+            self.bandStart = None
+            self.bandEnd = None
+
+            self.activateFlag = False
+            self.targetLabelFrame.configure(text="Select Band...")
+
+        def activate(self, bandID, bandStart, bandEnd):
+            self.bandID = bandID
+            self.bandStart = bandStart
+            self.bandEnd = bandEnd
+
+            self.activateFlag = True
+            self.targetLabelFrame.configure(text=self.bandID)
+
+
+
+        def get_bandID(self):
+            return self.bandID
+
+        def getFrequency(self,scrollbarPosition):
+            pass
+
+        def setFrequency(self,scrollbarPosition):
+            pass
+
+        def available(self):
+            return not self.activateFlag
+
+
+
     def __init__(self,  master=None, mainWindow=None, **kw):
         self.master = master                            # pointer to the root master.Needed for scheduling "after" events
         self.mainWindow = mainWindow
@@ -51,7 +93,7 @@ class bandScanner(baseui.bandScannerUI):
 
         self.numberBandsChecked = 0     # Total number of bands checked
 
-
+        self.targetGraph[] = None * 3
         self.averageBuffer = bytearray(self.MaxADCCount)    # Tracks the current average of a frequency
 
 
@@ -110,9 +152,13 @@ class bandScanner(baseui.bandScannerUI):
         #   100 - this is the bandwidth  100 x 20 = 2000
         #
         self.mainWindow.theRadio.updateFrequencySpectrumOptions(self.repeatCount, 0, self.MaxADCCount, 100)
+        #
+        #   Instantiate the 3 objects to do the plotting
+        #
+        self.targetGraph[0] = self.graphObject(self.band0_Labelframe, self.band0Plot_Canvas)
+        self.targetGraph[1] = self.graphObject(self.band1_Labelframe, self.band1Plot_Canvas)
+        self.targetGraph[2] = self.graphObject(self.band2_Labelframe, self.band2Plot_Canvas)
 
-        self.testClass = self.graphObject(self.band1Plot_Canvas)
-        self.testClass1 = self.graphObject(self.band2Plot_Canvas)
 
         self.initUXComplete = True
 
@@ -132,28 +178,50 @@ class bandScanner(baseui.bandScannerUI):
     def bandGo_CB(self, widget_id):
         print("bandGo_CB: widget_id=", widget_id)
 
+    def allocateGraphObj(self, bandid, bandStart=None, bandEnd=None):
+        for i in range(len(self.targetGraph)):
+            if(self.targetGraph[i].available():
+                self.activate(self, bandID, bandStart, bandEnd)
+                return True
+
+        #
+        #   If it falls thru, no available slots. Display warning message
+        #
+
+        messagebox.showwarning(title="No Available Graph Areas",
+            message="Attempt to allocate more than 3 bands for scanning", parent=self,
+            DETAILS="You must first free up a band and then try again.")
+        return False
+
+    def releaseGraphObj(self, bandid):
+        pass
+
     def band_Checked_CB(self, widget_id):
         print("band checked callback, widget_id=", widget_id)
 
         match widget_id:
-            case "band160m_checkbox":
+            case "band_160m":
                 if self.band160m_Checked_VAR.get() == '1':
-                    print("160m turned on")
+                    if(self.allocateGraphObj("band_160m",bandStart["band_160m"], bandEnd["band_160m"])):
+                        return
+                    else:
+                        pass
+                        # error message
                 else:
-                    print("160m turned off")
-            case "band80m_checkbox":
+                    self.releaseGraphObj("band_160m")
+            case "band_80m":
                 pass
-            case "band40m_checkbox":
+            case "band_40m":
                 pass
-            case "band30m_checkbox":
+            case "band_30m":
                 pass
-            case "band20m_checkbox":
+            case "band_20m":
                 pass
-            case "band17m_checkbox":
+            case "band_17m":
                 pass
-            case "band12m_checkbox":
+            case "band_12m":
                 pass
-            case "band10m_checkbox":
+            case "band_10m":
                 pass
             case _:
                 print("unknown band", widget_id)
