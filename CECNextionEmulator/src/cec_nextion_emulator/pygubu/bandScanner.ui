@@ -432,9 +432,10 @@
                         <property name="text" translatable="yes">17M</property>
                         <property name="variable">string:band17m_Checked_VAR</property>
                         <layout manager="grid">
-                          <property name="column">2</property>
+                          <property name="column">1</property>
                           <property name="padx">10 0</property>
-                          <property name="row">0</property>
+                          <property name="pady">15 10</property>
+                          <property name="row">2</property>
                           <property name="sticky">w</property>
                         </layout>
                       </object>
@@ -448,10 +449,9 @@
                         <property name="text" translatable="yes">15M</property>
                         <property name="variable">string:band15m_Checked_VAR</property>
                         <layout manager="grid">
-                          <property name="column">1</property>
+                          <property name="column">2</property>
                           <property name="padx">10 0</property>
-                          <property name="pady">15 10</property>
-                          <property name="row">2</property>
+                          <property name="row">0</property>
                           <property name="sticky">w</property>
                         </layout>
                       </object>

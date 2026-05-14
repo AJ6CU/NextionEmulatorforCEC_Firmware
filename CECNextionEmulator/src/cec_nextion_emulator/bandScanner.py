@@ -14,6 +14,8 @@ from tkinter import messagebox
 
 import bandScannerui as baseui
 
+import globalvars as gv
+
 
 #
 # Manual user code
@@ -36,6 +38,8 @@ class bandScanner(baseui.bandScannerUI):
             self.bandStart = None
             self.bandEnd = None
             self.activateFlag = False
+            self.scrollbarSize = None
+
             self.plotterAvg = barPlotter(self, self.tartgetCanvas, 120, 70)
 
         def deactivate(self):
@@ -46,6 +50,7 @@ class bandScanner(baseui.bandScannerUI):
             self.activateFlag = False
             self.targetLabelFrame.configure(text="Select Band...")
 
+
         def activate(self, bandID, bandStart, bandEnd):
             self.bandID = bandID
             self.bandStart = bandStart
@@ -53,8 +58,6 @@ class bandScanner(baseui.bandScannerUI):
 
             self.activateFlag = True
             self.targetLabelFrame.configure(text=self.bandID)
-
-
 
         def get_bandID(self):
             return self.bandID
@@ -64,6 +67,9 @@ class bandScanner(baseui.bandScannerUI):
 
         def setFrequency(self,scrollbarPosition):
             pass
+
+        def setScrollbarSize(self, size):
+            self.scrollbarSize = size
 
         def available(self):
             return not self.activateFlag
@@ -194,37 +200,43 @@ class bandScanner(baseui.bandScannerUI):
         return False
 
     def releaseGraphObj(self, bandid):
-        pass
+        for i in range(len(self.targetGraph)):
+            if self.targetGraph[i].get_bandid == bandid:
+                self.targetGraph[i].deactivate()
+                return True
+        #
+        #   If it dropped thru, tried to deactivate a bandid that was not found.
+        #
+        return False
+
 
     def band_Checked_CB(self, widget_id):
         print("band checked callback, widget_id=", widget_id)
 
-        match widget_id:
-            case "band_160m":
-                if self.band160m_Checked_VAR.get() == '1':
-                    if(self.allocateGraphObj("band_160m",bandStart["band_160m"], bandEnd["band_160m"])):
-                        return
-                    else:
-                        pass
-                        # error message
-                else:
-                    self.releaseGraphObj("band_160m")
-            case "band_80m":
-                pass
-            case "band_40m":
-                pass
-            case "band_30m":
-                pass
-            case "band_20m":
-                pass
-            case "band_17m":
-                pass
-            case "band_12m":
-                pass
-            case "band_10m":
-                pass
-            case _:
-                print("unknown band", widget_id)
+        if getattr(self,widget_id+"_Checked_VAR").get() == 1:
+            #
+            #   Trying to allocate this band. Allocate it. If True, success
+            #
+            if(self.allocateGraphObj("band_160m",gv.bandStart["band_160m"], gv.bandEnd["band_160m"])):
+                #
+                #   True indicates successful allocation. Can just return
+                #
+                return
+            else:
+                #
+                #   False indicates no available slots. Error message already generated to free up slots
+                #
+                getattr(self,widget_id+"_Checked_VAR").set('0')
+                return
+        else:
+            #
+            #   Trying to deactivate a graphobject
+            #
+            if self.releaseGraphObj("band_160m"):
+                return
+            else:
+                print("trying to release a band that is not allocated, band=", widget_id)
+                return
 
 
     def scan_CB(self):

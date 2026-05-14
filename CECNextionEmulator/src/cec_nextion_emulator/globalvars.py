@@ -64,6 +64,17 @@ MCU_Headroom_Values = ["40","50","60","70","80","90","100","110","150","160","17
 
 Frequency_To_Run_UX_loop = ["250","300","350","400","425","450","475","500","550","600","650","675","700","725","800"]
 
+#
+#   Band limits. Probably should be retrieved from eeprom. Perhaps later...
+#user = {"name": "Alice", "age": 25, "city": "Seattle"}
+bandStart = {"band_160m":1800000,"band_80m":3500000,"band_40m":7000000,"band_30m":10100000,
+             "band_20m":14000000, "band_17m":18068000, "band_15m":21000000, "band_12m":24890000,
+             "band_10m":28000000}
+bandEnd =   {"band_160m":2000000,"band_80m":4000000,"band_40m":7300000,"band_30m":10150000,
+             "band_20m":14350000, "band_17m":18168000, "band_15m":21450000, "band_12m":24990000,
+             "band_10m":29700000}
+
+
 
 #   VFO Formatting Functions
 #####################################################################################
