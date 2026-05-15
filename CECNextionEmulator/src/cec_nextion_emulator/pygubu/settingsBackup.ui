@@ -23,9 +23,7 @@
     <resources />
   </project>
   <object class="tk.Toplevel" id="settingsBackup_Toplevel" named="True">
-    <property name="height">200</property>
-    <property name="title" translatable="yes">Settings</property>
-    <property name="width">200</property>
+    <property name="title" translatable="yes">Radio Backup</property>
     <child>
       <object class="ttk.Labelframe" id="labelframe1">
         <property name="height">400</property>
@@ -873,44 +871,94 @@ File</property>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Combobox" id="from_Combobox" named="True">
-                    <property name="justify">center</property>
-                    <property name="state">readonly</property>
-                    <property name="style">ComboBox1.TCombobox</property>
-                    <property name="textvariable">string:from_Combobox_VAR</property>
-                    <property name="values">Select Factory Current ConfigFile</property>
-                    <property name="width">9</property>
-                    <layout manager="grid">
-                      <property name="column">3</property>
-                      <property name="padx">5 0</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
                   <object class="ttk.Label" id="to_Label" named="True">
                     <property name="style">Heading1b.TLabel</property>
                     <property name="text" translatable="yes">Destination:</property>
                     <layout manager="grid">
                       <property name="column">4</property>
-                      <property name="padx">10 0</property>
+                      <property name="padx">40 0</property>
                       <property name="row">0</property>
                     </layout>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Combobox" id="to_Combobox" named="True">
-                    <property name="justify">center</property>
-                    <property name="state">readonly</property>
-                    <property name="style">ComboBox1.TCombobox</property>
-                    <property name="textvariable">string:to_Combobox_VAR</property>
-                    <property name="values">Select Current ConfigFile</property>
-                    <property name="width">9</property>
+                  <object class="ttk.Menubutton" id="from_Menubutton" named="True">
+                    <property name="style">Heading0.TMenubutton</property>
+                    <property name="text" translatable="yes">Select</property>
+                    <property name="textvariable">string:from_Source_VAR</property>
+                    <property name="width">10</property>
+                    <layout manager="grid">
+                      <property name="column">3</property>
+                      <property name="padx">15 5</property>
+                      <property name="pady">10</property>
+                      <property name="row">0</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                    <child>
+                      <object class="tk.Menu" id="from_Menu" named="True">
+                        <property name="tearoff">false</property>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="from_Factory_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectFrom_Factory_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">Factory</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="from_Current_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectFrom_Current_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">Current</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="from_ConfigFile_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectFrom_ConfigFile_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">ConfigFile</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Menubutton" id="to_Menubutton" named="True">
+                    <property name="style">Heading0.TMenubutton</property>
+                    <property name="text" translatable="yes">Select</property>
+                    <property name="textvariable">string:to_Source_VAR</property>
+                    <property name="width">10</property>
                     <layout manager="grid">
                       <property name="column">5</property>
-                      <property name="padx">5 0</property>
+                      <property name="padx">15 10</property>
+                      <property name="pady">10</property>
                       <property name="row">0</property>
+                      <property name="sticky">w</property>
                     </layout>
+                    <child>
+                      <object class="tk.Menu" id="to_Menu" named="True">
+                        <property name="tearoff">false</property>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="to_Current_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectTo_Current_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">Current</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="to_ConfigFile_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectTo_ConfigFile_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">ConfigFile</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

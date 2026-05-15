@@ -48,11 +48,10 @@ class settingsBackup(baseui.settingsBackupUI):
         self.ConfigFile_CW_Delay_Before_TX_VAR.set(self.get_ConfigFile_CW_Delay_Before_TX())
         self.ConfigFIle_CW_Delay_Returning_To_RX_VAR.set(self.get_ConfigFile_CW_Delay_Returning_To_RX())
 
-        gv.formatCombobox(self.from_Combobox, "Arial", "18", "bold")
-        gv.formatCombobox(self.to_Combobox, "Arial", "18", "bold")
 
-        self.from_Combobox_VAR.set("Select")
-        self.to_Combobox_VAR.set("Select")
+
+        self.from_Source_VAR.set("Select")
+        self.to_Source_VAR.set("Select")
         #
         #   The following are know values and we just need to load the ones that currently exist
         #
@@ -85,7 +84,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def initUX(self):
         self.popup.title("Backup Key Radio Settings")
-        self.popup.geometry("850x675")
+        # self.popup.geometry("850x675")
         self.popup.wait_visibility()  # required on Linux
         self.popup.grab_set()
         self.popup.transient(self.mainWindow)
@@ -336,20 +335,33 @@ class settingsBackup(baseui.settingsBackupUI):
             self.select_All_Checked_Text_VAR.set("Select All")
 
 
+    def selectFrom_Factory_CB(self):
+        self.from_Source_VAR.set('Factory')
 
+    def selectFrom_Current_CB(self):
+        self.from_Source_VAR.set('Current')
+
+    def selectFrom_ConfigFile_CB(self):
+        self.from_Source_VAR.set('ConfigFile')
+
+    def selectTo_Current_CB(self):
+        self.to_Source_VAR.set('Current')
+
+    def selectTo_ConfigFile_CB(self):
+        self.to_Source_VAR.set('ConfigFile')
 
 
 
 
     def copy_CB(self):
 
-        if self.from_Combobox_VAR.get() == "Select":
+        if self.from_Source_VAR.get() == "Select":
             messagebox.showinfo(message="Must select a source for the copy", parent=self)
             return
-        elif self.to_Combobox_VAR.get() == "Select":
+        elif self.to_Source_VAR.get() == "Select":
             messagebox.showinfo(message="Must select a destination for the copy", parent=self)
             return
-        elif self.from_Combobox_VAR.get() == self.to_Combobox_VAR.get():
+        elif self.from_Source_VAR.get() == self.to_Source_VAR.get():
             messagebox.showinfo(message="Source and Destination must be different", parent=self)
             return
 
@@ -359,8 +371,8 @@ class settingsBackup(baseui.settingsBackupUI):
         #
         selectedValues = {}
 
-        source = self.from_Combobox_VAR.get()
-        destination = self.to_Combobox_VAR.get()
+        source = self.from_Source_VAR.get()
+        destination = self.to_Source_VAR.get()
 
         #
         #   Process each line that is checked assigning read/writing file using the infamous "getattr" magic

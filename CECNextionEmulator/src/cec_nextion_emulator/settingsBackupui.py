@@ -1,19 +1,26 @@
 #!/usr/bin/python3
+"""
+settingsBackup
+
+used to kachup and restore critical values
+
+UI source file: settingsBackup.ui
+"""
 import tkinter as tk
 import tkinter.ttk as ttk
 
 
-def i18n_translator_noop(value):
+def safe_i18n_translator(value):
     """i18n - Setup translator in derived class file"""
     return value
 
 
-def first_object_callback_noop(widget):
+def safe_fo_callback(widget):
     """on first objec callback - Setup callback in derived class file."""
     pass
 
 
-def image_loader_default(master, image_name: str):
+def safe_image_loader(master, image_name: str):
     """Image loader - Setup image_loader in derived class file."""
     img = None
     try:
@@ -38,12 +45,12 @@ class settingsBackupUI(ttk.Labelframe):
         **kw
     ):
         if translator is None:
-            translator = i18n_translator_noop
+            translator = safe_i18n_translator
         _ = translator  # i18n string marker.
         if image_loader is None:
-            image_loader = image_loader_default
+            image_loader = safe_image_loader
         if on_first_object_cb is None:
-            on_first_object_cb = first_object_callback_noop
+            on_first_object_cb = safe_fo_callback
 
         super().__init__(master, **kw)
 
@@ -527,30 +534,73 @@ class settingsBackupUI(ttk.Labelframe):
         self.from_Label = ttk.Label(self.action_Frame, name="from_label")
         self.from_Label.configure(style="Heading1b.TLabel", text='Source:')
         self.from_Label.grid(column=2, padx="10 0", row=0)
-        self.from_Combobox = ttk.Combobox(
-            self.action_Frame, name="from_combobox")
-        self.from_Combobox_VAR = tk.StringVar()
-        self.from_Combobox.configure(
-            justify="center",
-            state="readonly",
-            style="ComboBox1.TCombobox",
-            textvariable=self.from_Combobox_VAR,
-            values='Select Factory Current ConfigFile',
-            width=9)
-        self.from_Combobox.grid(column=3, padx="5 0", row=0)
         self.to_Label = ttk.Label(self.action_Frame, name="to_label")
         self.to_Label.configure(style="Heading1b.TLabel", text='Destination:')
-        self.to_Label.grid(column=4, padx="10 0", row=0)
-        self.to_Combobox = ttk.Combobox(self.action_Frame, name="to_combobox")
-        self.to_Combobox_VAR = tk.StringVar()
-        self.to_Combobox.configure(
-            justify="center",
-            state="readonly",
-            style="ComboBox1.TCombobox",
-            textvariable=self.to_Combobox_VAR,
-            values='Select Current ConfigFile',
-            width=9)
-        self.to_Combobox.grid(column=5, padx="5 0", row=0)
+        self.to_Label.grid(column=4, padx="40 0", row=0)
+        self.from_Menubutton = ttk.Menubutton(
+            self.action_Frame, name="from_menubutton")
+        self.from_Source_VAR = tk.StringVar(value='Select')
+        self.from_Menubutton.configure(
+            style="Heading0.TMenubutton",
+            text='Select',
+            textvariable=self.from_Source_VAR,
+            width=10)
+        self.from_Menu = tk.Menu(self.from_Menubutton, name="from_menu")
+        self.from_Menu.configure(tearoff=False)
+        self.from_Menu.add(
+            "command",
+            command=self.selectFrom_Factory_CB,
+            font="{Arial} 36 {}",
+            label='Factory',
+            state="normal")
+        self.from_Menu.add(
+            "command",
+            command=self.selectFrom_Current_CB,
+            font="{Arial} 36 {}",
+            label='Current',
+            state="normal")
+        self.from_Menu.add(
+            "command",
+            command=self.selectFrom_ConfigFile_CB,
+            font="{Arial} 36 {}",
+            label='ConfigFile',
+            state="normal")
+        self.from_Menubutton.configure(menu=self.from_Menu)
+        self.from_Menubutton.grid(
+            column=3,
+            padx="15 5",
+            pady=10,
+            row=0,
+            sticky="w")
+        self.to_Menubutton = ttk.Menubutton(
+            self.action_Frame, name="to_menubutton")
+        self.to_Source_VAR = tk.StringVar(value='Select')
+        self.to_Menubutton.configure(
+            style="Heading0.TMenubutton",
+            text='Select',
+            textvariable=self.to_Source_VAR,
+            width=10)
+        self.to_Menu = tk.Menu(self.to_Menubutton, name="to_menu")
+        self.to_Menu.configure(tearoff=False)
+        self.to_Menu.add(
+            "command",
+            command=self.selectTo_Current_CB,
+            font="{Arial} 36 {}",
+            label='Current',
+            state="normal")
+        self.to_Menu.add(
+            "command",
+            command=self.selectTo_ConfigFile_CB,
+            font="{Arial} 36 {}",
+            label='ConfigFile',
+            state="normal")
+        self.to_Menubutton.configure(menu=self.to_Menu)
+        self.to_Menubutton.grid(
+            column=5,
+            padx="15 10",
+            pady=10,
+            row=0,
+            sticky="w")
         self.action_Frame.pack(
             anchor="center",
             expand=True,
@@ -584,6 +634,21 @@ class settingsBackupUI(ttk.Labelframe):
         # Layout for 'labelframe1' skipped in custom widget template.
 
     def select_All_Checkbutton_CB(self):
+        pass
+
+    def selectFrom_Factory_CB(self):
+        pass
+
+    def selectFrom_Current_CB(self):
+        pass
+
+    def selectFrom_ConfigFile_CB(self):
+        pass
+
+    def selectTo_Current_CB(self):
+        pass
+
+    def selectTo_ConfigFile_CB(self):
         pass
 
     def copy_CB(self):

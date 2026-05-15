@@ -23,8 +23,6 @@
     <resources />
   </project>
   <object class="tk.Toplevel" id="cw_settings_window" named="True">
-    <property name="height">400</property>
-    <property name="width">600</property>
     <child>
       <object class="ttk.Labelframe" id="labelframe1">
         <property name="height">400</property>
@@ -66,14 +64,69 @@
                   </object>
                 </child>
                 <child>
-                  <object class="pygubu.widgets.Combobox" id="CW_Keytype_Widget_Combobox" named="True">
-                    <property name="justify">center</property>
-                    <property name="keyvariable">string:key_type_value_VAR</property>
-                    <property name="style">ComboBox1.TCombobox</property>
-                    <property name="values">STRAIGHT IAMBICA IAMBICB</property>
-                    <property name="width">10</property>
+                  <object class="ttk.Menubutton" id="CW_Key_Type_Menubutton" named="True">
+                    <property name="style">Heading0.TMenubutton</property>
+                    <property name="textvariable">string:key_type_value_VAR</property>
+                    <property name="width">9</property>
                     <layout manager="grid">
                       <property name="column">1</property>
+                      <property name="padx">20 0</property>
+                      <property name="pady">40 0</property>
+                      <property name="row">0</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                    <child>
+                      <object class="tk.Menu" id="CW_Key_Type_Menu" named="True">
+                        <property name="tearoff">false</property>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="selectStraight_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectCWStraightKey_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">STRAIGHT</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="selectIAMBICA_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectCWIAMBICAKey_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">IAMBICA</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="selectIAMBICB_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectCWIAMBICBKey_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">IAMBICB </property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="CW_START_MS_LABEL" named="True">
+                    <property name="style">Heading1b.TLabel</property>
+                    <property name="text" translatable="yes">Delay Starting TX (ms)</property>
+                    <layout manager="grid">
+                      <property name="column">3</property>
+                      <property name="pady">40 0</property>
+                      <property name="row">0</property>
+                      <property name="sticky">e</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Spinbox" id="CW_Start_TX_Spinbox" named="True">
+                    <property name="font">{Arial} 36 {}</property>
+                    <property name="justify">right</property>
+                    <property name="style">Custom.TSpinbox</property>
+                    <property name="textvariable">string:delay_starting_tx_value_VAR</property>
+                    <property name="width">5</property>
+                    <layout manager="grid">
+                      <property name="column">4</property>
                       <property name="padx">20 0</property>
                       <property name="pady">40 0</property>
                       <property name="row">0</property>
@@ -94,70 +147,17 @@
                   </object>
                 </child>
                 <child>
-                  <object class="pygubu.widgets.Combobox" id="CW_Sidetone_Widget_Combobox" named="True">
-                    <property name="justify">center</property>
-                    <property name="keyvariable">string:tone_value_VAR</property>
-                    <property name="style">ComboBox1.TCombobox</property>
-                    <property name="width">4</property>
+                  <object class="ttk.Spinbox" id="CW_Sidetone_Spinbox" named="True">
+                    <property name="font">{Arial} 36 {}</property>
+                    <property name="justify">right</property>
+                    <property name="style">Custom.TSpinbox</property>
+                    <property name="textvariable">string:tone_value_VAR</property>
+                    <property name="width">3</property>
                     <layout manager="grid">
                       <property name="column">1</property>
                       <property name="padx">20 0</property>
                       <property name="pady">40 0</property>
                       <property name="row">2</property>
-                      <property name="sticky">w</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Label" id="CW_SPEED_WPM_LABEL" named="True">
-                    <property name="style">Heading1b.TLabel</property>
-                    <property name="text" translatable="yes">Speed (WPM)</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="pady">40 0</property>
-                      <property name="row">6</property>
-                      <property name="sticky">e</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="pygubu.widgets.Combobox" id="CW_Speed_WPM_Widget_Combobox" named="True">
-                    <property name="justify">center</property>
-                    <property name="keyvariable">string:key_speed_value_VAR</property>
-                    <property name="style">ComboBox1.TCombobox</property>
-                    <property name="width">4</property>
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">20 0</property>
-                      <property name="pady">40 0</property>
-                      <property name="row">6</property>
-                      <property name="sticky">w</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Label" id="CW_START_MS_LABEL" named="True">
-                    <property name="style">Heading1b.TLabel</property>
-                    <property name="text" translatable="yes">Delay Starting TX (ms)</property>
-                    <layout manager="grid">
-                      <property name="column">3</property>
-                      <property name="pady">40 0</property>
-                      <property name="row">0</property>
-                      <property name="sticky">e</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="pygubu.widgets.Combobox" id="CW_Start_MS_Widget_Combobox" named="True">
-                    <property name="justify">center</property>
-                    <property name="keyvariable">string:delay_starting_tx_value_VAR</property>
-                    <property name="style">ComboBox1.TCombobox</property>
-                    <property name="width">4</property>
-                    <layout manager="grid">
-                      <property name="column">4</property>
-                      <property name="padx">20</property>
-                      <property name="pady">40 0</property>
-                      <property name="row">0</property>
                       <property name="sticky">w</property>
                     </layout>
                   </object>
@@ -175,16 +175,29 @@
                   </object>
                 </child>
                 <child>
-                  <object class="pygubu.widgets.Combobox" id="CW_Delay_MS_Widget_Combobox" named="True">
-                    <property name="justify">center</property>
-                    <property name="keyvariable">string:delay_returning_to_rx_value_VAR</property>
-                    <property name="style">ComboBox1.TCombobox</property>
-                    <property name="width">4</property>
+                  <object class="ttk.Label" id="CW_SPEED_WPM_LABEL" named="True">
+                    <property name="style">Heading1b.TLabel</property>
+                    <property name="text" translatable="yes">Speed (WPM)</property>
                     <layout manager="grid">
-                      <property name="column">4</property>
-                      <property name="padx">20</property>
+                      <property name="column">0</property>
                       <property name="pady">40 0</property>
-                      <property name="row">2</property>
+                      <property name="row">3</property>
+                      <property name="sticky">e</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Spinbox" id="CW_Speed_WPM_Spinbox" named="True">
+                    <property name="font">{Arial} 36 {}</property>
+                    <property name="justify">right</property>
+                    <property name="style">Custom.TSpinbox</property>
+                    <property name="textvariable">string:key_speed_value_VAR</property>
+                    <property name="width">3</property>
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="padx">20 0</property>
+                      <property name="pady">40 0</property>
+                      <property name="row">3</property>
                       <property name="sticky">w</property>
                     </layout>
                   </object>
@@ -196,24 +209,8 @@
                     <layout manager="grid">
                       <property name="column">3</property>
                       <property name="pady">40 0</property>
-                      <property name="row">6</property>
+                      <property name="row">3</property>
                       <property name="sticky">e</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="pygubu.widgets.Combobox" id="CW_Display_Freq_Combobox" named="True">
-                    <property name="justify">center</property>
-                    <property name="keyvariable">string:CW_Display_TXFreq_VAR</property>
-                    <property name="style">ComboBox1.TCombobox</property>
-                    <property name="values">TX RX</property>
-                    <property name="width">4</property>
-                    <layout manager="grid">
-                      <property name="column">4</property>
-                      <property name="padx">20 0</property>
-                      <property name="pady">40 0</property>
-                      <property name="row">6</property>
-                      <property name="sticky">w</property>
                     </layout>
                   </object>
                 </child>
@@ -239,8 +236,59 @@ This setting will be reset to that stored in the EEPROM on reboot.  Use the Sett
                       <property name="columnspan">5</property>
                       <property name="padx">70 0</property>
                       <property name="pady">20</property>
-                      <property name="row">15</property>
+                      <property name="row">4</property>
                     </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Spinbox" id="CW_Delay_Returning_RX_Spinbox" named="True">
+                    <property name="font">{Arial} 36 {}</property>
+                    <property name="justify">right</property>
+                    <property name="style">Custom.TSpinbox</property>
+                    <property name="textvariable">string:delay_returning_to_rx_value_VAR</property>
+                    <property name="width">5</property>
+                    <layout manager="grid">
+                      <property name="column">4</property>
+                      <property name="padx">20 0</property>
+                      <property name="pady">40 0</property>
+                      <property name="row">2</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Menubutton" id="CW_Freq_Display_Menubutton" named="True">
+                    <property name="style">Heading0.TMenubutton</property>
+                    <property name="textvariable">string:CW_Display_TXFreq_VAR</property>
+                    <property name="width">3</property>
+                    <layout manager="grid">
+                      <property name="column">4</property>
+                      <property name="padx">20 0</property>
+                      <property name="pady">40 0</property>
+                      <property name="row">3</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                    <child>
+                      <object class="tk.Menu" id="CW_Freq_Display_Menu" named="True">
+                        <property name="tearoff">false</property>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="CW_Freq_Display_SetTX_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectCWDisplayTX_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">TX</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="selectCWDisplayRX_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectCWDisplayRX_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">RX</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

@@ -29,18 +29,17 @@ class cwSettings(baseui.cwSettingsUI):
         #   Magic code to get a handle on the current font of the default item and propagate it to the list...
         #
 
-        gv.formatCombobox(self.CW_Keytype_Widget_Combobox, "Arial", "24", "bold")
-        gv.formatCombobox(self.CW_Sidetone_Widget_Combobox, "Arial", "24", "bold")
-        gv.formatCombobox(self.CW_Speed_WPM_Widget_Combobox, "Arial", "24", "bold")
-        gv.formatCombobox(self.CW_Start_MS_Widget_Combobox, "Arial", "24", "bold")
-        gv.formatCombobox(self.CW_Delay_MS_Widget_Combobox, "Arial", "24", "bold")
-        gv.formatCombobox(self.CW_Display_Freq_Combobox, "Arial", "24", "bold")
 
 
-        self.CW_Sidetone_Widget_Combobox.configure(values=gv.CW_Sidetone_Values)
-        self.CW_Speed_WPM_Widget_Combobox.configure(values=gv.CW_WPM_Values)
-        self.CW_Start_MS_Widget_Combobox.configure(values=gv.Start_TX_Values)
-        self.CW_Delay_MS_Widget_Combobox.configure(values=gv.Delay_Return_RX_Values)
+
+
+
+
+        self.CW_Sidetone_Spinbox.configure(values=gv.CW_Sidetone_Values)
+        self.CW_Speed_WPM_Spinbox.configure(values=gv.CW_WPM_Values)
+        self.CW_Start_TX_Spinbox.configure(values=gv.Start_TX_Values)
+        self.CW_Delay_Returning_RX_Spinbox.configure(values=gv.Delay_Return_RX_Values)
+
 
 
         self.orig_tone = None
@@ -67,7 +66,7 @@ class cwSettings(baseui.cwSettingsUI):
                                                        )
 
         self.popup.title("CW Settings")
-        self.popup.geometry("1025x500")
+
         self.popup.wait_visibility()  # required on Linux
         self.popup.grab_set()
         self.popup.transient(self.mainWindow)
@@ -93,10 +92,10 @@ class cwSettings(baseui.cwSettingsUI):
         #
         #   Stuff values into stringvars of the UX
         #
-        self.CW_Sidetone_Widget_Combobox.configure(values=gv.CW_Sidetone_Values)
-        self.CW_Speed_WPM_Widget_Combobox.configure(values=gv.CW_WPM_Values)
-        self.CW_Start_MS_Widget_Combobox.configure(values=gv.Start_TX_Values)
-        self.CW_Delay_MS_Widget_Combobox.configure(values=gv.Delay_Return_RX_Values)
+        self.CW_Sidetone_Spinbox.configure(values=gv.CW_Sidetone_Values)
+        self.CW_Speed_WPM_Spinbox.configure(values=gv.CW_WPM_Values)
+        self.CW_Start_TX_Spinbox.configure(values=gv.Start_TX_Values)
+        self.CW_Delay_Returning_RX_Spinbox.configure(values=gv.Delay_Return_RX_Values)
 
         #
         #   The following code deals with the situation where an existing value is in EEPROM that
@@ -105,21 +104,21 @@ class cwSettings(baseui.cwSettingsUI):
         #
 
         if tone not in gv.CW_Sidetone_Values:
-            self.CW_Sidetone_Widget_Combobox.configure(values=gv.CW_Sidetone_Values + [tone])
+            self.CW_Sidetone_Spinbox.configure(values=gv.CW_Sidetone_Values + [tone])
         self.tone_value_VAR.set(tone)
 
         self.key_type_value_VAR.set(keyType)
 
         if keySpeed not in gv.CW_WPM_Values:
-            self.CW_Speed_WPM_Widget_Combobox.configure(values=gv.CW_WPM_Values + [keySpeed])
+            self.CW_Speed_WPM_Spinbox.configure(values=gv.CW_WPM_Values + [keySpeed])
         self.key_speed_value_VAR.set(keySpeed)
 
         if delayToTX not in gv.Start_TX_Values:
-            self.CW_Start_MS_Widget_Combobox.configure(values=gv.Start_TX_Values + [delayToTX])
+            self.CW_Start_TX_Spinbox.configure(values=gv.Start_TX_Values + [delayToTX])
         self.delay_starting_tx_value_VAR.set(delayToTX)
 
         if delayToRX not in gv.Delay_Return_RX_Values:
-            self.CW_Delay_MS_Widget_Combobox.configure(values=gv.Delay_Return_RX_Values + [delayToRX])
+            self.CW_Delay_Returning_RX_Spinbox.configure(values=gv.Delay_Return_RX_Values + [delayToRX])
         self.delay_returning_to_rx_value_VAR.set(delayToRX)
 
 
@@ -132,21 +131,21 @@ class cwSettings(baseui.cwSettingsUI):
     def dirty_DisplayCWSettings (self):
         reboot_required = False
         if( self.tone_value_VAR.get() != self.orig_tone):
-            self.mainWindow.Radio_Set_CW_Tone(self.tone_value_VAR.get())
+            self.mainWindow.theRadio.Set_CW_Tone(self.tone_value_VAR.get())
             reboot_required = True
 
         if (self.key_type_value_VAR.get() != self.orig_key_type):
-            self.mainWindow.Radio_Set_CW_Keytype(self.key_type_value_VAR.get())
+            self.mainWindow.theRadio.Set_CW_Keytype(self.key_type_value_VAR.get())
 
         if (self.key_speed_value_VAR.get() != self.orig_keySpeed):
-            self.mainWindow.Radio_Set_CW_Speed(self.key_speed_value_VAR.get())
+            self.mainWindow.theRadio.Set_CW_Speed(self.key_speed_value_VAR.get())
 
         if (self.delay_starting_tx_value_VAR.get() != self.delay_starting_tx):
-            self.mainWindow.Radio_Set_CW_Delay_Starting_TX(self.delay_starting_tx_value_VAR.get())
+            self.mainWindow.theRadio.Set_CW_Delay_Starting_TX(self.delay_starting_tx_value_VAR.get())
             reboot_required = True
 
         if (self.delay_returning_to_rx_value_VAR.get() != self.delay_returning_to_rx):
-            self.mainWindow.Radio_Set_CW_Delay_Returning_To_RX(self.delay_returning_to_rx_value_VAR.get())
+            self.mainWindow.theRadio.Set_CW_Delay_Returning_To_RX(self.delay_returning_to_rx_value_VAR.get())
             reboot_required = True
         #
         #   Note: self.offset_Freq_Flag should generally be the sames as self.mainWindow.cwTX_OffsetFlag
@@ -155,10 +154,10 @@ class cwSettings(baseui.cwSettingsUI):
         #
         if (self.CW_Display_TXFreq_VAR.get()) == 'RX' and self.offset_Freq_Flag:
             self.mainWindow.cwTX_OffsetFlag = False
-            self.mainWindow.offsetVFOforTX(False)
+            self.mainWindow.theVFO_Object.offsetVFOforTX(False)
         elif (self.CW_Display_TXFreq_VAR.get()) == 'TX' and not self.offset_Freq_Flag:
             self.mainWindow.cwTX_OffsetFlag = True
-            self.mainWindow.offsetVFOforTX(True)
+            self.mainWindow.theVFO_Object.offsetVFOforTX(True)
 
 
 
@@ -172,8 +171,20 @@ class cwSettings(baseui.cwSettingsUI):
             else:
                 print('told us to wait')
 
+    def selectCWStraightKey_CB(self):
+        self.key_type_value_VAR.set("STRAIGHT")
 
+    def selectCWIAMBICAKey_CB(self):
+        self.key_type_value_VAR.set("IAMBICA")
 
+    def selectCWIAMBICBKey_CB(self):
+        self.key_type_value_VAR.set("IAMBICB")
+
+    def selectCWDisplayTX_CB(self):
+        self.CW_Display_TXFreq_VAR.set('TX')
+
+    def selectCWDisplayRX_CB(self):
+        self.CW_Display_TXFreq_VAR.set('RX')
 
     def apply_CB(self):
         self.dirty_DisplayCWSettings()
