@@ -24,10 +24,7 @@
     <resources />
   </project>
   <object class="tk.Toplevel" id="frequencySpectrum_Window" named="True">
-    <property name="geometry">800x575</property>
-    <property name="height">200</property>
     <property name="title" translatable="yes">Frequency Spectrum</property>
-    <property name="width">800</property>
     <child>
       <object class="ttk.Labelframe" id="frequencySpectrum_Labelframe" named="True">
         <property name="height">200</property>

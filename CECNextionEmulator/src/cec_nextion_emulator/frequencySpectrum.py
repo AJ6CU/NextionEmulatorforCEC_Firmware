@@ -81,7 +81,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
     def initUX(self):
         # self.title("Frequency Spectrum")
-        self.geometry("800x600")
+        # self.geometry("800x600")
 
         self.wait_visibility()  # required on Linux
         self.grab_set()

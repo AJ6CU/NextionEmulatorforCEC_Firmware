@@ -361,8 +361,6 @@ class frequencySpectrumUI(tk.Toplevel):
             expand=True, fill="both", side="top")
         self.frequencySpectrum_Labelframe.rowconfigure(0, uniform=1)
         self.frequencySpectrum_Labelframe.columnconfigure(0, weight=1)
-        self.configure(height=200, width=800)
-        self.geometry("800x575")
         self.title("Frequency Spectrum")
         # Layout for 'frequencySpectrum_Window' skipped in custom widget
         # template.

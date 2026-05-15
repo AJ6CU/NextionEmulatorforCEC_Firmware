@@ -24,9 +24,7 @@
     <resources />
   </project>
   <object class="tk.Toplevel" id="settings_Window" named="True">
-    <property name="height">200</property>
-    <property name="title" translatable="yes">Settings</property>
-    <property name="width">200</property>
+    <property name="title" translatable="yes">Machine Settings</property>
     <child>
       <object class="ttk.Labelframe" id="labelframe1">
         <property name="cursor">arrow</property>
@@ -67,19 +65,38 @@
               </object>
             </child>
             <child>
-              <object class="pygubu.widgets.Combobox" id="DSP_Enable_Combobox" named="True">
-                <property name="exportselection">false</property>
-                <property name="keyvariable">string:DSP_Enable_VAR</property>
-                <property name="state">disabled</property>
-                <property name="style">ComboBox1.TCombobox</property>
-                <property name="values">True False</property>
+              <object class="ttk.Menubutton" id="DSP_Enable_Menubutton" named="True">
+                <property name="style">Heading0.TMenubutton</property>
+                <property name="textvariable">string:DSP_Enable_VAR</property>
                 <property name="width">5</property>
                 <layout manager="grid">
                   <property name="column">1</property>
-                  <property name="padx">20</property>
+                  <property name="padx">15 5</property>
                   <property name="pady">10</property>
                   <property name="row">0</property>
+                  <property name="sticky">w</property>
                 </layout>
+                <child>
+                  <object class="tk.Menu" id="DSP_Enable_Menu" named="True">
+                    <property name="tearoff">false</property>
+                    <child>
+                      <object class="tk.Menuitem.Command" id="selectDSP_On_Command" named="True">
+                        <property name="command" type="command" cbtype="simple">selectDSP_On_CB</property>
+                        <property name="font">{Arial} 36 {}</property>
+                        <property name="label" translatable="yes">True</property>
+                        <property name="state">normal</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="tk.Menuitem.Command" id="selectDSP_Off_Command" named="True">
+                        <property name="command" type="command" cbtype="simple">selectDSP_Off_CB</property>
+                        <property name="font">{Arial} 36 {}</property>
+                        <property name="label" translatable="yes">False</property>
+                        <property name="state">normal</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -107,21 +124,7 @@ Radio (ms):</property>
                   <property name="padx">10</property>
                   <property name="pady">10</property>
                   <property name="row">2</property>
-                  <property name="sticky">e</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="pygubu.widgets.Combobox" id="MCU_Command_Headroom_Combobox" named="True">
-                <property name="keyvariable">string:MCU_Command_Headroom_VAR</property>
-                <property name="style">ComboBox1.TCombobox</property>
-                <property name="values">90 100</property>
-                <property name="width">5</property>
-                <layout manager="grid">
-                  <property name="column">1</property>
-                  <property name="padx">20</property>
-                  <property name="pady">10</property>
-                  <property name="row">2</property>
+                  <property name="sticky">w</property>
                 </layout>
               </object>
             </child>
@@ -135,21 +138,7 @@ UX changes (ms):</property>
                   <property name="padx">10</property>
                   <property name="pady">10</property>
                   <property name="row">3</property>
-                  <property name="sticky">e</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="pygubu.widgets.Combobox" id="MCU_Update_Period_Combobox" named="True">
-                <property name="keyvariable">string:MCU_Update_Period_VAR</property>
-                <property name="style">ComboBox1.TCombobox</property>
-                <property name="values">500 600</property>
-                <property name="width">5</property>
-                <layout manager="grid">
-                  <property name="column">1</property>
-                  <property name="padx">20</property>
-                  <property name="pady">10</property>
-                  <property name="row">3</property>
+                  <property name="sticky">w</property>
                 </layout>
               </object>
             </child>
@@ -169,16 +158,56 @@ MCU/DPS (ms):</property>
               </object>
             </child>
             <child>
-              <object class="pygubu.widgets.Combobox" id="MCU_Read_Wait_Period_Combobox" named="True">
-                <property name="keyvariable">string:MCU_Read_Wait_Period_VAR</property>
-                <property name="style">ComboBox1.TCombobox</property>
-                <property name="values">5 10 15 20 25 30 40 50</property>
-                <property name="width">5</property>
+              <object class="ttk.Spinbox" id="MCU_Command_Headroom_Spinbox" named="True">
+                <property name="font">{Arial} 36 {}</property>
+                <property name="from_">1</property>
+                <property name="justify">right</property>
+                <property name="style">Custom.TSpinbox</property>
+                <property name="textvariable">string:MCU_Command_Headroom_VAR</property>
+                <property name="to">20</property>
+                <property name="width">3</property>
                 <layout manager="grid">
                   <property name="column">1</property>
                   <property name="padx">20</property>
-                  <property name="pady">20 50</property>
+                  <property name="pady">10</property>
+                  <property name="row">2</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Spinbox" id="MCU_Update_Period_Spinbox" named="True">
+                <property name="font">{Arial} 36 {}</property>
+                <property name="from_">1</property>
+                <property name="justify">right</property>
+                <property name="style">Custom.TSpinbox</property>
+                <property name="textvariable">string:MCU_Update_Period_VAR</property>
+                <property name="to">20</property>
+                <property name="width">3</property>
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="padx">20</property>
+                  <property name="pady">10</property>
+                  <property name="row">3</property>
+                  <property name="sticky">w</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Spinbox" id="MCU_Read_Wait_Period_Spinbox" named="True">
+                <property name="font">{Arial} 36 {}</property>
+                <property name="from_">1</property>
+                <property name="justify">right</property>
+                <property name="style">Custom.TSpinbox</property>
+                <property name="textvariable">string:MCU_Read_Wait_Period_VAR</property>
+                <property name="to">20</property>
+                <property name="width">3</property>
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="padx">20</property>
+                  <property name="pady">10</property>
                   <property name="row">4</property>
+                  <property name="sticky">w</property>
                 </layout>
               </object>
             </child>

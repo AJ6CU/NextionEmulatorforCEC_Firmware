@@ -21,8 +21,10 @@ class settingsMachine(baseui.settingsMachineUI):
 
         super().__init__(self.popup, **kw)
 
-        self.MCU_Command_Headroom_Combobox.configure(values=gv.MCU_Headroom_Values)
-        self.MCU_Update_Period_Combobox.configure(values=gv.Frequency_To_Run_UX_loop)
+        self.MCU_Command_Headroom_Spinbox.configure(values=gv.MCU_Headroom_Values)
+        self.MCU_Update_Period_Spinbox.configure(values=gv.Frequency_To_Run_UX_loop)
+        self.MCU_Read_Wait_Period_Spinbox.configure(values=gv.MCU_Read_Completion_Wait_Period)
+
 
         self.saveDSP_Enable = gv.config.get_DSP_Switch()
         self.saveMCU_Command_Headroom = int(gv.config.get_MCU_Command_Headroom()*1000)
@@ -34,18 +36,14 @@ class settingsMachine(baseui.settingsMachineUI):
         self.MCU_Update_Period_VAR.set(str(self.saveMCU_Update_Period))
         self.MCU_Read_Wait_Period_VAR.set(str(int(self.saveMCU_Read_Wait_Period*1000)))
 
-        gv.formatCombobox(self.DSP_Enable_Combobox, "arial", "24", "bold")
-        gv.formatCombobox(self.MCU_Command_Headroom_Combobox, "Arial", "24", "bold")
-        gv.formatCombobox(self.MCU_Update_Period_Combobox, "Arial", "24", "bold")
-        gv.formatCombobox(self.MCU_Read_Wait_Period_Combobox, "Arial", "24", "bold")
 
         if self.mainWindow.DSPFound:
             self.DSP_Enable_Label.configure(state="normal")
-            self.DSP_Enable_Combobox.configure(state="normal")
+            self.DSP_Enable_Menubutton.configure(state="normal")
             self.DSPMessage_VAR.set("")
         else:
             self.DSP_Enable_Label.configure(state="disabled")
-            self.DSP_Enable_Combobox.configure(state="disabled")
+            self.DSP_Enable_Menubutton.configure(state="disabled")
             self.DSPMessage_VAR.set("No DSP Found on startup. Option automatically disabled")
 
         #
@@ -56,14 +54,19 @@ class settingsMachine(baseui.settingsMachineUI):
 
     def initUX(self):
         self.popup.title("Machine Settings - Advanced Usage Only")
-        # self.popup.geometry("500x450")
-        self.popup.geometry("550x600")
+
         self.popup.wait_visibility()  # required on Linux
         self.popup.grab_set()
         self.popup.transient(self.mainWindow)
 
         self.pack(expand=tk.YES, fill=tk.BOTH)
         gv.trimAndLocateWindow(self.popup, 0, 0)
+
+    def selectDSP_On_CB(self):
+        self.DSP_Enable_VAR.set('True')
+
+    def selectDSP_Off_CB(self):
+        self.DSP_Enable_VAR.set('False')
 
     def apply_CB(self):
         print("Applying settings")

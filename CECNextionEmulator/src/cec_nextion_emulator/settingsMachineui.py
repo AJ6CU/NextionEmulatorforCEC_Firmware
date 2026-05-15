@@ -8,7 +8,6 @@ UI source file: settingsMachine.ui
 """
 import tkinter as tk
 import tkinter.ttk as ttk
-from pygubu.widgets.combobox import Combobox
 
 
 def safe_i18n_translator(value):
@@ -67,16 +66,32 @@ class settingsMachineUI(ttk.Labelframe):
             text='Use DSP Processor')
         self.DSP_Enable_Label.grid(
             column=0, padx=10, pady=10, row=0, sticky="e")
-        self.DSP_Enable_Combobox = Combobox(frame1, name="dsp_enable_combobox")
+        self.DSP_Enable_Menubutton = ttk.Menubutton(
+            frame1, name="dsp_enable_menubutton")
         self.DSP_Enable_VAR = tk.StringVar()
-        self.DSP_Enable_Combobox.configure(
-            exportselection=False,
-            keyvariable=self.DSP_Enable_VAR,
-            state="disabled",
-            style="ComboBox1.TCombobox",
-            values='True False',
+        self.DSP_Enable_Menubutton.configure(
+            style="Heading0.TMenubutton",
+            textvariable=self.DSP_Enable_VAR,
             width=5)
-        self.DSP_Enable_Combobox.grid(column=1, padx=20, pady=10, row=0)
+        self.DSP_Enable_Menu = tk.Menu(
+            self.DSP_Enable_Menubutton,
+            name="dsp_enable_menu")
+        self.DSP_Enable_Menu.configure(tearoff=False)
+        self.DSP_Enable_Menu.add(
+            "command",
+            command=self.selectDSP_On_CB,
+            font="{Arial} 36 {}",
+            label='True',
+            state="normal")
+        self.DSP_Enable_Menu.add(
+            "command",
+            command=self.selectDSP_Off_CB,
+            font="{Arial} 36 {}",
+            label='False',
+            state="normal")
+        self.DSP_Enable_Menubutton.configure(menu=self.DSP_Enable_Menu)
+        self.DSP_Enable_Menubutton.grid(
+            column=1, padx="15 5", pady=10, row=0, sticky="w")
         self.DSPMessage_Label = ttk.Label(frame1, name="dspmessage_label")
         self.DSPMessage_VAR = tk.StringVar(
             value='No DSP Found on startup. Option automatically disabled')
@@ -96,33 +111,14 @@ class settingsMachineUI(ttk.Labelframe):
             style="Heading1b.TLabel",
             text='Minimum time between\ncommands sent to\nRadio (ms):')
         self.MCU_Command_Headroom_Label.grid(
-            column=0, padx=10, pady=10, row=2, sticky="e")
-        self.MCU_Command_Headroom_Combobox = Combobox(
-            frame1, name="mcu_command_headroom_combobox")
-        self.MCU_Command_Headroom_VAR = tk.StringVar()
-        self.MCU_Command_Headroom_Combobox.configure(
-            keyvariable=self.MCU_Command_Headroom_VAR,
-            style="ComboBox1.TCombobox",
-            values='90 100',
-            width=5)
-        self.MCU_Command_Headroom_Combobox.grid(
-            column=1, padx=20, pady=10, row=2)
+            column=0, padx=10, pady=10, row=2, sticky="w")
         self.MCU_Update_Period_Label = ttk.Label(
             frame1, name="mcu_update_period_label")
         self.MCU_Update_Period_Label.configure(
             style="Heading1b.TLabel",
             text='Frequency to check for\nUX changes (ms):')
         self.MCU_Update_Period_Label.grid(
-            column=0, padx=10, pady=10, row=3, sticky="e")
-        self.MCU_Update_Period_Combobox = Combobox(
-            frame1, name="mcu_update_period_combobox")
-        self.MCU_Update_Period_VAR = tk.StringVar()
-        self.MCU_Update_Period_Combobox.configure(
-            keyvariable=self.MCU_Update_Period_VAR,
-            style="ComboBox1.TCombobox",
-            values='500 600',
-            width=5)
-        self.MCU_Update_Period_Combobox.grid(column=1, padx=20, pady=10, row=3)
+            column=0, padx=10, pady=10, row=3, sticky="w")
         self.MCU_Read_Wait_Period_Label = ttk.Label(
             frame1, name="mcu_read_wait_period_label")
         self.MCU_Read_Wait_Period_Label.configure(
@@ -130,16 +126,45 @@ class settingsMachineUI(ttk.Labelframe):
             text='Wait time for completion \nof data transfer from\nMCU/DPS (ms):')
         self.MCU_Read_Wait_Period_Label.grid(
             column=0, padx=10, pady="20 50", row=4, sticky="e")
-        self.MCU_Read_Wait_Period_Combobox = Combobox(
-            frame1, name="mcu_read_wait_period_combobox")
+        self.MCU_Command_Headroom_Spinbox = ttk.Spinbox(
+            frame1, name="mcu_command_headroom_spinbox")
+        self.MCU_Command_Headroom_VAR = tk.StringVar()
+        self.MCU_Command_Headroom_Spinbox.configure(
+            font="{Arial} 36 {}",
+            from_=1,
+            justify="right",
+            style="Custom.TSpinbox",
+            textvariable=self.MCU_Command_Headroom_VAR,
+            to=20,
+            width=3)
+        self.MCU_Command_Headroom_Spinbox.grid(
+            column=1, padx=20, pady=10, row=2, sticky="w")
+        self.MCU_Update_Period_Spinbox = ttk.Spinbox(
+            frame1, name="mcu_update_period_spinbox")
+        self.MCU_Update_Period_VAR = tk.StringVar()
+        self.MCU_Update_Period_Spinbox.configure(
+            font="{Arial} 36 {}",
+            from_=1,
+            justify="right",
+            style="Custom.TSpinbox",
+            textvariable=self.MCU_Update_Period_VAR,
+            to=20,
+            width=3)
+        self.MCU_Update_Period_Spinbox.grid(
+            column=1, padx=20, pady=10, row=3, sticky="w")
+        self.MCU_Read_Wait_Period_Spinbox = ttk.Spinbox(
+            frame1, name="mcu_read_wait_period_spinbox")
         self.MCU_Read_Wait_Period_VAR = tk.StringVar()
-        self.MCU_Read_Wait_Period_Combobox.configure(
-            keyvariable=self.MCU_Read_Wait_Period_VAR,
-            style="ComboBox1.TCombobox",
-            values='5 10 15 20 25 30 40 50',
-            width=5)
-        self.MCU_Read_Wait_Period_Combobox.grid(
-            column=1, padx=20, pady="20 50", row=4)
+        self.MCU_Read_Wait_Period_Spinbox.configure(
+            font="{Arial} 36 {}",
+            from_=1,
+            justify="right",
+            style="Custom.TSpinbox",
+            textvariable=self.MCU_Read_Wait_Period_VAR,
+            to=20,
+            width=3)
+        self.MCU_Read_Wait_Period_Spinbox.grid(
+            column=1, padx=20, pady=10, row=4, sticky="w")
         frame1.pack(
             anchor="center",
             expand=True,
@@ -171,6 +196,12 @@ class settingsMachineUI(ttk.Labelframe):
             text='Machine Settings ( Caution Advised)',
             width=450)
         # Layout for 'labelframe1' skipped in custom widget template.
+
+    def selectDSP_On_CB(self):
+        pass
+
+    def selectDSP_Off_CB(self):
+        pass
 
     def apply_CB(self):
         pass
