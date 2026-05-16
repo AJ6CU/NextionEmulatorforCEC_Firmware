@@ -50,6 +50,8 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         self.peakBuffer = bytearray(self.MaxADCCount)       # Tracks the peak value of a frequency
         self.averageBuffer = bytearray(self.MaxADCCount)    # Tracks the current average of a frequency
 
+        self.bandwidthValues = {"60k":"60,000","120k":"120,000","240k":"240,000","360k":"360,000", "480k":"480,000"}
+
 
 
         self.spectrumScanning = False               # default to scanning off
@@ -89,19 +91,17 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
         # gv.trimAndLocateWindow(self.master, 0, 0)     # causes annoying resizing on initialization of window
 
-        gv.formatCombobox(self.repeat_Combobox, "Arial", "24", "bold")
-        gv.formatCombobox(self.bandwidth_Combobox, "Arial", "24", "bold")
-
-
         self.repeat_VAR.set('10')                       # defaults to run the scan 10 times
-        self.bandwidthSelected_VAR.set('240,000')       # sets the default bandwidth to 240,000 hz
 
         # Update bandwidth to use selected delimiter
+        for key, value in self.bandwidthValues.items():
+            self.bandwidthValues[key] = value.replace(',', gv.NUMBER_DELIMITER)
+            self.bandwidth_Menu.entryconfigure(value, label=self.bandwidthValues[key])
 
-        localizedBandwidth=[]
-        for item in self.bandwidth_Combobox['values']:
-            localizedBandwidth.append(item.replace(',', gv.NUMBER_DELIMITER))
-        self.bandwidth_Combobox['values']=localizedBandwidth
+        if gv.NUMBER_DELIMITER == ',':
+            self.bandwidthSelected_VAR.set('240,000')       # sets the default bandwidth to 240,000 hz
+        else:
+            self.bandwidthSelected_VAR.set('240.000')
 
 
         self.frequencyTuning_VAR.set(60)                                                # Set scrollbar to middle
@@ -258,15 +258,55 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         #
         self.remainingCount_VAR.set(self.repeat_VAR.get())
 
+    def select_Repeat_1x_CB(self):
+        self.repeat_VAR.set('1')
+        self.remainingCount_VAR.set('1')
+
+    def select_Repeat_5x_CB(self):
+        self.repeat_VAR.set('5')
+        self.remainingCount_VAR.set('5')
+
+    def select_Repeat_10x_CB(self):
+        self.repeat_VAR.set('10')
+        self.remainingCount_VAR.set('10')
+
+    def select_Repeat_15x_CB(self):
+        self.repeat_VAR.set('15')
+        self.remainingCount_VAR.set('15')
+
+    def select_Repeat_20x_CB(self):
+        self.repeat_VAR.set('20')
+        self.remainingCount_VAR.set('20')
+
+    def select_Repeat_50x_CB(self):
+        self.repeat_VAR.set('50')
+        self.remainingCount_VAR.set('50')
+
 
     #
     #   Callback when bandwidth has been changed. Updates the UX Parameters and kicks off a new
     #   scan by using the recenter_CB.
     #
 
-    def bandwidthValueChanged_CB(self, event=None):
-        self.updateScanParameters()
+
+    def updateBandwidth(self, newValue):
+        self.bandwidthSelected_VAR.set(newValue)
         self.recenter_CB()
+
+    def select_60k_CB(self):
+        self.updateBandwidth(self.bandwidthValues['60k'])
+
+    def select_120k_CB(self):
+        self.updateBandwidth(self.bandwidthValues['120k'])
+
+    def select_240k_CB(self):
+        self.updateBandwidth(self.bandwidthValues['240k'])
+
+    def select_360k_CB(self):
+        self.updateBandwidth(self.bandwidthValues['360k'])
+
+    def select_480k_CB(self):
+        self.updateBandwidth(self.bandwidthValues['480k'])
 
 
     def recenter_CB(self):
@@ -303,8 +343,8 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         #
 
 
-        self.bandwidth_Combobox.configure(state=status)
-        self.repeat_Combobox.configure(state=status)
+        self.bandwidth_Menubutton.configure(state=status)
+        self.repeat_Menubutton.configure(state=status)
 
         self.recenter_Button.configure(state=status)
         self.startStop_Button.configure(state=status)

@@ -49,6 +49,7 @@
             <layout manager="grid">
               <property name="column">0</property>
               <property name="padx">10 0</property>
+              <property name="pady">40 0</property>
               <property name="row">0</property>
               <property name="sticky">ew</property>
             </layout>
@@ -226,7 +227,6 @@
                       <property name="anchor">nw</property>
                       <property name="expand">true</property>
                       <property name="fill">x</property>
-                      <property name="pady">20 0</property>
                       <property name="side">top</property>
                     </layout>
                     <child>
@@ -240,19 +240,60 @@
                       </object>
                     </child>
                     <child>
-                      <object class="pygubu.widgets.Combobox" id="bandwidth_Combobox" named="True">
-                        <property name="justify">right</property>
-                        <property name="style">ComboBox1.TCombobox</property>
+                      <object class="ttk.Menubutton" id="bandwidth_Menubutton" named="True">
+                        <property name="style">Heading0.TMenubutton</property>
                         <property name="textvariable">string:bandwidthSelected_VAR</property>
-                        <property name="values">60,000 120,000 240,000 360,000 480,000</property>
-                        <property name="width">7</property>
-                        <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="bandwidthValueChanged_CB" add="" />
+                        <property name="width">8</property>
                         <layout manager="grid">
-                          <property name="column">0</property>
                           <property name="padx">20 0</property>
                           <property name="row">1</property>
                           <property name="sticky">w</property>
                         </layout>
+                        <child>
+                          <object class="tk.Menu" id="bandwidth_Menu" named="True">
+                            <property name="tearoff">false</property>
+                            <child>
+                              <object class="tk.Menuitem.Command" id="select_60k_Command" named="True">
+                                <property name="command" type="command" cbtype="simple">select_60k_CB</property>
+                                <property name="font">{Arial} 36 {}</property>
+                                <property name="label" translatable="yes">60,000</property>
+                                <property name="state">normal</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="tk.Menuitem.Command" id="select_120k_Command" named="True">
+                                <property name="command" type="command" cbtype="simple">select_120k_CB</property>
+                                <property name="font">{Arial} 36 {}</property>
+                                <property name="label" translatable="yes">120,000</property>
+                                <property name="state">normal</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="tk.Menuitem.Command" id="select_240k_Command" named="True">
+                                <property name="command" type="command" cbtype="simple">select_240k_CB</property>
+                                <property name="font">{Arial} 36 {}</property>
+                                <property name="label" translatable="yes">240,000</property>
+                                <property name="state">normal</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="tk.Menuitem.Command" id="select_360k_Command" named="True">
+                                <property name="command" type="command" cbtype="simple">select_360k_CB</property>
+                                <property name="font">{Arial} 36 {}</property>
+                                <property name="label" translatable="yes">360,000</property>
+                                <property name="state">normal</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="tk.Menuitem.Command" id="select_480k_Command" named="True">
+                                <property name="command" type="command" cbtype="simple">select_480k_CB</property>
+                                <property name="font">{Arial} 36 {}</property>
+                                <property name="label" translatable="yes">480,000</property>
+                                <property name="state">normal</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -265,8 +306,9 @@ Size(Hz)</property>
                         <property name="width">10</property>
                         <layout manager="grid">
                           <property name="column">1</property>
+                          <property name="padx">20 10</property>
                           <property name="row">0</property>
-                          <property name="sticky">w</property>
+                          <property name="sticky">e</property>
                         </layout>
                       </object>
                     </child>
@@ -294,7 +336,7 @@ Size(Hz)</property>
                       <property name="anchor">nw</property>
                       <property name="expand">true</property>
                       <property name="fill">x</property>
-                      <property name="pady">40 0</property>
+                      <property name="pady">20 0</property>
                       <property name="side">top</property>
                     </layout>
                     <child>
@@ -303,7 +345,7 @@ Size(Hz)</property>
                         <property name="text" translatable="yes">Repeat</property>
                         <layout manager="grid">
                           <property name="column">0</property>
-                          <property name="padx">55 0</property>
+                          <property name="padx">100 0</property>
                           <property name="row">0</property>
                         </layout>
                       </object>
@@ -316,26 +358,75 @@ Size(Hz)</property>
                         <property name="width">10</property>
                         <layout manager="grid">
                           <property name="column">1</property>
-                          <property name="padx">5 0</property>
+                          <property name="padx">110 0</property>
                           <property name="row">0</property>
-                          <property name="sticky">w</property>
+                          <property name="sticky">e</property>
                         </layout>
                       </object>
                     </child>
                     <child>
-                      <object class="pygubu.widgets.Combobox" id="repeat_Combobox" named="True">
-                        <property name="justify">right</property>
-                        <property name="keyvariable">string:repeat_VAR</property>
-                        <property name="style">ComboBox1.TCombobox</property>
-                        <property name="values">1 5 10 15 20 50 100</property>
-                        <property name="width">5</property>
-                        <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="repeatValueChanged_CB" add="" />
+                      <object class="ttk.Menubutton" id="repeat_Menubutton" named="True">
+                        <property name="style">Heading0.TMenubutton</property>
+                        <property name="textvariable">string:repeat_VAR</property>
+                        <property name="width">3</property>
                         <layout manager="grid">
-                          <property name="column">0</property>
-                          <property name="padx">50 0</property>
+                          <property name="padx">85 0</property>
                           <property name="row">1</property>
                           <property name="sticky">e</property>
                         </layout>
+                        <child>
+                          <object class="tk.Menu" id="repeat_Menu" named="True">
+                            <property name="tearoff">false</property>
+                            <child>
+                              <object class="tk.Menuitem.Command" id="select_Repeat_1x_Command" named="True">
+                                <property name="command" type="command" cbtype="simple">select_Repeat_1x_CB</property>
+                                <property name="font">{Arial} 36 {}</property>
+                                <property name="label" translatable="yes">1</property>
+                                <property name="state">normal</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="tk.Menuitem.Command" id="select_Repeat_5x_Command" named="True">
+                                <property name="command" type="command" cbtype="simple">select_Repeat_5x_CB</property>
+                                <property name="font">{Arial} 36 {}</property>
+                                <property name="label" translatable="yes">5</property>
+                                <property name="state">normal</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="tk.Menuitem.Command" id="select_Repeat_10x_Command" named="True">
+                                <property name="command" type="command" cbtype="simple">select_Repeat_10x_CB</property>
+                                <property name="font">{Arial} 36 {}</property>
+                                <property name="label" translatable="yes">10</property>
+                                <property name="state">normal</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="tk.Menuitem.Command" id="select_Repeat_15x_Command" named="True">
+                                <property name="command" type="command" cbtype="simple">select_Repeat_15x_CB</property>
+                                <property name="font">{Arial} 36 {}</property>
+                                <property name="label" translatable="yes">15</property>
+                                <property name="state">normal</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="tk.Menuitem.Command" id="select_Repeat_20x_Command" named="True">
+                                <property name="command" type="command" cbtype="simple">select_Repeat_20x_CB</property>
+                                <property name="font">{Arial} 36 {}</property>
+                                <property name="label" translatable="yes">20</property>
+                                <property name="state">normal</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="tk.Menuitem.Command" id="select_Repeat_50x_Command" named="True">
+                                <property name="command" type="command" cbtype="simple">select_Repeat_50x_CB</property>
+                                <property name="font">{Arial} 36 {}</property>
+                                <property name="label" translatable="yes">50</property>
+                                <property name="state">normal</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -347,6 +438,7 @@ Size(Hz)</property>
                         <property name="width">5</property>
                         <layout manager="grid">
                           <property name="column">1</property>
+                          <property name="padx">90 10</property>
                           <property name="row">1</property>
                         </layout>
                       </object>
@@ -439,7 +531,7 @@ Rerun</property>
             <layout manager="grid">
               <property name="column">0</property>
               <property name="columnspan">2</property>
-              <property name="pady">20 0</property>
+              <property name="pady">20 15</property>
               <property name="row">1</property>
             </layout>
             <containerlayout manager="grid">

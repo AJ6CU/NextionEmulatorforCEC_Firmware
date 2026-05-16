@@ -208,7 +208,7 @@ during Scan</property>
               </object>
             </child>
             <child>
-              <object class="ttk.Spinbox" id="spinbox1">
+              <object class="ttk.Spinbox" id="Time_On_Freq_Spinbox" named="True">
                 <property name="font">{Arial} 36 {}</property>
                 <property name="from_">1</property>
                 <property name="justify">right</property>
