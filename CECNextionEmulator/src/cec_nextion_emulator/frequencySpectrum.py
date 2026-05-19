@@ -440,6 +440,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         self.mainWindow.highlightCWorSpectrumBoxes(True)
         self.mainWindow.theRadio.Set_Spectrum_Mode(95)
         self.mainWindow.theRadio.Set_New_Frequency(self.centerFrequency)
+        self.mainWindow.consumerSpectrumdata = None
         if self.frequencyChangeCheckPtr != None:
             self.master.after_cancel(self.frequencyChangeCheckPtr)
         self.destroy()
@@ -456,6 +457,7 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
         self.mainWindow.highlightCWorSpectrumBoxes(True)
         self.mainWindow.theRadio.Set_Spectrum_Mode(95)
         self.mainWindow.theRadio.Set_New_Frequency(self.originalFrequency)
+        self.mainWindow.consumerSpectrumdata = None
         if self.frequencyChangeCheckPtr != None:
             self.master.after_cancel(self.frequencyChangeCheckPtr)
         self.destroy()

@@ -201,6 +201,8 @@ class barPlotter:
     def get_CurrentMin(self):
         return(self.currentMin)
 
+
+
 class barPlotterBdata (barPlotter):
     def process_Data(self, buffer, yDivider=0):
         super().process_Data(bytearray.fromhex(buffer), yDivider)

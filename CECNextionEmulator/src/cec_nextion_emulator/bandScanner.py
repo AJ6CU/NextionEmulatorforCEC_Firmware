@@ -21,63 +21,105 @@ import globalvars as gv
 # Manual user code
 #
 
+class graphObject(barPlotter):
+
+    def __init__(self, targetLabelFrame, canvasObj=None, totalX=120, maxY=70,
+                 barColor="yellow", X_GAP=4, Y_GAP=0, currentMax=0, currentMin=0, **kw):
+
+        self.targetLabelFrame = targetLabelFrame
+        self.canvasObj = canvasObj
+        self.totalX = totalX
+        self.maxY = maxY
+
+        self.yDivider = 0
+
+        self.barColor = barColor
+        self.X_GAP = X_GAP
+        self.Y_GAP = Y_GAP
+        self.currentMax = currentMax
+        self.currentMin = currentMin
+
+        self.averageBuffer = bytearray(self.totalX)
+        self.processDataCount = 0
+
+        self.bandID = None
+        self.bandStart = None
+        self.bandEnd = None
+        self.activateFlag = False
+        self.scrollbarSize = None
+
+        super().__init__(self.targetLabelFrame, self.canvasObj, self.totalX, self.maxY, self.X_GAP, self.Y_GAP,
+                         self.currentMax, self.currentMin, self.barColor, **kw)
+
+    def deactivate(self):
+        self.bandID = None
+        self.bandStart = None
+        self.bandEnd = None
+
+        self.activateFlag = False
+        self.targetLabelFrame.configure(text="Select Band...")
+
+
+    def activate(self, bandID, bandStart, bandSampleSize, maxY=70, scrollbarSize=120):
+        self.bandID = bandID
+        self.bandStart = bandStart
+        self.bandSampleSize = bandSampleSize
+        self.maxY = maxY
+        self.scrollbarSize = scrollbarSize
+
+        self.bandEnd = self.bandStart + (self.bandSampleSize * scrollbarSize)
+
+        print("band:", self.bandStart, gv.bandEnd[bandID], "actual end", self.bandStart + (self.bandSampleSize * 120))
+
+        self.activateFlag = True
+        self.targetLabelFrame.configure(text=self.bandID.replace("Band", "Band: "))
+
+    def get_bandID(self):
+        return self.bandID
+
+    def getFrequency(self, scrollbarPosition):
+        pass
+
+    def setFrequency(self, scrollbarPosition):
+        return self.bandStart + (self.bandSampleSize * scrollbarPosition)
+
+    def available(self):
+        return not self.activateFlag
+
+    def activated(self):
+        return self.activateFlag
+
+    def processData(self, buffer):
+
+        byteBuffer = bytearray.fromhex(buffer)
+        self.processDataCount += 1
+
+        for x, y in enumerate(byteBuffer):
+
+            tmp = int(round(self.averageBuffer[x] + ((y - self.averageBuffer[x]) / self.processDataCount)))
+
+            if tmp > 255:
+                print("tmp too big, tmp")
+            self.averageBuffer[x] = tmp
+
+
+
+
+    def drawHighLightBars(self):
+        self.drawHighLightBars(int(self.frequencyTuning_VAR.get()))
+
+    def displayData(self, buffer):
+
+        (super).process_Data(self, self.buffer)             # yDivider is defaulted to 0
+
+        self.plotter.drawHighLightBars()
+        self.processDataCount = 0
+        self.averageBuffer = bytearray(self.totalX)
+
+
+
+
 class bandScanner(baseui.bandScannerUI):
-    #
-    #   graphObject is an inner class that is used as a convenience to manage the 3 canvases that can display a
-    #   band scan. Being an inner class, it is isolated from the outer class instance variables. Consequently,
-    #   all communication is via class get/set/query methods
-    #
-    class graphObject:
-        def __init__(self, targetLabelFrame, targetCanvas=None, **kw):
-
-            self.targetLabelFrame = targetLabelFrame
-            self.targetCanvas = targetCanvas
-
-
-            self.bandID = None
-            self.bandStart = None
-            self.bandEnd = None
-            self.activateFlag = False
-            self.scrollbarSize = None
-
-            self.plotterAvg = barPlotter(self, self.targetCanvas, 120, 70)
-
-        def deactivate(self):
-            self.bandID = None
-            self.bandStart = None
-            self.bandEnd = None
-
-            self.activateFlag = False
-            self.targetLabelFrame.configure(text="Select Band...")
-
-
-        def activate(self, bandID, bandStart, bandSampleSize, maxY=70, scrollbarSize=120):
-            self.bandID = bandID
-            self.bandStart = bandStart
-            self.bandSampleSize = bandSampleSize
-            self.maxY = maxY
-            self.scrollbarSize = scrollbarSize
-
-            self.bandEnd = self.bandStart + (self.bandSampleSize*scrollbarSize)
-
-            print ("band:", self.bandStart, gv.bandEnd[bandID], "actual end", self.bandStart + (self.bandSampleSize*120))
-
-            self.activateFlag = True
-            self.targetLabelFrame.configure(text=self.bandID.replace("Band","Band: "))
-
-        def get_bandID(self):
-            return self.bandID
-
-        def getFrequency(self,scrollbarPosition):
-            pass
-
-        def setFrequency(self,scrollbarPosition):
-            return self.bandStart + (self.bandSampleSize * scrollbarPosition)
-
-
-        def available(self):
-            return not self.activateFlag
-
 
 
     def __init__(self,  master=None, mainWindow=None, **kw):
@@ -104,6 +146,7 @@ class bandScanner(baseui.bandScannerUI):
         self.numberBandsChecked = 0     # Total number of bands checked
 
         self.targetGraph = [None]  * 3
+        self.scanlist = []              # used to identify which targetGraphs are acticated and require band scans
         self.averageBuffer = bytearray(self.MaxADCCount)    # Tracks the current average of a frequency
 
 
@@ -144,14 +187,7 @@ class bandScanner(baseui.bandScannerUI):
 
 
         self.frequencyTuning_VAR.set(60)                                                # Set scrollbar to middle
-        #
-        #   Create two plotter objects. Top one is for average signal strength. Bottom is for Peak signal strength
-        #
-        # self.plotterAvg = barPlotter(self, self.frequencyPlotCanvas, self.MaxADCCount, self.FREQ_Y_MAX)
-        # self.plotterPeak = barPlotter(self, self.waterfall_Canvas, self.MaxADCCount, self.FREQ_Y_MAX, barColor="green")
-        #
-        # self.remainingCount_VAR.set(self.repeat_VAR.get())              # Set remaining count to current count
-        # self.updateScanParameters()                                     # Can now format Frequency graphs
+
 
         self.lastFrequency = self.mainWindow.theVFO_Object.getIntPrimaryVFO()
         #
@@ -165,9 +201,9 @@ class bandScanner(baseui.bandScannerUI):
         #
         #   Instantiate the 3 objects to do the plotting
         #
-        self.targetGraph[0] = self.graphObject(self.band0_Labelframe, self.band0Plot_Canvas)
-        self.targetGraph[1] = self.graphObject(self.band1_Labelframe, self.band1Plot_Canvas)
-        self.targetGraph[2] = self.graphObject(self.band2_Labelframe, self.band2Plot_Canvas)
+        self.targetGraph[0] = graphObject(self.band0_Labelframe, self.band0Plot_Canvas)
+        self.targetGraph[1] = graphObject(self.band1_Labelframe, self.band1Plot_Canvas)
+        self.targetGraph[2] = graphObject(self.band2_Labelframe, self.band2Plot_Canvas)
 
 
         self.initUXComplete = True
@@ -182,7 +218,7 @@ class bandScanner(baseui.bandScannerUI):
             if self.targetGraph[i].available():
                 return
             else:
-                f=self.targetGraph[i].setFrequency(int(self.frequencyTuning_VAR.get()))
+                f=gv.formatVFO(str(self.targetGraph[i].setFrequency(int(self.frequencyTuning_VAR.get()))))
                 getattr(self, "band"+str(i)+"Frequency_VAR").set(str(f))
         pass
 
@@ -193,6 +229,8 @@ class bandScanner(baseui.bandScannerUI):
         for i in range(len(self.targetGraph)):
             if self.targetGraph[i].available():
                 self.targetGraph[i].activate(bandID, bandStart, bandSampleSize, self.FREQ_Y_MAX, scrollbarSize)
+                f=gv.formatVFO(str(self.targetGraph[i].setFrequency(int(self.frequencyTuning_VAR.get()))))
+                getattr(self, "band"+str(i)+"Frequency_VAR").set(f)
                 return True
 
         #
@@ -208,6 +246,7 @@ class bandScanner(baseui.bandScannerUI):
         for i in range(len(self.targetGraph)):
             if self.targetGraph[i].get_bandID() == bandID:
                 self.targetGraph[i].deactivate()
+                getattr(self, "band" + str(i) + "Frequency_VAR").set("")
                 return True
         #
         #   If it dropped thru, tried to deactivate a bandID that was not found.
@@ -244,9 +283,61 @@ class bandScanner(baseui.bandScannerUI):
                 print("trying to release a band that is not allocated, band=", widget_id)
                 return
 
+    def processData(self,buffer):
+        self.processDataCount += 1
+
+        if self.processDataCount == self.repeatCount:
+            self.displayData()
+
+    def process_Spectrum_Data(self,buffer):
+        pass
+
 
     def scan_CB(self):
         print("scan_CB")
+        self.spectrumScanning = True
+        self.parameterStatus("disabled")
+        for i in range(len(self.targetGraph)):
+            if self.targetGraph[i].activated():         # if this GraphObject is activated, add it to list to process
+                self.scanlist.append(i)
+                self.mainWindow.theRadio.startFrequencySpectrumScan()  ##WRONG! Not done
+
+
+        self.mainWindow.theRadio.startFrequencySpectrumScan(self.startFrequency, int(self.repeat_VAR.get()))
+
+
+    def parameterStatus(self, status):
+        #
+        #   Convenience routine to turn all the buttons on or off. When Start button is called, all these
+        #   buttons are "disabled". When the scan is done, they are re-enabled.
+        #
+
+
+        self.band1GO_Button.configure(state=status)
+        self.band2GO_Button.configure(state=status)
+        self.band3GO_Button.configure(state=status)
+
+
+        self.scan_Button.configure(state=status)
+        self.close_Button.configure(state=status)
+
+        self.Band160m.configure(state=status)
+        self.Band80m.configure(state=status)
+        self.Band40m.configure(state=status)
+        self.Band30m.configure(state=status)
+        self.Band20m.configure(state=status)
+        self.Band17m.configure(state=status)
+        self.Band15m.configure(state=status)
+        self.Band12m.configure(state=status)
+        self.Band10m.configure(state=status)
+
+        self.frequencyTuning_Scale.configure(state=status)
+
+        if self.spectrumScanning:
+            self.scan_Button_VAR.set("Running")
+        else:
+            self.scan_Button_VAR.set("Scan")
+
 
 
     def close_CB(self):
@@ -258,6 +349,7 @@ class bandScanner(baseui.bandScannerUI):
         self.mainWindow.highlightCWorSpectrumBoxes(True)
         self.mainWindow.theRadio.Set_Spectrum_Mode(95)
         self.mainWindow.theRadio.Set_New_Frequency(self.lastFrequency)
+        self.mainWindow.consumerSpectrumdata = None
         print("reseting frequency=", self.lastFrequency)
         self.destroy()
 

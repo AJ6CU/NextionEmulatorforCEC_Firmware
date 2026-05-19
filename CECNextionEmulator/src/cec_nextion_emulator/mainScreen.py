@@ -44,7 +44,9 @@ class mainScreen(baseui.mainScreenUI):
         self.cwSettingsWindow = None    # Object pointer for the CW Settinge Window
         self.settingsWindow = None      # Object pointer for the General Settings Window
         self.channelsWindow = None      # object pointer for the Memory-> VFO Window
-        self.spectrumWindow = None #object point for the SpectrumScan Window
+        self.spectrumWindow = None       #object point for the SpectrumScan Window
+        self.consumerSpectrumdata = None #Object pointer to the current consumer of spectrum data
+
         self.bandScannerWindow = None   # object pointer to the band scanner window
         self.consumerDSPdata = self     # object pointer to the object receiving DSP data
                                         # This could be:
@@ -522,13 +524,15 @@ class mainScreen(baseui.mainScreenUI):
         #
         #   Start CW Scanner Window
         #
-        self.spectrumWindow = frequencySpectrum(self.master, self, self.theVFO_Object.getIntPrimaryVFO())
+        self.theRadio.Set_Spectrum_Mode(94)
+        self.consumerSpectrumdata = frequencySpectrum(self.master, self, self.theVFO_Object.getIntPrimaryVFO())
 
     def bandScan_Button_CB(self, event=None):
         #
-        #   Start CW Scanner Window
+        #   Start BandScanner Window
         #
-        self.bandScannerWindow = bandScanner(self.master, self)
+        self.theRadio.Set_Spectrum_Mode(94)
+        self.consumerSpectrumdata = bandScanner(self.master, self)
 
 
 
@@ -952,7 +956,7 @@ class mainScreen(baseui.mainScreenUI):
                     self.theRadio.Factory_CW_Sidetone_Setter(str(int(value, 16)))
 
                 case "Spectrum_Scan":
-                    self.spectrumWindow.process_Spectrum_Data(value)
+                    self.consumerSpectrumdata.process_Spectrum_Data(value)
 
                 case _:
                     # print("case=",memoryCategory)
