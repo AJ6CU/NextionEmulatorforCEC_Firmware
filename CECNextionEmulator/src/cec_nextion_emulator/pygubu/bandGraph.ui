@@ -60,7 +60,9 @@
             <property name="command" type="command" cbtype="scale">bandStart_CB</property>
             <property name="from_">0</property>
             <property name="orient">horizontal</property>
-            <property name="to">749</property>
+            <property name="state">normal</property>
+            <property name="style">Custom.Horizontal.TScale</property>
+            <property name="to">119</property>
             <property name="variable">string:band0Start_VAR</property>
             <layout manager="pack">
               <property name="expand">true</property>

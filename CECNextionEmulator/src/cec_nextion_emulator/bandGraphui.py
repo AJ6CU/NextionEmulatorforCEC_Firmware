@@ -71,7 +71,9 @@ class bandGraphUI(ttk.Labelframe):
         self.bandStart_Scale.configure(
             from_=0,
             orient="horizontal",
-            to=749,
+            state="normal",
+            style="Custom.Horizontal.TScale",
+            to=119,
             variable=self.band0Start_VAR)
         self.bandStart_Scale.pack(expand=True, fill="x", side="top")
         self.bandStart_Scale.configure(command=self.bandStart_CB)
