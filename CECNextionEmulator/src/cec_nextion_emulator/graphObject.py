@@ -158,9 +158,11 @@ class graphObject(barPlotter):
             return self.bandScanStart
         else:
             return gv.roundToNearest(self.bandStart + (self.bandwidth * scrollbarPosition), self.bandwidth)
-
+    #
+    #   Get routine that just returns the starting frequency for the band scanning
+    #
     def getStartScanF(self):
-        return self.bandStart
+        return self.bandScanStart
 
     def available(self):
         return not self.activateFlag

@@ -7,6 +7,7 @@ Scans up to three selected bands for signals.
 UI source file: bandScanner.ui
 """
 import tkinter as tk
+from time import sleep
 import tkinter.ttk as ttk
 from multiprocessing.process import parent_process
 
@@ -53,6 +54,9 @@ class bandScanner(baseui.bandScannerUI):
 
         self.targetGraph = [None]  * 3
         self.scanlist = []              # used to identify which targetGraphs are activated and require band scans
+        self.scanlistIndex = None       # the index into scanlist that is currently being processed (0-2)
+        self.processDataCount = None    # real time count of the number of data buffers left to process
+
 
         self.averageBuffer = bytearray(self.MaxADCCount)    # Tracks the current average of a frequency
 
@@ -174,7 +178,9 @@ class bandScanner(baseui.bandScannerUI):
             if self.targetGraph[i].get_bandID() == bandID:
                 self.targetGraph[i].deactivate()
                 getattr(self, "band" + str(i) + "Frequency_VAR").set("")
+                print("before removal scanlist=", self.scanlist)
                 self.scanlist.remove(i)         # remove this band from scanable channels
+                print("after removal scanlist=", self.scanlist)
                 return True
         #
         #   If it dropped thru, tried to deactivate a bandID that was not found.
@@ -227,19 +233,43 @@ class bandScanner(baseui.bandScannerUI):
 
     def process_Spectrum_Data(self,buffer):
         print("processing spectrum buffer\n",buffer)
+        self.processDataCount -= 1
+        if self.processDataCount == 0:
+            # self.displayData()
+            self.scanlistIndex += 1
+            if self.scanlistIndex < len(self.scanlist):
+                self.sendNextScanRequest(self.scanlist[self.scanlistIndex])
+            else:
+                #
+                #   We have finished processing the scanlist and can go back to normal operation
+                #
+                self.spectrumScanning = False
+                self.parameterStatus("normal")
 
 
+
+    def sendNextScanRequest(self,i):
+        self.processDataCount = 3
+        self.mainWindow.theRadio.startFrequencySpectrumScan(self.targetGraph[i].getStartScanF(),
+                                                           self.repeatCount)
+
+    #
+    #   This is called when the Scan button is pressed. It creates a list of bands to scan and then
+    #   scans the first one. Once the scan is processed on the first band, the next band is kicked off
+    #   in the process_Spectrum_Data method. This controls the speed of instructions to the MCU
+    #   and avoids overwhelming it.
+    #
     def scan_CB(self):
-        print("scan_CB")
         self.spectrumScanning = True
         self.parameterStatus("disabled")
         #
         #   Find all the graphObjects that are activated
         #
-        for i in range(len(self.scanlist)):
-            print('activating band=', self.scanlist[i])
-            self.mainWindow.theRadio.startFrequencySpectrumScan(self.targetGraph[self.scanlist[i]].getStartScanF(),
-                                                                    self.repeatCount)
+        if len(self.scanlist) != 0:
+            self.scanlistIndex = 0
+            self.sendNextScanRequest(self.scanlistIndex)
+
+
 
     def parameterStatus(self, status):
         #

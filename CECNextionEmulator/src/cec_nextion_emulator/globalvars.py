@@ -64,7 +64,7 @@ MCU_Headroom_Values = ["40","50","60","70","80","90","100","110","150","160","17
 
 Frequency_To_Run_UX_loop = ["250","300","350","400","425","450","475","500","550","600","650","675","700","725","800"]
 
-MCU_Read_Completion_Wait_Period = ["5", "10", "15", "20", "25", "30", "40", "50"]
+MCU_Read_Completion_Wait_Period = ["5", "10", "15", "20", "25", "30", "40", "50","60","70","80","90"]
 
 #
 #   Band limits. Probably should be retrieved from eeprom. Perhaps later...
