@@ -1,27 +1,20 @@
 #!/usr/bin/python3
-"""
-Band Scanner
-
-Scans up to three selected bands for signals.
-
-UI source file: bandScanner.ui
-"""
 import tkinter as tk
 import tkinter.ttk as ttk
 from bandGraph import bandGraph
 
 
-def safe_i18n_translator(value):
+def i18n_translator_noop(value):
     """i18n - Setup translator in derived class file"""
     return value
 
 
-def safe_fo_callback(widget):
+def first_object_callback_noop(widget):
     """on first objec callback - Setup callback in derived class file."""
     pass
 
 
-def safe_image_loader(master, image_name: str):
+def image_loader_default(master, image_name: str):
     """Image loader - Setup image_loader in derived class file."""
     img = None
     try:
@@ -46,12 +39,12 @@ class bandScannerUI(tk.Toplevel):
         **kw
     ):
         if translator is None:
-            translator = safe_i18n_translator
+            translator = i18n_translator_noop
         _ = translator  # i18n string marker.
         if image_loader is None:
-            image_loader = safe_image_loader
+            image_loader = image_loader_default
         if on_first_object_cb is None:
-            on_first_object_cb = safe_fo_callback
+            on_first_object_cb = first_object_callback_noop
 
         super().__init__(master, **kw)
 
@@ -358,6 +351,7 @@ class bandScannerUI(tk.Toplevel):
         self.scan_Button = ttk.Button(self.closingFrame, name="scan_button")
         self.scan_Button_VAR = tk.StringVar(value='Scan')
         self.scan_Button.configure(
+            state="disabled",
             style="Button2b.TButton",
             text='Scan',
             textvariable=self.scan_Button_VAR,
@@ -375,7 +369,6 @@ class bandScannerUI(tk.Toplevel):
         self.bandScanner_Labelframe.columnconfigure(0, weight=1)
         self.configure(height=200, width=800)
         self.title("Frequency Spectrum")
-        # Layout for 'bandScanner_Toplevel' skipped in custom widget template.
 
     def frequencyTuningRelease_CB(self, event=None):
         pass
@@ -396,4 +389,5 @@ class bandScannerUI(tk.Toplevel):
 if __name__ == "__main__":
     root = tk.Tk()
     widget = bandScannerUI(root)
+    widget.pack(expand=True, fill="both")
     root.mainloop()

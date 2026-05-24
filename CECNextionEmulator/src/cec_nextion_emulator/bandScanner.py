@@ -52,7 +52,8 @@ class bandScanner(baseui.bandScannerUI):
         self.numberBandsChecked = 0     # Total number of bands checked
 
         self.targetGraph = [None]  * 3
-        self.scanlist = []              # used to identify which targetGraphs are acticated and require band scans
+        self.scanlist = []              # used to identify which targetGraphs are activated and require band scans
+
         self.averageBuffer = bytearray(self.MaxADCCount)    # Tracks the current average of a frequency
 
 
@@ -151,6 +152,7 @@ class bandScanner(baseui.bandScannerUI):
             if self.targetGraph[i].available():
                 self.targetGraph[i].activate(bandID, bandStart, bandEnd, self.Bandwidth, self.FREQ_Y_MAX, scrollbarSize)
                 self.setFrequency(i)
+                self.scanlist.append(i)     # add i to list of scannable bands
                 return True
 
         #
@@ -172,6 +174,7 @@ class bandScanner(baseui.bandScannerUI):
             if self.targetGraph[i].get_bandID() == bandID:
                 self.targetGraph[i].deactivate()
                 getattr(self, "band" + str(i) + "Frequency_VAR").set("")
+                self.scanlist.remove(i)         # remove this band from scanable channels
                 return True
         #
         #   If it dropped thru, tried to deactivate a bandID that was not found.
@@ -194,8 +197,9 @@ class bandScanner(baseui.bandScannerUI):
             if self.allocateGraphObj(widget_id,gv.bandStart[widget_id], gv.bandEnd[widget_id],
                                      self.FREQ_Y_MAX, self.MaxADCCount):
                 #
-                #   True indicates successful allocation. Can just return
+                #   True indicates successful allocation. Enable Scan button and return
                 #
+                self.scan_Button.configure(state="normal")
                 return
             else:
                 #
@@ -208,6 +212,8 @@ class bandScanner(baseui.bandScannerUI):
             #   Trying to deactivate a graphobject
             #
             if self.releaseGraphObj(widget_id):
+                if len(self.scanlist) == 0:   #  if there is no active bands, disable scan button
+                    self.scan_Button.configure(state="disabled")
                 return
             else:
                 print("trying to release a band that is not allocated, band=", widget_id)
@@ -220,21 +226,20 @@ class bandScanner(baseui.bandScannerUI):
             self.displayData()
 
     def process_Spectrum_Data(self,buffer):
-        pass
+        print("processing spectrum buffer\n",buffer)
 
 
     def scan_CB(self):
         print("scan_CB")
         self.spectrumScanning = True
         self.parameterStatus("disabled")
-        for i in range(len(self.targetGraph)):
-            if self.targetGraph[i].activated():         # if this GraphObject is activated, add it to list to process
-                self.scanlist.append(i)
-                self.mainWindow.theRadio.startFrequencySpectrumScan()  ##WRONG! Not done
-
-
-        self.mainWindow.theRadio.startFrequencySpectrumScan(self.startFrequency, int(self.repeat_VAR.get()))
-
+        #
+        #   Find all the graphObjects that are activated
+        #
+        for i in range(len(self.scanlist)):
+            print('activating band=', self.scanlist[i])
+            self.mainWindow.theRadio.startFrequencySpectrumScan(self.targetGraph[self.scanlist[i]].getStartScanF(),
+                                                                    self.repeatCount)
 
     def parameterStatus(self, status):
         #
@@ -242,10 +247,9 @@ class bandScanner(baseui.bandScannerUI):
         #   buttons are "disabled". When the scan is done, they are re-enabled.
         #
 
-
+        self.band0GO_Button.configure(state=status)
         self.band1GO_Button.configure(state=status)
         self.band2GO_Button.configure(state=status)
-        self.band3GO_Button.configure(state=status)
 
 
         self.scan_Button.configure(state=status)

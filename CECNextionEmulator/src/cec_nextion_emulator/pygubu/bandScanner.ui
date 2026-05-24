@@ -464,6 +464,7 @@
             <child>
               <object class="ttk.Button" id="scan_Button" named="True">
                 <property name="command" type="command" cbtype="simple">scan_CB</property>
+                <property name="state">disabled</property>
                 <property name="style">Button2b.TButton</property>
                 <property name="text" translatable="yes">Scan</property>
                 <property name="textvariable">string:scan_Button_VAR</property>
