@@ -19,6 +19,7 @@ class bandGraph(baseui.bandGraphUI):
     def __init__(self, master=None,  **kw):
 
         super().__init__(master, **kw)
+        # print("allocating a band")
         # self.bandScannerWindow = bandScannerWindow
     #
     #   This function allows the attachment of a callback within the GraphPak object

@@ -104,6 +104,7 @@
                 </layout>
                 <child>
                   <object class="tk.Scale" id="frequencyTuning_Scale" named="True">
+                    <property name="command" type="command" cbtype="scale">frequencyTuning_CB</property>
                     <property name="digits">0</property>
                     <property name="from_">0</property>
                     <property name="length">500</property>
@@ -114,7 +115,6 @@
                     <property name="to">119</property>
                     <property name="variable">string:frequencyTuning_VAR</property>
                     <property name="width">30</property>
-                    <bind sequence="&lt;ButtonRelease-1&gt;" handler="frequencyTuningRelease_CB" add="True" />
                     <layout manager="pack">
                       <property name="anchor">w</property>
                       <property name="expand">true</property>
@@ -455,8 +455,10 @@
             <layout manager="grid">
               <property name="column">0</property>
               <property name="columnspan">2</property>
+              <property name="padx">60 0</property>
               <property name="pady">20 30</property>
               <property name="row">1</property>
+              <property name="sticky">w</property>
             </layout>
             <containerlayout manager="pack">
               <property name="anchor">center</property>
@@ -477,9 +479,21 @@
             </child>
             <child>
               <object class="ttk.Button" id="close_Button" named="True">
-                <property name="command" type="command" cbtype="simple">close_CB</property>
+                <property name="command" type="command" cbtype="with_wid">close_CB</property>
                 <property name="style">Button2b.TButton</property>
                 <property name="text" translatable="yes">Close</property>
+                <property name="width">10</property>
+                <layout manager="pack">
+                  <property name="padx">0 20</property>
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Button" id="cancel_Button" named="True">
+                <property name="command" type="command" cbtype="with_wid">close_CB</property>
+                <property name="style">Button2b.TButton</property>
+                <property name="text" translatable="yes">Cancel</property>
                 <property name="width">10</property>
                 <layout manager="pack">
                   <property name="side">left</property>

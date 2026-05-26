@@ -658,12 +658,12 @@ class mainScreen(baseui.mainScreenUI):
         #
 
         self.vv_Command_Buffer = self.extractValue(buffer, 10, len(buffer) - 3)
-        print("Received VV data", self.vv_Command_Buffer, "len=", len(self.vv_Command_Buffer))
+        # print("Received VV data", self.vv_Command_Buffer, "len=", len(self.vv_Command_Buffer))
 
 
     def vg_UX_DSP_Flag(self, buffer):
         commandType = self.extractValue(buffer, 10, len(buffer) - 3)
-        print("vg_UX_DSP_Flag Received:", commandType)
+        # print("vg_UX_DSP_Flag Received:", commandType)
         #
         #   Dsp data is weird. You get a "vv" command with the data followed by a "vg" with
         #   the command to send the "vv" buffer that you received previously.
@@ -744,7 +744,7 @@ class mainScreen(baseui.mainScreenUI):
             self.mainScreenCW_logger.process_CWDecoded_Data(buffer)
 
     def process_DSP_EEPROM_Data(self, buffer):
-        print("Processing DSP Data for main window", buffer)
+        # print("Processing DSP Data for main window", buffer)
         byteList = int(buffer).to_bytes(4, 'little')
         # print("process_DSP_Data", byteList)
 
@@ -752,10 +752,10 @@ class mainScreen(baseui.mainScreenUI):
             self.DSPFound = True
 
 
-            print("main window eeprom values returned")
-            print(hex(int(buffer)))
-            print("main window decodescale*10=", byteList[0])
-            print("main window useDSPFlag=", byteList[1])
+            # print("main window eeprom values returned")
+            # print(hex(int(buffer)))
+            # print("main window decodescale*10=", byteList[0])
+            # print("main window useDSPFlag=", byteList[1])
 
             self.frequencyDecodeScale = int(byteList[0] / 10)
 
@@ -783,7 +783,7 @@ class mainScreen(baseui.mainScreenUI):
             #
             self.highlightCWorSpectrumBoxes(True)
 
-            print("eeprom fetch:", hex(int(buffer)))
+            # print("eeprom fetch:", hex(int(buffer)))
 
     def request_DSP_EEPROM_Data(self):
         #

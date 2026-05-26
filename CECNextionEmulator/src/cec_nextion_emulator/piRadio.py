@@ -802,11 +802,11 @@ class piRadio:
 
         command = [self.toRadioCommandDict["TS_CMD_SPECTRUMOPT"], repeatCount, ADCoffset, ADCCount, scanStep]
         self.sendCommandToMCU(bytes(command))
-        print("Updated Spectrum Options", command)
+        # print("Updated Spectrum Options", command)
 
     def startFrequencySpectrumScan(self, freq,count):
 
-        print("Starting Frequency Spectrum Scan", freq, count)
+        # print("Starting Frequency Spectrum Scan", freq, count)
         self.mainWindow.startingspectrum = True
 
         # for _ in range(count):
@@ -818,7 +818,7 @@ class piRadio:
 
         command = [self.toRadioCommandDict["TS_CMD_SPECTRUM"],fourBytes[0],fourBytes[1],fourBytes[2],fourBytes[3]]
         self.sendCommandToMCU(bytes(command))
-        print("started spectrum", command)
+        # print("started spectrum", command)
 
         for _ in range(count):
             self.memoryQueue.append("Spectrum_Scan")

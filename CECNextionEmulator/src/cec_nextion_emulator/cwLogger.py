@@ -14,7 +14,7 @@ class cwLogger:
     #   logCW does the work of managing the text box and rolling characters off display (FIFO)
     #
     def process_CWDecoded_Data(self, buffer):
-        print("Processing CW Decoded in window", buffer)
+        # print("Processing CW Decoded in window", buffer)
         for char in buffer:
             self.logCW_Character(char)
 
@@ -24,5 +24,5 @@ class cwLogger:
         self.textBoxObj.insert('2.end',newchar)
 
     def clearLog(self):
-        print("Clearing Log")
+        # print("Clearing Log")
         self.textBoxObj.delete('1.0', 'end')

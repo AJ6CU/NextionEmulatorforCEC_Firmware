@@ -33,7 +33,7 @@ class barPlotter:
         
         self.canvas_height = self.bandPlot_Canvas.winfo_height()
         self.canvas_width = self.bandPlot_Canvas.winfo_width()
-        print("self.canvas_height=", self.canvas_height, "self.canvas_width=", self.canvas_width)
+        # print("self.canvas_height=", self.canvas_height, "self.canvas_width=", self.canvas_width)
 
         #
         #   Following used to save object pointers to bars and lines drawn so we can just move them
@@ -82,7 +82,15 @@ class barPlotter:
         #   Can get into a race condition on turning it off where you delete the bars on canvas
         #   and there is still one more coming thru that turns them back on again
         #
+
+        # print("self.canvas_height=", self.canvas_height, "self.canvas_width=", self.canvas_width)
+
         if gv.config.get_DSP_Switch() == "True":
+            #
+            #   Update the canvas height and width - i wonder why this is necessary....
+            #
+            self.canvas_height = self.bandPlot_Canvas.winfo_height()
+            self.canvas_width = self.bandPlot_Canvas.winfo_width()
 
             self.calculatePlotParameters()              # calculate the fixed parameters of the chart
 
@@ -92,6 +100,7 @@ class barPlotter:
                     ymag = 0
                 elif (ymag > self.maxY):
                         ymag = self.maxY
+
 
                 if ymag < self.currentMin:
                     self.currentMin = ymag
@@ -158,16 +167,18 @@ class barPlotter:
             self.bandPlot_Canvas.coords(self.tuningLine2, x1, self.canvas_height, x1, 0)
             self.bandPlot_Canvas.itemconfig(self.tuningLine2, fill="red")
 
-    def clearCanvas(self):
-        print("clearCanvas")
-        self.bandPlot_Canvas.delete("bars")
-        for x in range(self.totalX):
-            self.barObj[x] = None
+    def clearCanvas(self, what="All"):
+        # print("clearCanvas")
+        if what == "All":
+            self.bandPlot_Canvas.delete("bars")
+            for x in range(self.totalX):
+                self.barObj[x] = None
 
-        if self.tuningLine1 != None:
-            self.bandPlot_Canvas.delete("tuningLing")
-            self.tuningLine1 = None
-            self.tuningLine2 = None
+        if what == "All" or what == "tuningLine":
+            if self.tuningLine1 != None:
+                self.bandPlot_Canvas.delete("tuningLine")
+                self.tuningLine1 = None
+                self.tuningLine2 = None
 
 
     def refreshCanvas(self):

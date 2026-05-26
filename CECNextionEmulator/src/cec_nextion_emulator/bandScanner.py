@@ -32,8 +32,8 @@ class bandScanner(baseui.bandScannerUI):
         self.master = master                            # pointer to the root master.Needed for scheduling "after" events
         self.mainWindow = mainWindow
 
-        self.lastFrequency = None                 # tracks the last center frequency in case it has been changed
-                                                        # between scans
+        self.startingFrequency = None                   # tracks the frequency of the radio upon entry to the scan window
+                                                        # This allows the cancel button to reset the frequency upon close
 
         self.frequencyScrolling = False                 # tracks when the scrollbar is being used to adjust frequency
                                                         # turns on when button 1 pressed, off when released
@@ -100,7 +100,7 @@ class bandScanner(baseui.bandScannerUI):
         self.frequencyTuning_VAR.set(60)                                                # Set scrollbar to middle
 
 
-        self.lastFrequency = self.mainWindow.theVFO_Object.getIntPrimaryVFO()
+        self.startingFrequency = self.mainWindow.theVFO_Object.getIntPrimaryVFO()
         #
         #   Set the defaults for scanning
         #
@@ -112,9 +112,9 @@ class bandScanner(baseui.bandScannerUI):
         #
         #   Instantiate the 3 objects to do the plotting
         #
-        self.targetGraph[0] = graphObject(self.band0, self.updateBandFrequency_CB)
-        self.targetGraph[1] = graphObject(self.band1, self.updateBandFrequency_CB)
-        self.targetGraph[2] = graphObject(self.band2, self.updateBandFrequency_CB)
+        self.targetGraph[0] = graphObject(self.band0, self.updateBandFrequency_CB, self.frequencyTuning_VAR)
+        self.targetGraph[1] = graphObject(self.band1, self.updateBandFrequency_CB, self.frequencyTuning_VAR)
+        self.targetGraph[2] = graphObject(self.band2, self.updateBandFrequency_CB, self.frequencyTuning_VAR)
 
 
         self.initUXComplete = True
@@ -129,6 +129,12 @@ class bandScanner(baseui.bandScannerUI):
     def setFrequency(self, i):
         f = gv.formatVFO(str(self.targetGraph[i].getFrequency(int(self.frequencyTuning_VAR.get()))))
         getattr(self, "band" + str(i) + "Frequency_VAR").set(str(f))
+        self.targetGraph[i].drawHighLightBars()
+
+    def getFrequency(self, i):
+        f = gv.unformatFrequency(getattr(self, "band" + i + "Frequency_VAR").get())
+        return int(f)
+
 
 
     def updateBandFrequency_CB(self, theBand):
@@ -137,16 +143,18 @@ class bandScanner(baseui.bandScannerUI):
                 self.setFrequency(i)
 
 
-    def frequencyTuningRelease_CB(self, event=None):
+
+    def frequencyTuning_CB(self, scale_value):
         for i in range(len(self.targetGraph)):
-            if self.targetGraph[i].available():
-                print("available, index=",i)
-            else:
+            if self.targetGraph[i].activated():
+                self.targetGraph[i].clearCanvas("tuningLine")
                 self.setFrequency(i)
 
 
     def bandGo_CB(self, widget_id):
-        print("bandGo_CB: widget_id=", widget_id)
+        f=self.getFrequency(widget_id.replace("band","").replace("GO_Button",""))
+        self.mainWindow.theRadio.Set_New_Frequency(f)
+
 
     #
     #   Does the work of allocating a Free graphObject
@@ -176,11 +184,12 @@ class bandScanner(baseui.bandScannerUI):
     def releaseGraphObj(self, bandID):
         for i in range(len(self.targetGraph)):
             if self.targetGraph[i].get_bandID() == bandID:
+                self.targetGraph[i].clearCanvas("All")
                 self.targetGraph[i].deactivate()
                 getattr(self, "band" + str(i) + "Frequency_VAR").set("")
-                print("before removal scanlist=", self.scanlist)
+                # print("before removal scanlist=", self.scanlist)
                 self.scanlist.remove(i)         # remove this band from scanable channels
-                print("after removal scanlist=", self.scanlist)
+                # print("after removal scanlist=", self.scanlist)
                 return True
         #
         #   If it dropped thru, tried to deactivate a bandID that was not found.
@@ -225,31 +234,64 @@ class bandScanner(baseui.bandScannerUI):
                 print("trying to release a band that is not allocated, band=", widget_id)
                 return
 
-    def processData(self,buffer):
-        self.processDataCount += 1
+    # def processData(self,buffer):
+    #     self.processDataCount += 1
+    #
+    #     if self.processDataCount == self.repeatCount:
+    #         self.displayData()
+    def updateAverage(self,buffer, valueCount):
+        byteBuffer =bytearray.fromhex(buffer)
 
-        if self.processDataCount == self.repeatCount:
-            self.displayData()
+        for x, y in enumerate(byteBuffer):
+            # if y >5:
+            #     print("larger value", x, y)
+            # if x == 12:
+            #     print("newvalue =", y)
+
+            tmp = int(round(self.averageBuffer[x] +((y-self.averageBuffer[x])/valueCount)))
+
+            if tmp > 255:
+                print("tmp too big, tmp")
+            self.averageBuffer[x] = tmp
 
     def process_Spectrum_Data(self,buffer):
-        print("processing spectrum buffer\n",buffer)
-        self.processDataCount -= 1
-        if self.processDataCount == 0:
-            # self.displayData()
-            self.scanlistIndex += 1
-            if self.scanlistIndex < len(self.scanlist):
-                self.sendNextScanRequest(self.scanlist[self.scanlistIndex])
-            else:
+        if self.spectrumScanning:
+            # print("processing spectrum buffer#",self.processDataCount,buffer)
+            self.processDataCount += 1
+            #
+            #   Average the data provided by the buffer
+            #
+            self.updateAverage(buffer, self.processDataCount)
+            # print("average buffer ", self.averageBuffer)
+            #
+            #   Check whether we have received all the buffers we were supposed to get
+            #
+            if self.processDataCount == self.repeatCount:
                 #
-                #   We have finished processing the scanlist and can go back to normal operation
+                #   Display data for the band we just completed
                 #
-                self.spectrumScanning = False
-                self.parameterStatus("normal")
+                # print("band processing complete")
+                # print(self.averageBuffer)
+
+                self.targetGraph[self.scanlist[self.scanlistIndex]].displayData(self.averageBuffer)
+                # self.targetGraph[self.scanlistIndex].process_Data(self.averageBuffer)
+
+                self.scanlistIndex += 1
+                if self.scanlistIndex < len(self.scanlist):
+                    self.sendNextScanRequest(self.scanlist[self.scanlistIndex])
+                else:
+                    #
+                    #   We have finished processing the scanlist and can go back to normal operation
+                    #
+                    self.spectrumScanning = False
+                    self.parameterStatus("normal")
 
 
 
     def sendNextScanRequest(self,i):
-        self.processDataCount = 3
+        self.processDataCount = 0
+        self.averageBuffer = bytearray(self.MaxADCCount)        # Reinitialized average buffer to all zeros
+
         self.mainWindow.theRadio.startFrequencySpectrumScan(self.targetGraph[i].getStartScanF(),
                                                            self.repeatCount)
 
@@ -262,10 +304,13 @@ class bandScanner(baseui.bandScannerUI):
     def scan_CB(self):
         self.spectrumScanning = True
         self.parameterStatus("disabled")
+
         #
         #   Find all the graphObjects that are activated
         #
         if len(self.scanlist) != 0:
+            for i in range(len(self.scanlist)):
+                self.targetGraph[self.scanlist[i]].clearCanvas()
             self.scanlistIndex = 0
             self.sendNextScanRequest(self.scanlistIndex)
 
@@ -284,6 +329,7 @@ class bandScanner(baseui.bandScannerUI):
 
         self.scan_Button.configure(state=status)
         self.close_Button.configure(state=status)
+        self.cancel_Button.configure(state=status)
 
         self.Band160m.configure(state=status)
         self.Band80m.configure(state=status)
@@ -303,8 +349,7 @@ class bandScanner(baseui.bandScannerUI):
             self.scan_Button_VAR.set("Scan")
 
 
-
-    def close_CB(self):
+    def close_CB(self, widget_id="cancel_Button"):
         #
         #   Needs to invoke a mainWindow routine instead of directly calling these attributes
         #
@@ -312,9 +357,10 @@ class bandScanner(baseui.bandScannerUI):
         self.mainWindow.consumerDSPdata = self.mainWindow
         self.mainWindow.highlightCWorSpectrumBoxes(True)
         self.mainWindow.theRadio.Set_Spectrum_Mode(95)
-        self.mainWindow.theRadio.Set_New_Frequency(self.lastFrequency)
+        if widget_id == "cancel_Button":
+            self.mainWindow.theRadio.Set_New_Frequency(self.startingFrequency)
+            # print("reseting frequency=", self.startingFrequency)
         self.mainWindow.consumerSpectrumdata = None
-        print("reseting frequency=", self.lastFrequency)
         self.destroy()
 
 

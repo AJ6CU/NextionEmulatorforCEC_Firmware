@@ -1,20 +1,27 @@
 #!/usr/bin/python3
+"""
+Band Scanner
+
+Scans up to three selected bands for signals.
+
+UI source file: bandScanner.ui
+"""
 import tkinter as tk
 import tkinter.ttk as ttk
 from bandGraph import bandGraph
 
 
-def i18n_translator_noop(value):
+def safe_i18n_translator(value):
     """i18n - Setup translator in derived class file"""
     return value
 
 
-def first_object_callback_noop(widget):
+def safe_fo_callback(widget):
     """on first objec callback - Setup callback in derived class file."""
     pass
 
 
-def image_loader_default(master, image_name: str):
+def safe_image_loader(master, image_name: str):
     """Image loader - Setup image_loader in derived class file."""
     img = None
     try:
@@ -39,12 +46,12 @@ class bandScannerUI(tk.Toplevel):
         **kw
     ):
         if translator is None:
-            translator = i18n_translator_noop
+            translator = safe_i18n_translator
         _ = translator  # i18n string marker.
         if image_loader is None:
-            image_loader = image_loader_default
+            image_loader = safe_image_loader
         if on_first_object_cb is None:
-            on_first_object_cb = first_object_callback_noop
+            on_first_object_cb = safe_fo_callback
 
         super().__init__(master, **kw)
 
@@ -95,10 +102,7 @@ class bandScannerUI(tk.Toplevel):
             padx="10 0",
             pady="15 0",
             side="top")
-        self.frequencyTuning_Scale.bind(
-            "<ButtonRelease-1>",
-            self.frequencyTuningRelease_CB,
-            add="+")
+        self.frequencyTuning_Scale.configure(command=self.frequencyTuning_CB)
         self.freqTuneFrame.grid(column=0, row=3, sticky="ew")
         self.frequencySpectrumFrame.grid(
             column=0, padx="10 0", row=0, sticky="ew")
@@ -361,16 +365,33 @@ class bandScannerUI(tk.Toplevel):
         self.close_Button = ttk.Button(self.closingFrame, name="close_button")
         self.close_Button.configure(
             style="Button2b.TButton", text='Close', width=10)
-        self.close_Button.pack(side="left")
-        self.close_Button.configure(command=self.close_CB)
-        self.closingFrame.grid(column=0, columnspan=2, pady="20 30", row=1)
+        self.close_Button.pack(padx="0 20", side="left")
+        def close_Button_cmd_(): self.close_CB("close_Button")
+
+        self.close_Button.configure(command=close_Button_cmd_)
+        self.cancel_Button = ttk.Button(
+            self.closingFrame, name="cancel_button")
+        self.cancel_Button.configure(
+            style="Button2b.TButton", text='Cancel', width=10)
+        self.cancel_Button.pack(side="left")
+        def cancel_Button_cmd_(): self.close_CB("cancel_Button")
+
+        self.cancel_Button.configure(command=cancel_Button_cmd_)
+        self.closingFrame.grid(
+            column=0,
+            columnspan=2,
+            padx="60 0",
+            pady="20 30",
+            row=1,
+            sticky="w")
         self.bandScanner_Labelframe.pack(expand=True, fill="both", side="top")
         self.bandScanner_Labelframe.rowconfigure(0, uniform=1)
         self.bandScanner_Labelframe.columnconfigure(0, weight=1)
         self.configure(height=200, width=800)
         self.title("Frequency Spectrum")
+        # Layout for 'bandScanner_Toplevel' skipped in custom widget template.
 
-    def frequencyTuningRelease_CB(self, event=None):
+    def frequencyTuning_CB(self, scale_value):
         pass
 
     def bandGo_CB(self, widget_id):
@@ -382,12 +403,11 @@ class bandScannerUI(tk.Toplevel):
     def scan_CB(self):
         pass
 
-    def close_CB(self):
+    def close_CB(self, widget_id):
         pass
 
 
 if __name__ == "__main__":
     root = tk.Tk()
     widget = bandScannerUI(root)
-    widget.pack(expand=True, fill="both")
     root.mainloop()

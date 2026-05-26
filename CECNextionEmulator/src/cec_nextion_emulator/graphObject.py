@@ -21,7 +21,7 @@ import globalvars as gv
 
 class graphObject(barPlotter):
 
-    def __init__(self, band, updateFreqField_callback,  totalX=120, maxY=70,
+    def __init__(self, band, updateFreqField_callback,  masterFreqScrollbar, totalX=120, maxY=70,
                  barColor="yellow", X_GAP=4, Y_GAP=0, currentMax=0, currentMin=0, **kw):
 
         self.band = band                # object pointer to the bandGraph associated with this GraphObject
@@ -31,6 +31,7 @@ class graphObject(barPlotter):
         self.updateFreqField_CB = updateFreqField_callback
                                         # this is a callback in bandScanner to update the Frequency
                                         # for the band.
+        self.masterFreqScrollbar = masterFreqScrollbar
         self.totalX = totalX
         self.maxY = maxY
 
@@ -187,15 +188,16 @@ class graphObject(barPlotter):
 
 
     def drawHighLightBars(self):
-        self.drawHighLightBars(int(self.frequencyTuning_VAR.get()))
+        super().drawHighLightBars(int(self.masterFreqScrollbar.get()))
 
     def displayData(self, buffer):
 
-        (super).process_Data(self, self.buffer)             # yDivider is defaulted to 0
+        # print("displayData, buffer=", buffer)
+        super().process_Data(buffer)             # yDivider is defaulted to 0
 
-        self.plotter.drawHighLightBars()
-        self.processDataCount = 0
-        self.averageBuffer = bytearray(self.totalX)
+        self.drawHighLightBars()
+        # self.processDataCount = 0
+        # self.averageBuffer = bytearray(self.totalX)
 
 
 
