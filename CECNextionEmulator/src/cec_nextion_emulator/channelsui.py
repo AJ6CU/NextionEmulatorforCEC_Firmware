@@ -9,7 +9,6 @@ UI source file: channels.ui
 import tkinter as tk
 import tkinter.ttk as ttk
 from frequencyChannel import frequencyChannel
-from pygubu.widgets.combobox import Combobox
 from pygubu.widgets.scrolledframe import ScrolledFrame
 
 
@@ -219,7 +218,9 @@ class channelsUI(ttk.Labelframe):
         self.frameSizer.pack(expand=True, fill="both", side="left")
         self.frameSizer.pack_propagate(0)
         frame2.pack(expand=True, fill="both", side="top")
-        self.channelEdit_Frame = ttk.Frame(frame1, name="channeledit_frame")
+        frame3 = ttk.Frame(frame1)
+        frame3.configure(height=200, style="Normal.TFrame", width=200)
+        self.channelEdit_Frame = ttk.Frame(frame3, name="channeledit_frame")
         self.channelEdit_Frame.configure(style="Normal.TFrame", width=200)
         self.ChannelToVFO_Button = ttk.Button(
             self.channelEdit_Frame, name="channeltovfo_button")
@@ -229,7 +230,7 @@ class channelsUI(ttk.Labelframe):
             style="Button2b.TButton",
             text='Channel->VFO',
             width=14)
-        self.ChannelToVFO_Button.grid(column=0, row=0, sticky="nw")
+        self.ChannelToVFO_Button.grid(column=0, padx="0 15", row=0)
         self.ChannelToVFO_Button.configure(command=self.ChannelToVFO_CB)
         self.VFOToChannel_Button = ttk.Button(
             self.channelEdit_Frame, name="vfotochannel_button")
@@ -238,60 +239,21 @@ class channelsUI(ttk.Labelframe):
             style="Button2b.TButton",
             text='VFO->Channel',
             width=14)
-        self.VFOToChannel_Button.grid(column=1, row=0, sticky="nw")
+        self.VFOToChannel_Button.grid(column=1, padx="0 15", row=0)
         self.VFOToChannel_Button.configure(command=self.VFOToChannel_CB)
-        frame3 = ttk.Frame(self.channelEdit_Frame)
-        frame3.configure(height=200, style="Normal.TFrame", width=200)
-        self.scan_Button = ttk.Button(frame3, name="scan_button")
+        self.scan_Button = ttk.Button(
+            self.channelEdit_Frame, name="scan_button")
         self.scan_Channel_ButtonText_VAR = tk.StringVar(value='Run Scan')
         self.scan_Button.configure(
             style="Button2b.TButton",
             text='Run Scan',
             textvariable=self.scan_Channel_ButtonText_VAR,
             width=14)
-        self.scan_Button.grid(column=0, columnspan=2, row=0)
+        self.scan_Button.grid(column=2, columnspan=2, row=0)
         self.scan_Button.configure(command=self.scan_Channel_CB)
-        self.scan_Select_Channel_Label = ttk.Label(
-            frame3, name="scan_select_channel_label")
-        self.scan_Select_Channel_Label.configure(
-            style="Heading2b.TLabel", text='Select Scan Set')
-        self.scan_Select_Channel_Label.grid(column=0, row=1)
-        self.Time_On_Freq_Label = ttk.Label(frame3, name="time_on_freq_label")
-        self.Time_On_Freq_Label.configure(
-            style="Heading2b.TLabel",
-            text='Time on Freq(sec)')
-        self.Time_On_Freq_Label.grid(column=2, row=1)
-        self.scan_Select_Combobox = Combobox(
-            frame3, name="scan_select_combobox")
-        self.scan_Select_Channel_VAR = tk.StringVar()
-        self.scan_Select_Combobox.configure(
-            justify="center",
-            keyvariable=self.scan_Select_Channel_VAR,
-            style="ComboBox2b.TCombobox",
-            values='None Scan1 Scan2 Scan3 Scan4',
-            width=8)
-        self.scan_Select_Combobox.grid(column=0, row=2)
-        self.scan_Select_Combobox.bind(
-            "<<ComboboxSelected>>",
-            self.runScan_Selection_CB,
-            add="+")
-        self.Time_On_Freq_Combobox = Combobox(
-            frame3, name="time_on_freq_combobox")
-        self.Time_On_Freq_VAR = tk.StringVar()
-        self.Time_On_Freq_Combobox.configure(
-            justify="center",
-            keyvariable=self.Time_On_Freq_VAR,
-            style="ComboBox2b.TCombobox",
-            values='1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20',
-            width=8)
-        self.Time_On_Freq_Combobox.grid(column=2, row=2)
-        self.Time_On_Freq_Combobox.bind(
-            "<<ComboboxSelected>>",
-            self.update_Time_On_Station_CB,
-            add="+")
-        frame3.grid(column=2, row=0)
-        self.channelEdit_Frame.pack(expand=True, fill="x", side="top")
-        self.closingFrame = ttk.Frame(frame1, name="closingframe")
+        self.channelEdit_Frame.pack(expand=False, pady="5 15", side="top")
+        self.channelEdit_Frame.grid_anchor("center")
+        self.closingFrame = ttk.Frame(frame3, name="closingframe")
         self.closingFrame.configure(style="Normal.TFrame")
         self.saveChannel_Button = ttk.Button(
             self.closingFrame, name="savechannel_button")
@@ -299,25 +261,109 @@ class channelsUI(ttk.Labelframe):
             state="normal",
             style="Button2b.TButton",
             text='Save Channel')
-        self.saveChannel_Button.grid(column=0, row=0)
+        self.saveChannel_Button.grid(column=0, padx="0 15", row=0)
         self.saveChannel_Button.configure(command=self.saveChannel_CB)
         self.saveAllChannels_Button = ttk.Button(
             self.closingFrame, name="saveallchannels_button")
         self.saveAllChannels_Button.configure(
             state="normal", style="Button2b.TButton", text='Save All')
-        self.saveAllChannels_Button.grid(column=1, padx="10 0", row=0)
+        self.saveAllChannels_Button.grid(column=1, padx="0 15", row=0)
         self.saveAllChannels_Button.configure(command=self.saveAllChannels_CB)
         self.refresh_Button = ttk.Button(
             self.closingFrame, name="refresh_button")
         self.refresh_Button.configure(style="Button2b.TButton", text='Refresh')
-        self.refresh_Button.grid(column=2, padx="10 0", row=0)
+        self.refresh_Button.grid(column=2, padx="0 15", row=0)
         self.refresh_Button.configure(command=self.refresh_Channel_CB)
         self.close_Button = ttk.Button(self.closingFrame, name="close_button")
         self.close_Button.configure(style="Button2b.TButton", text='Close')
-        self.close_Button.grid(column=3, padx="10 0", row=0)
+        self.close_Button.grid(column=3, row=0)
         self.close_Button.configure(command=self.close_Channel_CB)
-        self.closingFrame.pack(side="top")
+        self.closingFrame.pack(pady="30 15", side="left")
         self.closingFrame.grid_anchor("center")
+        frame3.pack(padx="75 0", side="left")
+        self.scanSettings_Frame = ttk.Frame(frame1, name="scansettings_frame")
+        self.scanSettings_Frame.configure(
+            height=200, style="NormalOutline.TFrame", width=200)
+        self.scan_Select_Channel_Label = ttk.Label(
+            self.scanSettings_Frame, name="scan_select_channel_label")
+        self.scan_Select_Channel_Label.configure(
+            style="Heading2b.TLabel", text='Select Scan Set')
+        self.scan_Select_Channel_Label.grid(
+            column=0, padx=5, pady=15, row=1, sticky="e")
+        self.scan_Select_Channel_Menubutton = ttk.Menubutton(
+            self.scanSettings_Frame, name="scan_select_channel_menubutton")
+        self.scan_Select_Channel_VAR = tk.StringVar(value='Select')
+        self.scan_Select_Channel_Menubutton.configure(
+            style="Heading1b.TMenubutton",
+            text='Select',
+            textvariable=self.scan_Select_Channel_VAR)
+        self.scan_Select_Channel_Menu = tk.Menu(
+            self.scan_Select_Channel_Menubutton,
+            name="scan_select_channel_menu")
+        self.scan_Select_Channel_Menu.configure(tearoff=False)
+
+        def None_Command_cmd(
+            itemid="None_Command"): self.selectScanSet_CB(itemid)
+        self.scan_Select_Channel_Menu.add(
+            "command",
+            command=None_Command_cmd,
+            font="{Arial} 20 {bold}",
+            label='None')
+
+        def Scan1_Command_cmd(
+            itemid="Scan1_Command"): self.selectScanSet_CB(itemid)
+        self.scan_Select_Channel_Menu.add(
+            "command",
+            command=Scan1_Command_cmd,
+            font="{Arial} 20 {}",
+            label='Scan1')
+
+        def Scan2_Command_cmd(
+            itemid="Scan2_Command"): self.selectScanSet_CB(itemid)
+        self.scan_Select_Channel_Menu.add(
+            "command",
+            command=Scan2_Command_cmd,
+            font="{Arial} 20 {bold}",
+            label='Scan2')
+
+        def Scan3_Command_cmd(
+            itemid="Scan3_Command"): self.selectScanSet_CB(itemid)
+        self.scan_Select_Channel_Menu.add(
+            "command",
+            command=Scan3_Command_cmd,
+            font="{Arial} 20 {bold}",
+            label='Scan3')
+        def Scan4_Command_cmd(
+            itemid="Scan4_Command"): self.selectScanSet_CB(itemid)
+        self.scan_Select_Channel_Menu.add(
+            "command",
+            command=Scan4_Command_cmd,
+            font="{Arial} 20 {bold}",
+            label='Scn4')
+        self.scan_Select_Channel_Menubutton.configure(
+            menu=self.scan_Select_Channel_Menu)
+        self.scan_Select_Channel_Menubutton.grid(column=1, row=1)
+        self.Time_On_Freq_Label = ttk.Label(
+            self.scanSettings_Frame, name="time_on_freq_label")
+        self.Time_On_Freq_Label.configure(
+            style="Heading2b.TLabel",
+            text='Time on Freq(sec)')
+        self.Time_On_Freq_Label.grid(
+            column=0, padx="5 0", pady="10 0", row=2, sticky="e")
+        self.Time_On_Freq_Spinbox = ttk.Spinbox(
+            self.scanSettings_Frame, name="time_on_freq_spinbox")
+        self.Time_On_Freq_VAR = tk.StringVar()
+        self.Time_On_Freq_Spinbox.configure(
+            font="{Arial} 36 {}",
+            from_=1,
+            justify="right",
+            style="Custom.TSpinbox",
+            textvariable=self.Time_On_Freq_VAR,
+            to=20,
+            width=2)
+        self.Time_On_Freq_Spinbox.grid(
+            column=1, padx="15 5", pady="40 20", row=2, sticky="w")
+        self.scanSettings_Frame.pack(padx=5, pady="5 10", side="right")
         frame1.pack(expand=True, fill="both", side="top")
         self.configure(
             height=600,
@@ -334,12 +380,6 @@ class channelsUI(ttk.Labelframe):
     def scan_Channel_CB(self):
         pass
 
-    def runScan_Selection_CB(self, event=None):
-        pass
-
-    def update_Time_On_Station_CB(self, event=None):
-        pass
-
     def saveChannel_CB(self):
         pass
 
@@ -350,6 +390,9 @@ class channelsUI(ttk.Labelframe):
         pass
 
     def close_Channel_CB(self):
+        pass
+
+    def selectScanSet_CB(self, itemid):
         pass
 
 

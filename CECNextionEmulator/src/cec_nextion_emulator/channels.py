@@ -109,8 +109,8 @@ class channels(baseui.channelsUI):
         # self.popup.grab_set()         # dont want as we can allow other things to click while using channels
         self.popup.transient(self.mainWindow)
 
-        gv.formatCombobox(self.scan_Select_Combobox, "Arial", "14", "bold")
-        gv.formatCombobox(self.Time_On_Freq_Combobox, "Arial", "14", "bold")
+        # gv.formatCombobox(self.scan_Select_Combobox, "Arial", "14", "bold")
+        # gv.formatCombobox(self.Time_On_Freq_Combobox, "Arial", "14", "bold")
 
         self.pack(expand=tk.YES, fill=tk.BOTH)
         gv.trimAndLocateWindow(self.popup, 0, 0)

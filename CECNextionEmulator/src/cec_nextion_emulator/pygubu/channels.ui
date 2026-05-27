@@ -423,52 +423,55 @@ Set</property>
               </object>
             </child>
             <child>
-              <object class="ttk.Frame" id="channelEdit_Frame" named="True">
+              <object class="ttk.Frame" id="frame3">
+                <property name="height">200</property>
                 <property name="style">Normal.TFrame</property>
                 <property name="width">200</property>
                 <layout manager="pack">
-                  <property name="expand">true</property>
-                  <property name="fill">x</property>
-                  <property name="side">top</property>
+                  <property name="padx">75 0</property>
+                  <property name="side">left</property>
                 </layout>
                 <child>
-                  <object class="ttk.Button" id="ChannelToVFO_Button" named="True">
-                    <property name="command" type="command" cbtype="simple">ChannelToVFO_CB</property>
-                    <property name="compound">none</property>
-                    <property name="state">normal</property>
-                    <property name="style">Button2b.TButton</property>
-                    <property name="text" translatable="yes">Channel-&gt;VFO</property>
-                    <property name="width">14</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="row">0</property>
-                      <property name="sticky">nw</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="VFOToChannel_Button" named="True">
-                    <property name="command" type="command" cbtype="simple">VFOToChannel_CB</property>
-                    <property name="state">normal</property>
-                    <property name="style">Button2b.TButton</property>
-                    <property name="text" translatable="yes">VFO-&gt;Channel</property>
-                    <property name="width">14</property>
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="row">0</property>
-                      <property name="sticky">nw</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Frame" id="frame3">
-                    <property name="height">200</property>
+                  <object class="ttk.Frame" id="channelEdit_Frame" named="True">
                     <property name="style">Normal.TFrame</property>
                     <property name="width">200</property>
-                    <layout manager="grid">
-                      <property name="column">2</property>
-                      <property name="row">0</property>
+                    <layout manager="pack">
+                      <property name="expand">false</property>
+                      <property name="pady">5 15</property>
+                      <property name="side">top</property>
                     </layout>
+                    <containerlayout manager="grid">
+                      <property name="anchor">center</property>
+                    </containerlayout>
+                    <child>
+                      <object class="ttk.Button" id="ChannelToVFO_Button" named="True">
+                        <property name="command" type="command" cbtype="simple">ChannelToVFO_CB</property>
+                        <property name="compound">none</property>
+                        <property name="state">normal</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">Channel-&gt;VFO</property>
+                        <property name="width">14</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="padx">0 15</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="VFOToChannel_Button" named="True">
+                        <property name="command" type="command" cbtype="simple">VFOToChannel_CB</property>
+                        <property name="state">normal</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">VFO-&gt;Channel</property>
+                        <property name="width">14</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="padx">0 15</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
                     <child>
                       <object class="ttk.Button" id="scan_Button" named="True">
                         <property name="command" type="command" cbtype="simple">scan_Channel_CB</property>
@@ -477,57 +480,70 @@ Set</property>
                         <property name="textvariable">string:scan_Channel_ButtonText_VAR</property>
                         <property name="width">14</property>
                         <layout manager="grid">
-                          <property name="column">0</property>
+                          <property name="column">2</property>
                           <property name="columnspan">2</property>
                           <property name="row">0</property>
                         </layout>
                       </object>
                     </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Frame" id="closingFrame" named="True">
+                    <property name="style">Normal.TFrame</property>
+                    <layout manager="pack">
+                      <property name="pady">30 15</property>
+                      <property name="side">left</property>
+                    </layout>
+                    <containerlayout manager="grid">
+                      <property name="anchor">center</property>
+                    </containerlayout>
                     <child>
-                      <object class="ttk.Label" id="scan_Select_Channel_Label" named="True">
-                        <property name="style">Heading2b.TLabel</property>
-                        <property name="text" translatable="yes">Select Scan Set</property>
+                      <object class="ttk.Button" id="saveChannel_Button" named="True">
+                        <property name="command" type="command" cbtype="simple">saveChannel_CB</property>
+                        <property name="state">normal</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">Save Channel</property>
                         <layout manager="grid">
                           <property name="column">0</property>
-                          <property name="row">1</property>
+                          <property name="padx">0 15</property>
+                          <property name="row">0</property>
                         </layout>
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Label" id="Time_On_Freq_Label" named="True">
-                        <property name="style">Heading2b.TLabel</property>
-                        <property name="text" translatable="yes">Time on Freq(sec)</property>
+                      <object class="ttk.Button" id="saveAllChannels_Button" named="True">
+                        <property name="command" type="command" cbtype="simple">saveAllChannels_CB</property>
+                        <property name="state">normal</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">Save All</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="padx">0 15</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="refresh_Button" named="True">
+                        <property name="command" type="command" cbtype="simple">refresh_Channel_CB</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">Refresh</property>
                         <layout manager="grid">
                           <property name="column">2</property>
-                          <property name="row">1</property>
+                          <property name="padx">0 15</property>
+                          <property name="row">0</property>
                         </layout>
                       </object>
                     </child>
                     <child>
-                      <object class="pygubu.widgets.Combobox" id="scan_Select_Combobox" named="True">
-                        <property name="justify">center</property>
-                        <property name="keyvariable">string:scan_Select_Channel_VAR</property>
-                        <property name="style">ComboBox2b.TCombobox</property>
-                        <property name="values">None Scan1 Scan2 Scan3 Scan4</property>
-                        <property name="width">8</property>
-                        <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="runScan_Selection_CB" add="True" />
+                      <object class="ttk.Button" id="close_Button" named="True">
+                        <property name="command" type="command" cbtype="simple">close_Channel_CB</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">Close</property>
                         <layout manager="grid">
-                          <property name="column">0</property>
-                          <property name="row">2</property>
-                        </layout>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="pygubu.widgets.Combobox" id="Time_On_Freq_Combobox" named="True">
-                        <property name="justify">center</property>
-                        <property name="keyvariable">string:Time_On_Freq_VAR</property>
-                        <property name="style">ComboBox2b.TCombobox</property>
-                        <property name="values">1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20</property>
-                        <property name="width">8</property>
-                        <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="update_Time_On_Station_CB" add="True" />
-                        <layout manager="grid">
-                          <property name="column">2</property>
-                          <property name="row">2</property>
+                          <property name="column">3</property>
+                          <property name="row">0</property>
                         </layout>
                       </object>
                     </child>
@@ -536,60 +552,107 @@ Set</property>
               </object>
             </child>
             <child>
-              <object class="ttk.Frame" id="closingFrame" named="True">
-                <property name="style">Normal.TFrame</property>
+              <object class="ttk.Frame" id="scanSettings_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">NormalOutline.TFrame</property>
+                <property name="width">200</property>
                 <layout manager="pack">
-                  <property name="side">top</property>
+                  <property name="padx">5</property>
+                  <property name="pady">5 10</property>
+                  <property name="side">right</property>
                 </layout>
-                <containerlayout manager="grid">
-                  <property name="anchor">center</property>
-                </containerlayout>
                 <child>
-                  <object class="ttk.Button" id="saveChannel_Button" named="True">
-                    <property name="command" type="command" cbtype="simple">saveChannel_CB</property>
-                    <property name="state">normal</property>
-                    <property name="style">Button2b.TButton</property>
-                    <property name="text" translatable="yes">Save Channel</property>
+                  <object class="ttk.Label" id="scan_Select_Channel_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">Select Scan Set</property>
                     <layout manager="grid">
                       <property name="column">0</property>
-                      <property name="row">0</property>
+                      <property name="padx">5</property>
+                      <property name="pady">15</property>
+                      <property name="row">1</property>
+                      <property name="sticky">e</property>
                     </layout>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Button" id="saveAllChannels_Button" named="True">
-                    <property name="command" type="command" cbtype="simple">saveAllChannels_CB</property>
-                    <property name="state">normal</property>
-                    <property name="style">Button2b.TButton</property>
-                    <property name="text" translatable="yes">Save All</property>
+                  <object class="ttk.Menubutton" id="scan_Select_Channel_Menubutton" named="True">
+                    <property name="style">Heading1b.TMenubutton</property>
+                    <property name="text" translatable="yes">Select</property>
+                    <property name="textvariable">string:scan_Select_Channel_VAR</property>
                     <layout manager="grid">
                       <property name="column">1</property>
-                      <property name="padx">10 0</property>
-                      <property name="row">0</property>
+                      <property name="row">1</property>
+                    </layout>
+                    <child>
+                      <object class="tk.Menu" id="scan_Select_Channel_Menu" named="True">
+                        <property name="tearoff">false</property>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="None_Command" named="True">
+                            <property name="command" type="command" cbtype="with_wid">selectScanSet_CB</property>
+                            <property name="font">{Arial} 20 {bold}</property>
+                            <property name="label" translatable="yes">None</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="Scan1_Command" named="True">
+                            <property name="command" type="command" cbtype="with_wid">selectScanSet_CB</property>
+                            <property name="font">{Arial} 20 {}</property>
+                            <property name="label" translatable="yes">Scan1</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="Scan2_Command" named="True">
+                            <property name="command" type="command" cbtype="with_wid">selectScanSet_CB</property>
+                            <property name="font">{Arial} 20 {bold}</property>
+                            <property name="label" translatable="yes">Scan2</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="Scan3_Command" named="True">
+                            <property name="command" type="command" cbtype="with_wid">selectScanSet_CB</property>
+                            <property name="font">{Arial} 20 {bold}</property>
+                            <property name="label" translatable="yes">Scan3</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="Scan4_Command" named="True">
+                            <property name="command" type="command" cbtype="with_wid">selectScanSet_CB</property>
+                            <property name="font">{Arial} 20 {bold}</property>
+                            <property name="label" translatable="yes">Scn4</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="Time_On_Freq_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">Time on Freq(sec)</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="padx">5 0</property>
+                      <property name="pady">10 0</property>
+                      <property name="row">2</property>
+                      <property name="sticky">e</property>
                     </layout>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Button" id="refresh_Button" named="True">
-                    <property name="command" type="command" cbtype="simple">refresh_Channel_CB</property>
-                    <property name="style">Button2b.TButton</property>
-                    <property name="text" translatable="yes">Refresh</property>
+                  <object class="ttk.Spinbox" id="Time_On_Freq_Spinbox" named="True">
+                    <property name="font">{Arial} 36 {}</property>
+                    <property name="from_">1</property>
+                    <property name="justify">right</property>
+                    <property name="style">Custom.TSpinbox</property>
+                    <property name="textvariable">string:Time_On_Freq_VAR</property>
+                    <property name="to">20</property>
+                    <property name="width">2</property>
                     <layout manager="grid">
-                      <property name="column">2</property>
-                      <property name="padx">10 0</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="close_Button" named="True">
-                    <property name="command" type="command" cbtype="simple">close_Channel_CB</property>
-                    <property name="style">Button2b.TButton</property>
-                    <property name="text" translatable="yes">Close</property>
-                    <layout manager="grid">
-                      <property name="column">3</property>
-                      <property name="padx">10 0</property>
-                      <property name="row">0</property>
+                      <property name="column">1</property>
+                      <property name="padx">15 5</property>
+                      <property name="pady">40 20</property>
+                      <property name="row">2</property>
+                      <property name="sticky">w</property>
                     </layout>
                   </object>
                 </child>
