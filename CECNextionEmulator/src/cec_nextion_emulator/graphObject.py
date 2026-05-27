@@ -21,7 +21,7 @@ import globalvars as gv
 
 class graphObject(barPlotter):
 
-    def __init__(self, band, updateFreqField_callback,  masterFreqScrollbar, totalX=120, maxY=70,
+    def __init__(self, band, updateFreqField_callback,  windowResized_callback, masterFreqScrollbar, totalX=120, maxY=70,
                  barColor="yellow", X_GAP=4, Y_GAP=0, currentMax=0, currentMin=0, **kw):
 
         self.band = band                # object pointer to the bandGraph associated with this GraphObject
@@ -31,6 +31,8 @@ class graphObject(barPlotter):
         self.updateFreqField_CB = updateFreqField_callback
                                         # this is a callback in bandScanner to update the Frequency
                                         # for the band.
+        self.windowResized_CB = windowResized_callback
+
         self.masterFreqScrollbar = masterFreqScrollbar
         self.totalX = totalX
         self.maxY = maxY
@@ -63,6 +65,7 @@ class graphObject(barPlotter):
                                                                 # within the bandGraph. When the scrollbar is
                                                                 # moved, this routine is called to adjust the scanning
                                                                 # range for this band
+        self.band.attachWindowResized_CB(self.windowResized_CB)
     #
     #   Activates a graphObject when a band is assigned to a particular Ham band
     #

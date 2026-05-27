@@ -32,9 +32,15 @@ class bandGraph(baseui.bandGraphUI):
         self.scrollbar_CB = scrollbar_callback
         # self.currentFrequency_CB = currentFrequency_callback
 
+    def attachWindowResized_CB( self, windowResized_callback):
+       self.windowResized_CB = windowResized_callback
+
     def bandStart_CB(self, scale_value):
         self.scrollbar_CB(scale_value )
         # self.currentFrequency_CB()
+
+    def resizeCanvas_CB(self, event=None):
+        self.windowResized_CB()
 
 
 
