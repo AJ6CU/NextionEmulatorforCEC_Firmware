@@ -89,7 +89,8 @@ class bandScanner(baseui.bandScannerUI):
 
     def initUX(self):
         # self.title("Frequency Spectrum")
-        self.geometry("825x675")
+        # self.geometry("825x675")
+        self.geometry(gv.POPUP_WINDOW_OFFSET)
 
         self.wait_visibility()  # required on Linux
         self.grab_set()

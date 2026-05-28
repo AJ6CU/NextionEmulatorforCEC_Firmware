@@ -56,13 +56,13 @@ class settingsGeneral(baseui.settingsGeneralUI):
 
     def initUX(self):
         self.popup.title("General Settings")
+        self.popup.geometry(gv.POPUP_WINDOW_OFFSET)
 
         self.popup.wait_visibility()  # required on Linux
         self.popup.grab_set()
         self.popup.transient(self.mainWindow)
 
         self.pack(expand=tk.YES, fill=tk.BOTH)
-        gv.trimAndLocateWindow(self.popup, 0, 0)
 
 
     def selectCommaDelimiter_CB(self):

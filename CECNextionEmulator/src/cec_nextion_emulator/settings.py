@@ -7,7 +7,6 @@ from cwSettings import cwSettings
 from settingsMachine import settingsMachine
 from settingsGeneral import settingsGeneral
 from settingsBackup import settingsBackup
-from settingsFactoryReset import settingsFatoryResetToplevel
 from tkinter import messagebox
 import globalvars as gv
 
@@ -59,14 +58,16 @@ class settings(baseui.settingsUI):
 
     def initUX(self):
         self.popup.title("PiCEC Software Settings")
-        self.popup.geometry("600x425")
+
+        # self.popup.geometry("600x425")
         self.popup.wait_visibility()  # required on Linux
         self.popup.grab_set()
         self.popup.transient(self.mainWindow)
         # self.mainWindow.wait_window(self.popup)
 
+        self.popup.geometry(gv.POPUP_WINDOW_OFFSET)
         self.pack(expand=tk.YES, fill=tk.BOTH)
-        gv.trimAndLocateWindow(self.popup, 0, 0)
+        # gv.trimAndLocateWindow(self.popup, 0, 0)
 
     #
     #   The following are the callbacks for the various buttons in the Settings Dialog

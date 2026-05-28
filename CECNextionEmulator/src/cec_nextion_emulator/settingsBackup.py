@@ -84,13 +84,12 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def initUX(self):
         self.popup.title("Backup Key Radio Settings")
-        # self.popup.geometry("850x675")
+        self.popup.geometry(gv.POPUP_WINDOW_OFFSET)
         self.popup.wait_visibility()  # required on Linux
         self.popup.grab_set()
         self.popup.transient(self.mainWindow)
 
         self.pack(expand=tk.YES, fill=tk.BOTH)
-        gv.trimAndLocateWindow(self.popup, 0, 0)
 
 
     #

@@ -122,6 +122,7 @@ class settingsUI(ttk.Labelframe):
             expand=True,
             fill="both",
             padx=20,
+            pady=15,
             side="top")
         self.configure(
             height=200,

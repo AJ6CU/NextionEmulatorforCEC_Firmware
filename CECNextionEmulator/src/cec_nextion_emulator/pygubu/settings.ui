@@ -158,6 +158,7 @@
               <property name="expand">true</property>
               <property name="fill">both</property>
               <property name="padx">20</property>
+              <property name="pady">15</property>
               <property name="side">top</property>
             </layout>
             <child>

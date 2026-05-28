@@ -8,12 +8,12 @@ default_config_data = {
     "Callsign": "",
     "DSP": "False",
     "MCU Command Headroom": 0.09,
-    "MCU Read Wait Period": 0.02,
+    "MCU Read Wait Period": 0.04,
     "MCU Update Period": 250,
     "Master Cal": "",
     "NUMBER DELIMITER": ".",
     "SSB BFO": "",
-    "Scan On Station Time": 1000,
+    "Scan On Station Time": 5000,
     "Scan Set Settings": [
         [
             0,

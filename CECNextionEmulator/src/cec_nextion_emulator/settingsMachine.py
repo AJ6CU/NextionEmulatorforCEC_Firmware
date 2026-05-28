@@ -54,13 +54,13 @@ class settingsMachine(baseui.settingsMachineUI):
 
     def initUX(self):
         self.popup.title("Machine Settings - Advanced Usage Only")
+        self.popup.geometry(gv.POPUP_WINDOW_OFFSET)
 
         self.popup.wait_visibility()  # required on Linux
         self.popup.grab_set()
         self.popup.transient(self.mainWindow)
 
         self.pack(expand=tk.YES, fill=tk.BOTH)
-        gv.trimAndLocateWindow(self.popup, 0, 0)
 
     def selectDSP_On_CB(self):
         self.DSP_Enable_VAR.set('True')

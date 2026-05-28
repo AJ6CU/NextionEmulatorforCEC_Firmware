@@ -59,7 +59,9 @@ def startMainWindow(radioPortName, radioPortHandle):
 #
 root = tk.Tk()
 
-root.geometry("900x875+5+30")           # necessary because latest Tixie put new windows in center
+root.geometry(gv.MAIN_WINDOW_OFFSET)
+
+
 root.title("CECNextionEmulator - A Nextion Emulator for CEC Firmware running on the uBITX")
 root.protocol("WM_DELETE_WINDOW", lambda: root.destroy())
 
@@ -79,8 +81,7 @@ if not radioPort.getRadioPort():
     #
     radioPort.pack()
 
-
-    root.geometry(gv.trimAndLocateWindow(radioPort, 5, 30))
+    root.geometry(gv.POPUP_WINDOW_OFFSET)
 
     root.after(100, radioPort.retry())           # If we failed to get a comport the easy way, try again
 

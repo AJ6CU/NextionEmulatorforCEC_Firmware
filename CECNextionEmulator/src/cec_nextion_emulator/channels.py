@@ -106,7 +106,7 @@ class channels(baseui.channelsUI):
         #   This places the popup a little down and over from o,o. This special treatment is needed becase of the height of
         #   the channel window
         #
-        self.popup.geometry("+200+100")
+        self.popup.geometry(gv.POPUP_WINDOW_OFFSET)
         self.popup.title("Frequency Channels")
 
         self.popup.wait_visibility()  # required on Linux

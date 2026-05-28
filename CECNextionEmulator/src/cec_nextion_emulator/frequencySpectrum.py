@@ -83,13 +83,11 @@ class frequencySpectrum(baseui.frequencySpectrumUI):
 
     def initUX(self):
         # self.title("Frequency Spectrum")
-        # self.geometry("800x600")
+        self.geometry(gv.POPUP_WINDOW_OFFSET)
 
         self.wait_visibility()  # required on Linux
         self.grab_set()
         self.transient(self.master)
-
-        # gv.trimAndLocateWindow(self.master, 0, 0)     # causes annoying resizing on initialization of window
 
         self.repeat_VAR.set('10')                       # defaults to run the scan 10 times
 

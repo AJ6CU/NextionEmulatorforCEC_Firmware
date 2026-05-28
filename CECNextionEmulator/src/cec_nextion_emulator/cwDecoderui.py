@@ -268,8 +268,6 @@ class cwDecoderUI(tk.Toplevel):
         self.closingFrame.pack(expand=True, fill="x", ipady=20)
         self.closingFrame.grid_anchor("center")
         self.cwDecoder_Labelframe.pack(expand=True, fill="both", side="top")
-        self.configure(height=200, width=800)
-        self.geometry("600x430")
         self.title("CW Decode")
         # Layout for 'cwDecoder_Window' skipped in custom widget template.
 

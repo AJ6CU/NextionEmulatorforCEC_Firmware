@@ -47,13 +47,12 @@ class cwDecoder(baseui.cwDecoderUI):
 
     def initUX(self):
         self.title("CW Decode")
-        self.geometry("625x430")
-        self.minsize(600,500)
+        self.geometry(gv.POPUP_WINDOW_OFFSET)
         self.wait_visibility()  # required on Linux
         self.grab_set()
         self.transient(self.master)
 
-        gv.trimAndLocateWindow(self.master, 0, 0)
+        # gv.trimAndLocateWindow(self.master, 0, 0)
 
 
         #
