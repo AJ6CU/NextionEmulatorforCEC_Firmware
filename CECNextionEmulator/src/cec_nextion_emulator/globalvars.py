@@ -26,7 +26,6 @@ MAIN_WINDOW_OFFSET = "+5+30"
 POPUP_WINDOW_OFFSET = "+50+50"
 VNUMERICKEYBOARD_OFFSET = "+550+160"
 VALPHAKEYBOARD_OFFSET = "+375+160"
-
 RELOADICON = "reloadicon.png"
 BAUD = 57600     #9600
 NUMBER_DELIMITER = ""               # Loaded with value from configuration file
@@ -131,7 +130,7 @@ def formatCombobox( combobox, family="Arial", size="36", weight="bold"):
     #   grab (create a new one or get existing) popdown
     # popdown = combobox.tk.eval('ttk::combobox::PopdownWindow %s' % combobox)
     # #   configure popdown font
-    # combobox.tk.call('%s.f.l' % popdown, 'configure', '-font', combobox['font'])
+    # combobox.tk.call('%s.f.l' % popdown, 'co        self.popup.geometry(gv.POPUP_WINDOW_OFFSET)nfigure', '-font', combobox['font'])
 
 def validateNumber(value, lowbound, highbound, name, parent):
     if str(value) == "":
