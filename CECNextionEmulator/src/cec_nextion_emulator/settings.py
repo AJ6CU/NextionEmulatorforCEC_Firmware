@@ -58,6 +58,7 @@ class settings(baseui.settingsUI):
 
     def initUX(self):
         self.popup.title("PiCEC Software Settings")
+        self.popup.geometry(gv.POPUP_WINDOW_OFFSET)
 
         # self.popup.geometry("600x425")
         self.popup.wait_visibility()  # required on Linux
@@ -65,7 +66,7 @@ class settings(baseui.settingsUI):
         self.popup.transient(self.mainWindow)
         # self.mainWindow.wait_window(self.popup)
 
-        self.popup.geometry(gv.POPUP_WINDOW_OFFSET)
+
         self.pack(expand=tk.YES, fill=tk.BOTH)
         # gv.trimAndLocateWindow(self.popup, 0, 0)
 
