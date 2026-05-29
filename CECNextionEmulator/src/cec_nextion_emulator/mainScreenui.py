@@ -242,29 +242,60 @@ class mainScreenUI(ttk.Frame):
             self.control_Meter_Tuning_Frame,
             name="smeter_frame")
         self.sMeter_Frame.configure(
-            height=200, style="Normal.TFrame", width=200)
-        label7 = ttk.Label(self.sMeter_Frame)
+            height=70, style="Normal.TFrame", width=525)
+        self.meter_Frame = ttk.Frame(self.sMeter_Frame, name="meter_frame")
+        self.meter_Frame.configure(height=60, style="Normal.TFrame", width=425)
+        label7 = ttk.Label(self.meter_Frame)
         label7.configure(
-            font="{Arial} 14 {bold}",
-            style="Heading2b.TLabel",
+            style="Heading3b.TLabel",
             text=' ...................5................7..............8..........9........')
-        label7.grid(column=1, row=0, sticky="ew")
-        self.s_meter_Label = ttk.Label(self.sMeter_Frame, name="s_meter_label")
-        self.s_meter_Label.configure(style="Heading2b.TLabel", text='S Meter')
+        label7.grid(column=1, row=0)
+        self.s_meter_Label = ttk.Label(self.meter_Frame, name="s_meter_label")
+        self.s_meter_Label.configure(style="Heading2b.TLabel", text='S/PO')
         self.s_meter_Label.grid(column=0, padx="0 10", row=1, sticky="w")
         self.s_meter_Progressbar = ttk.Progressbar(
-            self.sMeter_Frame, name="s_meter_progressbar")
+            self.meter_Frame, name="s_meter_progressbar")
         self.s_meter_Progressbar_VAR = tk.StringVar(value='0')
         self.s_meter_Progressbar.configure(
-            length=300,
+            length=335,
             maximum=10,
             mode="determinate",
             orient="horizontal",
             style="Striped.Horizontal.TProgressbar",
             value=0,
             variable=self.s_meter_Progressbar_VAR)
-        self.s_meter_Progressbar.grid(column=1, row=1, sticky="w")
+        self.s_meter_Progressbar.grid(column=1, padx="5 0", row=1, sticky="w")
+        self.meter_Frame.grid(column=0, row=0)
+        self.meter_Frame.grid_propagate(0)
+        self.SWR_PWR_Frame = ttk.Frame(self.sMeter_Frame, name="swr_pwr_frame")
+        self.SWR_PWR_Frame.configure(
+            height=60, style="NormalOutline.TFrame", width=95)
+        self.SWR_Label = ttk.Label(self.SWR_PWR_Frame, name="swr_label")
+        self.SWR_Label.configure(style="Heading3b.TLabel", text='SWR:')
+        self.SWR_Label.grid(column=0, padx="5 0", pady=5, row=0)
+        self.SWR_Value = ttk.Label(self.SWR_PWR_Frame, name="swr_value")
+        self.SWR_Value_VAR = tk.StringVar()
+        self.SWR_Value.configure(
+            anchor="e",
+            style="Heading4b.TLabel",
+            textvariable=self.SWR_Value_VAR,
+            width=4)
+        self.SWR_Value.grid(column=1, padx="0 5", row=0, sticky="e")
+        self.PWR_Label = ttk.Label(self.SWR_PWR_Frame, name="pwr_label")
+        self.PWR_Label.configure(style="Heading3b.TLabel", text='PWR:')
+        self.PWR_Label.grid(column=0, padx="5 0", pady="0 5", row=1)
+        self.PWR_Value = ttk.Label(self.SWR_PWR_Frame, name="pwr_value")
+        self.PWR_Value_VAR = tk.StringVar()
+        self.PWR_Value.configure(
+            anchor="e",
+            style="Heading4b.TLabel",
+            textvariable=self.PWR_Value_VAR,
+            width=4)
+        self.PWR_Value.grid(column=1, padx="0 5", row=1, sticky="e")
+        self.SWR_PWR_Frame.grid(column=1, row=0, rowspan=2, sticky="se")
+        self.SWR_PWR_Frame.grid_propagate(0)
         self.sMeter_Frame.grid(column=0, padx="20 0", row=1, sticky="w")
+        self.sMeter_Frame.grid_propagate(0)
         self.cwDecodeFrame = ttk.Frame(
             self.control_Meter_Tuning_Frame,
             name="cwdecodeframe")

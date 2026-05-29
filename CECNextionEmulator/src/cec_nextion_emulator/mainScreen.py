@@ -110,6 +110,8 @@ class mainScreen(baseui.mainScreenUI):
         gv.config.register_observer("VFO Touch Optimized", self.switchVFO_Tuning_Optimization)
         self.baselineJogValue = 0
 
+        self.lastPWRSWR_Reading = None              # tracks what was the last PWR/SWR reading received
+
 
 
 
@@ -183,6 +185,7 @@ class mainScreen(baseui.mainScreenUI):
         self.master.geometry(str(self.winfo_width()) + "x" + str(self.winfo_height()) + gv.MAIN_WINDOW_OFFSET)
 
         self.master.protocol("WM_DELETE_WINDOW", lambda: self.close_MainWindow())
+        self.SWR_PWR_Frame.grid_remove()
         self.mainScreenPlotter = barPlotterBdata(self, self.spectrumCanvas, 63, 70)
         self.mainScreenCW_logger = cwLogger(self, self.decodedCWText, 100)
         self.consumerDSPdata.request_DSP_EEPROM_Data()          # Request data. If we get some, then DSP will be marked as exists
@@ -656,10 +659,19 @@ class mainScreen(baseui.mainScreenUI):
             print("another weird malformed command, buffer =", buffer)
     #
     #   This command provides Nextion with the Power and SWR levels
+    #   PWR is sent first, followed by the SWR second
     #
     def vm_UX_PW_SWR_Level(self, buffer):
-        value = self.extractValue(buffer, 6, len(buffer) - 3)
-        print("pwr/swr:", value)
+        value = self.extractValue(buffer, 10, len(buffer) - 3)
+        adjustedValue = str(round(int(value)/100,1))
+
+        if self.lastPWRSWR_Reading == None or self.lastPWRSWR_Reading == "SWR":
+            self.lastPWRSWR_Reading = "PWR"
+            self.PWR_Value_VAR.set(adjustedValue)
+        else:
+            self.lastPWRSWR_Reading = "SWR"
+            self.SWR_Value_VAR.set(adjustedValue)
+
 
     def vv_UX_Command_Data(self, buffer):
 
@@ -800,14 +812,23 @@ class mainScreen(baseui.mainScreenUI):
         #
         # Request DSP data stored in EEPROM
         self.theRadio.Req_DSP_EEPROM_Settings()
-
+    #
+    #   Indicates a switching of RX/TX mode. 1=TX, 0=RX
+    #
     def ct_UX_RX_TX_Mode(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        print("ct get called:", "buffer =", buffer)
         if value == "1":  #going into transmit mode
             self.theVFO_Object.setTXButtonState()
+            self.SWR_PWR_Frame.grid()
+
         else:
             self.theVFO_Object.setRXButtonState()
+            #
+            #   the self.master.state('normal') is a little magic that is needed on macos to make sure the
+            #   frame really disappears
+            #
+            self.master.after(2000, lambda: [self.SWR_PWR_Frame.grid_remove(), self.master.state('normal')])
+
 
 
     #
