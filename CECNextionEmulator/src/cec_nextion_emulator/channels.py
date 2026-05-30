@@ -6,6 +6,7 @@ from tkinter import messagebox
 from configuration import configuration
 import globalvars as gv
 import EEPROM as EEPROM
+from delayWarning import delayWarning
 
 #
 # Manual user code
@@ -28,6 +29,16 @@ class channels(baseui.channelsUI):
 
         self.channelSlotCount = 0           #initialize instance variables to process channels
         self.channelSlotSelection = None
+        #
+        #   This pops up a warning dialog that this operation could take several seconds
+        #
+        self.delayDialog = tk.Toplevel(self.master)
+        self.channelDelayWarning=delayWarning(self.delayDialog)
+        self.channelDelayWarning.warningLabel_VAR.set("Loading Channels from EEPROM...\n\nThis could take several seconds...")
+
+        self.delayDialog.wait_visibility()  # required on Linux
+
+        self.delayDialog.transient(self.mainWindow)
 
 
         self.popup = tk.Toplevel(self.master)           # Create a top level window to contain the channel window
@@ -100,7 +111,10 @@ class channels(baseui.channelsUI):
         self.mainWindow.theRadio.Req_Channel_Freqs()
         self.mainWindow.theRadio.Req_Channel_Labels()
         self.mainWindow.theRadio.Req_Channel_Show_Labels()
-
+        #
+        #   Since we are about to display the channel window, we can get rid of the warning dialog
+        #
+        self.delayDialog.destroy()
 #
         #
         #   This places the popup a little down and over from o,o. This special treatment is needed becase of the height of

@@ -5,6 +5,7 @@ import tkinter.ttk as ttk
 
 import settingsBackupui as baseui
 from configuration import configuration
+from delayWarning import delayWarning
 import globalvars as gv
 from time import sleep
 
@@ -23,6 +24,17 @@ class settingsBackup(baseui.settingsBackupUI):
 
         self.master= master
         self.mainWindow = mainWindow
+
+        #
+        #   This pops up a warning dialog that this operation could take several seconds
+        #
+        self.delayDialog = tk.Toplevel(self.master)
+        self.channelDelayWarning=delayWarning(self.delayDialog)
+        self.channelDelayWarning.warningLabel_VAR.set("Loading Radio Settings from EEPROM...\n\nThis could take a couple seconds...")
+
+        self.delayDialog.wait_visibility()  # required on Linux
+
+        self.delayDialog.transient(self.mainWindow)
 
         #
         #   Create a toplevel window to contain the settings popup
@@ -83,6 +95,11 @@ class settingsBackup(baseui.settingsBackupUI):
         self.initUX()
 
     def initUX(self):
+        #
+        #   Since we are about to display the channel window, we can get rid of the warning dialog
+        #
+        self.delayDialog.destroy()
+
         self.popup.title("Backup Key Radio Settings")
         self.popup.geometry(gv.POPUP_WINDOW_OFFSET)
         self.popup.wait_visibility()  # required on Linux

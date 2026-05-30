@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.5" author="PygubuDesigner 0.41.4">
+  <project>
+    <settings>
+      <setting id="name">Progress Warning Dialog</setting>
+      <setting id="description">Just pops up a warning dialog</setting>
+      <setting id="template">widgetds</setting>
+      <setting id="main_widget">delay_warning</setting>
+      <setting id="module_namespace">delayWarning</setting>
+      <setting id="module_name">delayWarning</setting>
+      <setting id="main_classname">delayWarning</setting>
+      <setting id="output_dir">..</setting>
+      <setting id="builder_namespace">custom_widgets</setting>
+      <setting id="output_dir2" />
+      <setting id="generate_code_onsave">False</setting>
+      <setting id="use_i18n">False</setting>
+      <setting id="all_ids_attributes">False</setting>
+      <setting id="import_tkvariables">False</setting>
+      <setting id="use_ttk_styledefinition_file">False</setting>
+      <setting id="use_window_centering_code">False</setting>
+      <setting id="ttk_style_definition_file">../mystyles.py</setting>
+    </settings>
+    <customwidgets />
+    <resources />
+  </project>
+  <object class="tk.Toplevel" id="delay_warning" named="True">
+    <property name="height">200</property>
+    <property name="title" translatable="yes">Warning... Delay</property>
+    <property name="width">200</property>
+    <child>
+      <object class="ttk.Frame" id="warningFrame" named="True">
+        <property name="height">200</property>
+        <property name="style">Normal.TFrame</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="expand">true</property>
+          <property name="fill">both</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="ttk.Label" id="warningLabel" named="True">
+            <property name="anchor">w</property>
+            <property name="justify">center</property>
+            <property name="style">Heading2bi.TLabel</property>
+            <property name="text" translatable="yes">Loading...
+
+This could take several seconds...</property>
+            <property name="textvariable">string:warningLabel_VAR</property>
+            <layout manager="pack">
+              <property name="padx">10</property>
+              <property name="pady">10</property>
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
