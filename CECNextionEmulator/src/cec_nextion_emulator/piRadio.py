@@ -116,64 +116,76 @@ class piRadio:
         ffCount = 0
         buffer = []
         commandCount = 0
+        emptyInByteCount = 0
 
         while commandCount < 26:
             # Read a line from the serial port (until a newline character is received)
             # Decode the bytes to a string (e.g., 'utf-8') and remove leading/trailing whitespace
-
-            in_byte= self.radioPort.read(1)
-
-            if in_byte:
-                #
-                #   Looking for the first line with a "p" in the first character
-                #   CEC sends a zero to start, just ignore it
-                #
-                if ((len(buffer) == 0) and (in_byte.decode(errors='ignore') != 'p')):
-                    pass
+            try:
+                in_byte= self.radioPort.read(1)
+                if in_byte == b'':
+                    print(in_byte)
+                    emptyInByteCount += 1
+                    if emptyInByteCount >= 1:
+                        print("showing error")
+                        response=messagebox.askyesno("No Radio on Port", "No radio found on port. Did you forget to turn it on?")
+                        print("response=",response)
                 else:
-                    buffer.append (in_byte)
+                    print(in_byte)
 
-
-                    if in_byte.hex() == 'ff':
-                        ffCount += 1
-                        if ffCount == 3:
-                            #
-                            #   decode the characters into ascii
-                            #
-                            decoded_buffer_char = [item.decode(errors='ignore') for item in buffer]
-
-                            # if self.debugCommandDecoding:
-                            #     for item in decoded_buffer_char:
-                            #         print(f"{item:<{4}}", end="")
-                            #     print("")
-
-                            # decoded_buffer_hex = [item.hex() for item in buffer]
-                                # for item in decoded_buffer_hex:
-                                #     print(f"{item:<{4}}", end="")
-                                # print("")
-
-                            # decoded_buffer_ord = [ord(item) for item in buffer]
-                                # for item in decoded_buffer_ord:
-                                #     print(f"{item:<{4}}", end="")
-                                # print("")
-                            #
-                            #   since we saw 3 0xff's in a row, we can call the getter to
-                            #   set the value in the UX
-                            #
-                            self.processRadioCommand(decoded_buffer_char)
-                            #
-                            #   reset counters (and add one to total processed)
-                            #
-                            ffCount = 0
-                            buffer = buffer[:0]
-                            commandCount += 1
-
+                if in_byte:
                     #
-                    #   Sometimes the Emulator can outrun the MCU's ability to deliver data. If we were reading valid data
-                    #   and we get a zero waiting situation, wait for a little to see if more data appears
+                    #   Looking for the first line with a "p" in the first character
+                    #   CEC sends a zero to start, just ignore it
                     #
-                    if self.radioPort.in_waiting == 0:
-                        sleep(float(gv.config.get_MCU_Read_Wait_Period()))
+                    if ((len(buffer) == 0) and (in_byte.decode(errors='ignore') != 'p')):
+                        pass
+                    else:
+                        buffer.append (in_byte)
+
+
+                        if in_byte.hex() == 'ff':
+                            ffCount += 1
+                            if ffCount == 3:
+                                #
+                                #   decode the characters into ascii
+                                #
+                                decoded_buffer_char = [item.decode(errors='ignore') for item in buffer]
+
+                                # if self.debugCommandDecoding:
+                                #     for item in decoded_buffer_char:
+                                #         print(f"{item:<{4}}", end="")
+                                #     print("")
+
+                                # decoded_buffer_hex = [item.hex() for item in buffer]
+                                    # for item in decoded_buffer_hex:
+                                    #     print(f"{item:<{4}}", end="")
+                                    # print("")
+
+                                # decoded_buffer_ord = [ord(item) for item in buffer]
+                                    # for item in decoded_buffer_ord:
+                                    #     print(f"{item:<{4}}", end="")
+                                    # print("")
+                                #
+                                #   since we saw 3 0xff's in a row, we can call the getter to
+                                #   set the value in the UX
+                                #
+                                self.processRadioCommand(decoded_buffer_char)
+                                #
+                                #   reset counters (and add one to total processed)
+                                #
+                                ffCount = 0
+                                buffer = buffer[:0]
+                                commandCount += 1
+
+                        #
+                        #   Sometimes the Emulator can outrun the MCU's ability to deliver data. If we were reading valid data
+                        #   and we get a zero waiting situation, wait for a little to see if more data appears
+                        #
+                        if self.radioPort.in_waiting == 0:
+                            sleep(float(gv.config.get_MCU_Read_Wait_Period()))
+            except:
+                print("read timeout")
 
     def updateData(self, repeatFlag=True):
         ffCount = 0
