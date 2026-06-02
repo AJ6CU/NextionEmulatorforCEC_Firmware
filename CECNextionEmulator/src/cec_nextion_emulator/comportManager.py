@@ -45,6 +45,8 @@ class comportManager(baseui.comportManagerUI):
             else:
                 self.setRadioPortType( 'ComPort')
 
+        elif len(gv.config.getRadioPort()) == 0:
+            self.setRadioPortType('ComPort')
         else:
             self.setRadioPortType(self, self.radioPortType)
 

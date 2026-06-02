@@ -1,3 +1,5 @@
+from urllib import response
+
 import serial
 from time import sleep
 from timeit import default_timer as timer
@@ -7,7 +9,7 @@ from tkinter import messagebox
 import EEPROM as EEPROM
 import random
 
-# from comportManager import *
+# from comportManager import * 737566.747668916
 
 
 class piRadio:
@@ -116,22 +118,41 @@ class piRadio:
         ffCount = 0
         buffer = []
         commandCount = 0
-        emptyInByteCount = 0
+        timeStarted = timer()                   # need time on entry to check for timeout
 
         while commandCount < 26:
-            # Read a line from the serial port (until a newline character is received)
-            # Decode the bytes to a string (e.g., 'utf-8') and remove leading/trailing whitespace
-            try:
-                in_byte= self.radioPort.read(1)
-                if in_byte == b'':
-                    print(in_byte)
-                    emptyInByteCount += 1
-                    if emptyInByteCount >= 1:
-                        print("showing error")
-                        response=messagebox.askyesno("No Radio on Port", "No radio found on port. Did you forget to turn it on?")
-                        print("response=",response)
+            #
+            #   Check for timeout situation
+            #
+            if timer() - timeStarted > gv.RADIOTIMEOUT:
+                #
+                #   If we hit the RADIOTIMEOUT limit, then something has gone wrong...
+                #
+                response = messagebox.askyesno(message="No Response from the Radio!",
+                                               detail="Did you forget to turn it on or connect it?\n\n"+
+                                               "If so, you can turn it on now and click the 'Yes' button.\n\n" +
+                                               "Otherwise click 'No' for more options.",
+                                               icon="error")
+                if response == True:
+                    timeStarted = timer()   # Reset timer
                 else:
-                    print(in_byte)
+                    response = messagebox.askyesno(message="Wrong Serial Port?",
+                                                   detail="The next most likely cause of this error  is that the application is trying to open the wrong serial port.\n\n" +
+                                                   "The best option here is to clear the serial port in the configuration file and restart the program.\n\n"+
+                                                   "On restart, you can select a different serial port.\n\n"+
+                                                   "Click the Yes button to proceed to clear the selected serial port or the 'No' button if you want to try something else.\n\n"+
+                                                   "In both cases the application will terminate.",
+                                                    icon="error")
+                    if response == True:
+                        gv.config.setRadioPort("")      # This clears out out the entry for the serial port name in the configuration file
+                                                        # On restart, the user will have opportinity tp select a new port.
+                    exit(99)
+            else:
+
+                # Read a line from the serial port (until a newline character is received)
+                # Decode the bytes to a string (e.g., 'utf-8') and remove leading/trailing whitespace
+
+                in_byte= self.radioPort.read(1)
 
                 if in_byte:
                     #
@@ -141,6 +162,7 @@ class piRadio:
                     if ((len(buffer) == 0) and (in_byte.decode(errors='ignore') != 'p')):
                         pass
                     else:
+
                         buffer.append (in_byte)
 
 
@@ -184,8 +206,7 @@ class piRadio:
                         #
                         if self.radioPort.in_waiting == 0:
                             sleep(float(gv.config.get_MCU_Read_Wait_Period()))
-            except:
-                print("read timeout")
+
 
     def updateData(self, repeatFlag=True):
         ffCount = 0
@@ -851,7 +872,7 @@ class piRadio:
         self.sendCommandToMCU(bytes(command))
 
     def Set_Signal_Value(self, scale_value):
-        print("scale_value:", scale_value)
+        # print("scale_value:", scale_value)
         MyAddr  = 55
         DSPCode = 0x6A
         value = int(scale_value) + 146
@@ -868,12 +889,12 @@ class piRadio:
             value = 51    # This turns the DSP on and sets it into Spectrum Mode
             self.mainWindow.frequencySpectrumMode == "FreqScan"
             gv.config.set_DSP_Switch(flag)
-            print("turning on DSP")
+            # print("turning on DSP")
 
         else:
             value = 50    # This turns off the DSP
-            print("Turning off DSP")
-            # gv.config.set_DSP_Switch(flag)
+            # print("Turning off DSP")
+            gv.config.set_DSP_Switch(flag)
             self.mainWindow.mainScreenPlotter.clearCanvas()
 
 

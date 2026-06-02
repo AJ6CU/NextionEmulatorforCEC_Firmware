@@ -22,6 +22,8 @@ def get_image(filename):
 
 config = None
 
+RADIOTIMEOUT=5          # give the operator 5 seconds to remember to turn on the radio.
+
 MAIN_WINDOW_OFFSET = "+5+30"
 POPUP_WINDOW_OFFSET = "+50+50"
 VNUMERICKEYBOARD_OFFSET = "+600+160"        #"+550+160"
