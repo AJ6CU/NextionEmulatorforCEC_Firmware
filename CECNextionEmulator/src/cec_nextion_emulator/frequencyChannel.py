@@ -37,10 +37,13 @@ class frequencyChannel(baseui.frequencyChannelUI):
     #   Set up labels for channels
     #
     def channel_Number_Default(self):
-        if self.myChannelNum < 9:
-            self.channel_Number_VAR.set("Channel " + " "+str(int(self.myChannelNum+1)))
-        else:
-            self.channel_Number_VAR.set("Channel " +str(int(self.myChannelNum+1)))
+        self.channel_Number_VAR.set(str(int(self.myChannelNum + 1)))
+        # if self.myChannelNum < 9:
+        #     self.channel_Number_VAR.set("Channel " + " "+str(int(self.myChannelNum+1)))
+        #     # self.channel_Number_VAR.set("Channel " + " "+str(int(self.myChannelNum+1)))
+        # else:
+        #     self.channel_Number_VAR.set("Channel " +str(int(self.myChannelNum+1)))
+        #     # self.channel_Number_VAR.set("Channel " +str(int(self.myChannelNum+1)))
 
     #
     #   Label get/set
@@ -82,11 +85,11 @@ class frequencyChannel(baseui.frequencyChannelUI):
     def channel_Label_Entered_CB(self, event=None):
         self.channel_label_save.set(self.channel_Label_VAR.get())
         self.channel_Label_VAR.set(self.channel_label_save.get().replace(" ",""))
-        if gv.config.get_Virtual_Keyboard_Switch() == "On":
+        if gv.config.get_Virtual_Keyboard_Switch() == "True":
             self.vKeyboard = VirtualKeyboard(self, self.channel_Label_VAR, self.channel_Name_Changed_CB, 5)
 
-    def channel_Lavel_Validation_CB(self, p_entry_value, v_condition):
-        if (v_condition == "focusout") and (gv.config.get_Virtual_Keyboard_Switch() == "Off"):
+    def channel_Label_Validation_CB(self, p_entry_value, v_condition):
+        if (v_condition == "focusout") and (gv.config.get_Virtual_Keyboard_Switch() == "False"):
             if len(p_entry_value) > 5:
                 messagebox.showinfo("Error Too Long", "Maximum of 5 characters in a channel label.\n"
                                     + "Your label has been truncated to left most 5 characters", parent=self)
@@ -110,12 +113,13 @@ class frequencyChannel(baseui.frequencyChannelUI):
 
     def numeric_Keypad_CB(self, event=None):
         self.channel_Freq_save = gv.unformatFrequency(self.channel_Freq_VAR.get())        # save unformated version
-        if gv.config.get_Virtual_Keyboard_Switch() == "On":
+        if gv.config.get_Virtual_Keyboard_Switch() == "True":
             self.vNumericPad = VirtualNumericKeyboard(self, self.channel_Freq_VAR, self.Channel_Freq_Changed_CB,8)
+
 
     def channel_Freq_Validation_CB(self, p_entry_value, v_condition):
 
-        if (v_condition == "focusout") and (gv.config.get_Virtual_Keyboard_Switch() == "Off"):
+        if (v_condition == "focusout") and (gv.config.get_Virtual_Keyboard_Switch() == "False"):
 
             unformatted_p_entry_value = gv.unformatFrequency(p_entry_value)
 
@@ -138,7 +142,7 @@ class frequencyChannel(baseui.frequencyChannelUI):
     def Set_Mode(self, mode):
         self.channel_Mode_VAR.set(mode)
     def Mode_Default(self):
-        self.Set_Mode("CWU")
+        self.Set_Mode("DFT")
 
     #
     #   Get set show label  flag
@@ -152,7 +156,7 @@ class frequencyChannel(baseui.frequencyChannelUI):
             self.Set_ShowLabel("Yes")
         else:
             self.Set_ShowLabel("No")
-            self.show_Label_Combobox.configure(state="disabled")
+            self.show_Label_Menubutton.configure(state="disabled")
 
 
     #
@@ -179,27 +183,21 @@ class frequencyChannel(baseui.frequencyChannelUI):
     def channel_Name_Changed_CB(self, event=None):
         self.channel_Dirty()
 
-    def Channel_Freq_Changed_CB(self, event=None):
+
+    def Channel_ShowLabel_Changed_CB(self, itemid):
+        self.channel_ShowLabel_VAR.set(itemid)
         self.channel_Dirty()
 
-    def Channel_Mode_Changed_CB(self, event=None):
+    def Channel_ScanSet_Changed_CB(self, itemid):
+        self.channel_ScanSet_VAR.set(itemid.replace("_Command",""))
         self.channel_Dirty()
 
-    def Channel_ShowLabel_Changed_CB(self, event=None):
+    def Channel_Mode_Changed_CB(self, itemid):
+        self.channel_Mode_VAR.set(itemid)
         self.channel_Dirty()
 
-    def Channel_ScanSet_Changed_CB(self, event=None):
+    def Channel_Freq_Changed_CB(self):
         self.channel_Dirty()
-
-
-
-
-
-
-
-
-
-
 
 
 

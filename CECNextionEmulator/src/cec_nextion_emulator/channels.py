@@ -5,7 +5,8 @@ import channelsui as baseui
 from tkinter import messagebox
 from configuration import configuration
 import globalvars as gv
-
+import EEPROM as EEPROM
+from delayWarning import delayWarning
 
 #
 # Manual user code
@@ -28,6 +29,16 @@ class channels(baseui.channelsUI):
 
         self.channelSlotCount = 0           #initialize instance variables to process channels
         self.channelSlotSelection = None
+        #
+        #   This pops up a warning dialog that this operation could take several seconds
+        #
+        self.delayDialog = tk.Toplevel(self.master)
+        self.channelDelayWarning=delayWarning(self.delayDialog)
+        self.channelDelayWarning.warningLabel_VAR.set("Loading Channels from EEPROM...\n\nThis could take several seconds...")
+
+        self.delayDialog.wait_visibility()  # required on Linux
+
+        self.delayDialog.transient(self.mainWindow)
 
 
         self.popup = tk.Toplevel(self.master)           # Create a top level window to contain the channel window
@@ -42,7 +53,9 @@ class channels(baseui.channelsUI):
         #   the smallest preset to avoid frequency being truncated. So capture it,
         #   reset it and late we will reset it.
         #
-        self.SaveAndSetPreset()
+        self.mainWindow.theVFO_Object.savePresetState()
+        self.mainWindow.theRadio.Set_Tuning_Preset(1)
+
         #
         #   Since we display the frequency using the selected Delimiter, need
         #   to register interest in its value in case it changes while channel window
@@ -93,25 +106,29 @@ class channels(baseui.channelsUI):
     #
 
     def initChannelsUX(self):
-        self.update_Current_Frequency(gv.formatFrequency(self.mainWindow.primary_VFO_VAR.get()))
+        self.update_Current_Frequency(self.mainWindow.theVFO_Object.getFormattedPrimaryVFO())
         self.update_Current_Mode(self.mainWindow.primary_Mode_VAR.get())
-        self.mainWindow.Radio_Req_Channel_Freqs()
-        self.mainWindow.Radio_Req_Channel_Labels()
-        self.mainWindow.Radio_Req_Channel_Show_Labels()
-
-
-
+        self.mainWindow.theRadio.Req_Channel_Freqs()
+        self.mainWindow.theRadio.Req_Channel_Labels()
+        self.mainWindow.theRadio.Req_Channel_Show_Labels()
+        #
+        #   Since we are about to display the channel window, we can get rid of the warning dialog
+        #
+        self.delayDialog.destroy()
+#
+        #
+        #   This places the popup a little down and over from o,o. This special treatment is needed becase of the height of
+        #   the channel window
+        #
+        self.popup.geometry(gv.POPUP_WINDOW_OFFSET)
         self.popup.title("Frequency Channels")
-        self.popup.geometry("800x700")
+
         self.popup.wait_visibility()  # required on Linux
-        # self.popup.grab_set()         # dont want as we can allow other things to click while using channels
+
         self.popup.transient(self.mainWindow)
 
-        gv.formatCombobox(self.scan_Select_Combobox, "Arial", "14", "bold")
-        gv.formatCombobox(self.Time_On_Freq_Combobox, "Arial", "14", "bold")
-
         self.pack(expand=tk.YES, fill=tk.BOTH)
-        gv.trimAndLocateWindow(self.popup, 0, 0)
+
 
     #
     #   Handles reformating the frequencies in the case someone changes the number delimiter
@@ -128,14 +145,6 @@ class channels(baseui.channelsUI):
 
         self.current_VFO_VAR.set(self.current_VFO_VAR.get().replace(prior_delimiter,new_delimiter))
 
-    #
-    #   Channels could have been created using any frequency. Need to use
-    #   the smallest preset to avoid frequency being truncated. SO this method capture it,
-    #   reset it and late we will reset it.
-    #
-    def SaveAndSetPreset(self):
-        self.savePreset = int(self.mainWindow.tuning_Preset_Selection_VAR.get())
-        self.mainWindow.Radio_Set_Tuning_Preset(1)
     #
     #   The following are just external visible methods to set/change various values
     #
@@ -174,7 +183,7 @@ class channels(baseui.channelsUI):
 
         channels.channelList[channelNum].Set_Freq(str(freq))
 
-        channels.channelList[channelNum].Set_Mode(self.mainWindow.modeNum_To_TextDict[str(mode)])
+        channels.channelList[channelNum].Set_Mode(EEPROM.modeNum_To_TextDict[str(mode)])
 
     def EEPROM_SetChannelLabel(self, channelNum, label):
         channels.channelList[channelNum].Set_Label(label)
@@ -192,8 +201,10 @@ class channels(baseui.channelsUI):
                                 parent=self)
             return
 
-        self.mainWindow.Radio_Set_New_Frequency(channels.channelList[self.channelSlotSelection].Get_Freq())
-        self.mainWindow.Radio_Set_Mode(self.mainWindow.Text_To_ModeNum[channels.channelList[self.channelSlotSelection].Get_Mode()])
+        self.mainWindow.theRadio.Set_Mode(
+            EEPROM.Text_To_ModeNum[channels.channelList[self.channelSlotSelection].Get_Mode()])
+        self.mainWindow.theRadio.Set_New_Frequency(channels.channelList[self.channelSlotSelection].Get_Freq())
+        # self.mainWindow.theRadio.Set_Mode(EEPROM.Text_To_ModeNum[channels.channelList[self.channelSlotSelection].Get_Mode()])
         self.current_Channel_VAR.set(channels.channelList[self.channelSlotSelection].Get_Label())
 
     #
@@ -266,7 +277,8 @@ class channels(baseui.channelsUI):
         else:
             self.startScan()
 
-    def runScan_Selection_CB(self, event=None):
+    def runScan_Selection_CB(self, itemid):
+        self.scan_Select_Channel_VAR.set(itemid.replace("_Command",""))
         self.scanSetSelected = self.scan_Select_Channel_VAR.get()
 
     #
@@ -283,7 +295,7 @@ class channels(baseui.channelsUI):
     #
     def close_Channel_CB(self):             # method called when window closed
         self.confirmExitorWriteDirty()
-        self.mainWindow.Radio_Set_Tuning_Preset(self.savePreset)
+        self.mainWindow.theVFO_Object.restorePresetState()
         self.stopScan()                 # Stop any scan that might be running
         self.master.withdraw()
 
@@ -310,7 +322,7 @@ class channels(baseui.channelsUI):
     def channelSlot_CB(self, slotNumber):
         if self.channelSlotSelection != None:
             channels.channelList[self.channelSlotSelection].channel_Select_Button.configure(
-                style="Button2b.TButton")
+                style="Button1bARaised.TButton")
             channels.channelList[self.channelSlotSelection].channel_Select_VAR.set("Select")  # unselect the prior one
 
         if self.channelSlotSelection == slotNumber:         #Unselect if already selected
@@ -318,7 +330,7 @@ class channels(baseui.channelsUI):
         else:
             self.channelSlotSelection = slotNumber
             channels.channelList[self.channelSlotSelection].channel_Select_Button.configure(
-                    style="Button2bipressed.TButton")
+                    style="Button1bAPressed.TButton")
             channels.channelList[self.channelSlotSelection].channel_Select_VAR.set("Selected") # select the new one
     #
     #   Does the actual saving of a particular channel when a save is requested. A "save all"
@@ -333,16 +345,16 @@ class channels(baseui.channelsUI):
         if  (channels.channelList[channelNum].dirty):
             channels.channelList[channelNum].channel_Not_Dirty()
 
-            self.mainWindow.Radio_Write_EEPROM_Channel_FreqMode(
+            self.mainWindow.theRadio.Write_EEPROM_Channel_FreqMode(
                 channelNum,
                 channels.channelList[channelNum].Get_Freq(),
                 channels.channelList[channelNum].Get_Mode())
 
-            self.mainWindow.Radio_Write_EEPROM_Channel_Label(
+            self.mainWindow.theRadio.Write_EEPROM_Channel_Label(
                 channelNum,
                 channels.channelList[channelNum].Get_Label())
 
-            self.mainWindow.Radio_Write_EEPROM_Channel_ShowLabel(
+            self.mainWindow.theRadio.Write_EEPROM_Channel_ShowLabel(
                 channelNum,
                 channels.channelList[channelNum].Get_ShowLabel())
 

@@ -20,27 +20,27 @@ from tkinter import messagebox
 
 root = None
 mainWindow = None
-comPort = None
+radioPort = None
 myRadio = None
 
 
 #
 #   once a valid port is found, then we can start the main window.
 #
-def startMainWindow(comPortName, comPortID):
+def startMainWindow(radioPortName, radioPortHandle):
 
-    comPort.place_forget()
+    radioPort.place_forget()
 
-    comPort.place(relx=0.80, rely=1, anchor="s")
+    radioPort.place(relx=0.85, rely=1, anchor="s")
 
-    gv.config.setComPort(comPortName)  # update the config file if necessary because of comport selection
-    # print(" radio:", comPortName)
-    # comPort.setComPort(comPortName)
-    myRadio = piRadio(comPortName, comPortID, mainWindow)  # Initialize the Radio object with selected port
+    gv.config.setRadioPort(radioPortName)  # update the config file if necessary because of comport selection
+
+    myRadio = piRadio(radioPortName, radioPortHandle, mainWindow)  # Initialize the Radio object with selected port
 
 
 
     mainWindow.attachRadio(myRadio)         # tell the mainWindow how to talk to the radio
+    mainWindow.savePortHandle (radioPortHandle) # Save pointer to port to close
 
     myRadio.rebootRadio()                   # We reboot the radio because it sends a bunch of initialization values on startup
                                             # to the Nextion screen. We need to capture them
@@ -59,8 +59,11 @@ def startMainWindow(comPortName, comPortID):
 #
 root = tk.Tk()
 
-root.geometry("400x275+5+30")           # necessary because latest Tixie put new windows in center
+root.geometry(gv.MAIN_WINDOW_OFFSET)
+
+
 root.title("CECNextionEmulator - A Nextion Emulator for CEC Firmware running on the uBITX")
+root.protocol("WM_DELETE_WINDOW", lambda: root.destroy())
 
 
 gv.config = configuration(root)                    # Read in config data, if missing preload with defaults
@@ -68,18 +71,18 @@ gv.config = configuration(root)                    # Read in config data, if mis
 
 mainWindow = mainScreen(root)
 
-comPort = comportManager(root,startMainWindow)
+radioPort = comportManager(root, startMainWindow)
 
 
-if not comPort.getComPort():
+if not radioPort.getRadioPort():
     #
     #   Handles the case where the com port is not valid or not in .ini file.
     #   Have to open up  selection window.
     #
-    comPort.pack()
+    radioPort.pack()
 
-    root.geometry(gv.trimAndLocateWindow(comPort,5,30))
+    root.geometry(gv.POPUP_WINDOW_OFFSET)
 
-    root.after(500, comPort.retry() )           # If we failed to get a comport the easy way, try again
+    root.after(100, radioPort.retry())           # If we failed to get a comport the easy way, try again
 
 root.mainloop()

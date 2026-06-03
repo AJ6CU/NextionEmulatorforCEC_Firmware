@@ -5,6 +5,7 @@ import platform
 import tkinter as tk
 from tkinter import messagebox
 import globalvars as gv
+from defaultCECNextionEmulator import default_config_data
 
 
 configuration_file = os.path.expanduser(os.path.join("~", ".CECNextionEmulator.ini"))
@@ -35,6 +36,7 @@ class configuration:
                                                 parent=master)
 
             self.writeDefaults()
+
     def distributeConfigData(self):
         gv.NUMBER_DELIMITER = self.get_NUMBER_DELIMITER()
         # print("delimiter number is ", gv.NUMBER_DELIMITER)
@@ -42,6 +44,13 @@ class configuration:
 
 
     def writeDefaults(self):
+        #
+        #   Use the defaults saved in defaultCECNextionEmulator.py
+        #
+        self.config_data = default_config_data
+        #
+        #   Make a guess on the serial port
+        #
         if platform.system() == 'Windows':
             serialPort = "com6"
 
@@ -49,47 +58,17 @@ class configuration:
             serialPort = "/dev/cu.usbserial-00000000"
 
         else:
-            serialPort = "/dev/serial0"                     # for trixie+
+            serialPort = "/dev/tty/USB0"                     # for trixie+
+            # serialPort = "/dev/serial0"  # for trixie+
             # serialPort = "/dev/ttyS0"                     # for bookbinder and below
 
-        #
-        #   The default for scanSet Settings is all "None"
-        #
-        self.config_data = {
-                            "Serial Port": serialPort,
+        self.config_data["Serial Port"] = serialPort
 
-                            "Scan Set Settings": [
-                                    [0,"None"], [1,"None"], [2, "None"], [3, "None"], [4, "None"],
-                                    [5, "None"], [6, "None"], [7, "None"], [8, "None"], [9, "None"],
-                                    [10, "None"], [11, "None"], [12, "None"], [13, "None"], [14, "None"],
-                                    [15, "None"], [16, "None"], [17, "None"], [18, "None"], [19, "None"]],
-
-                            "Scan On Station Time":1000,
-
-                            "MCU Command Headroom": .09,        # in seconds
-                            "MCU Update Period": 500,            # in ms
-
-                            "NUMBER DELIMITER": ".",
-                            "TXOffset": "EEPROM",
-                            "VIRTUAL KEYBOARD": "True",
-
-                            "Master Cal": "",
-                            "SSB BFO": "",
-                            "CW BFO": "",
-                            "CW Tone": "600",
-                            "CW Speed":"10",
-                            "CW Key Type":"STRAIGHT",
-                            "CW Delay Before TX":"500",
-                            "CW Delay Returning to RX":"5000",
-                            "Callsign":"",
-                            "Virtual Keyboard Switch":"On"
-
-                            }
         self.saveConfig()
 
-    def getComPort(self):
+    def getRadioPort(self):
         return self.config_data["Serial Port"]
-    def setComPort(self,port):
+    def setRadioPort(self, port):
         self.config_data ["Serial Port"] = port
         self.saveConfig()
 
@@ -127,6 +106,54 @@ class configuration:
         self._notify_observers("MCU Update Period", value)
         self.saveConfig()
 
+    def get_MCU_Read_Wait_Period(self):
+        return self.config_data["MCU Read Wait Period"]
+
+    def set_MCU_Read_Wait_Period(self, value):
+        self.config_data["MCU Read Wait Period"] = value
+        self.saveConfig()
+
+        "PWR SWR"
+
+    def get_PWR_SWR_Switch(self):
+        if "PWR SWR" in self.config_data:
+            return self.config_data["PWR SWR"]
+        else:
+            self.config_data["PWR SWR"] = "False"
+            self.saveConfig()
+            return self.config_data["PWR SWR"]
+
+    def set_PWR_SWR_Switch(self, value):
+        self.config_data["PWR SWR"] = value
+        self.saveConfig()
+
+
+    def get_SWR_Factor(self):
+        if "SWR Factor" in self.config_data:
+            return self.config_data["SWR Factor"]
+        else:
+            self.config_data["SWR Factor"] = "1.00"
+            self.saveConfig()
+            return self.config_data["SWR Factor"]
+
+    def set_SWR_Factor(self, value):
+        self.config_data["SWR Factor"] = value
+        self.saveConfig()
+
+
+
+    def get_PWR_Factor(self):
+        if "PWR Factor" in self.config_data:
+            return self.config_data["PWR Factor"]
+        else:
+            self.config_data["PWR Factor"] = "1.00"
+            self.saveConfig()
+            return self.config_data["PWR Factor"]
+
+    def set_PWR_Factor(self, value):
+        self.config_data["PWR Factor"] = value
+        self.saveConfig()
+
 
     def get_NUMBER_DELIMITER(self):
         return self.config_data["NUMBER DELIMITER"]
@@ -134,6 +161,14 @@ class configuration:
     def set_NUMBER_DELIMITER(self, value):
         self.config_data["NUMBER DELIMITER"] = value
         self._notify_observers("NUMBER DELIMITER", value)
+        self.saveConfig()
+
+    def get_VFO_Touch_Optimized(self):
+        return self.config_data["VFO Touch Optimized"]
+
+    def set_VFO_Touch_Optimized(self, value):
+        self.config_data["VFO Touch Optimized"] = value
+        self._notify_observers("VFO Touch Optimized", value)
         self.saveConfig()
 
 
@@ -204,11 +239,33 @@ class configuration:
         self.config_data["Virtual Keyboard Switch"] = value
         self.saveConfig()
 
+    def get_DSP_Switch(self):
+        return self.config_data["DSP"]
+
+    def set_DSP_Switch(self, value):
+        self.config_data["DSP"] = value
+        self.saveConfig()
+
+    #
+    #   following is a template on how add new parameters to configuration file
+    #
+    # def get_Template(self):
+    #     if "Template" in self.config_data:
+    #         return self.config_data["Template"]
+    #     else:
+    #         self.config_data["Template"] = "newdefault"
+    #         self.saveConfig()
+    #         return self.config_data["Template"]
+    #
+    # def set_Template(self, value):
+    #     self.config_data["Template"] = value
+    #     self.saveConfig()
+
 
 
     def saveConfig(self):
         config_file = open(configuration_file, 'w')
-        json.dump(self.config_data, config_file)
+        json.dump(self.config_data, config_file, indent=4, sort_keys=True)
         config_file.close()
 
 

@@ -5,6 +5,7 @@ import tkinter.ttk as ttk
 
 import settingsBackupui as baseui
 from configuration import configuration
+from delayWarning import delayWarning
 import globalvars as gv
 from time import sleep
 
@@ -19,10 +20,21 @@ from tkinter import messagebox
 
 class settingsBackup(baseui.settingsBackupUI):
     def __init__(self, master=None,mainWindow=None, **kw):
-        super().__init__(master, **kw)
+        # super().__init__(master, **kw)  # Is this necessary?
 
         self.master= master
         self.mainWindow = mainWindow
+
+        #
+        #   This pops up a warning dialog that this operation could take several seconds
+        #
+        self.delayDialog = tk.Toplevel(self.master)
+        self.channelDelayWarning=delayWarning(self.delayDialog)
+        self.channelDelayWarning.warningLabel_VAR.set("Loading Radio Settings from EEPROM...\n\nThis could take a couple seconds...")
+
+        self.delayDialog.wait_visibility()  # required on Linux
+
+        self.delayDialog.transient(self.mainWindow)
 
         #
         #   Create a toplevel window to contain the settings popup
@@ -48,11 +60,10 @@ class settingsBackup(baseui.settingsBackupUI):
         self.ConfigFile_CW_Delay_Before_TX_VAR.set(self.get_ConfigFile_CW_Delay_Before_TX())
         self.ConfigFIle_CW_Delay_Returning_To_RX_VAR.set(self.get_ConfigFile_CW_Delay_Returning_To_RX())
 
-        gv.formatCombobox(self.from_Combobox, "Arial", "18", "bold")
-        gv.formatCombobox(self.to_Combobox, "Arial", "18", "bold")
 
-        self.from_Combobox_VAR.set("Select")
-        self.to_Combobox_VAR.set("Select")
+
+        self.from_Source_VAR.set("Select")
+        self.to_Source_VAR.set("Select")
         #
         #   The following are know values and we just need to load the ones that currently exist
         #
@@ -66,14 +77,14 @@ class settingsBackup(baseui.settingsBackupUI):
         #   Following a little complex as we have to request that the radio perform EEPROM Memory reads
         #
 
-        mainWindow.Radio_Req_Master_Cal(self.load_Current_Master_Cal)
-        mainWindow.Radio_Req_SSB_BFO(self.load_Current_SSB_BFO)
-        mainWindow.Radio_Req_CW_BFO(self.load_Current_CW_BFO)
+        self.mainWindow.theRadio.Req_Master_Cal(self.load_Current_Master_Cal)
+        self.mainWindow.theRadio.Req_SSB_BFO(self.load_Current_SSB_BFO)
+        self.mainWindow.theRadio.Req_CW_BFO(self.load_Current_CW_BFO)
 
-        mainWindow.Radio_Req_Factory_Master_Cal(self.load_Factory_Master_Cal)
-        mainWindow.Radio_Req_Factory_SSB_BFO(self.load_Factory_SSB_BFO)
-        mainWindow.Radio_Req_Factory_CW_Speed(self.load_Factory_CW_Speed)
-        mainWindow.Radio_Req_Factory_CW_Sidetone(self.load_Factory_CW_Tone)
+        self.mainWindow.theRadio.Req_Factory_Master_Cal(self.load_Factory_Master_Cal)
+        self.mainWindow.theRadio.Req_Factory_SSB_BFO(self.load_Factory_SSB_BFO)
+        self.mainWindow.theRadio.Req_Factory_CW_Speed(self.load_Factory_CW_Speed)
+        self.mainWindow.theRadio.Req_Factory_CW_Sidetone(self.load_Factory_CW_Tone)
 
         self.reboot = False                 # Some settings require a reboot to take effect
         sleep(.5)                           # give the MCU some time to respond
@@ -84,14 +95,18 @@ class settingsBackup(baseui.settingsBackupUI):
         self.initUX()
 
     def initUX(self):
+        #
+        #   Since we are about to display the channel window, we can get rid of the warning dialog
+        #
+        self.delayDialog.destroy()
+
         self.popup.title("Backup Key Radio Settings")
-        self.popup.geometry("850x675")
+        self.popup.geometry(gv.POPUP_WINDOW_OFFSET)
         self.popup.wait_visibility()  # required on Linux
         self.popup.grab_set()
         self.popup.transient(self.mainWindow)
 
         self.pack(expand=tk.YES, fill=tk.BOTH)
-        gv.trimAndLocateWindow(self.popup, 0, 0)
 
 
     #
@@ -108,7 +123,7 @@ class settingsBackup(baseui.settingsBackupUI):
     def set_Current_Master_Cal(self,value):
 
         if gv.validateNumber(value, gv.MASTER_CAL_BOUNDS['LOW'], gv.MASTER_CAL_BOUNDS['HIGH'], "Master Cal", self):
-            self.mainWindow.Radio_Set_Master_Cal(value)
+            self.mainWindow.theRadio.Set_Master_Cal(value)
             self.reboot = True
 
 
@@ -135,7 +150,7 @@ class settingsBackup(baseui.settingsBackupUI):
     def set_Current_SSB_BFO(self,value):
 
         if gv.validateNumber(value, gv.BFO_CAL_BOUNDS['LOW'], gv.BFO_CAL_BOUNDS['HIGH'], "SSB BFO", self):
-            self.mainWindow.Radio_Set_SSB_BFO(value)
+            self.mainWindow.theRadio.Set_SSB_BFO(value)
             self.reboot = True
 
     #       ConfigFile SSB_BFO Cal getters/setters
@@ -159,7 +174,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def set_Current_CW_BFO(self,value):
         if gv.validateNumber(value, gv.CW_CAL_BOUNDS['LOW'], gv.CW_CAL_BOUNDS['HIGH'], "CW BFO", self):
-            self.mainWindow.Radio_Set_CW_BFO(value)
+            self.mainWindow.theRadio.Set_CW_BFO(value)
             self.reboot = True
 
 
@@ -181,7 +196,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def set_Current_CW_Keytype(self, value):
         if gv.validateKeyInDict(gv.CW_KeyValue, value, "CW Keytype", self):
-            self.mainWindow.Radio_Set_CW_Keytype(value)
+            self.mainWindow.theRadio.Set_CW_Keytype(value)
 
     #       ConfigFile Key_Type getters/setters
     def get_ConfigFile_CW_Keytype(self):
@@ -228,7 +243,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def set_Current_CW_Speed(self,value):
         if gv.validateNumber(value, gv.CW_SPEED_WPM_BOUNDS['LOW'], gv.CW_SPEED_WPM_BOUNDS['HIGH'], "CW WPM", self):
-            self.mainWindow.Radio_Set_CW_Speed(value)
+            self.mainWindow.theRadio.Set_CW_Speed(value)
 
 
     def get_ConfigFile_CW_Speed(self):
@@ -256,7 +271,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def set_Current_CW_Tone(self, value):
         if gv.validateNumber(value, gv.CW_TONE_BOUNDS['LOW'], gv.CW_TONE_BOUNDS['HIGH'], "CW Sidetone", self):
-            self.mainWindow.Radio_Set_CW_Tone(value)
+            self.mainWindow.theRadio.Set_CW_Tone(value)
             self.reboot = True
 
     #       ConfigFile CW_Sidetone getters/setters
@@ -277,7 +292,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def set_Current_CW_Delay_Before_TX(self, value):
         if gv.validateNumber(value, gv.CW_START_TX_BOUNDS['LOW'], gv.CW_START_TX_BOUNDS['HIGH'], "Delay->TX", self):
-            self.mainWindow.Radio_Set_CW_Delay_Starting_TX(value)
+            self.mainWindow.theRadio.Set_CW_Delay_Starting_TX(value)
             self.reboot = True
 
     #       ConfigFile Delay_Before_TX_Value getters/setters
@@ -297,7 +312,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def set_Current_CW_Delay_Returning_To_RX(self, value):
         if gv.validateNumber(value, gv.CW_DELAY_Return_RX_BOUNDS['LOW'], gv.CW_DELAY_Return_RX_BOUNDS['HIGH'], "Delay->RX", self):
-            self.mainWindow.Radio_Set_CW_Delay_Returning_To_RX(value)
+            self.mainWindow.theRadio.Set_CW_Delay_Returning_To_RX(value)
             self.reboot = True
 
     #       ConfigFile Delay_Returning_To_RX_Value getters/setters
@@ -307,49 +322,67 @@ class settingsBackup(baseui.settingsBackupUI):
     def set_ConfigFile_CW_Delay_Returning_To_RX(self, value):
         gv.config.set_CW_Delay_Returning_to_RX(value)
 
+    def selectSetting_CB(self, widget_id):
+        if getattr(self, widget_id + "_VAR").get() == 'Yes':
+            getattr(self, widget_id + "_VAR").set('No')
+        else:
+            getattr(self, widget_id + "_VAR").set('Yes')
 
 
     def select_All_Checkbutton_CB(self):
-        if self.select_All_Checked_VAR.get() == "1":
-            self.Master_Cal_Checked_VAR.set("1")
-            self.SSB_BFO_Checked_VAR.set("1")
-            self.CW_BFO_Checked_VAR.set("1")
-            self.CW_Keytype_Checked_VAR.set("1")
-            self.CW_Speed_Checked_VAR.set("1")
-            self.CW_Sidetone_Checked_VAR.set("1")
-            self.CW_Delay_Before_TX_Checked_VAR.set("1")
-            self.CW_Delay_Returning_To_RX_Checked_VAR.set("1")
+        if self.select_All_VAR.get() == "Select All":
+            self.Master_Cal_VAR.set("Yes")
+            self.SSB_BFO_VAR.set("Yes")
+            self.CW_BFO_VAR.set("Yes")
+            self.CW_Keytype_VAR.set("Yes")
+            self.CW_Speed_VAR.set("Yes")
+            self.CW_Sidetone_VAR.set("Yes")
+            self.CW_Delay_Before_TX_VAR.set("Yes")
+            self.CW_Delay_Before_RX_VAR.set("Yes")
 
-            self.select_All_Checked_Text_VAR.set("Uncheck to Deselect All")
+            self.select_All_VAR.set("Deselect All")
 
 
         else:
-            self.Master_Cal_Checked_VAR.set("0")
-            self.SSB_BFO_Checked_VAR.set("0")
-            self.CW_BFO_Checked_VAR.set("0")
-            self.CW_Keytype_Checked_VAR.set("0")
-            self.CW_Speed_Checked_VAR.set("0")
-            self.CW_Sidetone_Checked_VAR.set("0")
-            self.CW_Delay_Before_TX_Checked_VAR.set("0")
-            self.CW_Delay_Returning_To_RX_Checked_VAR.set("0")
+            self.Master_Cal_VAR.set("No")
+            self.SSB_BFO_VAR.set("No")
+            self.CW_BFO_VAR.set("No")
+            self.CW_Keytype_VAR.set("No")
+            self.CW_Speed_VAR.set("No")
+            self.CW_Sidetone_VAR.set("No")
+            self.CW_Delay_Before_TX_VAR.set("No")
+            self.CW_Delay_Before_RX_VAR.set("No")
 
-            self.select_All_Checked_Text_VAR.set("Select All")
+            self.select_All_VAR.set("Select All")
 
 
+    def selectFrom_Factory_CB(self):
+        self.from_Source_VAR.set('Factory')
 
+    def selectFrom_Current_CB(self):
+        self.from_Source_VAR.set('Current')
+
+    def selectFrom_ConfigFile_CB(self):
+        self.from_Source_VAR.set('ConfigFile')
+
+    def selectTo_Current_CB(self):
+        self.to_Source_VAR.set('Current')
+
+    def selectTo_ConfigFile_CB(self):
+        self.to_Source_VAR.set('ConfigFile')
 
 
 
 
     def copy_CB(self):
 
-        if self.from_Combobox_VAR.get() == "Select":
+        if self.from_Source_VAR.get() == "Select":
             messagebox.showinfo(message="Must select a source for the copy", parent=self)
             return
-        elif self.to_Combobox_VAR.get() == "Select":
+        elif self.to_Source_VAR.get() == "Select":
             messagebox.showinfo(message="Must select a destination for the copy", parent=self)
             return
-        elif self.from_Combobox_VAR.get() == self.to_Combobox_VAR.get():
+        elif self.from_Source_VAR.get() == self.to_Source_VAR.get():
             messagebox.showinfo(message="Source and Destination must be different", parent=self)
             return
 
@@ -359,20 +392,20 @@ class settingsBackup(baseui.settingsBackupUI):
         #
         selectedValues = {}
 
-        source = self.from_Combobox_VAR.get()
-        destination = self.to_Combobox_VAR.get()
+        source = self.from_Source_VAR.get()
+        destination = self.to_Source_VAR.get()
 
         #
         #   Process each line that is checked assigning read/writing file using the infamous "getattr" magic
         #
-        if self.Master_Cal_Checked_VAR.get() == "1":
+        if self.Master_Cal_VAR.get() == "Yes":
             readFunction = getattr(self, "get_"+source+"_Master_Cal", None)
             writeFunction = getattr(self, "set_"+destination+"_Master_Cal", None)
 
             if readFunction != None and writeFunction != None:
                 selectedValues["Master_Cal"] = [writeFunction, readFunction]
 
-        if self.SSB_BFO_Checked_VAR.get() == "1":
+        if self.SSB_BFO_VAR.get() == "Yes":
             readFunction = getattr(self, "get_"+source+"_SSB_BFO", None)
             writeFunction = getattr(self, "set_"+destination+"_SSB_BFO", None)
 
@@ -380,7 +413,7 @@ class settingsBackup(baseui.settingsBackupUI):
                 selectedValues["SSB_BFO"] = [writeFunction, readFunction]
 
 
-        if self.CW_BFO_Checked_VAR.get() == "1":
+        if self.CW_BFO_VAR.get() == "Yes":
             readFunction = getattr(self, "get_"+source+"_CW_BFO", None)
             writeFunction = getattr(self, "set_"+destination+"_CW_BFO", None)
 
@@ -391,7 +424,7 @@ class settingsBackup(baseui.settingsBackupUI):
                 messagebox.showinfo(message=source + " is not a valid source for CW BFO\nRequested update ignored", parent=self)
 
 
-        if self.CW_Keytype_Checked_VAR.get() == "1":
+        if self.CW_Keytype_VAR.get() == "Yes":
             readFunction = getattr(self, "get_"+source+"_CW_Keytype", None)
             writeFunction = getattr(self, "set_"+destination+"_CW_Keytype", None)
 
@@ -402,7 +435,7 @@ class settingsBackup(baseui.settingsBackupUI):
                 messagebox.showinfo(message=source + " is not a valid source for CW Keytype\nRequested update ignored", parent=self)
 
 
-        if self.CW_Speed_Checked_VAR.get() == "1":
+        if self.CW_Speed_VAR.get() == "Yes":
             readFunction = getattr(self, "get_"+source+"_CW_Speed", None)
             writeFunction = getattr(self, "set_"+destination+"_CW_Speed", None)
 
@@ -410,7 +443,7 @@ class settingsBackup(baseui.settingsBackupUI):
                 selectedValues["CW_Speed"] = [writeFunction, readFunction]
 
 
-        if self.CW_Sidetone_Checked_VAR.get() == "1":
+        if self.CW_Sidetone_VAR.get() == "Yes":
             readFunction = getattr(self, "get_"+source+"_CW_Tone", None)
             writeFunction = getattr(self, "set_"+destination+"_CW_Tone", None)
 
@@ -420,7 +453,7 @@ class settingsBackup(baseui.settingsBackupUI):
                 selectedValues["CW_Tone"] = [writeFunction, readFunction]
 
 
-        if self.CW_Delay_Before_TX_Checked_VAR.get() == "1":
+        if self.CW_Delay_Before_TX_VAR.get() == "Yes":
             readFunction = getattr(self, "get_" + source + "_CW_Delay_Before_TX", None)
             writeFunction = getattr(self, "set_" + destination + "_CW_Delay_Before_TX", None)
 
@@ -432,7 +465,7 @@ class settingsBackup(baseui.settingsBackupUI):
                 messagebox.showinfo(message=source + " is not a valid source for Delay->TX\nRequested update ignored", parent=self)
 
 
-        if self.CW_Delay_Returning_To_RX_Checked_VAR.get() == "1":
+        if self.CW_Delay_Before_RX_VAR.get() == "Yes":
             readFunction = getattr(self, "get_" + source + "_CW_Delay_Returning_To_RX", None)
             writeFunction = getattr(self, "set_" + destination + "_CW_Delay_Returning_To_RX", None)
 

@@ -5,7 +5,7 @@ cp cecNext cecNext_MacOS
 cp Install_cecNext_MacOS cecNext_MacOS
 cp Uninstall_cecNext_MacOS cecNext_MacOS
 cp ../../../../dist/cec_nextion_emulator-0.1.0-py3-none-any.whl cecNext_MacOS
-cp ../../defaultCECNextionEmulator.ini cecNext_MacOS
+cp ../../defaultCECNextionEmulator.py cecNext_MacOS/defaultCECNextionEmulator.ini
 
 tar -czvpf cecNext_MacOS.tar.gz cecNext_MacOS
 rm -r cecNext_MacOS

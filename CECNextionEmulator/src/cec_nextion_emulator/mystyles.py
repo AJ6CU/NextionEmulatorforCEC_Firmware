@@ -27,10 +27,11 @@ def setup_ttk_styles(master=None):
     #sv_ttk.set_theme("dark"))
     style.theme_use('default')
 
-    fontList = {'Heading0': ('Arial',36, 'bold' ),
+    fontList = {'Heading0': ('Arial',36 ),
             'Heading1': ('Times New Roman', 24, 'bold'),
             'Heading1Std': ('Arial', 24),
             'Heading1Fixed': ("TkFixedFont", 24, 'bold'),
+            'Heading1A': ('Arial', 24, 'bold'),
             'Heading1b': ('Arial', 20, 'bold'),
             'Heading1bi': ('Arial', 20, 'bold', 'italic'),
             'Heading2': ('Arial',18, 'bold' ),
@@ -50,14 +51,21 @@ def setup_ttk_styles(master=None):
     style.configure('Heading1.TLabel',font=fontList['Heading1'], background='gray', foreground='white')
     style.configure('Heading1Fixed.TLabel',font=fontList['Heading1'], background='gray', foreground='white')
     style.configure('Heading1b.TLabel', font=fontList['Heading1b'], background='gray', foreground='white')
+    style.map('Heading1b.TLabel', background=[('disabled', 'gray')], foreground=[('disabled', 'white')])
     style.configure('Heading1bi.TLabel', font=fontList['Heading1bi'], background='gray', foreground='white')
 
     style.configure('Heading2.TLabel',font=fontList['Heading2'])
-    style.configure('Heading2b.TLabel',font=fontList['Heading2b'], background='gray', foreground='white')
+    # style.configure('Heading2b.TLabel', font=fontList['Heading2b'], foreground='white', background="gray",
+    #                 fieldbackground=[("normal", "gray"), ("disabled", "gray")])
+
+    style.configure('Heading2b.TLabel',font=fontList['Heading2b'], foreground='white', background="gray")
+
     style.configure('Heading2bi.TLabel', font=fontList['Heading2bi'], background='gray', foreground='white')
     style.configure('Heading3b.TLabel',font=fontList['Heading3'], background='gray', foreground='white')
+    style.configure('Heading3bRed.TLabel', font=fontList['Heading3'], background='red', foreground='white')
     style.configure('Heading3bi.TLabel', font=fontList['Heading3i'], background='gray', foreground='white')
     style.configure('Heading4b.TLabel',font=fontList['Heading4'], background='gray', foreground='white')
+    style.configure('Heading4bRed.TLabel', font=fontList['Heading4'], background='red', foreground='white')
     style.configure('OffLED.TLabel', font=fontList['Heading5'], background='gray', foreground='gray')
     style.configure('OnLED.TLabel', font=fontList['Heading5'], background='green', foreground='green')
     style.configure('GreenLED.TLabel',font=fontList['Heading2'], background='green', foreground='white')
@@ -69,6 +77,8 @@ def setup_ttk_styles(master=None):
     style.configure('Symbol1.TLabel',font=fontList['Symbol1'])
     style.configure('Button1.TButton',font=fontList['Heading1'])
     style.configure('Button1Raised.TButton', font=fontList['Heading1'], relief='raised')
+    style.configure('Button1bARaised.TButton', font=fontList['Heading1b'], relief='raised')
+    style.configure('Button1bAPressed.TButton', font=fontList['Heading1b'], relief='sunken')
     style.configure('Button1Sunken.TButton', font=fontList['Heading1'], relief='sunken')
     style.configure('Button2.TButton',font=fontList['Heading2'])
     style.configure('Button2b.TButton',font=fontList['Heading2b'], justify='center')
@@ -91,6 +101,8 @@ def setup_ttk_styles(master=None):
     style.configure('RadioButton4.TRadiobutton',font=fontList['Heading4'])
     style.configure('RadioButtonNormal.TRadiobutton',font=fontList['Normal'])
     style.configure('RadioButtonEmphasis.TRadiobutton',font=fontList['Emphasis'])
+    style.configure('Heading0.TMenubutton', font=fontList['Heading0'], anchor='center')
+    style.configure('Heading1b.TMenubutton', font=fontList['Heading1b'], anchor='center')
     style.configure('Heading2b.TMenubutton',font=fontList['Heading2b'])
     style.configure('Submenu.TMenuitem.Command',font=fontList['Heading2b'])
     style.configure('Checkbox1b.TCheckbutton', font=fontList['Heading1b'], background='gray', foreground='white')
@@ -114,13 +126,17 @@ def setup_ttk_styles(master=None):
     style.configure('ComboBox4White.TCombobox',font=fontList['Heading4'],foreground='white')
     style.configure('Normal.TEntry',font=fontList['Normal'])
 
-    style.configure('Entry1b.TEntry', font=fontList['Heading1'])
+    style.configure('Entry1b.TEntry', font=fontList['Heading1b'])
     style.configure('Entry2b.TEntry', font=fontList['Heading2'])
+    style.configure('Entry2bCopy.TEntry', font=fontList['Heading2'],highlightthickness=0, borderwidth=0, background='red', readonlybackground='red',bd=0)
     style.configure('NoBorder.TEntry',font=fontList['Normal'], highlightthickness=0, borderwidth=0, bd=0)
 
     style.configure('Title.TFrame', background='blue', foreground='white')
     style.configure('Heading2.TLabelframe.Label', background='gray', bd=4, font=fontList['Heading2'])
     style.configure('Heading2.TLabelframe', background='gray', bd=4)
+
+    style.configure('Heading3.TLabelframe.Label', background='gray', bd=4, font=fontList['Heading2b'])
+    style.configure('Heading3.TLabelframe', background='gray', bd=4)
 
     style.configure('GreenBox.TLabelframe', background='green', bd=4)
     style.configure('GreenBox.TLabelframe.Label', background='green', foreground='white', bd=4, font=fontList['Heading2'])
@@ -135,6 +151,7 @@ def setup_ttk_styles(master=None):
  #   style.configure('Dark.TFrame', background='black', bd=4, bordercolor='white')
     style.configure('Normal.TFrame', background='gray', bd=4,font=fontList['Heading2'])
     style.configure('NormalOutline.TFrame', background='gray', bd=4, bordercolor='white' ,relief='groove')
+    # style.configure('WarningOutline.TFrame', background='red', bd=4, bordercolor='white', relief='groove')
 
     style.configure('Fixed.TNotebook')
     style.configure('Fixed.TNotebook.Tab',padding=[5,2])
@@ -150,5 +167,9 @@ def setup_ttk_styles(master=None):
                     foreground="black",
                     arrowsize=50)
 
+    style.map('Custom.Horizontal.TScale',
+                    foreground=[('disabled', 'gray'),('!disabled', 'blue')],
+                    troughcolor=[('disabled', 'gray'), ('!disabled', 'black')],
+                    background=[('disabled', 'gray'), ('!disabled', 'gray')])
 
 

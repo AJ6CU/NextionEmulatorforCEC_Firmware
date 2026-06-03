@@ -8,6 +8,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import StringVar
 from tkinter import messagebox
+import globalvars as gv
 
 
 class VirtualKeyboard(tk.Toplevel):
@@ -55,11 +56,13 @@ class VirtualKeyboard(tk.Toplevel):
         #
         #       Two possible error messages.
         #
+
         self.messageTooLong = "Too Many Chars, Max = " + str(self.maxChars)
         self.messageNoBackslash = "Backslash (\\) not allowed in channel name"
         self.wait_visibility()      # required on Linux
         self.grab_set()                 # This line makes the window modal
         self.transient(self.master)     # Puts the keyboard on top of the underlying window that called up the keyboard
+        # self.geometry(gv.VALPHAKEYBOARD_OFFSET)
 
 
 
@@ -265,6 +268,8 @@ class VirtualKeyboard(tk.Toplevel):
 
 
         # add the frames to the main window
+        self.update()
+        self.geometry(gv.VALPHAKEYBOARD_OFFSET)
         keyframe1.grid(row=1, sticky="NSEW", padx=9, pady=6)
         keyframe2.grid(row=2, sticky="NSEW", padx=9)
         keyframe3.grid(row=3, sticky="NSEW", padx=9)

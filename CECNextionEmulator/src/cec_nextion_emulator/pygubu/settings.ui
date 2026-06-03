@@ -4,18 +4,19 @@
     <settings>
       <setting id="name">Settings Window</setting>
       <setting id="description">Used to save settings</setting>
-      <setting id="module_name">settings</setting>
       <setting id="template">widget</setting>
       <setting id="main_widget">settings_Labelframe</setting>
+      <setting id="module_namespace" />
+      <setting id="module_name">settings</setting>
       <setting id="main_classname">settings</setting>
-      <setting id="main_menu" />
       <setting id="output_dir">..</setting>
+      <setting id="builder_namespace">custom_widgets</setting>
       <setting id="output_dir2">..</setting>
-      <setting id="import_tkvariables">False</setting>
-      <setting id="use_ttk_styledefinition_file">True</setting>
+      <setting id="generate_code_onsave">False</setting>
       <setting id="use_i18n">False</setting>
       <setting id="all_ids_attributes">False</setting>
-      <setting id="generate_code_onsave">False</setting>
+      <setting id="import_tkvariables">False</setting>
+      <setting id="use_ttk_styledefinition_file">True</setting>
       <setting id="use_window_centering_code">False</setting>
       <setting id="ttk_style_definition_file">../mystyles.py</setting>
     </settings>
@@ -101,10 +102,11 @@
               </object>
             </child>
             <child>
-              <object class="ttk.Button" id="settingsReserved2_Button" named="True">
-                <property name="state">disabled</property>
+              <object class="ttk.Button" id="settingsAbout_Button" named="True">
+                <property name="command" type="command" cbtype="simple">settingsAbout_CB</property>
+                <property name="state">normal</property>
                 <property name="style">Button1Raised.TButton</property>
-                <property name="text" translatable="yes">tbd</property>
+                <property name="text" translatable="yes">About</property>
                 <property name="width">15</property>
                 <layout manager="grid">
                   <property name="column">2</property>
@@ -157,6 +159,7 @@
               <property name="expand">true</property>
               <property name="fill">both</property>
               <property name="padx">20</property>
+              <property name="pady">15</property>
               <property name="side">top</property>
             </layout>
             <child>

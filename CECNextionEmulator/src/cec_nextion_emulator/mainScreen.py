@@ -2,13 +2,17 @@
 import tkinter.ttk as ttk
 import tkinter as tk
 
-# from Cython.Compiler.Naming import self_cname
-
 import mainScreenui as baseui
 from settings import settings
 from cwSettings import cwSettings, cwSettings
 
 from channels import channels
+from cwDecoder import cwDecoder
+from frequencySpectrum import frequencySpectrum
+from bandScanner import bandScanner
+
+from barPlotter import barPlotterBdata
+from cwLogger import cwLogger
 from Classic_uBITX_Control import Classic_uBITX_Control
 
 import mystyles  # Styles definition module
@@ -16,9 +20,14 @@ from time import sleep
 import globalvars as gv
 from tkinter import messagebox
 import sys
+import EEPROM as EEPROM
+# from src.cec_nextion_emulator.theVFO import theVFO
+
 
 class mainScreen(baseui.mainScreenUI):
+
     def __init__(self, master=None, **kw):
+        self.theVFO_Object = None  # pointer to the VFO Object
         super().__init__(
             master,
             translator=None,
@@ -28,46 +37,46 @@ class mainScreen(baseui.mainScreenUI):
         self.master = master
 
         self.pack_forget()
+        self.startingspectrum = False
 
         self.theRadio = None            # Object pointer for the Radio
+        self.theVFO_Object.attachMainWindow(self)
         self.cwSettingsWindow = None    # Object pointer for the CW Settinge Window
         self.settingsWindow = None      # Object pointer for the General Settings Window
         self.channelsWindow = None      # object pointer for the Memory-> VFO Window
-        self.vfoToMemWindow = None      # object pointer for the VFO->Memory Window
+        self.spectrumWindow = None       #object point for the SpectrumScan Window
+        self.consumerSpectrumdata = None #Object pointer to the current consumer of spectrum data
+
+        self.bandScannerWindow = None   # object pointer to the band scanner window
+        self.consumerDSPdata = self     # object pointer to the object receiving DSP data
+                                        # This could be:
+                                        # "self" in the case where the DSP graph is displayed in the main window
+                                        # or could point to Spectrum, CW Decode or Band scan if those windows
+                                        # are active
+        self.mainScreenPlotter = None   # Plot object for main window
+        self.mainScreenCW_logger = None # CW display for the main window
+
+        self.frequencyDecodeScale = None
+        self.frequencySigValue = None
+        self.frequencyPlotcwToneScale = 10          # default implies 10*50 + 300
+        self.frequencyPlotcwToneValue = 800
+
+        self.frequencySpectrumMode = "FreqScan"     # start with the frequency scan unless DSP EEPROM says otherwise when
+                                                    # the eeprome data for the dsp is fetched. See call in initUX
+
+        self.DSPFound = False           # No DSP until proven by returning info at startup
+
+        # self.vfoToMemWindow = None      # object pointer for the VFO->Memory Window
+
         self.classic_uBITX_ControlWindow = None
         self.classic_uBITX_ControlWindowObj = None
         self.DeepDebug = False
         self.CurrentDebug = True
 
-        self.memoryQueue =[]            # when a memory slot is requested, it later comes in without any indication of which
-                                        # memory slot it belong to. Fortunately, all in order. So everytime a memory slot is
-                                        # requested, the type of memory requested is added to the queue so when we take it
-                                        # off the queue, we know where it goes.
-
-        self.rate_selection = {
-            0: self.tuning_Preset_Button,
-            1: self.digit1_Highlight_Label,
-            2: self.digit2_Highlight_Label,
-            3: self.digit3_Highlight_Label,
-            4: self.digit4_Highlight_Label,
-            5: self.digit5_Highlight_Label,
-            6: self.digit6_Highlight_Label,
-            7: self.digit7_Highlight_Label
-        }
-
-        self.DigitPos_to_Powers_of_Ten = {
-            0: 0,
-            1: 10,
-            2: 100,
-            3: 1000,
-            4: 10000,
-            5: 100000,
-            6: 1000000,
-            7: 10000000
-        }
-
-        self.currentDigitPos = 0
-        self.currentVFO_Tuning_Rate = 0
+        # self.memoryQueue =[]            # when a memory slot is requested, it later comes in without any indication of which
+        #                                 # memory slot it belong to. Fortunately, all in order. So everytime a memory slot is
+        #                                 # requested, the type of memory requested is added to the queue so when we take it
+        #                                 # off the queue, we know where it goes.
 
 
         self.VFO_A = "VFO-A"                        # String used for label of VFO-A
@@ -77,7 +86,7 @@ class mainScreen(baseui.mainScreenUI):
 
         self.lock_Button_On = False                 #controls lock of console
         self.speaker_Button_On = False              #On means in Mute/SDR
-        self.stop_Button_On = False                 #Emergency stop all tx
+        # self.stop_Button_On = False                 #Emergency stop all tx
         self.split_Button_On = False                #Controls entry into split mode
         self.rit_Button_On = False                  #Controls RIT. On means in RIT mode
         self.ATT_Button_On = False                  #On allows onscreen control of signal attn
@@ -85,14 +94,6 @@ class mainScreen(baseui.mainScreenUI):
         self.IFS_On_Boot_Flag = True              # a default IFS value can be set in eeprom. If so, MCU sends a flag.
                                                     # The handling routine will set this flag to true so that when the default value
                                                     # is sent to the UX, the IFS setting and Jogwheel will be enabled.
-
-        self.primary_VFO_VAR = tk.StringVar()
-        self.secondary_VFO_VAR = tk.StringVar()
-        self.freqOffset = 0                         # used to save the offset on the main dial. Only non-zero for CWL/CWU
-
-        gv.config.register_observer("NUMBER DELIMITER", self.reformatVFO)
-        self.digit_delimiter_primary_VFO_VAR.set(gv.config.get_NUMBER_DELIMITER())
-
 
 
         self.cwTX_OffsetFlag = False                # Controls whether the display shows the transmit freq when in CW
@@ -102,21 +103,17 @@ class mainScreen(baseui.mainScreenUI):
 
 
 
-        self.tuning_Preset_Selection_Frame.grid_remove()
-        self.tuning_Jogwheel.configure(scroll=True)
+
+        self.tuning_Jogwheel.configure(scroll=True, touchOptimized=gv.config.get_VFO_Touch_Optimized())
+        self.theVFO_Object.attachDial(self.tuning_Jogwheel)
+        self.tuning_Jogwheel.grid_remove()
+        gv.config.register_observer("VFO Touch Optimized", self.switchVFO_Tuning_Optimization)
         self.baselineJogValue = 0
-        self.saved_tuning_Preset_Selection = None       # This is a tristate variable.
-                                                        # If None, this means we are in
-                                                        # Preset mode.
-                                                        # When NOT None, this savesthe
-                                                        # Preset selection value from the
-                                                        # set of radiobuttons for the presets
-        self.saved_tuning_Preset_VAR = None
-        self.update_Tuning_Preset_Button_Label = True
+
+        self.lastPWRSWR_Reading = None              # tracks what was the last PWR/SWR reading received
 
 
 
-        # self.channelSelection = None                    # assigned to channel number when selected in channels
 
 #   Constants
         #######################################################################################
@@ -125,55 +122,22 @@ class mainScreen(baseui.mainScreenUI):
         #   a couple characters. These translations are collected here to avoid them being
         #   "codified" directly in the functions that use them.
         #######################################################################################
-
-
-        self.toRadioCommandDict = {
-            "TS_CMD_MODE":1,
-            "TS_CMD_FREQ":2,
-            "TS_CMD_BAND":3,
-            "TS_CMD_VFO":4,
-            "TS_CMD_SPLIT":5,
-            "TS_CMD_RIT":6,
-            "TS_CMD_TXSTOP":7,
-            "TS_CMD_SDR":8,
-            "TS_CMD_LOCK":9,            # Dial Lock
-            "TS_CMD_ATT":10,            # ATT
-            "TS_CMD_IFS":11,            # IFS Enabled
-            "TS_CMD_IFSVALUE":12,       # IFS VALUE
-            "TS_CMD_STARTADC":13,
-            "TS_CMD_STOPADC":14,
-            "TS_CMD_SPECTRUMOPT":15,    # Option for Spectrum
-            "TS_CMD_SPECTRUM":16,       # Get Spectrum Value
-            "TS_CMD_TUNESTEP":17,       # Get Spectrum Value
-            "TS_CMD_WPM":18,            # Set WPM
-            "TS_CMD_KEYTYPE":19,        # Set KeyType
-            "TS_CMD_SWTRIG":21,         # SW Action Trigger for WSPR and more
-            "TS_CMD_READMEM":31,        # Read EEProm
-            "TS_CMD_WRITEMEM":32,       # Write EEProm
-            "TS_CMD_LOOPBACK0":74,      # Loopback1 (Response to Loopback Channgel)
-            "TS_CMD_LOOPBACK1":75,      # Loopback2 (Response to Loopback Channgel)
-            "TS_CMD_LOOPBACK2":76,      # Loopback3 (Response to Loopback Channgel)
-            "TS_CMD_LOOPBACK3":77,      # Loopback4 (Response to Loopback Channgel)
-            "TS_CMD_LOOPBACK4":78,      # Loopback5 (Response to Loopback Channgel)
-            "TS_CMD_LOOPBACK5":79,      # Loopback6 (Response to Loopback Channgel)
-            "TS_CMD_FACTORYRESET":85,   # Factory Reset
-            "TS_CMD_UBITX_REBOOT":95    # Reboot
-        }
-        self.modeNum_To_TextDict = {
-            "0":"DFT",
-            "2":"LSB",
-            "3":"USB",
-            "4":"CWL",
-            "5":"CWU"
-        }
-
-        self.Text_To_ModeNum = {
-            "DFT":0,
-            "LSB":2,
-            "USB":3,
-            "CWL":4,
-            "CWU":5
-        }
+        
+        # EEPROM.modeNum_To_TextDict = {
+        #     "0":"DFT",
+        #     "2":"LSB",
+        #     "3":"USB",
+        #     "4":"CWL",
+        #     "5":"CWU"
+        # }
+        # 
+        # EEPROM.Text_To_ModeNum = {
+        #     "DFT":0,
+        #     "LSB":2,
+        #     "USB":3,
+        #     "CWL":4,
+        #     "CWU":5
+        # }
 
         self.Text_To_BandChange = {
             "UP": 2,
@@ -184,46 +148,9 @@ class mainScreen(baseui.mainScreenUI):
             "1": "VFO-B"
         }
 
-        # self.CW_KeyType = {         # 0: straight, 1 : iambica, 2: iambicb
-        #     "0":"STRAIGHT",
-        #     "1":"IAMBICA",
-        #     "2":"IAMBICB"
-        # }
-        #
-        # self.CW_KeyValue = {
-        #     "STRAIGHT": 0x0,
-        #     "IAMBICA": 0x01,
-        #     "IAMBICB": 0x02
-        # }
-        self.lsb = 0                    # index of least significant eeprom mem address in list below
-        self.msb = 1                    # index of most significant eeprom emem address in list below
-        self.memLength = 2
-        self.charFlag = 3
-        self.memOffset = 4
-        self.totalSlots = 5
-        self.EEPROM_Mem_Address = {
-            "cw_key_type": [ 0x66, 0x01, 0x01, 0x0, 0x0, 0x1],
-            "cw_wpm": [ 0x1c, 0x0, 0x04, 0x0, 0x0, 0x1],
-            "cw_sidetone": [ 0x18, 0x0, 0x04, 0x0, 0x0, 0x1],
-            "cw_Delay_Returning_to_RX": [0x02, 0x1, 0x01, 0x0, 0x0, 0x1],  # eeprom value divided by 10
-            "cw_Delay_Starting_TX": [0x03, 0x1, 0x1, 0x0, 0x0,  0x1],  # eeprom saved valued divided by 2
-            "channel_freq_Mode": [0x76, 0x2, 0x4, 0x48, 0x4, 0x14], # 0x48 indicates a integer number
-            "channel_Label": [0xc7, 0x2, 0x5, 0x57, 0x6, 0x9],  # should be 0xa for total, but bug with v2 cec
-                                                                # 0x57 indicates it is a character
-            "channel_ShowLabel": [0xc6, 0x2, 0x1, 0x57, 0x6,  0x9], # should be 0xa for total, but bug with v2 cec
-                                                                # 0x57 indicates it is a character
-            "master_cal": [0x0, 0x0, 0x4, 0x48 ],
-            "ssb_bfo": [ 0x08, 0x0, 0x04, 0x48],
-            "cw_bfo":[ 0xfc, 0x0, 0x04, 0x48],
 
-            "factory_master_cal": [0x41, 0x0, 0x4, 0x48],
-            "factory_ssb_bfo": [0x49, 0x0, 0x04, 0x48],
-            "factory_cw_wpm":[0x5d, 0x0, 0x01, 0x0, 0x0, 0x1],
-            "factory_cw_sidetone":[0x59, 0x0, 0x04, 0x0, 0x0, 0x1]
 
-        }
-
-        self.memReadingState = "Freq"
+        # self.memReadingState = "Freq"
 
         #
         #   These three variables are used to track which memory location (or "slot")
@@ -245,22 +172,71 @@ class mainScreen(baseui.mainScreenUI):
     def attachRadio(self, radio):
         self.theRadio = radio
 
+    def savePortHandle(self, portHandle):
+        self.portHandle = portHandle
+
     def initUX(self):
-        self.updateRateMultiplier()
-        self.updateLabelTuning_Multiplier()
-        self.toggle_Digit_Highlight(self.rate_selection[self.currentDigitPos], True)
+        self.theVFO_Object.initVFO(self.theRadio)
 
         self.place(x=0, y=0)  # place the mainWindow on the screen
-        self.master.geometry(gv.trimAndLocateWindow(self, 5, 30))
 
+        self.update()       # since we just created the window, need to run update to get width and height calculated
 
+        self.master.geometry(str(self.winfo_width()) + "x" + str(self.winfo_height()) + gv.MAIN_WINDOW_OFFSET)
+
+        self.master.protocol("WM_DELETE_WINDOW", lambda: self.close_MainWindow())
+        self.SWR_PWR_Frame.grid_remove()
+        self.mainScreenPlotter = barPlotterBdata(self, self.spectrumCanvas, 63, 70)
+        self.mainScreenCW_logger = cwLogger(self, self.decodedCWText, 100)
+        self.consumerDSPdata.request_DSP_EEPROM_Data()          # Request data. If we get some, then DSP will be marked as exists
+
+    def close_MainWindow (self):
+        self.portHandle.close()         # Close connection to Radio
+        self.master.destroy()           # Close Window
 
     ######################################################################################
     #   This looks up the command processing routing to be called via a dictionary
     #   based on the command type (characters 3,4 in the buffer after prelogue stripped
     ######################################################################################
 
+    def validateKey(self, command, buffer):
+        validateFlag = False
+        if len(command) != 2:
+            print("invalid command", command)
+        elif len(buffer) == 0:
+            print("empty buffer", buffer)
+        elif command.isalnum() == False:
+            print("invalid command", command)
+        elif buffer[0] != 'p' or buffer[1] != 'm':
+            print("invalid command - doesnt start pm", command)
+        elif buffer[2] != '.' or buffer[5] != '.':
+            print("invalid command - periods in wrong place ")
+        elif ((buffer[6] != 'v') or (buffer[7] != 'a') or (buffer[8] != 'l')) and ((buffer[6] != 't') or (buffer[7] != 'x') or  (buffer[8] != 't')):
+            print("invalid command - not txt or val")
+        elif buffer[9] != '=':
+            print("invalid command format, no =")
+        elif len(self.extractValue(buffer, 10, len(buffer) - 3)) < 1:
+            print("invalid value format, empty")
+        elif 'val' in self.extractValue(buffer, 10, len(buffer) - 3):
+            print("invalid value format, looks like val")
+        else:
+            validateFlag = True
+        #
+        #   Need to figure out how to recover from this type of bad data
+        #
+        # if validateFlag == False:
+        #     self.theRadio.rebootRadio()
+
+        return validateFlag
+
+
+
     def delegate_command_processing(self,command, buffer):
+        # print(command, buffer)
+
+        if self.validateKey(command, buffer) == False:
+            print(buffer)
+            return
         match command:
             case "v1": self.v1_UX_Set_Tuning_Preset_1(buffer)
             case "v2": self.v2_UX_Set_Tuning_Preset_2(buffer)
@@ -300,20 +276,21 @@ class mainScreen(baseui.mainScreenUI):
             case "cr": self.cr_UX_RIT_Toggle(buffer)
             case "vf": self.vf_UX_ATT_Level(buffer)
             case "vi": self.vi_UX_IFS_Level(buffer)
+            case "vm": self.vm_UX_PW_SWR_Level(buffer)
             case "ci": self.ci_UX_IFS_State_Set(buffer)
             case "cx": self.cx_UX_TX_Stop_Toggle(buffer)
             case "cp": self.cp_UX_S_Meter_Value(buffer)  # Related to S meter. search CMD_SMETER
             case "ct": self.ct_UX_RX_TX_Mode(buffer)
             case "al": self.al_UX_S_Meter_Value(buffer)
+            case "vv": self.vv_UX_Command_Data(buffer)
+            case "vg": self.vg_UX_DSP_Flag(buffer)
+            case "sb": self.sb_UX_CW_Decoded_Characters(buffer)
+            case "sp": self.sp_UX_DSP_Spectrum_Values(buffer)
+            case "xt": self.sp_UX_DSP_Spectrum_Values(buffer)
             case _:
                 print("Command not recognized=", buffer,"*")
                 print("command:", command,"*",sep="*")
 
-        # try:
-        #     self.MCU_Command_To_CB_Dict[command](buffer)
-        # except:
-        #     print("Command not recognized=", buffer,"*")
-        #     print("command:", command,"*",sep="*")
 
     ################################################################################
     #   Format of command sent by radio:
@@ -332,39 +309,6 @@ class mainScreen(baseui.mainScreenUI):
             returnBuffer = returnBuffer + buffer[i]
             i +=1
         return returnBuffer.replace('"','')
-
-    def offsetVFOforTX (self, flag):
-        if flag:            # indicates we need to offset VFO by the Tone and Tweak
-            self.Tx_Freq_Alert_VAR.set("TX Freq")
-            if self.primary_Mode_VAR.get() == 'CWL':
-                self.freqOffset  = int(self.tone_value_VAR.get()) + self.cwTX_Tweak
-
-            elif self.primary_Mode_VAR.get() == 'CWU':
-                self.freqOffset = - int(self.tone_value_VAR.get()) + self.cwTX_Tweak
-        else:
-            self.Tx_Freq_Alert_VAR.set("       ")
-            self.freqOffset = 0
-
-        self.update_VFO_Display(self.primary_VFO_VAR.get(), self.freqOffset)
-
-    def update_VFO_Display (self, unformatted_VFO_String, offset=0 ):
-        freq = int(unformatted_VFO_String) + offset
-
-        paddedVFO = str(freq).rjust(8)
-
-        self.digit0_primary_VFO_VAR.set(paddedVFO[7])
-        self.digit1_primary_VFO_VAR.set(paddedVFO[6])
-        self.digit2_primary_VFO_VAR.set(paddedVFO[5])
-        self.digit3_primary_VFO_VAR.set(paddedVFO[4])
-        self.digit4_primary_VFO_VAR.set(paddedVFO[3])
-        self.digit5_primary_VFO_VAR.set(paddedVFO[2])
-        self.digit6_primary_VFO_VAR.set(paddedVFO[1])
-        self.digit7_primary_VFO_VAR.set(paddedVFO[0])
-
-
-
-
-
 
     #   Callbacks
     #####################################################################################
@@ -393,9 +337,16 @@ class mainScreen(baseui.mainScreenUI):
             self.channelsWindow.initChannelsUX()
 
         else:
-            self.channelsWindow.SaveAndSetPreset()
-            self.channelsWindow.popup.deiconify()
-            self.channelsWindow.current_Channel_VAR.set("Not Saved")
+            self.redisplayChannelWindow()
+
+    #
+    #   Initializes things when just deiconfying a prior channel window
+    #
+    def redisplayChannelWindow(self):
+        self.theVFO_Object.savePresetState()
+        self.theRadio.Set_Tuning_Preset(1)
+        self.channelsWindow.popup.deiconify()
+        self.channelsWindow.current_Channel_VAR.set("Not Saved")
 
     def displayClassic_uBITXControlWindow(self):
         self.classic_uBITX_ControlWindow  = tk.Toplevel(self.master)
@@ -424,411 +375,48 @@ class mainScreen(baseui.mainScreenUI):
         self.channelsWindow = None
         self.displayChannelWindow()
 
-    def Radio_Req_Channel_Freqs(self):
 
-        base = self.EEPROM_Mem_Address["channel_freq_Mode"][self.lsb]
-
-        for i in range(self.EEPROM_Mem_Address["channel_freq_Mode"][self.totalSlots]):
-            command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                       base,
-                       self.EEPROM_Mem_Address["channel_freq_Mode"][self.msb],
-                       self.EEPROM_Mem_Address["channel_freq_Mode"][self.memLength],
-                       self.EEPROM_Mem_Address["channel_freq_Mode"][self.charFlag]
-                       ]
-            self.memoryQueue.append("Freq")         # Add  it to queue to be processed when MCU responds
-            self.theRadio.sendCommandToMCU(bytes(command))
-            base += self.EEPROM_Mem_Address["channel_freq_Mode"][self.memOffset]
-
-
-        base = self.EEPROM_Mem_Address["channel_freq_Mode"][self.lsb]
-
-    def Radio_Req_Channel_Labels(self):
-        base = self.EEPROM_Mem_Address["channel_Label"][self.lsb]
-        for i in range(self.EEPROM_Mem_Address["channel_Label"][self.totalSlots]):
-            command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                       base,
-                       self.EEPROM_Mem_Address["channel_Label"][self.msb],
-                       self.EEPROM_Mem_Address["channel_Label"][self.memLength],
-                       self.EEPROM_Mem_Address["channel_Label"][self.charFlag]
-                       ]
-            self.memoryQueue.append("Label")
-            self.theRadio.sendCommandToMCU(bytes(command))
-            base += self.EEPROM_Mem_Address["channel_Label"][self.memOffset]
-
-        base = self.EEPROM_Mem_Address["channel_Label"][self.lsb]
-
-    def Radio_Req_Channel_Show_Labels(self):
-        base = self.EEPROM_Mem_Address["channel_ShowLabel"][self.lsb]
-        for i in range(self.EEPROM_Mem_Address["channel_ShowLabel"][self.totalSlots]):
-            command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                       base,
-                       self.EEPROM_Mem_Address["channel_ShowLabel"][self.msb],
-                       self.EEPROM_Mem_Address["channel_ShowLabel"][self.memLength],
-                       self.EEPROM_Mem_Address["channel_ShowLabel"][self.charFlag]
-                       ]
-            self.memoryQueue.append("ShowLabel")
-            self.theRadio.sendCommandToMCU(bytes(command))
-            base += self.EEPROM_Mem_Address["channel_ShowLabel"][self.memOffset]
-
-        base = self.EEPROM_Mem_Address["channel_ShowLabel"][self.lsb]
-
-
-    def Radio_Req_Master_Cal(self, setter_CB):
-
-        self.Master_Cal_Setter = setter_CB
-
-        command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                   self.EEPROM_Mem_Address["master_cal"][self.lsb],
-                   self.EEPROM_Mem_Address["master_cal"][self.msb],
-                   self.EEPROM_Mem_Address["master_cal"][self.memLength],
-                   self.EEPROM_Mem_Address["master_cal"][self.charFlag]
-                   ]
-
-
-        self.memoryQueue.append("MasterCal")         # tell the command that receives the data what is it for
-
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Req_SSB_BFO(self, setter_CB):
-
-        self.SSB_BFO_Setter = setter_CB
-
-        command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                   self.EEPROM_Mem_Address["ssb_bfo"][self.lsb],
-                   self.EEPROM_Mem_Address["ssb_bfo"][self.msb],
-                   self.EEPROM_Mem_Address["ssb_bfo"][self.memLength],
-                   self.EEPROM_Mem_Address["ssb_bfo"][self.charFlag]
-                   ]
-        self.memoryQueue.append("SSB_BFO")
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Req_CW_BFO(self,setter_CB):
-
-        self.CW_BFO_Setter = setter_CB
-
-        command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                   self.EEPROM_Mem_Address["cw_bfo"][self.lsb],
-                   self.EEPROM_Mem_Address["cw_bfo"][self.msb],
-                   self.EEPROM_Mem_Address["cw_bfo"][self.memLength],
-                   self.EEPROM_Mem_Address["cw_bfo"][self.charFlag]
-                   ]
-
-        self.memoryQueue.append("CW_BFO")
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Req_Factory_Master_Cal(self, setter_CB):
-
-        self.Factory_Master_Cal_Setter = setter_CB
-
-        command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                   self.EEPROM_Mem_Address["factory_master_cal"][self.lsb],
-                   self.EEPROM_Mem_Address["factory_master_cal"][self.msb],
-                   self.EEPROM_Mem_Address["factory_master_cal"][self.memLength],
-                   self.EEPROM_Mem_Address["factory_master_cal"][self.charFlag]
-                   ]
-
-
-        self.memoryQueue.append("Factory_MasterCal")         # tell the command that receives the data what is it for
-
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Req_Factory_SSB_BFO(self, setter_CB):
-
-        self.Factory_SSB_BFO_Setter = setter_CB
-
-        command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                   self.EEPROM_Mem_Address["factory_ssb_bfo"][self.lsb],
-                   self.EEPROM_Mem_Address["factory_ssb_bfo"][self.msb],
-                   self.EEPROM_Mem_Address["factory_ssb_bfo"][self.memLength],
-                   self.EEPROM_Mem_Address["factory_ssb_bfo"][self.charFlag]
-                   ]
-
-        self.memoryQueue.append("Factory_SSB_BFO")
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Req_Factory_CW_Speed(self, setter_CB):
-
-        self.Factory_CW_Speed_Setter = setter_CB
-
-        command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                   self.EEPROM_Mem_Address["factory_cw_wpm"][self.lsb],
-                   self.EEPROM_Mem_Address["factory_cw_wpm"][self.msb],
-                   self.EEPROM_Mem_Address["factory_cw_wpm"][self.memLength],
-                   self.EEPROM_Mem_Address["factory_cw_wpm"][self.charFlag]
-                   ]
-
-        self.memoryQueue.append("Factory_CW_Speed")
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Req_Factory_CW_Sidetone(self, setter_CB):
-
-        self.Factory_CW_Sidetone_Setter = setter_CB
-
-        command = [self.toRadioCommandDict["TS_CMD_READMEM"],
-                   self.EEPROM_Mem_Address["factory_cw_sidetone"][self.lsb],
-                   self.EEPROM_Mem_Address["factory_cw_sidetone"][self.msb],
-                   self.EEPROM_Mem_Address["factory_cw_sidetone"][self.memLength],
-                   self.EEPROM_Mem_Address["factory_cw_sidetone"][self.charFlag]
-                   ]
-
-        self.memoryQueue.append("Factory_CW_Sidetone")
-        self.theRadio.sendCommandToMCU(bytes(command))
 
     def vfo_CB(self):
-        self.Radio_Toggle_VFO()
+        self.theRadio.Toggle_VFO()
 
     def mode_lsb_CB(self):
-        self.Radio_Set_Mode(self.Text_To_ModeNum["LSB"])
+        self.theRadio.Set_Mode(EEPROM.Text_To_ModeNum["LSB"])
 
     def mode_usb_CB(self):
-        self.Radio_Set_Mode(self.Text_To_ModeNum["USB"])
+        self.theRadio.Set_Mode(EEPROM.Text_To_ModeNum["USB"])
 
 
     def mode_cwl_CB(self):
-        self.Radio_Set_Mode(self.Text_To_ModeNum["CWL"])
+        self.theRadio.Set_Mode(EEPROM.Text_To_ModeNum["CWL"])
 
 
     def mode_cwu_CB(self):
-        self.Radio_Set_Mode(self.Text_To_ModeNum["CWU"])
+        self.theRadio.Set_Mode(EEPROM.Text_To_ModeNum["CWU"])
 
     def band_up_CB(self):
-         self.Radio_Change_Band(self.Text_To_BandChange["UP"])
+         self.theRadio.Change_Band(self.Text_To_BandChange["UP"])
 
     def band_down_CB(self):
-         self.Radio_Change_Band(self.Text_To_BandChange["DOWN"])
+         self.theRadio.Change_Band(self.Text_To_BandChange["DOWN"])
 
     def cwSettings_CB(self, event=None):
        if (not self.lock_Button_On):
            self.displayCWSettingsWindow()
 
-    def tuning_Preset_5_CB(self):
-        self.Radio_Set_Tuning_Preset(5)
-        self.tuning_Preset_Selection_Frame.grid_remove()
-
-    def tuning_Preset_4_CB(self):
-        self.Radio_Set_Tuning_Preset(4)
-        self.tuning_Preset_Selection_Frame.grid_remove()
-
-    def tuning_Preset_3_CB(self):
-        self.Radio_Set_Tuning_Preset(3)
-        self.tuning_Preset_Selection_Frame.grid_remove()
-
-    def tuning_Preset_2_CB(self):
-        self.Radio_Set_Tuning_Preset(2)
-        self.tuning_Preset_Selection_Frame.grid_remove()
-
-    def tuning_Preset_1_CB(self):
-        self.Radio_Set_Tuning_Preset(1)
-        self.tuning_Preset_Selection_Frame.grid_remove()
-
-
-    def tuning_Preset_Select_CB(self):
-        #
-        #   check if frame containing radiobuttons is displayed
-        #   if not, display it. If currently displayed, remove it
-        #
-        if (self.tuning_Preset_Selection_Frame.winfo_ismapped()):
-            self.tuning_Preset_Selection_Frame.grid_remove()
-        else:
-            self.tuning_Preset_Selection_Frame.grid()
 
     def tuning_Jogwheel_CB(self):
+        # print("\n\nin tuning_Jogwheel_CB")
+        # print("intVFO =", self.theVFO_Object.getIntPrimaryVFO())
+        # print("tuning rate=", self.theVFO_Object.getCurrentVFO_Tuning_Rate())
+        # print("baselinejogvalue=",self.baselineJogValue )
+        # print("jogwheel valye=", self.tuning_Jogwheel.get() )
+        newFreq =  (self.theVFO_Object.getIntPrimaryVFO()
+                    - (self.theVFO_Object.getCurrentVFO_Tuning_Rate() * self.baselineJogValue))
 
-        newFreq =  int(self.primary_VFO_VAR.get()) - (self.currentVFO_Tuning_Rate * self.baselineJogValue)
-        newFreq += self.currentVFO_Tuning_Rate * self.tuning_Jogwheel.get()
-        # if self.DeepDebug:
-        #     print("new freq from jog = ", newFreq)
-        self.Radio_Set_New_Frequency(newFreq)
-
-
-    def find_msd_position(self, number_string):
-        # Finds the index of the most significant digit from the right in a string representation of a number.
-
-        # Returns:
-        #     int or None: The index of the most significant digit, or None if no non-zero digit is found.
-
-        reversed_number_string = number_string[::-1].strip()  # neat trick to reverse a string
-
-        for i, char in enumerate(reversed_number_string):
-            if char.isdigit() and char != '0':
-                return i
-        return None
-
-    #
-    #   this function returns a single digit integer that occupies the position
-    #   corresponding to the current selected rate.
-    #   Conveniently, presets are allocated to position 0,
-    #   which is always zero in CEC and not setable
-    #
-
-    def getVFOdigit(self):
-        #
-        #   get the VFO currently displayed
-        #
-        currentVFO = self.primary_VFO_VAR.get()
-
-        #
-        #   reverse it so that least significant is in position 0
-        #
-        reversedVFO = currentVFO[::-1].strip()      # neat trick to reverse a string
-
-        #
-        #   pad it on right with zeros so we have 8 characters
-        #
-        reversedVFO = reversedVFO.ljust(8,"0")
-
-        if (self.currentDigitPos == 0):
-            if (self.currentVFO_Tuning_Rate != 0):
-                pos=self.find_msd_position(str(self.currentVFO_Tuning_Rate))
-                return int(reversedVFO[pos])
-            else:
-                return int(reversedVFO[2])
-        else:
-            #
-            #   now we can just return the character of the selected rate
-            #
-            return int(reversedVFO[self.currentDigitPos])
-    #
-    #   This routine handles switching between Direct and "Preset" tuning mode
-    #   The complexity here comes from the original CEC software using the current
-    #   preset-1 (i.e. if Preset 3 was 100 and Preset 2 was 50, and we were on preset 3,
-    #   everything below Preset 3 would be zero'ed out. This means to allow direct
-    #   tune mode on the tens digit, we must first make the preset the lowest # (i.e. 1)
-    #   so that the tens digit is not masked out and turned to zero.
-    #   As a result, we need to save the state of the preset when we move to Direct Tune,
-    #   and then restore it as we exit Direct Tune and go into Preset mode.
-    #   Since the MCU can also force changes in preset, we must temporarily turn off
-    #   the updating of the label
-    #
-    def toggle_Tuning_Mode(self, mode):
-        if (mode == "direct tune"):
-            if (self.saved_tuning_Preset_Selection == None):        #None value indicates we *were* in "direct tune" mode
-                #
-                #   save state prior to going into Direct Mode
-                #
-                self.saved_tuning_Preset_Selection = self.tuning_Preset_Selection_VAR.get()
-                self.saved_tuning_Preset_VAR = self.tuning_Preset_Label_VAR.get()
-                #
-                #   Sets label that displays current present with "Direct Tune" string
-                #
-                self.tuning_Preset_Label_VAR.set("Direct Tune")
-                #   turn off any changes in the label due to a change in preset coming from the radio
-                self.update_Tuning_Preset_Button_Label = False
-                #   Disable the tuning rate button so selected preset cannot be changed while in direct tune
-                self.tuning_Preset_Button.configure(state='disabled')
-                #
-                #   Select the lowest tuning rate of the presets. The need to do this is the result of the original
-                #   CEC software using the rate preselects to truncate digits below the preset. For example.
-                #   if a preset of 100 was selected, then it would be impossible to set the dial in increments of 20
-                #   or 10 because it would be truncated to lower 100.
-                #
-                self.Radio_Set_Tuning_Preset(1)
-
-        else:       # Switching into pre-set tuning mode and have to restore the state
-            if (self.saved_tuning_Preset_Selection != None):          # dont restore unless it was previously saved
-                #   Allow updating of the Label for the selected preset
-                self.update_Tuning_Preset_Button_Label = True
-                #   Restore the saved states
-                self.tuning_Preset_Label_VAR.set(self.saved_tuning_Preset_VAR)
-                self.Radio_Set_Tuning_Preset(int(self.saved_tuning_Preset_Selection))
-                #   Re-enable the button to select a preset
-                self.tuning_Preset_Button.configure(state='enabled')
-                #   indicate the saved states are now invalid
-                self.saved_tuning_Preset_Selection = None
-
-
-    def toggle_Digit_Highlight(self, light, Status):
-
-        if (Status):
-            if (isinstance(light, ttk.Button)):
-                light.configure(style='GreenButton2b.TButton')
-                self.toggle_Tuning_Mode("preset tune")      # go into preset tune mode
-
-            else:
-                light.configure(style='OnLED.TLabel')
-                self.toggle_Tuning_Mode("direct tune")      # go into direct tune mode
-
-        else:
-            if (isinstance(light, ttk.Button)):
-                light.configure(style='Button2b.TButton')
-            else:
-                light.configure(style='OffLED.TLabel')
-
-
-    #
-    #   When the tuning_Multiplier is clicked, it cycles through the digits in the VFO to allow them to be
-    #   manually tuned. The initial case the use of the preset tuning cycles is used, much in the same
-    #   way it would be if you are adjusting the physical tuning knob.
-    #
-    def tuning_Multiplier_Button_CB(self):
-        #
-        #   First turn off the old LED, turn on new LED indicator for tuning
-        #
-        self.updateLEDTuningHighlight()
-        #
-        #   Update rate multiplier for jogwheel
-        #
-        self.updateRateMultiplier()
-        #
-        #   set tracking variables for new rate change
-        #
-        self.updateJogTracking()
-        #
-        #   Update the label on the tuning button selector
-        #
-        self.updateLabelTuning_Multiplier()
-
-
-    def updateLEDTuningHighlight(self):
-        #
-        #   First turn off the old LED
-        #
-        self.toggle_Digit_Highlight(self.rate_selection[self.currentDigitPos], False)
-        #
-        #   Increment to the next slot and turn its LED on, check for rollover
-        #
-        self.currentDigitPos += 1
-        if self.currentDigitPos > len(self.rate_selection)-1:
-            self.currentDigitPos = 0
-        self.toggle_Digit_Highlight(self.rate_selection[self.currentDigitPos], True)
-
-    def updateRateMultiplier(self):
-        #
-        #   Set the frequency multiplier
-        #
-        self.currentVFO_Tuning_Rate = self.DigitPos_to_Powers_of_Ten[self.currentDigitPos]
-        #
-        #   Special case 0, which is the current value of the preset
-        #
-        if (self.currentVFO_Tuning_Rate == 0):
-           if self.tuning_Preset_Label_VAR.get() == "Direct Tune":
-               self.Radio_Set_Tuning_Preset(1)
-           else:
-               self.currentVFO_Tuning_Rate = int(self.tuning_Preset_Label_VAR.get())
-
-    def updateJogTracking(self,newBaseline=True):
-        # if self.DeepDebug:
-        #     print("updating jogwheel, digit=", self.getVFOdigit())
-        #     print("current jogwheel position =", self.tuning_Jogwheel.get())
-
-        self.tuning_Jogwheel.setSpecial(self.getVFOdigit())
-        if(newBaseline):
-            self.baselineJogValue = self.tuning_Jogwheel.get()
-
-    def updateLabelTuning_Multiplier(self):
-        if (self.currentVFO_Tuning_Rate < 1000):
-            multiplier_string = str(int(self.currentVFO_Tuning_Rate)) + "Hz"
-        elif (self.currentVFO_Tuning_Rate < 1000000):
-            multiplier_string = str(int(self.currentVFO_Tuning_Rate / 1000)) + "KHz"
-        else:
-            multiplier_string = str(int(self.currentVFO_Tuning_Rate / 1000000)) + "MHz"
-
-        #   Now set the text on the multiplier button to reflect the new rate
-        #
-        self.tuning_Multiplier_VAR.set("Tuning Factor\nx" + multiplier_string)
+        newFreq += self.theVFO_Object.getCurrentVFO_Tuning_Rate() * self.tuning_Jogwheel.get()
+        # print("newFreq=", newFreq)
+        self.theRadio.Set_New_Frequency(newFreq)
 
 #
 #   This function sends to the Radio a notice that a screen lock has been requested
@@ -839,19 +427,19 @@ class mainScreen(baseui.mainScreenUI):
 #
 
     def lock_CB(self):
-        self.Radio_Toggle_Lock()    # Inform  Radio that a screen lock has been requested
+        self.theRadio.Toggle_Lock()    # Inform  Radio that a screen lock has been requested
 
     def speaker_CB(self):           # Inform Radio that a request was made to mute speaker
-        self.Radio_Toggle_Speaker()
+        self.theRadio.Toggle_Speaker()
 
     def stop_CB(self):
-        self.Radio_Toggle_Stop()
+        self.theRadio.Toggle_Stop()
 
     def split_CB(self):
-        self.Radio_Toggle_Split()
+        self.theRadio.Toggle_Split()
 
     def rit_CB(self):
-        self.Radio_Toggle_RIT()
+        self.theRadio.Toggle_RIT()
 
 
 
@@ -867,7 +455,7 @@ class mainScreen(baseui.mainScreenUI):
     #   the jogwheel is released, a check is made on whether there was
     #   a change in value.
     #   The routines in this area just send a command to the Radio via the
-    #   self.Radio_Set_ATT (value) routine. Zero turns it off, any other value turns it on.
+    #   self.theRadio.Set_ATT (value) routine. Zero turns it off, any other value turns it on.
     #   Note that although the UX is updated as the jogwheel is moved, the real value is set
     #   self.vf_UX_ATT_Level routine which is kicked off when the Radio(MCU) sends a "vf"
     #   command to the screen
@@ -883,16 +471,16 @@ class mainScreen(baseui.mainScreenUI):
             if (self.ATT_Jogwheel.lastValue == currentValue) :
                 self.toggleATT_State()
             else:
-                self.Radio_Set_ATT(currentValue)
+                self.theRadio.Set_ATT(currentValue)
 
     #
     #   toggle ATT state to on if it was off, off it it was on
     #
     def toggleATT_State(self):
         if self.ATT_Jogwheel.state == "disabled":
-            self.Radio_Set_ATT(self.ATT_Jogwheel.lastValue)     # Signal radio ATT on and last value
+            self.theRadio.Set_ATT(self.ATT_Jogwheel.lastValue)     # Signal radio ATT on and last value
         else:
-            self.Radio_Set_ATT(self.ATT_Status_Off)             # Signal radio ATT turning off
+            self.theRadio.Set_ATT(self.ATT_Status_Off)             # Signal radio ATT turning off
 
     #
     #   Send Radio/MCU the updated value for the  ATT. Although the UX reflects the new
@@ -902,7 +490,7 @@ class mainScreen(baseui.mainScreenUI):
     #
     def updateATTValue_CB(self):
 
-        self.Radio_Set_ATT(self.ATT_Jogwheel.get())
+        self.theRadio.Set_ATT(self.ATT_Jogwheel.get())
 
 
     #
@@ -921,14 +509,38 @@ class mainScreen(baseui.mainScreenUI):
             if self.IFS_Jogwheel.lastValue == currentValue:
                 self.toggleIFS_State()
             else:
-                self.Radio_Set_IFS_Level(currentValue)
+                self.theRadio.Set_IFS_Level(currentValue)
 
 
     def toggleIFS_State(self):
-        self.Radio_Toggle_IFS()
+        self.theRadio.Toggle_IFS()
 
     def updateIFSValue_CB(self):
-        self.Radio_Set_IFS_Level(self.IFS_Jogwheel.get())
+        self.theRadio.Set_IFS_Level(self.IFS_Jogwheel.get())
+
+    def cwDecode_Button_CB(self, event=None):
+        #
+        #   Intercept any attempt to start CW Decoding ig DSP is not enabled
+        #
+        if gv.config.get_DSP_Switch() != "True":
+            messagebox.showerror(message="Error: DSP not enabled", detail="Please enable in Machine Settings and try again.\n\n",
+                                 parent=self)
+        else:
+            self.consumerDSPdata = cwDecoder(self.master, self)
+
+    def spectrumScan_Button_CB(self, event=None):
+        #
+        #   Start CW Scanner Window
+        #
+        self.theRadio.Set_Spectrum_Mode(94)
+        self.consumerSpectrumdata = frequencySpectrum(self.master, self, self.theVFO_Object.getIntPrimaryVFO())
+
+    def bandScan_Button_CB(self, event=None):
+        #
+        #   Start BandScanner Window
+        #
+        self.theRadio.Set_Spectrum_Mode(94)
+        self.consumerSpectrumdata = bandScanner(self.master, self)
 
 
 
@@ -942,386 +554,6 @@ class mainScreen(baseui.mainScreenUI):
 #   These routines are called to tell the MCU that an action has happened in the UX.
 #   Typically these should be used by the UX Callbacks
 ########################################################################################
-    def Radio_Freq_Encode(self, freq):
-        encodedBytes = bytearray()
-        intFreq = int(freq)
-        encodedBytes.append(intFreq & 0xff)
-
-        intFreq = (intFreq >> 8)
-        encodedBytes.append(intFreq & 0xff)
-
-        intFreq = (intFreq >> 8)
-        encodedBytes.append(intFreq & 0xff)
-
-        intFreq = (intFreq >> 8)
-        encodedBytes.append(intFreq & 0xff)
-
-        return encodedBytes
-
-    def Radio_Set_Master_Cal(self, cal):
-
-        #
-        #   Now have to write it to EEPROM as this is not one of the values that are automatically saved to EEPROM
-        #   This requires reboot to take effect
-        #
-
-        checksum = (self.EEPROM_Mem_Address["master_cal"][self.lsb] + self.EEPROM_Mem_Address["master_cal"][self.msb]
-                    + self.EEPROM_Mem_Address["master_cal"][self.memLength]) % 256
-
-        fourBytes = self.Radio_Freq_Encode(str(cal))
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["master_cal"][self.lsb],
-                   self.EEPROM_Mem_Address["master_cal"][self.msb],
-                   self.EEPROM_Mem_Address["master_cal"][self.memLength],
-                   checksum,
-                   fourBytes[0],
-                   fourBytes[1],
-                   fourBytes[2],
-                   fourBytes[3]
-                   ]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Set_SSB_BFO(self, cal):
-
-        #
-        #   Now have to write it to EEPROM as this is not one of the values that are automatically saved to EEPROM
-        #   This requires reboot to take effect
-        #
-
-        checksum = (self.EEPROM_Mem_Address["ssb_bfo"][self.lsb] + self.EEPROM_Mem_Address["ssb_bfo"][self.msb]
-                    + self.EEPROM_Mem_Address["ssb_bfo"][self.memLength]) % 256
-
-        fourBytes = self.Radio_Freq_Encode(str(cal))
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["ssb_bfo"][self.lsb],
-                   self.EEPROM_Mem_Address["ssb_bfo"][self.msb],
-                   self.EEPROM_Mem_Address["ssb_bfo"][self.memLength],
-                   checksum,
-                   fourBytes[0],
-                   fourBytes[1],
-                   fourBytes[2],
-                   fourBytes[3]
-                   ]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-
-    def Radio_Set_CW_BFO(self, cal):
-
-        #
-        #   Now have to write it to EEPROM as this is not one of the values that are automatically saved to EEPROM
-        #   This requires reboot to take effect
-        #
-
-        checksum = (self.EEPROM_Mem_Address["cw_bfo"][self.lsb] + self.EEPROM_Mem_Address["cw_bfo"][self.msb]
-                    + self.EEPROM_Mem_Address["cw_bfo"][self.memLength]) % 256
-
-        fourBytes = self.Radio_Freq_Encode(str(cal))
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["cw_bfo"][self.lsb],
-                   self.EEPROM_Mem_Address["cw_bfo"][self.msb],
-                   self.EEPROM_Mem_Address["cw_bfo"][self.memLength],
-                   checksum,
-                   fourBytes[0],
-                   fourBytes[1],
-                   fourBytes[2],
-                   fourBytes[3]
-                   ]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Set_Tuning_Preset(self, rate: bytes):
-        command = [self.toRadioCommandDict["TS_CMD_TUNESTEP"], rate, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Set_New_Frequency(self, value):
-        fourBytes = self.Radio_Freq_Encode(value)
-        command = [self.toRadioCommandDict["TS_CMD_FREQ"],fourBytes[0],fourBytes[1],fourBytes[2],fourBytes[3]]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    #
-    #   This function tells the Radio that a new mode has been selected for
-    #   the primary (displayed) VFO. After receiving the new mode, the
-    #   Radio will separately send back the mode to the UX
-    #
-    def Radio_Set_Mode(self, newMode):
-        command = [self.toRadioCommandDict["TS_CMD_MODE"], newMode, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    #
-    #   This function tells the Radio that a button up or down has been pushed
-    #   in the UX. After receiving this command the radio will send back a new frequency
-    #   and mode for the displayed VOF
-    #
-    def Radio_Change_Band(self, direction):
-        command = [self.toRadioCommandDict["TS_CMD_BAND"], direction, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Tuning_Rate(self,value: bytes):
-        command = [self.toRadioCommandDict["TS_CMD_TUNESTEP"], value, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Toggle_VFO(self):
-        command = [self.toRadioCommandDict["TS_CMD_VFO"], 0, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Toggle_Lock(self):
-        command = [self.toRadioCommandDict["TS_CMD_LOCK"], 0, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Toggle_Speaker(self):
-        command = [self.toRadioCommandDict["TS_CMD_SDR"], 0, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Toggle_Stop(self):
-        command = [self.toRadioCommandDict["TS_CMD_TXSTOP"], 0, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Toggle_Split(self):
-        command = [self.toRadioCommandDict["TS_CMD_SPLIT"], 0, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Toggle_RIT(self):
-        command = [self.toRadioCommandDict["TS_CMD_RIT"], 0, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Set_ATT(self, value: bytes):
-        command = [self.toRadioCommandDict["TS_CMD_ATT"], value, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Toggle_IFS(self):
-        command = [self.toRadioCommandDict["TS_CMD_IFS"], 0, 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-
-    def Radio_Set_IFS_Level(self, level):
-        encodedBytes = self.Radio_Freq_Encode(str(level))
-
-        command = [self.toRadioCommandDict["TS_CMD_IFSVALUE"], encodedBytes[0], encodedBytes[1], encodedBytes[2], 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Set_CW_Tone(self, tone):
-
-        #
-        #   Now have to write it to EEPROM as this is not one of the values that are automatically saved to EEPROM
-        #   This requires reboot to take effect
-        #
-
-        checksum = (self.EEPROM_Mem_Address["cw_sidetone"][self.lsb] + self.EEPROM_Mem_Address["cw_sidetone"][self.msb]
-                    + self.EEPROM_Mem_Address["cw_sidetone"][self.memLength]) % 256
-
-
-        fourBytes = self.Radio_Freq_Encode(str(tone))
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["cw_sidetone"][self.lsb],
-                   self.EEPROM_Mem_Address["cw_sidetone"][self.msb],
-                   self.EEPROM_Mem_Address["cw_sidetone"][self.memLength],
-                   checksum,
-                   fourBytes[0],
-                   fourBytes[1],
-                   fourBytes[2],
-                   fourBytes[3]
-                   ]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Set_CW_Keytype(self, keyType):
-        #
-        #   first send command to officially change the keytype
-        #
-        command = [self.toRadioCommandDict["TS_CMD_KEYTYPE"], gv.CW_KeyValue[keyType], 0, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-        #
-        #   Now have to write it to EEPROM as this is not one of the values that are automatically saved to EEPROM
-        #
-
-        checksum = (self.EEPROM_Mem_Address["cw_key_type"][self.lsb] + self.EEPROM_Mem_Address["cw_key_type"][self.msb]
-                    + self.EEPROM_Mem_Address["cw_key_type"][self.memLength]) % 256
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["cw_key_type"][self.lsb],
-                   self.EEPROM_Mem_Address["cw_key_type"][self.msb],
-                   self.EEPROM_Mem_Address["cw_key_type"][self.memLength],
-                   checksum,
-                   gv.CW_KeyValue[keyType]
-                   ]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-
-
-    def Radio_Set_CW_Speed(self, keySpeed):
-
-        #
-        #
-        #   first send command to officially change the key speed
-        #   wpm directly saved. It is the dot length which is 1200/wpm
-        #
-
-        dotLength_ms = int(1200 / int(keySpeed))
-        command = [self.toRadioCommandDict["TS_CMD_WPM"], dotLength_ms, 0, 0]
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-        #
-        #   Now have to write it to EEPROM as this is not one of the values that are automatically saved to EEPROM
-        #
-
-        checksum = (self.EEPROM_Mem_Address["cw_wpm"][self.lsb] + self.EEPROM_Mem_Address["cw_wpm"][self.msb]
-                    + self.EEPROM_Mem_Address["cw_wpm"][self.memLength]) % 256
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["cw_wpm"][self.lsb],
-                   self.EEPROM_Mem_Address["cw_wpm"][self.msb],
-                   self.EEPROM_Mem_Address["cw_wpm"][self.memLength],
-                   checksum,
-                   dotLength_ms,                # Eeprom allows up to two bytes for adjusted key,
-                                                    # but keychage without reboot only 1 byte
-                   0,0,0
-                   ]
-
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-
-    def Radio_Set_CW_Delay_Starting_TX(self, startTXDelay):
-        #
-        #   Requires reboot to take effect
-        #
-        #
-        # adjust the wpm speed to format of EEPROM
-        #
-        adjustedStartTXDelay = int(int(startTXDelay)/2)
-
-        #
-        #   write it to EEPROM as will be picked up on next reboot
-        #
-
-        checksum = (self.EEPROM_Mem_Address["cw_Delay_Starting_TX"][self.lsb] + self.EEPROM_Mem_Address["cw_Delay_Starting_TX"][self.msb]
-                    + self.EEPROM_Mem_Address["cw_Delay_Starting_TX"][self.memLength]) % 256
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["cw_Delay_Starting_TX"][self.lsb],
-                   self.EEPROM_Mem_Address["cw_Delay_Starting_TX"][self.msb],
-                   self.EEPROM_Mem_Address["cw_Delay_Starting_TX"][self.memLength],
-                   checksum,
-                   adjustedStartTXDelay
-                   ]
-
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Set_CW_Delay_Returning_To_RX(self, returnRXDelay):
-        # value stored to eeprom needs to divided by 10
-        #
-        #   Requires reboot to take effect
-        #
-        #
-        # adjust the wpm speed to format of EEPROM
-        #
-        adjustedReturnToRXDelay = int(int(returnRXDelay) / 10)
-
-        #
-        #   write it to EEPROM as will be picked up on next reboot
-        #
-
-        checksum = (self.EEPROM_Mem_Address["cw_Delay_Returning_to_RX"][self.lsb] +
-                    self.EEPROM_Mem_Address["cw_Delay_Returning_to_RX"][self.msb]
-                    + self.EEPROM_Mem_Address["cw_Delay_Returning_to_RX"][self.memLength]) % 256
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   self.EEPROM_Mem_Address["cw_Delay_Returning_to_RX"][self.lsb],
-                   self.EEPROM_Mem_Address["cw_Delay_Returning_to_RX"][self.msb],
-                   self.EEPROM_Mem_Address["cw_Delay_Returning_to_RX"][self.memLength],
-                   checksum,
-                   adjustedReturnToRXDelay
-                   ]
-
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Write_EEPROM_Channel_FreqMode (self, channelNum, freq, mode ):
-
-        encoded_data = (int(freq) & 0x1FFFFFFF) + ((int(self.Text_To_ModeNum[mode])& 0x7)<<29)
-
-        encodedBytes = self.Radio_Freq_Encode(str(encoded_data))
-
-        lsb = (channelNum*self.EEPROM_Mem_Address["channel_freq_Mode"][self.memOffset]) + self.EEPROM_Mem_Address["channel_freq_Mode"][self.lsb]
-        msb = self.EEPROM_Mem_Address["channel_freq_Mode"][self.msb]
-        totalBytes = self.EEPROM_Mem_Address["channel_freq_Mode"][self.memLength]
-
-
-        checksum = (lsb + msb + totalBytes) % 256
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   lsb,
-                   msb,
-                   totalBytes,
-                   checksum,
-                   encodedBytes[0], encodedBytes[1], encodedBytes[2], encodedBytes[3]
-                   ]
-
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Write_EEPROM_Channel_Label (self, channelNum, label ):
-
-        if channelNum > self.EEPROM_Mem_Address["channel_ShowLabel"][self.totalSlots]:
-            return
-
-        lsb = ((channelNum * self.EEPROM_Mem_Address["channel_Label"][self.memOffset]) +
-               self.EEPROM_Mem_Address["channel_Label"][self.lsb])
-        msb = self.EEPROM_Mem_Address["channel_Label"][self.msb]
-        totalBytes = self.EEPROM_Mem_Address["channel_Label"][self.memLength]
-
-        # strip blanks
-        noBlankLabel = label.strip()
-        labelBytes = bytes(noBlankLabel.ljust(totalBytes), 'utf-8')
-
-
-        checksum = (lsb + msb + totalBytes) % 256
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   lsb,
-                   msb,
-                   totalBytes,
-                   checksum,
-                   labelBytes[0], labelBytes[1], labelBytes[2], labelBytes[3], labelBytes[4]
-                   ]
-
-        self.theRadio.sendCommandToMCU(bytes(command))
-
-    def Radio_Write_EEPROM_Channel_ShowLabel (self, channelNum, showLabel ):
-
-        #
-        #   Don't write to EEPROMs showLabels 10+
-        #
-        if channelNum > self.EEPROM_Mem_Address["channel_ShowLabel"][self.totalSlots]:
-            return
-
-        lsb = (channelNum * self.EEPROM_Mem_Address["channel_ShowLabel"][self.memOffset]) + \
-              self.EEPROM_Mem_Address["channel_ShowLabel"][self.lsb]
-        msb = self.EEPROM_Mem_Address["channel_ShowLabel"][self.msb]
-        totalBytes = self.EEPROM_Mem_Address["channel_ShowLabel"][self.memLength]
-
-        checksum = (lsb + msb + totalBytes) % 256
-
-        if showLabel == 'Yes':
-            value = 0x3
-        else:
-            value = 0x0
-
-        command = [self.toRadioCommandDict["TS_CMD_WRITEMEM"],
-                   lsb,
-                   msb,
-                   totalBytes,
-                   checksum,
-                   value
-                   ]
-
-        self.theRadio.sendCommandToMCU(bytes(command))
 
 
 #   MCU Commands
@@ -1335,7 +567,7 @@ class mainScreen(baseui.mainScreenUI):
 
     def v1_UX_Set_Tuning_Preset_1(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.tuning_Preset_1_VAR.set(value)
+        self.theVFO_Object.set_Tuning_Preset_1(value)
 
 
     #
@@ -1343,21 +575,21 @@ class mainScreen(baseui.mainScreenUI):
     #
     def v2_UX_Set_Tuning_Preset_2(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.tuning_Preset_2_VAR.set(value)
+        self.theVFO_Object.set_Tuning_Preset_2(value)
 
     #
     #   The "v3" command 1s used for the third (middle) tuning rate
     #
     def v3_UX_Set_Tuning_Preset_3(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.tuning_Preset_3_VAR.set(value)
+        self.theVFO_Object.set_Tuning_Preset_3(value)
 
     #
     #   The "v4" command 1s used for the next largest tuning rate
     #
     def v4_UX_Set_Tuning_Preset_4(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.tuning_Preset_4_VAR.set(value)
+        self.theVFO_Object.set_Tuning_Preset_4(value)
 
 
     #
@@ -1365,7 +597,7 @@ class mainScreen(baseui.mainScreenUI):
     #
     def v5_UX_Set_Tuning_Preset_5(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.tuning_Preset_5_VAR.set(value)
+        self.theVFO_Object.set_Tuning_Preset_5(value)
 
     #
     #   The "cn" command indicates which tuning step is active (1(smallest) - 5(largest)
@@ -1373,39 +605,7 @@ class mainScreen(baseui.mainScreenUI):
     def cn_UX_Set_Active_Tuning_Preset(self, buffer):
 
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.tuning_Preset_Selection_VAR.set(value)
-
-        match value:
-            case "5":
-                if (self.update_Tuning_Preset_Button_Label):
-                    self.tuning_Preset_Label_VAR.set(self.tuning_Preset_5_VAR.get())
-                self.tuning_Preset_Selection_VAR.set(5)
-                self.currentVFO_Tuning_Rate = int(self.tuning_Preset_5_VAR.get())
-
-            case "4":
-                if (self.update_Tuning_Preset_Button_Label):
-                    self.tuning_Preset_Label_VAR.set(self.tuning_Preset_4_VAR.get())
-                self.tuning_Preset_Selection_VAR.set(4)
-                self.currentVFO_Tuning_Rate = int(self.tuning_Preset_4_VAR.get())
-            case "3":
-                if (self.update_Tuning_Preset_Button_Label):
-                    self.tuning_Preset_Label_VAR.set(self.tuning_Preset_3_VAR.get())
-                self.tuning_Preset_Selection_VAR.set(3)
-                self.currentVFO_Tuning_Rate = int(self.tuning_Preset_3_VAR.get())
-            case "2":
-                if (self.update_Tuning_Preset_Button_Label):
-                    self.tuning_Preset_Label_VAR.set(self.tuning_Preset_2_VAR.get())
-                self.tuning_Preset_Selection_VAR.set(2)
-                self.currentVFO_Tuning_Rate = int(self.tuning_Preset_2_VAR.get())
-            case "1":
-                if (self.update_Tuning_Preset_Button_Label):
-                    self.tuning_Preset_Label_VAR.set(self.tuning_Preset_1_VAR.get())
-                self.tuning_Preset_Selection_VAR.set(1)
-                self.currentVFO_Tuning_Rate = int(self.tuning_Preset_1_VAR.get())
-
-        self.updateRateMultiplier()
-        self.updateJogTracking()
-        self.updateLabelTuning_Multiplier()
+        self.theVFO_Object.set_Active_Tuning_Preset(value)
 
 
     #
@@ -1457,16 +657,190 @@ class mainScreen(baseui.mainScreenUI):
             self.s_meter_Progressbar_VAR.set(int(value))
         else:
             print("another weird malformed command, buffer =", buffer)
+    #
+    #   This command provides Nextion with the Power and SWR levels
+    #   PWR is sent first, followed by the SWR second
+    #
+    def vm_UX_PW_SWR_Level(self, buffer):
+        if gv.config.get_PWR_SWR_Switch() == "True":
+            value = self.extractValue(buffer, 10, len(buffer) - 3)
+            adjustedValue = int(value)/100
 
+            if self.lastPWRSWR_Reading == None or self.lastPWRSWR_Reading == "SWR":
+                self.lastPWRSWR_Reading = "PWR"
+                factorPWR = round(adjustedValue/float(gv.config.get_PWR_Factor()),1)              # 3.91
+                self.PWR_Value_VAR.set(str(factorPWR).replace(".", gv.config.get_NUMBER_DELIMITER()))
+            else:
+                self.lastPWRSWR_Reading = "SWR"
+                factorSWR=round(adjustedValue / float(gv.config.get_SWR_Factor()), 1)   # 2,95
+                if factorSWR < 1.0 or factorSWR > 2.9:
+                    self.SWR_Label.configure(style="Heading3bRed.TLabel")
+                    self.SWR_Value.configure(style="Heading4bRed.TLabel")
+                else:
+                    self.SWR_Label.configure(style="Heading3b.TLabel")
+                    self.SWR_Value.configure(style="Heading4b.TLabel")
+
+                self.SWR_Value_VAR.set(str(factorSWR).replace(".",gv.config.get_NUMBER_DELIMITER()))
+
+
+    def vv_UX_Command_Data(self, buffer):
+
+        #
+        # saving this data because dont know what to do with it until next command
+        # could be retrieving EEPROM DSP settings to screen dimming or ?
+        #
+
+        self.vv_Command_Buffer = self.extractValue(buffer, 10, len(buffer) - 3)
+        # print("Received VV data", self.vv_Command_Buffer, "len=", len(self.vv_Command_Buffer))
+
+
+    def vg_UX_DSP_Flag(self, buffer):
+        commandType = self.extractValue(buffer, 10, len(buffer) - 3)
+        # print("vg_UX_DSP_Flag Received:", commandType)
+        #
+        #   Dsp data is weird. You get a "vv" command with the data followed by a "vg" with
+        #   the command to send the "vv" buffer that you received previously.
+        #
+        self.process_DSP_EEPROM_Data(self.vv_Command_Buffer)
+
+
+    def sb_UX_CW_Decoded_Characters(self, buffer):
+        print("Decoded CW Characters", buffer)
+        value = self.extractValue(buffer, 10, len(buffer) - 3)
+        self.consumerDSPdata.process_CWDecoded_Data(value)
+
+
+    def sp_UX_DSP_Spectrum_Values(self, buffer):
+        if buffer[3] == "x" and buffer[4] == "t":         #error catch for malformed spectrum responses
+            value = self.extractValue(buffer, 6, len(buffer) - 3)
+            # print("fixing malformed p., value =", value)
+        else:
+            value = self.extractValue(buffer, 10, len(buffer) - 3)
+        # print("buffer=", buffer)
+        # print("value=", value)
+        # if self.consumerDSPdata
+        self.consumerDSPdata.process_Spectrum_Data(value)
+
+    def highlightCWorSpectrumBoxes(self, flag):
+        self.mainScreenCW_logger.clearLog()
+        self.mainScreenPlotter.clearCanvas()
+
+        if flag:
+            if self.frequencySpectrumMode == "FreqScan":
+                self.spectrumCanvas.configure(
+                    highlightbackground="white",
+                    highlightcolor="white")
+                self.decodedCWText.configure(
+                    highlightbackground="gray",
+                    highlightcolor="gray")
+                # self.mainScreenCW_logger.clearLog()
+                return
+            elif self.frequencySpectrumMode == "CWDecode":
+                self.spectrumCanvas.configure(
+                    highlightbackground="gray",
+                    highlightcolor="gray")
+                self.decodedCWText.configure(
+                    highlightbackground="white",
+                    highlightcolor="white")
+                # self.mainScreenPlotter.clearCanvas()
+                return
+
+        self.decodedCWText.configure(
+            highlightbackground="gray",
+            highlightcolor="gray")
+        self.spectrumCanvas.configure(
+            highlightbackground="gray",
+            highlightcolor="gray")
+        # self.mainScreenCW_logger.clearLog()
+        # self.mainScreenPlotter.clearCanvas()
+
+    def process_Spectrum_Data(self, buffer):
+        #
+        #   If the DSP had been previously enabled, it can be generating data before
+        #   the "consumer" in the mainscreen has been started. This just throws this data
+        #   away until it is ready
+        #
+        # print("mainscreen Processing Spectrum Data", buffer)
+        if self.mainScreenPlotter != None:
+            self.mainScreenPlotter.process_Data(buffer)
+
+
+    def process_CWDecoded_Data(self, buffer):
+        print("Processing CW Data for main window", buffer)
+        #
+        #   If the DSP had been previously enabled, it can be generating data before
+        #   the "consumer" in the mainscreen has been started. This just throws this data
+        #   away until it is ready
+        #
+
+        if self.mainScreenCW_logger!= None:
+            self.mainScreenCW_logger.process_CWDecoded_Data(buffer)
+
+    def process_DSP_EEPROM_Data(self, buffer):
+        # print("Processing DSP Data for main window", buffer)
+        byteList = int(buffer).to_bytes(4, 'little')
+        # print("process_DSP_Data", byteList)
+
+        if int(buffer) < 0xffffff:  # only a 3 hex byte number
+            self.DSPFound = True
+
+
+            # print("main window eeprom values returned")
+            # print(hex(int(buffer)))
+            # print("main window decodescale*10=", byteList[0])
+            # print("main window useDSPFlag=", byteList[1])
+
+            self.frequencyDecodeScale = int(byteList[0] / 10)
+
+            if byteList[1] == 1 and gv.config.get_DSP_Switch() == "False":          # configuration file/option says no, DSP says yes...
+                messagebox.showwarning(message="Configuration Mismatch!", detail="Configuration file disables DSP while DSP believes it is active.\n\n" +
+                    "Updating configuration file to Enable DSP. You can change this in Machine Settings.", parent=self)
+                gv.config.set_DSP_Switch("True")
+            elif byteList[1] == 0 and gv.config.get_DSP_Switch() == "True":         # configuration file says yes, DSP says no
+                messagebox.showwarning(message="Configuration Mismatch!", detail="Configuration file enables DSP while DSP is inactive.\n\n" +
+                    "Updating configuration file to Disable DSP. You can change this in Machine Settings.", parent=self)
+                gv.config.set_DSP_Switch("False")
+            else:
+                pass # configuration file and DSP agree, do nothing
+
+            if byteList[2] == 95:
+                self.frequencySpectrumMode = "FreqScan"
+            elif byteList[2] >= 100 and byteList[2] < 146:          # in CW mode
+                self.frequencyPlotcwToneScale = int(byteList[2] - 100)
+                self.frequencyPlotcwToneValue = ((byteList[2]-100)*50)+300
+                self.frequencySpectrumMode = "CWDecode"
+
+            #
+            #   Now that we know which mode we are in, set white boundaries around the cw or spectrum areas
+            #   appropriately and clear the areas to start fresh
+            #
+            self.highlightCWorSpectrumBoxes(True)
+
+            # print("eeprom fetch:", hex(int(buffer)))
+
+    def request_DSP_EEPROM_Data(self):
+        #
+        # Request DSP data stored in EEPROM
+        self.theRadio.Req_DSP_EEPROM_Settings()
+    #
+    #   Indicates a switching of RX/TX mode. 1=TX, 0=RX
+    #
     def ct_UX_RX_TX_Mode(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        print("ct get called:", "buffer =", buffer)
         if value == "1":  #going into transmit mode
-            self.tx_Status_Light_Label.configure(state="normal")
-            self.rx_Status_Light_Label.configure(state="disabled")
+            self.theVFO_Object.setTXButtonState()
+            if gv.config.get_PWR_SWR_Switch() == "True":            # If PWR/SWR Switch is off display nothing
+                self.SWR_PWR_Frame.grid()
+
         else:
-            self.tx_Status_Light_Label.configure(state="disabled")
-            self.rx_Status_Light_Label.configure(state="normal")
+            self.theVFO_Object.setRXButtonState()
+            #
+            #   the self.master.state('normal') is a little magic that is needed on macos to make sure the
+            #   frame really disappears. Only need to schedule this if PWR/SWR switch is on.
+            #
+            if gv.config.get_PWR_SWR_Switch() == "True":
+                self.master.after(2000, lambda: [self.SWR_PWR_Frame.grid_remove(), self.master.state('normal')])
+
 
 
     #
@@ -1490,7 +864,7 @@ class mainScreen(baseui.mainScreenUI):
     #
     def sv_UX_Set_SW_Version(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.firmwareVersion_VAR.set(value)
+        self.theVFO_Object.setFirmwareVersion(value)
 
 
 
@@ -1499,7 +873,7 @@ class mainScreen(baseui.mainScreenUI):
     #
     def sc_UX_Set_User_Callsign(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.callSign_VAR.set(value)
+        self.theVFO_Object.setCallsign(value)
 
 
     #
@@ -1550,11 +924,13 @@ class mainScreen(baseui.mainScreenUI):
     def sh_UX_Get_Memory(self, buffer):
         try:
             value = self.extractValue(buffer, 10, len(buffer) - 3)
-            if not self.memoryQueue:    # make sure something in queue, otherwise fatal error
+            # print("sh_UX_Get_Memory", self.theRadio.lenMemoryQueue())
+            if self.theRadio.lenMemoryQueue() == 0:    # make sure something in queue, otherwise fatal error
                 messagebox.showerror("Application Error", "Memory Queue is empty, yet memory value delivered by MCU")
                 sys.exit("A fatal internal error occurred")
 
-            memoryCategory = self.memoryQueue.pop(0)
+            memoryCategory = self.theRadio.popMemoryQueue()
+
             match memoryCategory:
 
                 case "Freq":                # Got a channel frequency request
@@ -1566,7 +942,7 @@ class mainScreen(baseui.mainScreenUI):
                         mode)
                     self.EEPROM_Current_Slot_Freq += 1
                     if (self.EEPROM_Current_Slot_Freq ==
-                            self.EEPROM_Mem_Address["channel_freq_Mode"][self.totalSlots]):
+                            EEPROM.Mem_Address["channel_freq_Mode"][EEPROM.totalSlots]):
                         self.EEPROM_Current_Slot_Freq = 0
 
                 case "Label":               # have a label for a memory channel
@@ -1577,7 +953,7 @@ class mainScreen(baseui.mainScreenUI):
                     #         print("label slot=", self.EEPROM_Current_Slot_Label, "value=", value, sep='*', end='*')
                     self.EEPROM_Current_Slot_Label += 1
                     if (self.EEPROM_Current_Slot_Label ==
-                            self.EEPROM_Mem_Address["channel_Label"][self.totalSlots]):
+                            EEPROM.Mem_Address["channel_Label"][EEPROM.totalSlots]):
                         self.EEPROM_Current_Slot_Label = 0
 
                 case "ShowLabel":           # Reading switch on whether to show or not show the label
@@ -1593,24 +969,24 @@ class mainScreen(baseui.mainScreenUI):
 
                     self.EEPROM_Current_Slot_ShowLabel += 1
                     if (self.EEPROM_Current_Slot_ShowLabel ==
-                            self.EEPROM_Mem_Address["channel_ShowLabel"][self.totalSlots]):
+                            EEPROM.Mem_Address["channel_ShowLabel"][EEPROM.totalSlots]):
                         self.EEPROM_Current_Slot_ShowLabel = 0
 
                 case "MasterCal":          # Got a master cal value
-                    self.Master_Cal_Setter(str(int(value, 16)))
+                    self.theRadio.Master_Cal_Setter(str(int(value, 16)))
 
 
                 case "SSB_BFO":            # Got a SSB BFO value
-                    self.SSB_BFO_Setter(str(int(value, 16)))
+                    self.theRadio.SSB_BFO_Setter(str(int(value, 16)))
 
                 case "CW_BFO":             # Got a CW BFO Value
-                    self.CW_BFO_Setter(str(int(value, 16)))
+                    self.theRadio.CW_BFO_Setter(str(int(value, 16)))
 
                 case "Factory_MasterCal":   #Got a Factory_MasterCal memory value
-                    self.Factory_Master_Cal_Setter(str(int(value, 16)))
+                    self.theRadio.Factory_Master_Cal_Setter(str(int(value, 16)))
 
                 case "Factory_SSB_BFO":     # Got a Factory SSB BFO memory value
-                    self.Factory_SSB_BFO_Setter(str(int(value, 16)))
+                    self.theRadio.Factory_SSB_BFO_Setter(str(int(value, 16)))
 
                 case "Factory_CW_Speed":    # Got a CW Speed memory value
                     if int(value,16) != 0:
@@ -1618,12 +994,17 @@ class mainScreen(baseui.mainScreenUI):
                     else:
                         cw_speed = "0"
 
-                    self.Factory_CW_Speed_Setter(cw_speed)
+                    self.theRadio.Factory_CW_Speed_Setter(cw_speed)
 
                 case "Factory_CW_Sidetone":
-                    self.Factory_CW_Sidetone_Setter(str(int(value, 16)))
+                    self.theRadio.Factory_CW_Sidetone_Setter(str(int(value, 16)))
+
+                case "Spectrum_Scan":
+                    # print("Spectrum_Scan")
+                    self.consumerSpectrumdata.process_Spectrum_Data(value)
 
                 case _:
+                    # print("case=",memoryCategory)
                     messagebox.showerror("Application Error", "Unknown Memory Request")
                     sys.exit("A fatal internal error occurred")
         except TypeError:
@@ -1640,33 +1021,21 @@ class mainScreen(baseui.mainScreenUI):
 
 
     def vn_UX_ACK_Memory_Write(self, buffer):
-        # if (pm.vn.val == 358) // key Type Write Complete
-        # {
-        #     nSendProcess.val = 11
-        # } else if (pm.vn.val == 28) // key Type Write Complete
-        # {
-        #     nSendProcess.val = 12
-        # } else if (pm.vn.val == 24) // key Type Write Complete
-        # {
-        #     nSendProcess.val = 13
-        # } else if (pm.vn.val == 258) // key Type Write Complete
-        # {
-        #     nSendProcess.val = 14
-        # } else if (pm.vn.val == 259) // key Type Write Complete
+
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        if self.CurrentDebug:
-            print("vn get called:", "buffer =", buffer)
-            print("buffer=", buffer)
-            if (int(value) == 358):
-                print("write complete for keychange, mem=", int(value))
-            elif (int(value) == 28):
-                print("write complete for new WPM, mem=", int(value))
-            elif (int(value) == 259):
-                print("write complete for new RX->TX, mem=", int(value))
-            elif (int(value) == 258):
-                print("write complete for new TX->RX, mem=", int(value))
-            else:
-                print("memory location write complete, mem=", int(value))
+        # if self.CurrentDebug:
+        #     print("vn get called:", "buffer =", buffer)
+        #     print("buffer=", buffer)
+        #     if (int(value) == 358):
+        #         print("write complete for keychange, mem=", int(value))
+        #     elif (int(value) == 28):
+        #         print("write complete for new WPM, mem=", int(value))
+        #     elif (int(value) == 259):
+        #         print("write complete for new RX->TX, mem=", int(value))
+        #     elif (int(value) == 258):
+        #         print("write complete for new TX->RX, mem=", int(value))
+        #     else:
+        #         print("memory location write complete, mem=", int(value))
 
 
 
@@ -1698,11 +1067,14 @@ class mainScreen(baseui.mainScreenUI):
         self.split_Button.configure(state="disabled")
         self.rit_Button.configure(state="disabled")
         self.channels_Button.configure(state="disabled")
-        self.tuning_Multiplier_Button.configure(state="disabled")
-        self.tuning_Preset_Button.configure(state="disabled")
         self.ATT_Jogwheel.setStateDisabled()
         self.IFS_Jogwheel.setStateDisabled()
         self.tuning_Jogwheel.setStateDisabled()
+        self.theVFO_Object.setVFOUXState("disabled")
+        self.cwDecode_Button.configure(state="disabled")
+        self.spectrumScan_Button.configure(state="disabled")
+        self.bandScan_Button.configure(state="disabled")
+
 
 
     #
@@ -1718,13 +1090,15 @@ class mainScreen(baseui.mainScreenUI):
         self.split_Button.configure(state="normal")
         self.rit_Button.configure(state="normal")
         self.channels_Button.configure(state="normal")
-        self.tuning_Multiplier_Button.configure(state="normal")
-        self.tuning_Preset_Button.configure(state="normal")
         if (self.ATT_Button_On == True):
             self.ATT_Jogwheel.setStateNormal()
         if (self.IFS_Button_On == True):
             self.IFS_Jogwheel.setStateNormal()
         self.tuning_Jogwheel.setStateNormal()
+        self.theVFO_Object.setVFOUXState("normal")
+        self.cwDecode_Button.configure(state="normal")
+        self.spectrumScan_Button.configure(state="normal")
+        self.bandScan_Button.configure(state="normal")
 
 
     def cj_UX_Speaker_Toggle(self, buffer):
@@ -1752,9 +1126,10 @@ class mainScreen(baseui.mainScreenUI):
     #   the current vfo setting anyway.
     #
     def vr_UX_Update_RIT_Freq(self, buffer):
-        if self.CurrentDebug:
-            print("vr called")  # command is rit related
-            print(buffer)
+        # if self.CurrentDebug:
+        #     print("vr called")  # command is rit related
+        #     print(buffer)
+        pass
 
 
     def cr_UX_RIT_Toggle(self, buffer):
@@ -1838,46 +1213,43 @@ class mainScreen(baseui.mainScreenUI):
 
 
     def cx_UX_TX_Stop_Toggle(self, buffer):
-        if (self.stop_Button_On):
-            self.stop_Button_On = False
-            self.stop_Button.configure(style='Button2b.TButton', state="normal")
-        else:
-            self.stop_Button_On = True
-            self.stop_Button.configure(style='RedButton2b.TButton', state="pressed")
+        self.theVFO_Object.toggleStopButtonState()
+
 
     #
     #   The "vc" command indicates a new frequency for the Primary
     #
     def vc_UX_Set_Primary_VFO_Frequency(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
+        self.theVFO_Object.setPrimaryVFO(value)
 
-        self.primary_VFO_VAR.set(value)
-        self.update_VFO_Display(self.primary_VFO_VAR.get(),self.freqOffset)
 
         if self.channelsWindow != None:      #  Only update frequency if the channel window has been created once
-            self.channelsWindow.update_Current_Frequency(gv.formatFrequency(self.primary_VFO_VAR.get()))
+            self.channelsWindow.update_Current_Frequency(self.theVFO_Object.getFormattedPrimaryVFO())
+            # self.channelsWindow.update_Current_Frequency(gv.formatFrequency(self.primary_VFO_VAR.get()))
 
 
-        self.updateJogTracking()
-
-    def reformatVFO(self, value):
-        self.digit_delimiter_primary_VFO_VAR.set(gv.config.get_NUMBER_DELIMITER())
-        self.update_VFO_Display(self.primary_VFO_VAR.get(), self.freqOffset)
-        self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(self.secondary_VFO_VAR.get(), self.freqOffset))
+    def switchVFO_Tuning_Optimization(self, value):
+        self.tuning_Jogwheel.configure(scroll=True, touchOptimized=value)
 
     #
     #   The "cc" command indicates a change to a new mode for primary (e.g. USB, LSB, etc.)
     #
     def cc_UX_Set_Primary_Mode(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        self.primary_Mode_VAR.set(self.modeNum_To_TextDict[value])
-        if self.cwTX_OffsetFlag and (self.modeNum_To_TextDict[value] == "CWL" or self.modeNum_To_TextDict[value] == "CWU"):
+
+        if value == '':
+            print("cc_UX_Set_Primary_Mode key error, buffer=", buffer)
+        self.primary_Mode_VAR.set(EEPROM.modeNum_To_TextDict[value])
+        if self.cwTX_OffsetFlag and (EEPROM.modeNum_To_TextDict[value] == "CWL" or EEPROM.modeNum_To_TextDict[value] == "CWU"):
             #
             #   We are showing the TX frequency on the VFO so need to offset it
             #
-            self.offsetVFOforTX(True)
+            self.theVFO_Object.offsetVFOforTX(True)
         else:
-            self.offsetVFOforTX(False)
+            self.theVFO_Object.offsetVFOforTX(False)
+
+        self.theVFO_Object.updateJogTracking()            # Since changed mode, may need to reset jogwheel to tx frequency
 
         if self.channelsWindow != None:
             # Only update frequency if the channel window has been created once
@@ -1895,12 +1267,11 @@ class mainScreen(baseui.mainScreenUI):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
 
         if (self.vfo_VAR.get()== self.VFO_A):       #update displayed frequency
-            self.primary_VFO_VAR.set(value)         #MJH dont we need to update vfoa and vfob directly?
-            self.update_VFO_Display(value,self.freqOffset)
+            self.theVFO_Object.setPrimaryVFO(value)         #MJH dont we need to update vfoa and vfob directly
 
         else:
-            self.secondary_VFO_VAR.set(value)
-            self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(value, self.freqOffset))
+            self.theVFO_Object.setSecondaryVFO(value)
+
 
 
 
@@ -1914,16 +1285,15 @@ class mainScreen(baseui.mainScreenUI):
 
         value = self.extractValue(buffer, 10, len(buffer) - 3)
 
+        if value == '4pm.vb.val=100980':
+            print("ca_UX_Set_VFO_A_Mode error 4pm.vb.val=100980, buffer:", buffer)
+
+
         if (self.vfo_VAR.get()== self.VFO_A):       #update displayed frequency
-            self.primary_Mode_VAR.set(self.modeNum_To_TextDict[value])
+            self.primary_Mode_VAR.set(EEPROM.modeNum_To_TextDict[value])
         else:
-            self.secondary_Mode_VAR.set(self.modeNum_To_TextDict[value])
+            self.theVFO_Object.setSecondaryMode(EEPROM.modeNum_To_TextDict[value])
 
-
-        # print("***ca get called:***", "buffer =", buffer)
-        # print("ca assign mode for vfoA frequency")
-        # print("value=", value, sep='*', end='*')
-        # print("\n")
 
     #
     #   The "vb" command indicates assignment of vfoB to new frequency
@@ -1937,16 +1307,11 @@ class mainScreen(baseui.mainScreenUI):
 
 
         if (self.vfo_VAR.get()== self.VFO_B):       #update displayed frequency
-            self.primary_VFO_VAR.set(value)
-            self.update_VFO_Display(value,self.freqOffset)
+            print("vb_UX_Set_VFO_B_Frequency", value)
+            self.theVFO_Object.setPrimaryVFO(value)
         else:
-            self.secondary_VFO_VAR.set(value)       #need formatted here too
-            self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(value, self.freqOffset))
+            self.theVFO_Object.setSecondaryVFO(value)       #need formatted here too
 
-        # print("***vb get called:***", "buffer =", buffer)
-        # print("vb assign vfo b frequency")
-        # print("value=", value, sep='*', end='*')
-        # print("\n")
     #
     #   This sets VFO B to a new mode
     #
@@ -1958,14 +1323,10 @@ class mainScreen(baseui.mainScreenUI):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
 
         if (self.vfo_VAR.get()== self.VFO_B):       #update displayed frequency
-            self.primary_Mode_VAR.set(self.modeNum_To_TextDict[value])
+            self.primary_Mode_VAR.set(EEPROM.modeNum_To_TextDict[value])
         else:
-            self.secondary_Mode_VAR.set(self.modeNum_To_TextDict[value])
+            self.theVFO_Object.secondary_Mode_VAR.set(EEPROM.modeNum_To_TextDict[value])
 
-        # print("***cb get called:***", "buffer =", buffer)
-        # print("cb assign mode for vfoB frequency")
-        # print("value=", value, sep='*', end='*')
-        # print("\n")
 
     #
     #   The "vt" command stores the CW tone
@@ -1973,6 +1334,7 @@ class mainScreen(baseui.mainScreenUI):
     def vt_UX_SET_CW_Tone(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
         self.tone_value_VAR.set(value)
+        # self.theVFO_Object.setCWTone(value)
 
 
     #
@@ -1980,6 +1342,8 @@ class mainScreen(baseui.mainScreenUI):
     #
     def ck_UX_Set_CW_Key_Type(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
+        if value == '':
+            print("ck_UX_Set_CW_Key_Type error, buffer:", buffer)
         self.key_type_value_VAR.set(gv.CW_KeyType[value])
 
     #
@@ -2011,24 +1375,9 @@ class mainScreen(baseui.mainScreenUI):
     #
     def cv_UX_VFO_Toggle(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
+        self.theVFO_Object.toggleVFO()
+        self.vfo_VAR.set(self.Text_To_VFO[value])           # Update Label on button
 
-        self.vfo_VAR.set(self.Text_To_VFO[value])
-
-        saveSecondary_VFO = self.secondary_VFO_VAR.get()
-        saveSecondary_Mode = self.secondary_Mode_VAR.get()
-
-        # self.secondary_VFO_VAR.set(gv.unformatFrequency(self.primary_VFO_Formatted_VAR))
-        self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(self.primary_VFO_VAR.get()))
-        # self.secondary_VFO_Formatted_VAR.set(self.primary_VFO_Formatted_VAR.get())
-        # self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(gv.unformatFrequency(self.primary_VFO_Formatted_VAR.get()), self.freqOffset))
-        self.secondary_Mode_VAR.set(self.primary_Mode_VAR.get())
-
-        self.primary_VFO_VAR.set(saveSecondary_VFO)
-
-        # self.primary_VFO_Formatted_VAR.set(gv.formatFrequency(saveSecondary_VFO, self.freqOffset))
-        self.update_VFO_Display(self.primary_VFO_VAR.get(), self.freqOffset)
-
-        self.primary_Mode_VAR.set(saveSecondary_Mode)
 
 ########################################################################################
 #   End processing of commands sent by MCU to Screen

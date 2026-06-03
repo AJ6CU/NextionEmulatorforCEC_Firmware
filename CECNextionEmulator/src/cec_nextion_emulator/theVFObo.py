@@ -5,24 +5,23 @@ from pygubu.api.v1 import (
     BuilderObject,
     register_widget,
 )
-from settingsFactoryReset import settingsFactoryReset
+from theVFO import theVFO
 
 
 #
 # Builder definition section
 #
-_widget_namespace = "settingsFactoryReset"
-_widget_classname = "settingsFactoryReset"
+_widget_namespace = "theVFO"
+_widget_classname = "theVFO"
 _builder_namespace = "projectcustom"
 _section_name = "Project Widgets"
 
 
-class settingsFactoryResetBO(BuilderObject):
-    class_ = settingsFactoryReset
+class theVFOBO(BuilderObject):
+    class_ = theVFO
 
 
 _builder_id = f"{_builder_namespace}.{_widget_classname}"
 register_widget(
-    _builder_id, settingsFactoryResetBO, _widget_classname, (
-        "ttk", _section_name)
+    _builder_id, theVFOBO, _widget_classname, ("ttk", _section_name)
 )

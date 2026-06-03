@@ -24,7 +24,8 @@ class JogwheelCustom_UXbo(BuilderObject):
         "button_radius",
         "command",
         "progress",
-        "state"
+        "state",
+        "touchOptimized"
     }
     ro_properties = ("start", "end", "divisions", "radius", "button_radius", "value", "progress", "scroll", "scroll_steps")
     command_properties = ("command",)
@@ -119,4 +120,12 @@ register_custom_property (
     _builder_id,
     "command",
     "commandentry"
+)
+
+
+register_custom_property (
+    _builder_id,
+    "touchOptimized",
+    "choice",
+    values=("True", "False")
 )

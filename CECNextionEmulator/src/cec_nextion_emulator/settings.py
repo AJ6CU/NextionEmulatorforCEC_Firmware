@@ -7,9 +7,10 @@ from cwSettings import cwSettings
 from settingsMachine import settingsMachine
 from settingsGeneral import settingsGeneral
 from settingsBackup import settingsBackup
-from settingsFactoryReset import settingsFatoryResetToplevel
+from settingsAbout import settingsAbout
 from tkinter import messagebox
 import globalvars as gv
+from src.cec_nextion_emulator.settingsAbout import settingsAbout
 
 
 #
@@ -47,6 +48,7 @@ class settings(baseui.settingsUI):
         self.settingsBackupWindow = None
         self.settingsFactoryResetWindow = None
         self.settingsRebootWindow = None
+        self.settingsAboutWindow = None
         #
         #   Can now kickoff the UX
         #
@@ -59,14 +61,17 @@ class settings(baseui.settingsUI):
 
     def initUX(self):
         self.popup.title("PiCEC Software Settings")
-        self.popup.geometry("600x425")
+        self.popup.geometry(gv.POPUP_WINDOW_OFFSET)
+
+        # self.popup.geometry("600x425")
         self.popup.wait_visibility()  # required on Linux
         self.popup.grab_set()
         self.popup.transient(self.mainWindow)
         # self.mainWindow.wait_window(self.popup)
 
+
         self.pack(expand=tk.YES, fill=tk.BOTH)
-        gv.trimAndLocateWindow(self.popup, 0, 0)
+        # gv.trimAndLocateWindow(self.popup, 0, 0)
 
     #
     #   The following are the callbacks for the various buttons in the Settings Dialog
@@ -92,6 +97,9 @@ class settings(baseui.settingsUI):
     def settingsReboot_CB(self):
         if messagebox.askokcancel("Reboot?", "Do you really want to reboot?", parent=self):
             self.mainWindow.theRadio.rebootRadio()
+
+    def settingsAbout_CB(self):
+        self.settingsAboutWindow = settingsAbout(self.master, self.mainWindow)
 
 
 

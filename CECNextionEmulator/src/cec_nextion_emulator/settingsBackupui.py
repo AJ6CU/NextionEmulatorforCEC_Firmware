@@ -1,19 +1,26 @@
 #!/usr/bin/python3
+"""
+settingsBackup
+
+used to bachup and restore critical values
+
+UI source file: settingsBackup.ui
+"""
 import tkinter as tk
 import tkinter.ttk as ttk
 
 
-def i18n_translator_noop(value):
+def safe_i18n_translator(value):
     """i18n - Setup translator in derived class file"""
     return value
 
 
-def first_object_callback_noop(widget):
+def safe_fo_callback(widget):
     """on first objec callback - Setup callback in derived class file."""
     pass
 
 
-def image_loader_default(master, image_name: str):
+def safe_image_loader(master, image_name: str):
     """Image loader - Setup image_loader in derived class file."""
     img = None
     try:
@@ -38,12 +45,12 @@ class settingsBackupUI(ttk.Labelframe):
         **kw
     ):
         if translator is None:
-            translator = i18n_translator_noop
+            translator = safe_i18n_translator
         _ = translator  # i18n string marker.
         if image_loader is None:
-            image_loader = image_loader_default
+            image_loader = safe_image_loader
         if on_first_object_cb is None:
-            on_first_object_cb = first_object_callback_noop
+            on_first_object_cb = safe_fo_callback
 
         super().__init__(master, **kw)
 
@@ -97,15 +104,18 @@ class settingsBackupUI(ttk.Labelframe):
         separator1.configure(orient="horizontal")
         separator1.pack(expand=True, fill="x", side="top")
         frame2.grid(column=0, columnspan=5, row=1, sticky="ew")
-        self.Master_Cal_Checkbutton = ttk.Checkbutton(
-            self.backupSettings_Frame, name="master_cal_checkbutton")
-        self.Master_Cal_Checked_VAR = tk.StringVar()
-        self.Master_Cal_Checkbutton.configure(
-            offvalue=0,
-            onvalue=1,
-            style="Checkbox1b.TCheckbutton",
-            variable=self.Master_Cal_Checked_VAR)
-        self.Master_Cal_Checkbutton.grid(column=0, padx=5, pady=5, row=3)
+        self.Master_Cal = ttk.Button(
+            self.backupSettings_Frame, name="master_cal")
+        self.Master_Cal_VAR = tk.StringVar(value='No')
+        self.Master_Cal.configure(
+            style="Button2Raised.TButton",
+            text='No',
+            textvariable=self.Master_Cal_VAR,
+            width=5)
+        self.Master_Cal.grid(column=0, pady=15, row=3)
+        def Master_Cal_cmd_(): self.selectSetting_CB("Master_Cal")
+
+        self.Master_Cal.configure(command=Master_Cal_cmd_)
         self.Master_Cal_Heading_Label = ttk.Label(
             self.backupSettings_Frame, name="master_cal_heading_label")
         self.Master_Cal_Heading_Label.configure(
@@ -147,15 +157,18 @@ class settingsBackupUI(ttk.Labelframe):
             width=10)
         self.ConfigFile_Master_Cal_Label.grid(
             column=4, padx="0 5", pady=5, row=3, sticky="e")
-        self.SSB_BFO_Checkbutton = ttk.Checkbutton(
-            self.backupSettings_Frame, name="ssb_bfo_checkbutton")
-        self.SSB_BFO_Checked_VAR = tk.StringVar()
-        self.SSB_BFO_Checkbutton.configure(
-            offvalue=0,
-            onvalue=1,
-            style="Checkbox1b.TCheckbutton",
-            variable=self.SSB_BFO_Checked_VAR)
-        self.SSB_BFO_Checkbutton.grid(column=0, padx=0, pady=5, row=4)
+        self.SSB_BFO = ttk.Button(self.backupSettings_Frame, name="ssb_bfo")
+        self.SSB_BFO_VAR = tk.StringVar(value='No')
+        self.SSB_BFO.configure(
+            cursor="arrow",
+            style="Button2Raised.TButton",
+            text='No',
+            textvariable=self.SSB_BFO_VAR,
+            width=5)
+        self.SSB_BFO.grid(column=0, pady="0 15", row=4)
+        def SSB_BFO_cmd_(): self.selectSetting_CB("SSB_BFO")
+
+        self.SSB_BFO.configure(command=SSB_BFO_cmd_)
         self.SSB_BFO_Heading_Label = ttk.Label(
             self.backupSettings_Frame, name="ssb_bfo_heading_label")
         self.SSB_BFO_Heading_Label.configure(
@@ -197,15 +210,18 @@ class settingsBackupUI(ttk.Labelframe):
             width=10)
         self.ConfigFile_SSB_BFO_Label.grid(
             column=4, padx="0 5", pady="0 5", row=4, sticky="e")
-        self.CW_BFO_Checkbutton = ttk.Checkbutton(
-            self.backupSettings_Frame, name="cw_bfo_checkbutton")
-        self.CW_BFO_Checked_VAR = tk.StringVar()
-        self.CW_BFO_Checkbutton.configure(
-            offvalue=0,
-            onvalue=1,
-            style="Checkbox1b.TCheckbutton",
-            variable=self.CW_BFO_Checked_VAR)
-        self.CW_BFO_Checkbutton.grid(column=0, padx=0, pady=5, row=5)
+        self.CW_BFO = ttk.Button(self.backupSettings_Frame, name="cw_bfo")
+        self.CW_BFO_VAR = tk.StringVar(value='No')
+        self.CW_BFO.configure(
+            cursor="arrow",
+            style="Button2Raised.TButton",
+            text='No',
+            textvariable=self.CW_BFO_VAR,
+            width=5)
+        self.CW_BFO.grid(column=0, pady="0 15", row=5)
+        def CW_BFO_cmd_(): self.selectSetting_CB("CW_BFO")
+
+        self.CW_BFO.configure(command=CW_BFO_cmd_)
         self.CW_BFO_Heading_Label = ttk.Label(
             self.backupSettings_Frame, name="cw_bfo_heading_label")
         self.CW_BFO_Heading_Label.configure(
@@ -245,15 +261,18 @@ class settingsBackupUI(ttk.Labelframe):
             width=10)
         self.ConfigFIle_CW_BFO_Label.grid(
             column=4, padx="0 5", pady="0 5", row=5, sticky="e")
-        self.CW_Keytype_Checkbutton = ttk.Checkbutton(
-            self.backupSettings_Frame, name="cw_keytype_checkbutton")
-        self.CW_Keytype_Checked_VAR = tk.StringVar()
-        self.CW_Keytype_Checkbutton.configure(
-            offvalue=0,
-            onvalue=1,
-            style="Checkbox1b.TCheckbutton",
-            variable=self.CW_Keytype_Checked_VAR)
-        self.CW_Keytype_Checkbutton.grid(column=0, padx=0, pady=5, row=6)
+        self.CW_Keytype = ttk.Button(
+            self.backupSettings_Frame, name="cw_keytype")
+        self.CW_Keytype_VAR = tk.StringVar(value='No')
+        self.CW_Keytype.configure(
+            style="Button2Raised.TButton",
+            text='No',
+            textvariable=self.CW_Keytype_VAR,
+            width=5)
+        self.CW_Keytype.grid(column=0, pady="0 15", row=6)
+        def CW_Keytype_cmd_(): self.selectSetting_CB("CW_Keytype")
+
+        self.CW_Keytype.configure(command=CW_Keytype_cmd_)
         self.CW_Keytype_Heading_Label = ttk.Label(
             self.backupSettings_Frame, name="cw_keytype_heading_label")
         self.CW_Keytype_Heading_Label.configure(
@@ -289,15 +308,18 @@ class settingsBackupUI(ttk.Labelframe):
             width=10)
         self.ConfigFile_CW_Keytype_Label.grid(
             column=4, padx="0 5", pady="0 5", row=6, sticky="e")
-        self.CW_Speed_Checkbutton = ttk.Checkbutton(
-            self.backupSettings_Frame, name="cw_speed_checkbutton")
-        self.CW_Speed_Checked_VAR = tk.StringVar()
-        self.CW_Speed_Checkbutton.configure(
-            offvalue=0,
-            onvalue=1,
-            style="Checkbox1b.TCheckbutton",
-            variable=self.CW_Speed_Checked_VAR)
-        self.CW_Speed_Checkbutton.grid(column=0, padx=0, pady=5, row=7)
+        self.CW_Speed = ttk.Button(self.backupSettings_Frame, name="cw_speed")
+        self.CW_Speed_VAR = tk.StringVar(value='No')
+        self.CW_Speed.configure(
+            cursor="arrow",
+            style="Button2Raised.TButton",
+            text='No',
+            textvariable=self.CW_Speed_VAR,
+            width=5)
+        self.CW_Speed.grid(column=0, pady="0 15", row=7)
+        def CW_Speed_cmd_(): self.selectSetting_CB("CW_Speed")
+
+        self.CW_Speed.configure(command=CW_Speed_cmd_)
         self.CW_Speed_Heading_Label = ttk.Label(
             self.backupSettings_Frame, name="cw_speed_heading_label")
         self.CW_Speed_Heading_Label.configure(
@@ -338,15 +360,19 @@ class settingsBackupUI(ttk.Labelframe):
             width=10)
         self.ConfigFile_CW_Speed_Label.grid(
             column=4, padx="0 5", pady="0 5", row=7, sticky="e")
-        self.CW_Sidetone_Checkbutton = ttk.Checkbutton(
-            self.backupSettings_Frame, name="cw_sidetone_checkbutton")
-        self.CW_Sidetone_Checked_VAR = tk.StringVar()
-        self.CW_Sidetone_Checkbutton.configure(
-            offvalue=0,
-            onvalue=1,
-            style="Checkbox1b.TCheckbutton",
-            variable=self.CW_Sidetone_Checked_VAR)
-        self.CW_Sidetone_Checkbutton.grid(column=0, padx=0, pady=5, row=8)
+        self.CW_Sidetone = ttk.Button(
+            self.backupSettings_Frame, name="cw_sidetone")
+        self.CW_Sidetone_VAR = tk.StringVar(value='No')
+        self.CW_Sidetone.configure(
+            cursor="arrow",
+            style="Button2Raised.TButton",
+            text='No',
+            textvariable=self.CW_Sidetone_VAR,
+            width=5)
+        self.CW_Sidetone.grid(column=0, pady="0 15", row=8)
+        def CW_Sidetone_cmd_(): self.selectSetting_CB("CW_Sidetone")
+
+        self.CW_Sidetone.configure(command=CW_Sidetone_cmd_)
         self.CW_Sidetone_Heading_Label = ttk.Label(
             self.backupSettings_Frame, name="cw_sidetone_heading_label")
         self.CW_Sidetone_Heading_Label.configure(
@@ -389,16 +415,19 @@ class settingsBackupUI(ttk.Labelframe):
             width=10)
         self.ConfigFile_CW_Sidetone_Label.grid(
             column=4, padx="0 5", pady="0 5", row=8, sticky="e")
-        self.CW_Delay_Before_TX_Checkbutton = ttk.Checkbutton(
-            self.backupSettings_Frame, name="cw_delay_before_tx_checkbutton")
-        self.CW_Delay_Before_TX_Checked_VAR = tk.StringVar()
-        self.CW_Delay_Before_TX_Checkbutton.configure(
-            offvalue=0,
-            onvalue=1,
-            style="Checkbox1b.TCheckbutton",
-            variable=self.CW_Delay_Before_TX_Checked_VAR)
-        self.CW_Delay_Before_TX_Checkbutton.grid(
-            column=0, padx=0, pady=5, row=9)
+        self.CW_Delay_Before_TX = ttk.Button(
+            self.backupSettings_Frame, name="cw_delay_before_tx")
+        self.CW_Delay_Before_TX_VAR = tk.StringVar(value='No')
+        self.CW_Delay_Before_TX.configure(
+            cursor="arrow",
+            style="Button2Raised.TButton",
+            text='No',
+            textvariable=self.CW_Delay_Before_TX_VAR,
+            width=5)
+        self.CW_Delay_Before_TX.grid(column=0, pady="0 15", row=9)
+        def CW_Delay_Before_TX_cmd_(): self.selectSetting_CB("CW_Delay_Before_TX")
+
+        self.CW_Delay_Before_TX.configure(command=CW_Delay_Before_TX_cmd_)
         self.CW_Delay_Before_TX_Heading_Label = ttk.Label(
             self.backupSettings_Frame, name="cw_delay_before_tx_heading_label")
         self.CW_Delay_Before_TX_Heading_Label.configure(
@@ -436,16 +465,19 @@ class settingsBackupUI(ttk.Labelframe):
             width=10)
         self.ConfigFile_CW_Delay_Before_TX_Label.grid(
             column=4, padx="0 5", pady="0 5", row=9, sticky="e")
-        self.CW_Delay_Returning_To_RX_Checkbutton = ttk.Checkbutton(
-            self.backupSettings_Frame, name="cw_delay_returning_to_rx_checkbutton")
-        self.CW_Delay_Returning_To_RX_Checked_VAR = tk.StringVar()
-        self.CW_Delay_Returning_To_RX_Checkbutton.configure(
-            offvalue=0,
-            onvalue=1,
-            style="Checkbox1b.TCheckbutton",
-            variable=self.CW_Delay_Returning_To_RX_Checked_VAR)
-        self.CW_Delay_Returning_To_RX_Checkbutton.grid(
-            column=0, padx=0, pady=5, row=10)
+        self.CW_Delay_Before_RX = ttk.Button(
+            self.backupSettings_Frame, name="cw_delay_before_rx")
+        self.CW_Delay_Before_RX_VAR = tk.StringVar(value='No')
+        self.CW_Delay_Before_RX.configure(
+            cursor="arrow",
+            style="Button2Raised.TButton",
+            text='No',
+            textvariable=self.CW_Delay_Before_RX_VAR,
+            width=5)
+        self.CW_Delay_Before_RX.grid(column=0, pady="0 15", row=10)
+        def CW_Delay_Before_RX_cmd_(): self.selectSetting_CB("CW_Delay_Before_RX")
+
+        self.CW_Delay_Before_RX.configure(command=CW_Delay_Before_RX_cmd_)
         self.CW_Delay_Returning_To_RX_Heading_Label = ttk.Label(
             self.backupSettings_Frame, name="cw_delay_returning_to_rx_heading_label")
         self.CW_Delay_Returning_To_RX_Heading_Label.configure(
@@ -499,25 +531,16 @@ class settingsBackupUI(ttk.Labelframe):
         frame3.grid(column=0, columnspan=5, row=11, sticky="ew")
         frame5 = ttk.Frame(self.backupSettings_Frame)
         frame5.configure(height=200, style="Normal.TFrame", width=200)
-        self.select_All_Checkbutton = ttk.Checkbutton(
-            frame5, name="select_all_checkbutton")
-        self.select_All_Checked_VAR = tk.StringVar()
-        self.select_All_Checkbutton.configure(
-            offvalue=0,
-            onvalue=1,
-            style="Checkbox1b.TCheckbutton",
-            variable=self.select_All_Checked_VAR)
-        self.select_All_Checkbutton.pack(padx="28 0", pady="5 0", side="left")
-        self.select_All_Checkbutton.configure(
-            command=self.select_All_Checkbutton_CB)
-        self.select_All_Label = ttk.Label(frame5, name="select_all_label")
-        self.select_All_Checked_Text_VAR = tk.StringVar(value='Select All')
-        self.select_All_Label.configure(
-            style="Heading1bi.TLabel",
+        self.select_All = ttk.Button(frame5, name="select_all")
+        self.select_All_VAR = tk.StringVar(value='Select All')
+        self.select_All.configure(
+            style="Button2Raised.TButton",
             text='Select All',
-            textvariable=self.select_All_Checked_Text_VAR)
-        self.select_All_Label.pack(padx=15, pady="5 0", side="right")
-        frame5.grid(column=0, columnspan=4, padx=8, row=12, sticky="w")
+            textvariable=self.select_All_VAR,
+            width=10)
+        self.select_All.pack(pady=15)
+        self.select_All.configure(command=self.select_All_Checkbutton_CB)
+        frame5.grid(column=0, columnspan=4, row=12, sticky="w")
         self.backupSettings_Frame.pack(
             anchor="center", expand=True, fill="x", side="top")
         self.backupSettings_Frame.grid_anchor("center")
@@ -527,30 +550,73 @@ class settingsBackupUI(ttk.Labelframe):
         self.from_Label = ttk.Label(self.action_Frame, name="from_label")
         self.from_Label.configure(style="Heading1b.TLabel", text='Source:')
         self.from_Label.grid(column=2, padx="10 0", row=0)
-        self.from_Combobox = ttk.Combobox(
-            self.action_Frame, name="from_combobox")
-        self.from_Combobox_VAR = tk.StringVar()
-        self.from_Combobox.configure(
-            justify="center",
-            state="readonly",
-            style="ComboBox1.TCombobox",
-            textvariable=self.from_Combobox_VAR,
-            values='Select Factory Current ConfigFile',
-            width=9)
-        self.from_Combobox.grid(column=3, padx="5 0", row=0)
         self.to_Label = ttk.Label(self.action_Frame, name="to_label")
         self.to_Label.configure(style="Heading1b.TLabel", text='Destination:')
-        self.to_Label.grid(column=4, padx="10 0", row=0)
-        self.to_Combobox = ttk.Combobox(self.action_Frame, name="to_combobox")
-        self.to_Combobox_VAR = tk.StringVar()
-        self.to_Combobox.configure(
-            justify="center",
-            state="readonly",
-            style="ComboBox1.TCombobox",
-            textvariable=self.to_Combobox_VAR,
-            values='Select Current ConfigFile',
-            width=9)
-        self.to_Combobox.grid(column=5, padx="5 0", row=0)
+        self.to_Label.grid(column=4, padx="40 0", row=0)
+        self.from_Menubutton = ttk.Menubutton(
+            self.action_Frame, name="from_menubutton")
+        self.from_Source_VAR = tk.StringVar(value='Select')
+        self.from_Menubutton.configure(
+            style="Heading0.TMenubutton",
+            text='Select',
+            textvariable=self.from_Source_VAR,
+            width=10)
+        self.from_Menu = tk.Menu(self.from_Menubutton, name="from_menu")
+        self.from_Menu.configure(tearoff=False)
+        self.from_Menu.add(
+            "command",
+            command=self.selectFrom_Factory_CB,
+            font="{Arial} 36 {}",
+            label='Factory',
+            state="normal")
+        self.from_Menu.add(
+            "command",
+            command=self.selectFrom_Current_CB,
+            font="{Arial} 36 {}",
+            label='Current',
+            state="normal")
+        self.from_Menu.add(
+            "command",
+            command=self.selectFrom_ConfigFile_CB,
+            font="{Arial} 36 {}",
+            label='ConfigFile',
+            state="normal")
+        self.from_Menubutton.configure(menu=self.from_Menu)
+        self.from_Menubutton.grid(
+            column=3,
+            padx="15 5",
+            pady=10,
+            row=0,
+            sticky="w")
+        self.to_Menubutton = ttk.Menubutton(
+            self.action_Frame, name="to_menubutton")
+        self.to_Source_VAR = tk.StringVar(value='Select')
+        self.to_Menubutton.configure(
+            style="Heading0.TMenubutton",
+            text='Select',
+            textvariable=self.to_Source_VAR,
+            width=10)
+        self.to_Menu = tk.Menu(self.to_Menubutton, name="to_menu")
+        self.to_Menu.configure(tearoff=False)
+        self.to_Menu.add(
+            "command",
+            command=self.selectTo_Current_CB,
+            font="{Arial} 36 {}",
+            label='Current',
+            state="normal")
+        self.to_Menu.add(
+            "command",
+            command=self.selectTo_ConfigFile_CB,
+            font="{Arial} 36 {}",
+            label='ConfigFile',
+            state="normal")
+        self.to_Menubutton.configure(menu=self.to_Menu)
+        self.to_Menubutton.grid(
+            column=5,
+            padx="15 10",
+            pady=10,
+            row=0,
+            sticky="w")
         self.action_Frame.pack(
             anchor="center",
             expand=True,
@@ -583,7 +649,25 @@ class settingsBackupUI(ttk.Labelframe):
             width=600)
         # Layout for 'labelframe1' skipped in custom widget template.
 
+    def selectSetting_CB(self, widget_id):
+        pass
+
     def select_All_Checkbutton_CB(self):
+        pass
+
+    def selectFrom_Factory_CB(self):
+        pass
+
+    def selectFrom_Current_CB(self):
+        pass
+
+    def selectFrom_ConfigFile_CB(self):
+        pass
+
+    def selectTo_Current_CB(self):
+        pass
+
+    def selectTo_ConfigFile_CB(self):
         pass
 
     def copy_CB(self):

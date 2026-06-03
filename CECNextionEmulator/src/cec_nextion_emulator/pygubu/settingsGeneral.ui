@@ -23,15 +23,13 @@
     <resources />
   </project>
   <object class="tk.Toplevel" id="settingsMisc_Toplevel" named="True">
-    <property name="height">200</property>
+    <property name="height">550</property>
     <property name="title" translatable="yes">Settings</property>
-    <property name="width">200</property>
+    <property name="width">550</property>
     <child>
       <object class="ttk.Labelframe" id="labelframe1">
-        <property name="height">400</property>
         <property name="style">Heading2.TLabelframe</property>
         <property name="text" translatable="yes">General Settings</property>
-        <property name="width">600</property>
         <layout manager="pack">
           <property name="expand">true</property>
           <property name="fill">both</property>
@@ -62,25 +60,80 @@
               </object>
             </child>
             <child>
-              <object class="pygubu.widgets.Combobox" id="Number_Delimiter_Combobox" named="True">
-                <property name="justify">center</property>
-                <property name="keyvariable">string:NUMBER_DELIMITER_VAR</property>
-                <property name="style">ComboBox1.TCombobox</property>
-                <property name="values">, .</property>
-                <property name="width">4</property>
+              <object class="ttk.Menubutton" id="Number_Delimiter_Menubutton" named="True">
+                <property name="style">Heading0.TMenubutton</property>
+                <property name="textvariable">string:NUMBER_DELIMITER_VAR</property>
+                <property name="width">2</property>
                 <layout manager="grid">
                   <property name="column">1</property>
-                  <property name="padx">20 0</property>
+                  <property name="padx">15 5</property>
+                  <property name="pady">10</property>
                   <property name="row">0</property>
                   <property name="sticky">w</property>
                 </layout>
+                <child>
+                  <object class="tk.Menu" id="Number_Delimiter_Menu" named="True">
+                    <property name="tearoff">false</property>
+                    <child>
+                      <object class="tk.Menuitem.Command" id="selectComma_Command" named="True">
+                        <property name="command" type="command" cbtype="simple">selectCommaDelimiter_CB</property>
+                        <property name="font">{Arial} 36 {}</property>
+                        <property name="label" translatable="yes">  ,  </property>
+                        <property name="state">normal</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="tk.Menuitem.Command" id="selectPeriod_Command" named="True">
+                        <property name="command" type="command" cbtype="simple">selectPeriodDelimiter_CB</property>
+                        <property name="font">{Arial} 36 {}</property>
+                        <property name="label" translatable="yes">  .  </property>
+                        <property name="state">normal</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Menubutton" id="Virtual_Keyboard_Menubutton" named="True">
+                <property name="style">Heading0.TMenubutton</property>
+                <property name="textvariable">string:Virtual_Keyboard_VAR</property>
+                <property name="width">5</property>
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="padx">15 5</property>
+                  <property name="pady">40 20</property>
+                  <property name="row">1</property>
+                  <property name="sticky">e</property>
+                </layout>
+                <child>
+                  <object class="tk.Menu" id="Virtual_Keyboard_Menu" named="True">
+                    <property name="tearoff">false</property>
+                    <child>
+                      <object class="tk.Menuitem.Command" id="selectVirtualKeyboardOn_Command" named="True">
+                        <property name="command" type="command" cbtype="simple">selectVirtualKeyboardOn_CB</property>
+                        <property name="font">{Arial} 36 {}</property>
+                        <property name="label" translatable="yes">True </property>
+                        <property name="state">normal</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="tk.Menuitem.Command" id="selectVirtualKeyboardOff_Command" named="True">
+                        <property name="command" type="command" cbtype="simple">selectVirtualKeyboardOff_CB</property>
+                        <property name="font">{Arial} 36 {}</property>
+                        <property name="label" translatable="yes">False</property>
+                        <property name="state">normal</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
               <object class="ttk.Label" id="Virtual_Keyboard_Label" named="True">
                 <property name="justify">right</property>
                 <property name="style">Heading1b.TLabel</property>
-                <property name="text" translatable="yes">Virtual Keyboard</property>
+                <property name="text" translatable="yes">Virtual Keyboard On</property>
                 <layout manager="grid">
                   <property name="column">0</property>
                   <property name="padx">10</property>
@@ -91,47 +144,83 @@
               </object>
             </child>
             <child>
-              <object class="pygubu.widgets.Combobox" id="Virtual_Keyboard_Combobox" named="True">
-                <property name="keyvariable">string:Virtual_Keyboard_VAR</property>
-                <property name="style">ComboBox1.TCombobox</property>
-                <property name="values">On Off</property>
-                <property name="width">4</property>
+              <object class="ttk.Label" id="VFO_Touch_Optimized_Label" named="True">
+                <property name="justify">right</property>
+                <property name="style">Heading1b.TLabel</property>
+                <property name="text" translatable="yes">VFO Touch Optimized</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">10</property>
+                  <property name="pady">40 20</property>
+                  <property name="row">2</property>
+                  <property name="sticky">e</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Menubutton" id="VFO_Touch_Optimized_Menubutton" named="True">
+                <property name="style">Heading0.TMenubutton</property>
+                <property name="textvariable">string:VFO_Touch_Optimized_VAR</property>
+                <property name="width">5</property>
                 <layout manager="grid">
                   <property name="column">1</property>
-                  <property name="padx">20 0</property>
+                  <property name="padx">15 5</property>
                   <property name="pady">40 20</property>
-                  <property name="row">1</property>
+                  <property name="row">2</property>
                   <property name="sticky">w</property>
                 </layout>
+                <child>
+                  <object class="tk.Menu" id="VFO_Touch_Optimized_Menu" named="True">
+                    <property name="tearoff">false</property>
+                    <child>
+                      <object class="tk.Menuitem.Command" id="selectVFO_TouchOn_Command" named="True">
+                        <property name="command" type="command" cbtype="simple">selectVFO_TouchOn_CB</property>
+                        <property name="font">{Arial} 36 {}</property>
+                        <property name="label" translatable="yes">True </property>
+                        <property name="state">normal</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="tk.Menuitem.Command" id="selectVFO_TouchOff_Command" named="True">
+                        <property name="command" type="command" cbtype="simple">selectVFO_TouchOff_CB</property>
+                        <property name="font">{Arial} 36 {}</property>
+                        <property name="label" translatable="yes">False</property>
+                        <property name="state">normal</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
               <object class="ttk.Label" id="Time_On_Freq_Label" named="True">
                 <property name="justify">right</property>
                 <property name="style">Heading1b.TLabel</property>
-                <property name="text" translatable="yes">Time on Frequency
+                <property name="text" translatable="yes">Seconds on Frequency
 during Scan</property>
                 <layout manager="grid">
                   <property name="column">0</property>
                   <property name="padx">10</property>
                   <property name="pady">40 20</property>
-                  <property name="row">2</property>
+                  <property name="row">3</property>
                   <property name="sticky">e</property>
                 </layout>
               </object>
             </child>
             <child>
-              <object class="pygubu.widgets.Combobox" id="Time_On_Freq_Combobox" named="True">
+              <object class="ttk.Spinbox" id="Time_On_Freq_Spinbox" named="True">
+                <property name="font">{Arial} 36 {}</property>
+                <property name="from_">1</property>
                 <property name="justify">right</property>
-                <property name="keyvariable">string:Time_On_Freq_VAR</property>
-                <property name="style">ComboBox1.TCombobox</property>
-                <property name="values">1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20</property>
-                <property name="width">4</property>
+                <property name="style">Custom.TSpinbox</property>
+                <property name="textvariable">string:Time_On_Freq_VAR</property>
+                <property name="to">20</property>
+                <property name="width">2</property>
                 <layout manager="grid">
                   <property name="column">1</property>
-                  <property name="padx">20 0</property>
+                  <property name="padx">15 5</property>
                   <property name="pady">40 20</property>
-                  <property name="row">2</property>
+                  <property name="row">3</property>
                   <property name="sticky">w</property>
                 </layout>
               </object>

@@ -33,11 +33,13 @@
     </layout>
     <child>
       <object class="ttk.Label" id="channel_Number_Label" named="True">
-        <property name="style">Heading3bi.TLabel</property>
+        <property name="anchor">e</property>
+        <property name="style">Heading1bi.TLabel</property>
         <property name="textvariable">string:channel_Number_VAR</property>
-        <property name="width">10</property>
+        <property name="width">3</property>
         <layout manager="grid">
           <property name="column">0</property>
+          <property name="padx">0 5</property>
           <property name="row">0</property>
           <property name="sticky">w</property>
         </layout>
@@ -46,7 +48,7 @@
     <child>
       <object class="ttk.Button" id="channel_Select_Button" named="True">
         <property name="command" type="command" cbtype="simple">channel_Select_CB</property>
-        <property name="style">Button2b.TButton</property>
+        <property name="style">Button1bARaised.TButton</property>
         <property name="text" translatable="yes">Select</property>
         <property name="textvariable">string:channel_Select_VAR</property>
         <property name="width">8</property>
@@ -59,15 +61,16 @@
     </child>
     <child>
       <object class="ttk.Entry" id="channel_Name_Entry" named="True">
+        <property name="font">{Arial} 20 {bold}</property>
         <property name="justify">left</property>
-        <property name="style">Entry2b.TEntry</property>
         <property name="textvariable">string:channel_Label_VAR</property>
         <property name="validate">focusout</property>
         <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">channel_Lavel_Validation_CB</property>
-        <property name="width">5</property>
+        <property name="width">6</property>
         <bind sequence="&lt;Button&gt;" handler="channel_Label_Entered_CB" add="True" />
         <layout manager="grid">
           <property name="column">2</property>
+          <property name="ipady">2</property>
           <property name="padx">5 0</property>
           <property name="row">0</property>
           <property name="sticky">w</property>
@@ -76,65 +79,20 @@
     </child>
     <child>
       <object class="ttk.Entry" id="freq_Entry" named="True">
-        <property name="style">Entry2b.TEntry</property>
+        <property name="font">{Arial} 20 {bold}</property>
+        <property name="justify">right</property>
+        <property name="style">Entry1b.TEntry</property>
         <property name="textvariable">string:channel_Freq_VAR</property>
         <property name="validate">focusout</property>
         <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">channel_Freq_Validation_CB</property>
-        <property name="width">8</property>
+        <property name="width">10</property>
         <bind sequence="&lt;Button&gt;" handler="numeric_Keypad_CB" add="True" />
         <layout manager="grid">
           <property name="column">3</property>
+          <property name="ipady">2</property>
           <property name="padx">5 0</property>
           <property name="row">0</property>
           <property name="sticky">w</property>
-        </layout>
-      </object>
-    </child>
-    <child>
-      <object class="pygubu.widgets.Combobox" id="mode_Combobox" named="True">
-        <property name="justify">center</property>
-        <property name="keyvariable">string:channel_Mode_VAR</property>
-        <property name="state">normal</property>
-        <property name="style">ComboBox2b.TCombobox</property>
-        <property name="values">DFT LSB USB CWL CWU</property>
-        <property name="width">8</property>
-        <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="Channel_Mode_Changed_CB" add="" />
-        <layout manager="grid">
-          <property name="column">4</property>
-          <property name="padx">5 0</property>
-          <property name="row">0</property>
-        </layout>
-      </object>
-    </child>
-    <child>
-      <object class="pygubu.widgets.Combobox" id="show_Label_Combobox" named="True">
-        <property name="justify">center</property>
-        <property name="keyvariable">string:channel_ShowLabel_VAR</property>
-        <property name="state">normal</property>
-        <property name="style">ComboBox2b.TCombobox</property>
-        <property name="values">Yes No</property>
-        <property name="width">5</property>
-        <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="Channel_ShowLabel_Changed_CB" add="True" />
-        <layout manager="grid">
-          <property name="column">5</property>
-          <property name="padx">5 0</property>
-          <property name="row">0</property>
-        </layout>
-      </object>
-    </child>
-    <child>
-      <object class="pygubu.widgets.Combobox" id="scan_Set_Combobox" named="True">
-        <property name="justify">center</property>
-        <property name="keyvariable">string:channel_ScanSet_VAR</property>
-        <property name="state">normal</property>
-        <property name="style">ComboBox2b.TCombobox</property>
-        <property name="values">None Scan1 Scan2 Scan3 Scan4</property>
-        <property name="width">5</property>
-        <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="Channel_ScanSet_Changed_CB" add="True" />
-        <layout manager="grid">
-          <property name="column">6</property>
-          <property name="padx">5 0</property>
-          <property name="row">0</property>
         </layout>
       </object>
     </child>
@@ -147,6 +105,144 @@
           <property name="padx">10 5</property>
           <property name="row">0</property>
         </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Menubutton" id="mode_Menubutton" named="True">
+        <property name="style">Heading1b.TMenubutton</property>
+        <property name="text" translatable="yes"> </property>
+        <property name="textvariable">string:channel_Mode_VAR</property>
+        <property name="width">5</property>
+        <layout manager="grid">
+          <property name="column">4</property>
+          <property name="padx">5 0</property>
+          <property name="row">0</property>
+        </layout>
+        <child>
+          <object class="tk.Menu" id="mode_Menu" named="True">
+            <property name="tearoff">false</property>
+            <child>
+              <object class="tk.Menuitem.Command" id="DFT" named="True">
+                <property name="command" type="command" cbtype="with_wid">Channel_Mode_Changed_CB</property>
+                <property name="font">{Arial} 36 {}</property>
+                <property name="label" translatable="yes">DFT</property>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Menuitem.Command" id="LSB" named="True">
+                <property name="command" type="command" cbtype="with_wid">Channel_Mode_Changed_CB</property>
+                <property name="font">{Arial} 36 {}</property>
+                <property name="label" translatable="yes">LSB</property>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Menuitem.Command" id="USB" named="True">
+                <property name="command" type="command" cbtype="with_wid">Channel_Mode_Changed_CB</property>
+                <property name="font">{Arial} 36 {}</property>
+                <property name="label" translatable="yes">USB</property>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Menuitem.Command" id="CWL" named="True">
+                <property name="command" type="command" cbtype="with_wid">Channel_Mode_Changed_CB</property>
+                <property name="font">{Arial} 36 {}</property>
+                <property name="label" translatable="yes">CWL</property>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Menuitem.Command" id="CWU" named="True">
+                <property name="command" type="command" cbtype="with_wid">Channel_Mode_Changed_CB</property>
+                <property name="font">{Arial} 36 {}</property>
+                <property name="label" translatable="yes">CWU</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Menubutton" id="show_Label_Menubutton" named="True">
+        <property name="style">Heading1b.TMenubutton</property>
+        <property name="text" translatable="yes"> </property>
+        <property name="textvariable">string:channel_ShowLabel_VAR</property>
+        <property name="width">5</property>
+        <layout manager="grid">
+          <property name="column">5</property>
+          <property name="padx">5 0</property>
+          <property name="row">0</property>
+        </layout>
+        <child>
+          <object class="tk.Menu" id="show_Label_Menu" named="True">
+            <property name="tearoff">false</property>
+            <child>
+              <object class="tk.Menuitem.Command" id="Yes" named="True">
+                <property name="command" type="command" cbtype="with_wid">Channel_ShowLabel_Changed_CB</property>
+                <property name="font">{Arial} 36 {}</property>
+                <property name="label" translatable="yes">Yes</property>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Menuitem.Command" id="No" named="True">
+                <property name="command" type="command" cbtype="with_wid">Channel_ShowLabel_Changed_CB</property>
+                <property name="font">{Arial} 36 {}</property>
+                <property name="label" translatable="yes">No</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Menubutton" id="scan_Set_Menubutton" named="True">
+        <property name="style">Heading1b.TMenubutton</property>
+        <property name="text" translatable="yes"> </property>
+        <property name="textvariable">string:channel_ScanSet_VAR</property>
+        <property name="width">5</property>
+        <layout manager="grid">
+          <property name="column">6</property>
+          <property name="padx">5 0</property>
+          <property name="row">0</property>
+        </layout>
+        <child>
+          <object class="tk.Menu" id="scan_Set_Menu" named="True">
+            <property name="tearoff">false</property>
+            <child>
+              <object class="tk.Menuitem.Command" id="None_Command" named="True">
+                <property name="command" type="command" cbtype="with_wid">Channel_ScanSet_Changed_CB</property>
+                <property name="font">{Arial} 36 {}</property>
+                <property name="label" translatable="yes">None</property>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Menuitem.Command" id="Scan1_Command" named="True">
+                <property name="command" type="command" cbtype="with_wid">Channel_ScanSet_Changed_CB</property>
+                <property name="font">{Arial} 36 {}</property>
+                <property name="label" translatable="yes">Scan1</property>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Menuitem.Command" id="Scan2_Command" named="True">
+                <property name="command" type="command" cbtype="with_wid">Channel_ScanSet_Changed_CB</property>
+                <property name="font">{Arial} 36 {}</property>
+                <property name="label" translatable="yes">Scan2</property>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Menuitem.Command" id="Scan3_Command" named="True">
+                <property name="command" type="command" cbtype="with_wid">Channel_ScanSet_Changed_CB</property>
+                <property name="font">{Arial} 36 {}</property>
+                <property name="label" translatable="yes">Scan3</property>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Menuitem.Command" id="Scan4_Command" named="True">
+                <property name="command" type="command" cbtype="with_wid">Channel_ScanSet_Changed_CB</property>
+                <property name="font">{Arial} 36 {}</property>
+                <property name="label" translatable="yes">Scan4</property>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
   </object>

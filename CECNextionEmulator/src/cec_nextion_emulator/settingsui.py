@@ -1,19 +1,26 @@
 #!/usr/bin/python3
+"""
+Settings Window
+
+Used to save settings
+
+UI source file: settings.ui
+"""
 import tkinter as tk
 import tkinter.ttk as ttk
 
 
-def i18n_translator_noop(value):
+def safe_i18n_translator(value):
     """i18n - Setup translator in derived class file"""
     return value
 
 
-def first_object_callback_noop(widget):
+def safe_fo_callback(widget):
     """on first objec callback - Setup callback in derived class file."""
     pass
 
 
-def image_loader_default(master, image_name: str):
+def safe_image_loader(master, image_name: str):
     """Image loader - Setup image_loader in derived class file."""
     img = None
     try:
@@ -38,12 +45,12 @@ class settingsUI(ttk.Labelframe):
         **kw
     ):
         if translator is None:
-            translator = i18n_translator_noop
+            translator = safe_i18n_translator
         _ = translator  # i18n string marker.
         if image_loader is None:
-            image_loader = image_loader_default
+            image_loader = safe_image_loader
         if on_first_object_cb is None:
-            on_first_object_cb = first_object_callback_noop
+            on_first_object_cb = safe_fo_callback
 
         super().__init__(master, **kw)
 
@@ -75,12 +82,16 @@ class settingsUI(ttk.Labelframe):
         self.settingsBackup_Button.grid(
             column=2, ipady=25, padx=10, pady=10, row=0)
         self.settingsBackup_Button.configure(command=self.settingsBackup_CB)
-        self.settingsReserved2_Button = ttk.Button(
-            self.settingsButtons_Frame, name="settingsreserved2_button")
-        self.settingsReserved2_Button.configure(
-            state="disabled", style="Button1Raised.TButton", text='tbd', width=15)
-        self.settingsReserved2_Button.grid(
+        self.settingsAbout_Button = ttk.Button(
+            self.settingsButtons_Frame, name="settingsabout_button")
+        self.settingsAbout_Button.configure(
+            state="normal",
+            style="Button1Raised.TButton",
+            text='About',
+            width=15)
+        self.settingsAbout_Button.grid(
             column=2, ipady=25, padx=10, pady=10, row=3)
+        self.settingsAbout_Button.configure(command=self.settingsAbout_CB)
         self.settingsMachine_Button = ttk.Button(
             self.settingsButtons_Frame, name="settingsmachine_button")
         self.settingsMachine_Button.configure(
@@ -115,6 +126,7 @@ class settingsUI(ttk.Labelframe):
             expand=True,
             fill="both",
             padx=20,
+            pady=15,
             side="top")
         self.configure(
             height=200,
@@ -130,6 +142,9 @@ class settingsUI(ttk.Labelframe):
         pass
 
     def settingsBackup_CB(self):
+        pass
+
+    def settingsAbout_CB(self):
         pass
 
     def SettingsMachine_CB(self):

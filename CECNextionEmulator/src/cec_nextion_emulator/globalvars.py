@@ -22,8 +22,17 @@ def get_image(filename):
 
 config = None
 
+APPVERSION = "1.0"
+APPDATE = "June 15, 2026"
+
+RADIOTIMEOUT=5          # give the operator 5 seconds to remember to turn on the radio.
+
+MAIN_WINDOW_OFFSET = "+5+30"
+POPUP_WINDOW_OFFSET = "+50+50"
+VNUMERICKEYBOARD_OFFSET = "+600+160"        #"+550+160"
+VALPHAKEYBOARD_OFFSET = "+375+160"
 RELOADICON = "reloadicon.png"
-BAUD = 9600
+BAUD = 57600     #9600
 NUMBER_DELIMITER = ""               # Loaded with value from configuration file
 
 MASTER_CAL_BOUNDS = {'LOW': -500000, 'HIGH': 500000}
@@ -64,6 +73,22 @@ MCU_Headroom_Values = ["40","50","60","70","80","90","100","110","150","160","17
 
 Frequency_To_Run_UX_loop = ["250","300","350","400","425","450","475","500","550","600","650","675","700","725","800"]
 
+MCU_Read_Completion_Wait_Period = ["5", "10", "15", "20", "25", "30", "40", "50","60","70","80","90"]
+
+#
+#   Band limits. Probably should be retrieved from eeprom. Perhaps later...
+#
+bandStart = {"Band160m":1800000,"Band80m":3500000,"Band40m":7000000,"Band30m":10100000,
+             "Band20m":14000000, "Band17m":18068000, "Band15m":21000000, "Band12m":24890000,
+             "Band10m":28000000}
+bandEnd =   {"Band160m":2000000,"Band80m":4000000,"Band40m":7300000,"Band30m":10150000,
+             "Band20m":14350000, "Band17m":18168000, "Band15m":21450000, "Band12m":24990000,
+             "Band10m":29700000}
+# bandSampleSize =   {"Band160m":1660,"Band80m":4160,"Band40m":2500,"Band30m":410,
+#              "Band20m":2910, "Band17m":830, "Band15m":3750, "Band12m":830,
+#              "Band10m":14160}
+
+
 
 #   VFO Formatting Functions
 #####################################################################################
@@ -87,7 +112,6 @@ def formatVFO(VFO):
 def updateNUMBER_DELIMITER(value):
     global NUMBER_DELIMITER
     NUMBER_DELIMITER = value
-    print("update Number Delimiter, now = ", NUMBER_DELIMITER)
 
 
 def formatFrequency(frequency, freqOffset=0):
@@ -102,15 +126,16 @@ def unformatFrequency(vfo, includeOffset=False, freqOffset=0):
         return (str(int(vfo.replace(",","").replace(".","")) - freqOffset))
 
 def formatCombobox( combobox, family="Arial", size="36", weight="bold"):
-    combobox.configure(font=font.Font(family=family, size=size, weight=weight))
+    # combobox.configure(font=font.Font(family=family, size=size, weight=weight))
+    combobox.configure(font=("Arial",36))
     #
     #   The following is pure magic....  Found after hours of search. Basically the first command
     #   discovers the handle to the ListBox that is hidden below the combobox
     #   with this handle you can then set the drop down to the fonts used by the combobox.
     #   grab (create a new one or get existing) popdown
-    popdown = combobox.tk.eval('ttk::combobox::PopdownWindow %s' % combobox)
-    #   configure popdown font
-    combobox.tk.call('%s.f.l' % popdown, 'configure', '-font', combobox['font'])
+    # popdown = combobox.tk.eval('ttk::combobox::PopdownWindow %s' % combobox)
+    # #   configure popdown font
+    # combobox.tk.call('%s.f.l' % popdown, 'co        self.popup.geometry(gv.POPUP_WINDOW_OFFSET)nfigure', '-font', combobox['font'])
 
 def validateNumber(value, lowbound, highbound, name, parent):
     if str(value) == "":
@@ -130,11 +155,46 @@ def validateKeyInDict(dict, key, name, parent):
     else:
         return True
 
-def trimAndLocateWindow(window,x_offset,y_offset):
-    window.update()        # Let things settle down so we can get
+# def trimAndLocateWindow(window,offset):
+#     window.update()        # Let things settle down so we can get
+#
+#     width = window.winfo_width()
+#     height = window.winfo_height()
+#
+#     return(f'{width}x{height}{offset}')
+#
+#   Shared plotting routines
+#
+def calculatePlotParameters(canvasWidth, numBars,x_gap, canvasHeight, maxY, y_gap):
+    # canvasWidth = current width of canvas where all the bars must fit
+    # numBars = total number of bars that need to fit into the canvas
+    # x_gap = space on right/left sides between canvas edge and first (last) bar
 
-    width = window.winfo_width()
-    height = window.winfo_height()
+    x_width = canvasWidth // numBars
 
-    return (f'{width}x{height}+{x_offset}+{y_offset}')
+    # what is this fixed constant of "8"???
+    remainingWidth = canvasWidth - (x_width * numBars) - (2*x_gap)
+
+    x_stretch = remainingWidth / numBars
+    y_stretch = (canvasHeight - y_gap)/maxY
+
+    return x_width, x_stretch, y_stretch
+
+def calculatePlotBar(canvasHeight, x, ymag, x_width, x_stretch, x_gap, y_stretch, y_gap):
+    # canvasHeight = the height of the canvas in pixels
+    # x = number of the bar being plotted
+    # ymag = actual magnitude of the bar
+    # x_width = width of the bar
+    # x_stretch = multiply factor to make total bars just fit on the canvas
+    # fixedParms = parameters that are "fixed" regardless of number of bars plotted
+    x0 = round((x * x_stretch) + (x * x_width) + x_gap)
+    y0 = round(canvasHeight - ((ymag * y_stretch) + y_gap))
+    x1 = round((x * x_stretch) + (x * x_width) + x_width + x_gap)
+    y1 = round(canvasHeight - y_gap)
+
+    return x0, y0, x1, y1
+
+
+def roundToNearest(n, base):
+    return base * round(n / base)
 

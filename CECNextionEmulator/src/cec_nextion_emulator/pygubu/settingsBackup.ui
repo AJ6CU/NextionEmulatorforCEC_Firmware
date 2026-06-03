@@ -3,19 +3,20 @@
   <project>
     <settings>
       <setting id="name">settingsBackup</setting>
-      <setting id="description">used to kachup and restore critical values</setting>
-      <setting id="module_name">settingsBackup</setting>
+      <setting id="description">used to bachup and restore critical values</setting>
       <setting id="template">widget</setting>
       <setting id="main_widget">labelframe1</setting>
+      <setting id="module_namespace" />
+      <setting id="module_name">settingsBackup</setting>
       <setting id="main_classname">settingsBackup</setting>
-      <setting id="main_menu" />
       <setting id="output_dir">..</setting>
+      <setting id="builder_namespace">custom_widgets</setting>
       <setting id="output_dir2">..</setting>
-      <setting id="import_tkvariables">False</setting>
-      <setting id="use_ttk_styledefinition_file">True</setting>
+      <setting id="generate_code_onsave">False</setting>
       <setting id="use_i18n">False</setting>
       <setting id="all_ids_attributes">False</setting>
-      <setting id="generate_code_onsave">False</setting>
+      <setting id="import_tkvariables">False</setting>
+      <setting id="use_ttk_styledefinition_file">True</setting>
       <setting id="use_window_centering_code">False</setting>
       <setting id="ttk_style_definition_file">../mystyles.py</setting>
     </settings>
@@ -23,9 +24,7 @@
     <resources />
   </project>
   <object class="tk.Toplevel" id="settingsBackup_Toplevel" named="True">
-    <property name="height">200</property>
-    <property name="title" translatable="yes">Settings</property>
-    <property name="width">200</property>
+    <property name="title" translatable="yes">Radio Backup</property>
     <child>
       <object class="ttk.Labelframe" id="labelframe1">
         <property name="height">400</property>
@@ -155,15 +154,15 @@ File</property>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Checkbutton" id="Master_Cal_Checkbutton" named="True">
-                    <property name="offvalue">0</property>
-                    <property name="onvalue">1</property>
-                    <property name="style">Checkbox1b.TCheckbutton</property>
-                    <property name="variable">string:Master_Cal_Checked_VAR</property>
+                  <object class="ttk.Button" id="Master_Cal" named="True">
+                    <property name="command" type="command" cbtype="with_wid">selectSetting_CB</property>
+                    <property name="style">Button2Raised.TButton</property>
+                    <property name="text" translatable="yes">No</property>
+                    <property name="textvariable">string:Master_Cal_VAR</property>
+                    <property name="width">5</property>
                     <layout manager="grid">
                       <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
+                      <property name="pady">15</property>
                       <property name="row">3</property>
                     </layout>
                   </object>
@@ -234,15 +233,16 @@ File</property>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Checkbutton" id="SSB_BFO_Checkbutton" named="True">
-                    <property name="offvalue">0</property>
-                    <property name="onvalue">1</property>
-                    <property name="style">Checkbox1b.TCheckbutton</property>
-                    <property name="variable">string:SSB_BFO_Checked_VAR</property>
+                  <object class="ttk.Button" id="SSB_BFO" named="True">
+                    <property name="command" type="command" cbtype="with_wid">selectSetting_CB</property>
+                    <property name="cursor">arrow</property>
+                    <property name="style">Button2Raised.TButton</property>
+                    <property name="text" translatable="yes">No</property>
+                    <property name="textvariable">string:SSB_BFO_VAR</property>
+                    <property name="width">5</property>
                     <layout manager="grid">
                       <property name="column">0</property>
-                      <property name="padx">0</property>
-                      <property name="pady">5</property>
+                      <property name="pady">0 15</property>
                       <property name="row">4</property>
                     </layout>
                   </object>
@@ -313,15 +313,16 @@ File</property>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Checkbutton" id="CW_BFO_Checkbutton" named="True">
-                    <property name="offvalue">0</property>
-                    <property name="onvalue">1</property>
-                    <property name="style">Checkbox1b.TCheckbutton</property>
-                    <property name="variable">string:CW_BFO_Checked_VAR</property>
+                  <object class="ttk.Button" id="CW_BFO" named="True">
+                    <property name="command" type="command" cbtype="with_wid">selectSetting_CB</property>
+                    <property name="cursor">arrow</property>
+                    <property name="style">Button2Raised.TButton</property>
+                    <property name="text" translatable="yes">No</property>
+                    <property name="textvariable">string:CW_BFO_VAR</property>
+                    <property name="width">5</property>
                     <layout manager="grid">
                       <property name="column">0</property>
-                      <property name="padx">0</property>
-                      <property name="pady">5</property>
+                      <property name="pady">0 15</property>
                       <property name="row">5</property>
                     </layout>
                   </object>
@@ -391,15 +392,15 @@ File</property>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Checkbutton" id="CW_Keytype_Checkbutton" named="True">
-                    <property name="offvalue">0</property>
-                    <property name="onvalue">1</property>
-                    <property name="style">Checkbox1b.TCheckbutton</property>
-                    <property name="variable">string:CW_Keytype_Checked_VAR</property>
+                  <object class="ttk.Button" id="CW_Keytype" named="True">
+                    <property name="command" type="command" cbtype="with_wid">selectSetting_CB</property>
+                    <property name="style">Button2Raised.TButton</property>
+                    <property name="text" translatable="yes">No</property>
+                    <property name="textvariable">string:CW_Keytype_VAR</property>
+                    <property name="width">5</property>
                     <layout manager="grid">
                       <property name="column">0</property>
-                      <property name="padx">0</property>
-                      <property name="pady">5</property>
+                      <property name="pady">0 15</property>
                       <property name="row">6</property>
                     </layout>
                   </object>
@@ -469,15 +470,16 @@ File</property>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Checkbutton" id="CW_Speed_Checkbutton" named="True">
-                    <property name="offvalue">0</property>
-                    <property name="onvalue">1</property>
-                    <property name="style">Checkbox1b.TCheckbutton</property>
-                    <property name="variable">string:CW_Speed_Checked_VAR</property>
+                  <object class="ttk.Button" id="CW_Speed" named="True">
+                    <property name="command" type="command" cbtype="with_wid">selectSetting_CB</property>
+                    <property name="cursor">arrow</property>
+                    <property name="style">Button2Raised.TButton</property>
+                    <property name="text" translatable="yes">No</property>
+                    <property name="textvariable">string:CW_Speed_VAR</property>
+                    <property name="width">5</property>
                     <layout manager="grid">
                       <property name="column">0</property>
-                      <property name="padx">0</property>
-                      <property name="pady">5</property>
+                      <property name="pady">0 15</property>
                       <property name="row">7</property>
                     </layout>
                   </object>
@@ -547,15 +549,16 @@ File</property>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Checkbutton" id="CW_Sidetone_Checkbutton" named="True">
-                    <property name="offvalue">0</property>
-                    <property name="onvalue">1</property>
-                    <property name="style">Checkbox1b.TCheckbutton</property>
-                    <property name="variable">string:CW_Sidetone_Checked_VAR</property>
+                  <object class="ttk.Button" id="CW_Sidetone" named="True">
+                    <property name="command" type="command" cbtype="with_wid">selectSetting_CB</property>
+                    <property name="cursor">arrow</property>
+                    <property name="style">Button2Raised.TButton</property>
+                    <property name="text" translatable="yes">No</property>
+                    <property name="textvariable">string:CW_Sidetone_VAR</property>
+                    <property name="width">5</property>
                     <layout manager="grid">
                       <property name="column">0</property>
-                      <property name="padx">0</property>
-                      <property name="pady">5</property>
+                      <property name="pady">0 15</property>
                       <property name="row">8</property>
                     </layout>
                   </object>
@@ -626,15 +629,16 @@ File</property>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Checkbutton" id="CW_Delay_Before_TX_Checkbutton" named="True">
-                    <property name="offvalue">0</property>
-                    <property name="onvalue">1</property>
-                    <property name="style">Checkbox1b.TCheckbutton</property>
-                    <property name="variable">string:CW_Delay_Before_TX_Checked_VAR</property>
+                  <object class="ttk.Button" id="CW_Delay_Before_TX" named="True">
+                    <property name="command" type="command" cbtype="with_wid">selectSetting_CB</property>
+                    <property name="cursor">arrow</property>
+                    <property name="style">Button2Raised.TButton</property>
+                    <property name="text" translatable="yes">No</property>
+                    <property name="textvariable">string:CW_Delay_Before_TX_VAR</property>
+                    <property name="width">5</property>
                     <layout manager="grid">
                       <property name="column">0</property>
-                      <property name="padx">0</property>
-                      <property name="pady">5</property>
+                      <property name="pady">0 15</property>
                       <property name="row">9</property>
                     </layout>
                   </object>
@@ -704,15 +708,16 @@ File</property>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Checkbutton" id="CW_Delay_Returning_To_RX_Checkbutton" named="True">
-                    <property name="offvalue">0</property>
-                    <property name="onvalue">1</property>
-                    <property name="style">Checkbox1b.TCheckbutton</property>
-                    <property name="variable">string:CW_Delay_Returning_To_RX_Checked_VAR</property>
+                  <object class="ttk.Button" id="CW_Delay_Before_RX" named="True">
+                    <property name="command" type="command" cbtype="with_wid">selectSetting_CB</property>
+                    <property name="cursor">arrow</property>
+                    <property name="style">Button2Raised.TButton</property>
+                    <property name="text" translatable="yes">No</property>
+                    <property name="textvariable">string:CW_Delay_Before_RX_VAR</property>
+                    <property name="width">5</property>
                     <layout manager="grid">
                       <property name="column">0</property>
-                      <property name="padx">0</property>
-                      <property name="pady">5</property>
+                      <property name="pady">0 15</property>
                       <property name="row">10</property>
                     </layout>
                   </object>
@@ -812,33 +817,18 @@ File</property>
                     <layout manager="grid">
                       <property name="column">0</property>
                       <property name="columnspan">4</property>
-                      <property name="padx">8</property>
                       <property name="row">12</property>
                       <property name="sticky">w</property>
                     </layout>
                     <child>
-                      <object class="ttk.Checkbutton" id="select_All_Checkbutton" named="True">
+                      <object class="ttk.Button" id="select_All" named="True">
                         <property name="command" type="command" cbtype="simple">select_All_Checkbutton_CB</property>
-                        <property name="offvalue">0</property>
-                        <property name="onvalue">1</property>
-                        <property name="style">Checkbox1b.TCheckbutton</property>
-                        <property name="variable">string:select_All_Checked_VAR</property>
-                        <layout manager="pack">
-                          <property name="padx">28 0</property>
-                          <property name="pady">5 0</property>
-                          <property name="side">left</property>
-                        </layout>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="ttk.Label" id="select_All_Label" named="True">
-                        <property name="style">Heading1bi.TLabel</property>
+                        <property name="style">Button2Raised.TButton</property>
                         <property name="text" translatable="yes">Select All</property>
-                        <property name="textvariable">string:select_All_Checked_Text_VAR</property>
+                        <property name="textvariable">string:select_All_VAR</property>
+                        <property name="width">10</property>
                         <layout manager="pack">
-                          <property name="padx">15</property>
-                          <property name="pady">5 0</property>
-                          <property name="side">right</property>
+                          <property name="pady">15</property>
                         </layout>
                       </object>
                     </child>
@@ -873,44 +863,94 @@ File</property>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Combobox" id="from_Combobox" named="True">
-                    <property name="justify">center</property>
-                    <property name="state">readonly</property>
-                    <property name="style">ComboBox1.TCombobox</property>
-                    <property name="textvariable">string:from_Combobox_VAR</property>
-                    <property name="values">Select Factory Current ConfigFile</property>
-                    <property name="width">9</property>
-                    <layout manager="grid">
-                      <property name="column">3</property>
-                      <property name="padx">5 0</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
                   <object class="ttk.Label" id="to_Label" named="True">
                     <property name="style">Heading1b.TLabel</property>
                     <property name="text" translatable="yes">Destination:</property>
                     <layout manager="grid">
                       <property name="column">4</property>
-                      <property name="padx">10 0</property>
+                      <property name="padx">40 0</property>
                       <property name="row">0</property>
                     </layout>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Combobox" id="to_Combobox" named="True">
-                    <property name="justify">center</property>
-                    <property name="state">readonly</property>
-                    <property name="style">ComboBox1.TCombobox</property>
-                    <property name="textvariable">string:to_Combobox_VAR</property>
-                    <property name="values">Select Current ConfigFile</property>
-                    <property name="width">9</property>
+                  <object class="ttk.Menubutton" id="from_Menubutton" named="True">
+                    <property name="style">Heading0.TMenubutton</property>
+                    <property name="text" translatable="yes">Select</property>
+                    <property name="textvariable">string:from_Source_VAR</property>
+                    <property name="width">10</property>
+                    <layout manager="grid">
+                      <property name="column">3</property>
+                      <property name="padx">15 5</property>
+                      <property name="pady">10</property>
+                      <property name="row">0</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                    <child>
+                      <object class="tk.Menu" id="from_Menu" named="True">
+                        <property name="tearoff">false</property>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="from_Factory_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectFrom_Factory_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">Factory</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="from_Current_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectFrom_Current_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">Current</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="from_ConfigFile_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectFrom_ConfigFile_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">ConfigFile</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Menubutton" id="to_Menubutton" named="True">
+                    <property name="style">Heading0.TMenubutton</property>
+                    <property name="text" translatable="yes">Select</property>
+                    <property name="textvariable">string:to_Source_VAR</property>
+                    <property name="width">10</property>
                     <layout manager="grid">
                       <property name="column">5</property>
-                      <property name="padx">5 0</property>
+                      <property name="padx">15 10</property>
+                      <property name="pady">10</property>
                       <property name="row">0</property>
+                      <property name="sticky">w</property>
                     </layout>
+                    <child>
+                      <object class="tk.Menu" id="to_Menu" named="True">
+                        <property name="tearoff">false</property>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="to_Current_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectTo_Current_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">Current</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="to_ConfigFile_Command" named="True">
+                            <property name="command" type="command" cbtype="simple">selectTo_ConfigFile_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">ConfigFile</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

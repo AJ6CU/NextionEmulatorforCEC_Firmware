@@ -5,7 +5,7 @@ cp cecNext.bat cecNext_Windows
 cp Install_cecNext_Windows.bat cecNext_Windows
 cp Uninstall_cecNext_Windows.bat cecNext_Windows
 cp ../../../../dist/cec_nextion_emulator-0.1.0-py3-none-any.whl cecNext_Windows
-cp ../../defaultCECNextionEmulator.ini cecNext_Windows
+cp ../../defaultCECNextionEmulator.py cecNext_Windows/defaultCECNextionEmulator.ini
 
 zip -r cecNext_Windows.zip cecNext_Windows
 rm -r cecNext_Windows

@@ -1,20 +1,26 @@
 #!/usr/bin/python3
+"""
+CW Settings Window
+
+Used to save cw settings
+
+UI source file: cwSettings.ui
+"""
 import tkinter as tk
 import tkinter.ttk as ttk
-from pygubu.widgets.combobox import Combobox
 
 
-def i18n_translator_noop(value):
+def safe_i18n_translator(value):
     """i18n - Setup translator in derived class file"""
     return value
 
 
-def first_object_callback_noop(widget):
+def safe_fo_callback(widget):
     """on first objec callback - Setup callback in derived class file."""
     pass
 
 
-def image_loader_default(master, image_name: str):
+def safe_image_loader(master, image_name: str):
     """Image loader - Setup image_loader in derived class file."""
     img = None
     try:
@@ -39,12 +45,12 @@ class cwSettingsUI(ttk.Labelframe):
         **kw
     ):
         if translator is None:
-            translator = i18n_translator_noop
+            translator = safe_i18n_translator
         _ = translator  # i18n string marker.
         if image_loader is None:
-            image_loader = image_loader_default
+            image_loader = safe_image_loader
         if on_first_object_cb is None:
-            on_first_object_cb = first_object_callback_noop
+            on_first_object_cb = safe_fo_callback
 
         super().__init__(master, **kw)
 
@@ -63,52 +69,38 @@ class cwSettingsUI(ttk.Labelframe):
         self.CW_KEY_TYPE_LABEL.configure(
             style="Heading1b.TLabel", text='Key Type')
         self.CW_KEY_TYPE_LABEL.grid(column=0, pady="40 0", row=0, sticky="e")
-        self.CW_Keytype_Widget_Combobox = Combobox(
-            self.General_CW_Settings_Frame,
-            name="cw_keytype_widget_combobox")
+        self.CW_Key_Type_Menubutton = ttk.Menubutton(
+            self.General_CW_Settings_Frame, name="cw_key_type_menubutton")
         self.key_type_value_VAR = tk.StringVar()
-        self.CW_Keytype_Widget_Combobox.configure(
-            justify="center",
-            keyvariable=self.key_type_value_VAR,
-            style="ComboBox1.TCombobox",
-            values='STRAIGHT IAMBICA IAMBICB',
-            width=10)
-        self.CW_Keytype_Widget_Combobox.grid(
+        self.CW_Key_Type_Menubutton.configure(
+            style="Heading0.TMenubutton",
+            textvariable=self.key_type_value_VAR,
+            width=9)
+        self.CW_Key_Type_Menu = tk.Menu(
+            self.CW_Key_Type_Menubutton,
+            name="cw_key_type_menu")
+        self.CW_Key_Type_Menu.configure(tearoff=False)
+        self.CW_Key_Type_Menu.add(
+            "command",
+            command=self.selectCWStraightKey_CB,
+            font="{Arial} 36 {}",
+            label='STRAIGHT',
+            state="normal")
+        self.CW_Key_Type_Menu.add(
+            "command",
+            command=self.selectCWIAMBICAKey_CB,
+            font="{Arial} 36 {}",
+            label='IAMBICA',
+            state="normal")
+        self.CW_Key_Type_Menu.add(
+            "command",
+            command=self.selectCWIAMBICBKey_CB,
+            font="{Arial} 36 {}",
+            label='IAMBICB ',
+            state="normal")
+        self.CW_Key_Type_Menubutton.configure(menu=self.CW_Key_Type_Menu)
+        self.CW_Key_Type_Menubutton.grid(
             column=1, padx="20 0", pady="40 0", row=0, sticky="w")
-        self.CW_SIDETONE_LABEL = ttk.Label(
-            self.General_CW_Settings_Frame,
-            name="cw_sidetone_label")
-        self.CW_SIDETONE_LABEL.configure(
-            style="Heading1b.TLabel", text='Sidetone (HZ)')
-        self.CW_SIDETONE_LABEL.grid(column=0, pady="40 0", row=2, sticky="e")
-        self.CW_Sidetone_Widget_Combobox = Combobox(
-            self.General_CW_Settings_Frame,
-            name="cw_sidetone_widget_combobox")
-        self.tone_value_VAR = tk.StringVar()
-        self.CW_Sidetone_Widget_Combobox.configure(
-            justify="center",
-            keyvariable=self.tone_value_VAR,
-            style="ComboBox1.TCombobox",
-            width=4)
-        self.CW_Sidetone_Widget_Combobox.grid(
-            column=1, padx="20 0", pady="40 0", row=2, sticky="w")
-        self.CW_SPEED_WPM_LABEL = ttk.Label(
-            self.General_CW_Settings_Frame,
-            name="cw_speed_wpm_label")
-        self.CW_SPEED_WPM_LABEL.configure(
-            style="Heading1b.TLabel", text='Speed (WPM)')
-        self.CW_SPEED_WPM_LABEL.grid(column=0, pady="40 0", row=6, sticky="e")
-        self.CW_Speed_WPM_Widget_Combobox = Combobox(
-            self.General_CW_Settings_Frame,
-            name="cw_speed_wpm_widget_combobox")
-        self.key_speed_value_VAR = tk.StringVar()
-        self.CW_Speed_WPM_Widget_Combobox.configure(
-            justify="center",
-            keyvariable=self.key_speed_value_VAR,
-            style="ComboBox1.TCombobox",
-            width=4)
-        self.CW_Speed_WPM_Widget_Combobox.grid(
-            column=1, padx="20 0", pady="40 0", row=6, sticky="w")
         self.CW_START_MS_LABEL = ttk.Label(
             self.General_CW_Settings_Frame,
             name="cw_start_ms_label")
@@ -116,17 +108,36 @@ class cwSettingsUI(ttk.Labelframe):
             style="Heading1b.TLabel",
             text='Delay Starting TX (ms)')
         self.CW_START_MS_LABEL.grid(column=3, pady="40 0", row=0, sticky="e")
-        self.CW_Start_MS_Widget_Combobox = Combobox(
+        self.CW_Start_TX_Spinbox = ttk.Spinbox(
             self.General_CW_Settings_Frame,
-            name="cw_start_ms_widget_combobox")
+            name="cw_start_tx_spinbox")
         self.delay_starting_tx_value_VAR = tk.StringVar()
-        self.CW_Start_MS_Widget_Combobox.configure(
-            justify="center",
-            keyvariable=self.delay_starting_tx_value_VAR,
-            style="ComboBox1.TCombobox",
-            width=4)
-        self.CW_Start_MS_Widget_Combobox.grid(
-            column=4, padx=20, pady="40 0", row=0, sticky="w")
+        self.CW_Start_TX_Spinbox.configure(
+            font="{Arial} 36 {}",
+            justify="right",
+            style="Custom.TSpinbox",
+            textvariable=self.delay_starting_tx_value_VAR,
+            width=5)
+        self.CW_Start_TX_Spinbox.grid(
+            column=4, padx="20 0", pady="40 0", row=0, sticky="w")
+        self.CW_SIDETONE_LABEL = ttk.Label(
+            self.General_CW_Settings_Frame,
+            name="cw_sidetone_label")
+        self.CW_SIDETONE_LABEL.configure(
+            style="Heading1b.TLabel", text='Sidetone (HZ)')
+        self.CW_SIDETONE_LABEL.grid(column=0, pady="40 0", row=2, sticky="e")
+        self.CW_Sidetone_Spinbox = ttk.Spinbox(
+            self.General_CW_Settings_Frame,
+            name="cw_sidetone_spinbox")
+        self.tone_value_VAR = tk.StringVar()
+        self.CW_Sidetone_Spinbox.configure(
+            font="{Arial} 36 {}",
+            justify="right",
+            style="Custom.TSpinbox",
+            textvariable=self.tone_value_VAR,
+            width=3)
+        self.CW_Sidetone_Spinbox.grid(
+            column=1, padx="20 0", pady="40 0", row=2, sticky="w")
         self.CW_DELAY_MS_LABEL = ttk.Label(
             self.General_CW_Settings_Frame,
             name="cw_delay_ms_label")
@@ -134,36 +145,31 @@ class cwSettingsUI(ttk.Labelframe):
             style="Heading1b.TLabel",
             text='Delay Returning to RX (ms)')
         self.CW_DELAY_MS_LABEL.grid(column=3, pady="40 0", row=2, sticky="e")
-        self.CW_Delay_MS_Widget_Combobox = Combobox(
+        self.CW_SPEED_WPM_LABEL = ttk.Label(
             self.General_CW_Settings_Frame,
-            name="cw_delay_ms_widget_combobox")
-        self.delay_returning_to_rx_value_VAR = tk.StringVar()
-        self.CW_Delay_MS_Widget_Combobox.configure(
-            justify="center",
-            keyvariable=self.delay_returning_to_rx_value_VAR,
-            style="ComboBox1.TCombobox",
-            width=4)
-        self.CW_Delay_MS_Widget_Combobox.grid(
-            column=4, padx=20, pady="40 0", row=2, sticky="w")
+            name="cw_speed_wpm_label")
+        self.CW_SPEED_WPM_LABEL.configure(
+            style="Heading1b.TLabel", text='Speed (WPM)')
+        self.CW_SPEED_WPM_LABEL.grid(column=0, pady="40 0", row=3, sticky="e")
+        self.CW_Speed_WPM_Spinbox = ttk.Spinbox(
+            self.General_CW_Settings_Frame,
+            name="cw_speed_wpm_spinbox")
+        self.key_speed_value_VAR = tk.StringVar()
+        self.CW_Speed_WPM_Spinbox.configure(
+            font="{Arial} 36 {}",
+            justify="right",
+            style="Custom.TSpinbox",
+            textvariable=self.key_speed_value_VAR,
+            width=3)
+        self.CW_Speed_WPM_Spinbox.grid(
+            column=1, padx="20 0", pady="40 0", row=3, sticky="w")
         self.label209 = ttk.Label(
             self.General_CW_Settings_Frame,
             name="label209")
         self.label209.configure(
             style="Heading1b.TLabel",
             text='VFO Freq Displays')
-        self.label209.grid(column=3, pady="40 0", row=6, sticky="e")
-        self.CW_Display_Freq_Combobox = Combobox(
-            self.General_CW_Settings_Frame,
-            name="cw_display_freq_combobox")
-        self.CW_Display_TXFreq_VAR = tk.StringVar()
-        self.CW_Display_Freq_Combobox.configure(
-            justify="center",
-            keyvariable=self.CW_Display_TXFreq_VAR,
-            style="ComboBox1.TCombobox",
-            values='TX RX',
-            width=4)
-        self.CW_Display_Freq_Combobox.grid(
-            column=4, padx="20 0", pady="40 0", row=6, sticky="w")
+        self.label209.grid(column=3, pady="40 0", row=3, sticky="e")
         self.text4 = tk.Text(self.General_CW_Settings_Frame, name="text4")
         self.text4.configure(
             background="#eeeeee",
@@ -182,7 +188,45 @@ class cwSettingsUI(ttk.Labelframe):
         self.text4.configure(state="normal")
         self.text4.insert("0.0", _text_)
         self.text4.configure(state="disabled")
-        self.text4.grid(column=2, columnspan=5, padx="70 0", pady=20, row=15)
+        self.text4.grid(column=2, columnspan=5, padx="70 0", pady=20, row=4)
+        self.CW_Delay_Returning_RX_Spinbox = ttk.Spinbox(
+            self.General_CW_Settings_Frame, name="cw_delay_returning_rx_spinbox")
+        self.delay_returning_to_rx_value_VAR = tk.StringVar()
+        self.CW_Delay_Returning_RX_Spinbox.configure(
+            font="{Arial} 36 {}",
+            justify="right",
+            style="Custom.TSpinbox",
+            textvariable=self.delay_returning_to_rx_value_VAR,
+            width=5)
+        self.CW_Delay_Returning_RX_Spinbox.grid(
+            column=4, padx="20 0", pady="40 0", row=2, sticky="w")
+        self.CW_Freq_Display_Menubutton = ttk.Menubutton(
+            self.General_CW_Settings_Frame, name="cw_freq_display_menubutton")
+        self.CW_Display_TXFreq_VAR = tk.StringVar()
+        self.CW_Freq_Display_Menubutton.configure(
+            style="Heading0.TMenubutton",
+            textvariable=self.CW_Display_TXFreq_VAR,
+            width=3)
+        self.CW_Freq_Display_Menu = tk.Menu(
+            self.CW_Freq_Display_Menubutton,
+            name="cw_freq_display_menu")
+        self.CW_Freq_Display_Menu.configure(tearoff=False)
+        self.CW_Freq_Display_Menu.add(
+            "command",
+            command=self.selectCWDisplayTX_CB,
+            font="{Arial} 36 {}",
+            label='TX',
+            state="normal")
+        self.CW_Freq_Display_Menu.add(
+            "command",
+            command=self.selectCWDisplayRX_CB,
+            font="{Arial} 36 {}",
+            label='RX',
+            state="normal")
+        self.CW_Freq_Display_Menubutton.configure(
+            menu=self.CW_Freq_Display_Menu)
+        self.CW_Freq_Display_Menubutton.grid(
+            column=4, padx="20 0", pady="40 0", row=3, sticky="w")
         self.General_CW_Settings_Frame.pack(padx="50 0", side="top")
         frame1.pack(side="top")
         self.closingFrame = ttk.Frame(self, name="closingframe")
@@ -208,6 +252,21 @@ class cwSettingsUI(ttk.Labelframe):
             text='CW Settings',
             width=600)
         # Layout for 'labelframe1' skipped in custom widget template.
+
+    def selectCWStraightKey_CB(self):
+        pass
+
+    def selectCWIAMBICAKey_CB(self):
+        pass
+
+    def selectCWIAMBICBKey_CB(self):
+        pass
+
+    def selectCWDisplayTX_CB(self):
+        pass
+
+    def selectCWDisplayRX_CB(self):
+        pass
 
     def apply_CB(self):
         pass

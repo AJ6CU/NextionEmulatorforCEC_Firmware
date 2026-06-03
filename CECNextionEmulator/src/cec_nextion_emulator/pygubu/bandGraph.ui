@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.5" author="PygubuDesigner 0.41.4">
+  <project>
+    <settings>
+      <setting id="name">bandGraph</setting>
+      <setting id="description">reuseable band graph object</setting>
+      <setting id="template">widget</setting>
+      <setting id="main_widget">bandLabelFrame</setting>
+      <setting id="module_namespace" />
+      <setting id="module_name">bandGraph</setting>
+      <setting id="main_classname">bandGraph</setting>
+      <setting id="output_dir">..</setting>
+      <setting id="builder_namespace">custom_widgets</setting>
+      <setting id="output_dir2">..</setting>
+      <setting id="generate_code_onsave">False</setting>
+      <setting id="use_i18n">False</setting>
+      <setting id="all_ids_attributes">False</setting>
+      <setting id="import_tkvariables">False</setting>
+      <setting id="use_ttk_styledefinition_file">True</setting>
+      <setting id="use_window_centering_code">False</setting>
+      <setting id="ttk_style_definition_file">../mystyles.py</setting>
+    </settings>
+    <customwidgets />
+    <resources />
+  </project>
+  <object class="ttk.Labelframe" id="bandLabelFrame" named="True">
+    <property name="height">200</property>
+    <property name="style">Heading3.TLabelframe</property>
+    <property name="text" translatable="yes">Select Band...</property>
+    <property name="width">200</property>
+    <layout manager="pack">
+      <property name="expand">true</property>
+      <property name="fill">x</property>
+      <property name="side">top</property>
+    </layout>
+    <child>
+      <object class="ttk.Frame" id="bandGraph_Frame" named="True">
+        <property name="height">200</property>
+        <property name="style">NormalOutline.TFrame</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="expand">true</property>
+          <property name="fill">x</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="tk.Canvas" id="bandPlot_Canvas" named="True">
+            <property name="background">#0432ff</property>
+            <property name="height">100</property>
+            <bind sequence="&lt;Configure&gt;" handler="resizeCanvas_CB" add="True" />
+            <layout manager="pack">
+              <property name="expand">true</property>
+              <property name="fill">x</property>
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Scale" id="bandStart_Scale" named="True">
+            <property name="command" type="command" cbtype="scale">bandStart_CB</property>
+            <property name="from_">0</property>
+            <property name="orient">horizontal</property>
+            <property name="state">disabled</property>
+            <property name="style">Custom.Horizontal.TScale</property>
+            <property name="to">119</property>
+            <property name="variable">string:band0Start_VAR</property>
+            <layout manager="pack">
+              <property name="expand">true</property>
+              <property name="fill">x</property>
+              <property name="side">top</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="scan_Frame" named="True">
+            <property name="height">200</property>
+            <property name="style">Normal.TFrame</property>
+            <property name="width">200</property>
+            <layout manager="pack">
+              <property name="expand">true</property>
+              <property name="fill">x</property>
+              <property name="side">top</property>
+            </layout>
+            <child>
+              <object class="ttk.Label" id="scanningRange_Label" named="True">
+                <property name="style">Heading4b.TLabel</property>
+                <property name="textvariable">string:scanningRange_VAR</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="bandRange_Label" named="True">
+                <property name="style">Heading4b.TLabel</property>
+                <property name="textvariable">string:bandRange_VAR</property>
+                <layout manager="pack">
+                  <property name="side">right</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

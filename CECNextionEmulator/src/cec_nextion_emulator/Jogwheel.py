@@ -131,9 +131,9 @@ class Jogwheel(tk.Canvas):
         """
         
         self.xn = self.yn = (self.radius) / 2
-        self.radians = (self.radius) / 2
+        self.radians = (self.radius) / 2     # appears to be related to where divisions start
         self.absolute = abs(self.max - self.start)
-        self.arc_pos = (self.radians) / 4
+        self.arc_pos = (self.radians) / 4  # incremental distance out of the outer arc
         
         # major scale 
 
@@ -232,6 +232,7 @@ class Jogwheel(tk.Canvas):
     def rotate_needle(self, event):
         
         angle = math.degrees(math.atan2(self.__y - event.y, event.x - self.__x))
+
         if self.previous_angle>angle:
             if self.max>self.start and self.start_angle>self.end_angle:
                 self.set(self.value+self.scroll_steps)
@@ -306,55 +307,6 @@ class Jogwheel(tk.Canvas):
         if self.previous_angle!=0:
             if self.command is not None:
                 self.command()
-
-    def setSpecial(self, value):
-        """
-        This function is used to set the position of the needle
-        """
-
-        self.value = value
-        angle = (value - self.start) * (self.end - self.start_angle) / (self.max - self.start) + self.start_angle
-
-        if self.start < self.max:
-            if value < self.start:
-                self.value = self.start
-                value = self.start
-            elif value > self.max:
-                self.value = self.max
-                value = self.max
-        else:
-            if value > self.start:
-                self.value = self.start
-                value = self.start
-            elif value < self.max:
-                self.value = self.max
-                value = self.max
-
-        if self.progress:
-            extend_angle = angle - (self.start_angle + self.end_angle)
-            self.itemconfigure(self.arc_id, extent=extend_angle)
-
-        self.coords(
-            self.knob,
-            self.line_coordinates(
-                r1=0,
-                r2=self.radius / 2 - self.arc_pos - self.bt_radius,
-                angle=angle
-            )
-        )
-
-        if self.integer == False:
-            value = round(value, 2)
-        else:
-            value = int(value)
-
-        if self.text:
-            self.itemconfig(tagOrId='text', text=self.text + str(value), fill=self.text_color)
-
-        if self.previous_angle != 0:
-            if self.command is not None:
-                pass
-
 
     def get(self):
         """
