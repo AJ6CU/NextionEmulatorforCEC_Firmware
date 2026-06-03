@@ -6,8 +6,8 @@ SET "install_dir=%~dp0
 SET "wheel=cec_nextion_emulator-0.1.0-py3-none-any.whl"
 SET "startscript=cecNext.bat"
 
-SET "default_ini_file=defaultCECNextionEmulator.ini"
-SET "target_ini_file=.CECNextionEmulator.ini"
+@REM SET "default_ini_file=defaultCECNextionEmulator.ini"
+@REM SET "target_ini_file=.CECNextionEmulator.ini"
 
 SET "full_wheel_path=%install_dir%\%wheel%"
 REM SET "full_startscript_path=%install_dir%\%startscript%"
@@ -21,6 +21,6 @@ pip "install" "%full_wheel_path%"
 
 
 COPY  "%install_dir%%startscript%" "%USERPROFILE%\Documents\%folder_name%\Scripts\%startscript%"
-COPY  "%install_dir%%default_ini_file%" "%USERPROFILE%\%target_ini_file%"
+@REM COPY  "%install_dir%%default_ini_file%" "%USERPROFILE%\%target_ini_file%"
 
 CALL "%USERPROFILE%\Documents\%folder_name%\Scripts\deactivate.bat"

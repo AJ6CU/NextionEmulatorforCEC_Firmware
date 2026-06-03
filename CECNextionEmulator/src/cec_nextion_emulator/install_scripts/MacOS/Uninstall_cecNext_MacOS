@@ -1,9 +1,9 @@
 #!/bin/zsh
 
 folder_name="CEC"
-default_ini_file=".CECNextionEmulator.ini"
+#default_ini_file=".CECNextionEmulator.ini"
 
 cd ~/Documents
 rm -r $folder_name
-cd ~
-rm $default_ini_file
+#cd ~
+#rm $default_ini_file

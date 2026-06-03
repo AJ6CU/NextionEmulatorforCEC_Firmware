@@ -6,12 +6,12 @@ install_dir=$PWD
 wheel="cec_nextion_emulator-0.1.0-py3-none-any.whl"
 startscript="cecNext"
 
-default_ini_file="defaultCECNextionEmulator.ini"
-target_ini_file=".CECNextionEmulator.ini"
+#default_ini_file="defaultCECNextionEmulator.ini"
+#target_ini_file=".CECNextionEmulator.ini"
 
 full_wheel_path="${install_dir}/${wheel}"
 full_startscript_path="${install_dir}/${startscript}"
-full_default_ini_file_path="${install_dir}/${default_ini_file}"
+#full_default_ini_file_path="${install_dir}/${default_ini_file}"
 
 python -m venv ~/Documents/${folder_name}
 cd ~/Documents/${folder_name}/bin
@@ -20,4 +20,4 @@ source activate
 pip install $full_wheel_path
 
 cp $full_startscript_path ~/Documents/$folder_name/bin/$startscript
-cp $full_default_ini_file_path ~/$target_ini_file
+#cp $full_default_ini_file_path ~/$target_ini_file
