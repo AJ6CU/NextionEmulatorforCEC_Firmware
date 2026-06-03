@@ -65,7 +65,7 @@ root.geometry(gv.MAIN_WINDOW_OFFSET)
 root.title("CECNextionEmulator - A Nextion Emulator for CEC Firmware running on the uBITX")
 root.protocol("WM_DELETE_WINDOW", lambda: root.destroy())
 
-
+root.update
 gv.config = configuration(root)                    # Read in config data, if missing preload with defaults
                                                 # Root is passed to allow popup error messages
 
