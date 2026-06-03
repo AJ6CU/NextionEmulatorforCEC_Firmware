@@ -10,7 +10,7 @@ from settingsBackup import settingsBackup
 from settingsAbout import settingsAbout
 from tkinter import messagebox
 import globalvars as gv
-from src.cec_nextion_emulator.settingsAbout import settingsAbout
+from settingsAbout import settingsAbout
 
 
 #
