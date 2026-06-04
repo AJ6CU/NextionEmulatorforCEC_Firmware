@@ -32,8 +32,7 @@ class channels(baseui.channelsUI):
         #
         #   This pops up a warning dialog that this operation could take several seconds
         #
-        self.delayDialog = tk.Toplevel(self.master)
-        self.delayDialog=delayWarning(self.delayDialog)
+        self.delayDialog=delayWarning()
         self.delayDialog.warningLabel_VAR.set("Loading Channels from EEPROM...\n\nThis could take several seconds...")
 
         # self.delayDialog.wait_visibility()  # required on Linux
