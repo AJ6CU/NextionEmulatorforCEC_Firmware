@@ -6,7 +6,6 @@ import importlib.resources as pkg_resources
 # from pygubu.plugins import ptk
 import tkinter as tk
 import pkgutil
-from PIL import Image, ImageTk
 import io
 
 
@@ -36,9 +35,15 @@ MAIN_WINDOW_OFFSET = "+5+30"
 POPUP_WINDOW_OFFSET = "+50+50"
 VNUMERICKEYBOARD_OFFSET = "+600+160"        #"+550+160"
 VALPHAKEYBOARD_OFFSET = "+375+160"
+
 RELOADICON = "reloadicon.png"
-UPARROWBUTTON = "round_up_button.png"
-DOWNARROWBUTTON = "round_down_button.png"
+UPARROWBUTTONNORMAL = "arrow_up_normal.png"
+UPARROWBUTTONPRESSED = "arrow_up_pressed.png"
+UPARROWBUTTONDISABLED = "arrow_up_normal_disabled.png"
+DOWNARROWBUTTONNORMAL = "arrow_down_normal.png"
+DOWNARROWBUTTONPRESSED = "arrow_down_pressed.png"
+DOWNARROWBUTTONDISABLED = "arrow_down_normal_disabled.png"
+
 BAUD = 57600     #9600
 NUMBER_DELIMITER = ""               # Loaded with value from configuration file
 

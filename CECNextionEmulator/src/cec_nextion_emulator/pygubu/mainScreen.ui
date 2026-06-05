@@ -233,49 +233,6 @@ SPEAKER
           </object>
         </child>
         <child>
-          <object class="ttk.Frame" id="frame3">
-            <property name="height">200</property>
-            <property name="style">Normal.TFrame</property>
-            <property name="width">200</property>
-            <layout manager="grid">
-              <property name="columnspan">3</property>
-              <property name="padx">650 0</property>
-              <property name="pady">30 0</property>
-              <property name="row">1</property>
-              <property name="rowspan">3</property>
-              <property name="sticky">nw</property>
-            </layout>
-            <child>
-              <object class="tk.Canvas" id="downButton_Canvas" named="True">
-                <property name="background">gray</property>
-                <property name="borderwidth">0</property>
-                <property name="height">140</property>
-                <property name="highlightthickness">0</property>
-                <property name="selectborderwidth">0</property>
-                <property name="width">140</property>
-                <bind sequence="&lt;Button&gt;" handler="downButton_CB" add="True" />
-                <layout manager="pack">
-                  <property name="side">left</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="tk.Canvas" id="upButton_Canvas" named="True">
-                <property name="background">gray</property>
-                <property name="borderwidth">0</property>
-                <property name="height">140</property>
-                <property name="highlightthickness">0</property>
-                <property name="selectborderwidth">0</property>
-                <property name="width">140</property>
-                <bind sequence="&lt;Button&gt;" handler="upButton_CB" add="True" />
-                <layout manager="pack">
-                  <property name="side">left</property>
-                </layout>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
           <object class="ttk.Frame" id="control_Meter_Tuning_Frame" named="True">
             <property name="borderwidth">0</property>
             <property name="height">200</property>
@@ -318,7 +275,7 @@ CHANNELS
                         <property name="width">11</property>
                         <layout manager="pack">
                           <property name="anchor">nw</property>
-                          <property name="padx">0 20</property>
+                          <property name="padx">0 10</property>
                           <property name="side">left</property>
                         </layout>
                       </object>
@@ -333,7 +290,7 @@ CW DECODE
                         <property name="width">11</property>
                         <layout manager="pack">
                           <property name="anchor">nw</property>
-                          <property name="padx">0 20</property>
+                          <property name="padx">0 10</property>
                           <property name="side">left</property>
                         </layout>
                       </object>
@@ -348,7 +305,7 @@ SPECTRUM
                         <property name="width">11</property>
                         <layout manager="pack">
                           <property name="anchor">nw</property>
-                          <property name="padx">0 20</property>
+                          <property name="padx">0 10</property>
                           <property name="side">left</property>
                         </layout>
                       </object>
@@ -359,6 +316,51 @@ SPECTRUM
                         <property name="style">Button2b.TButton</property>
                         <property name="text" translatable="yes">
 BAND SCAN
+</property>
+                        <property name="width">11</property>
+                        <layout manager="pack">
+                          <property name="anchor">nw</property>
+                          <property name="padx">0 10</property>
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="split_Button" named="True">
+                        <property name="command" type="command" cbtype="simple">split_CB</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">
+SPLIT
+</property>
+                        <property name="width">11</property>
+                        <layout manager="pack">
+                          <property name="anchor">nw</property>
+                          <property name="padx">0 10</property>
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="rit_Button" named="True">
+                        <property name="command" type="command" cbtype="simple">rit_CB</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">
+RIT
+</property>
+                        <property name="width">11</property>
+                        <layout manager="pack">
+                          <property name="anchor">nw</property>
+                          <property name="padx">0 10</property>
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="logQSO_Button" named="True">
+                        <property name="command" type="command" cbtype="simple">logQSO_CB</property>
+                        <property name="style">Button2b.TButton</property>
+                        <property name="text" translatable="yes">
+LOG QSO
 </property>
                         <property name="width">11</property>
                         <layout manager="pack">
@@ -563,6 +565,53 @@ BAND SCAN
                 </child>
               </object>
             </child>
+            <child>
+              <object class="ttk.Labelframe" id="tuningArrow_Labelframe" named="True">
+                <property name="height">200</property>
+                <property name="style">Heading3.TLabelframe</property>
+                <property name="text" translatable="yes">Tuning</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="columnspan">3</property>
+                  <property name="padx">650 0</property>
+                  <property name="pady">0</property>
+                  <property name="row">1</property>
+                  <property name="rowspan">3</property>
+                  <property name="sticky">sw</property>
+                </layout>
+                <child>
+                  <object class="tk.Canvas" id="downButton_Canvas" named="True">
+                    <property name="background">gray</property>
+                    <property name="borderwidth">0</property>
+                    <property name="height">140</property>
+                    <property name="highlightthickness">0</property>
+                    <property name="selectborderwidth">0</property>
+                    <property name="width">140</property>
+                    <bind sequence="&lt;ButtonPress&gt;" handler="downButtonPressed_CB" add="True" />
+                    <bind sequence="&lt;ButtonRelease&gt;" handler="downButtonReleased_CB" add="" />
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="tk.Canvas" id="upButton_Canvas" named="True">
+                    <property name="background">gray</property>
+                    <property name="borderwidth">0</property>
+                    <property name="height">140</property>
+                    <property name="highlightthickness">0</property>
+                    <property name="selectborderwidth">0</property>
+                    <property name="width">140</property>
+                    <bind sequence="&lt;ButtonPress&gt;" handler="upButtonPressed_CB" add="True" />
+                    <bind sequence="&lt;ButtonRelease&gt;" handler="upButtonReleased_CB" add="" />
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
       </object>
@@ -678,51 +727,12 @@ BAND SCAN
           </object>
         </child>
         <child>
-          <object class="ttk.Frame" id="split_rit_Frame" named="True">
-            <property name="height">200</property>
-            <property name="style">Normal.TFrame</property>
-            <property name="width">200</property>
-            <layout manager="pack">
-              <property name="side">top</property>
-            </layout>
-            <child>
-              <object class="ttk.Button" id="split_Button" named="True">
-                <property name="command" type="command" cbtype="simple">split_CB</property>
-                <property name="style">Button2b.TButton</property>
-                <property name="text" translatable="yes">
-SPLIT
-</property>
-                <property name="width">11</property>
-                <layout manager="pack">
-                  <property name="anchor">nw</property>
-                  <property name="padx">20 20</property>
-                  <property name="side">left</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Button" id="rit_Button" named="True">
-                <property name="command" type="command" cbtype="simple">rit_CB</property>
-                <property name="style">Button2b.TButton</property>
-                <property name="text" translatable="yes">
-RIT
-</property>
-                <property name="width">11</property>
-                <layout manager="pack">
-                  <property name="anchor">nw</property>
-                  <property name="padx">0 20</property>
-                  <property name="side">left</property>
-                </layout>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
           <object class="ttk.Frame" id="cwInfoFrame" named="True">
             <property name="height">200</property>
             <property name="style">Normal.TFrame</property>
             <property name="width">200</property>
             <layout manager="pack">
+              <property name="padx">50 0</property>
               <property name="pady">15 0</property>
               <property name="side">top</property>
             </layout>

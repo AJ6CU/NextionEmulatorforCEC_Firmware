@@ -189,7 +189,7 @@ class mainScreenUI(ttk.Frame):
             style="Button2b.TButton",
             text='\nCHANNELS\n',
             width=11)
-        self.channels_Button.pack(anchor="nw", padx="0 20", side="left")
+        self.channels_Button.pack(anchor="nw", padx="0 10", side="left")
         self.channels_Button.configure(command=self.channels_CB)
         self.cwDecode_Button = ttk.Button(
             self.signal_Control_Frame, name="cwdecode_button")
@@ -197,7 +197,7 @@ class mainScreenUI(ttk.Frame):
             style="Button2b.TButton",
             text='\nCW DECODE\n',
             width=11)
-        self.cwDecode_Button.pack(anchor="nw", padx="0 20", side="left")
+        self.cwDecode_Button.pack(anchor="nw", padx="0 10", side="left")
         def cwDecode_Button_cmd_(): self.cwDecode_Button_CB("cwDecode_Button")
 
         self.cwDecode_Button.configure(command=cwDecode_Button_cmd_)
@@ -205,7 +205,7 @@ class mainScreenUI(ttk.Frame):
             self.signal_Control_Frame, name="spectrumscan_button")
         self.spectrumScan_Button.configure(
             style="Button2b.TButton", text='\nSPECTRUM\n', width=11)
-        self.spectrumScan_Button.pack(anchor="nw", padx="0 20", side="left")
+        self.spectrumScan_Button.pack(anchor="nw", padx="0 10", side="left")
         def spectrumScan_Button_cmd_(): self.spectrumScan_Button_CB("spectrumScan_Button")
 
         self.spectrumScan_Button.configure(command=spectrumScan_Button_cmd_)
@@ -215,7 +215,7 @@ class mainScreenUI(ttk.Frame):
             style="Button2b.TButton",
             text='\nBAND SCAN\n',
             width=11)
-        self.bandScan_Button.pack(anchor="nw", padx="0 20", side="left")
+        self.bandScan_Button.pack(anchor="nw", padx="0 10", side="left")
         def bandScan_Button_cmd_(): self.bandScan_Button_CB("bandScan_Button")
 
         self.bandScan_Button.configure(command=bandScan_Button_cmd_)
@@ -225,7 +225,7 @@ class mainScreenUI(ttk.Frame):
             style="Button2b.TButton",
             text='\nSPLIT\n',
             width=11)
-        self.split_Button.pack(anchor="nw", padx="0 20", side="left")
+        self.split_Button.pack(anchor="nw", padx="0 10", side="left")
         self.split_Button.configure(command=self.split_CB)
         self.rit_Button = ttk.Button(
             self.signal_Control_Frame, name="rit_button")
@@ -233,8 +233,16 @@ class mainScreenUI(ttk.Frame):
             style="Button2b.TButton",
             text='\nRIT\n',
             width=11)
-        self.rit_Button.pack(anchor="nw", padx="0 20", side="left")
+        self.rit_Button.pack(anchor="nw", padx="0 10", side="left")
         self.rit_Button.configure(command=self.rit_CB)
+        self.logQSO_Button = ttk.Button(
+            self.signal_Control_Frame, name="logqso_button")
+        self.logQSO_Button.configure(
+            style="Button2b.TButton",
+            text='\nLOG QSO\n',
+            width=11)
+        self.logQSO_Button.pack(anchor="nw", padx="0 20", side="left")
+        self.logQSO_Button.configure(command=self.logQSO_CB)
         self.signal_Control_Frame.grid(column=0, pady=10, row=0, sticky="n")
         self.secondary_menu_Frame.grid(column=0, padx=5, row=0)
         self.sMeter_Frame = ttk.Frame(
@@ -339,9 +347,13 @@ class mainScreenUI(ttk.Frame):
             pady="10 0",
             row=2,
             sticky="nw")
-        frame3 = ttk.Frame(self.control_Meter_Tuning_Frame)
-        frame3.configure(height=200, style="Normal.TFrame", width=200)
-        self.downButton_Canvas = tk.Canvas(frame3, name="downbutton_canvas")
+        self.tuningArrow_Labelframe = ttk.Labelframe(
+            self.control_Meter_Tuning_Frame, name="tuningarrow_labelframe")
+        self.tuningArrow_Labelframe.configure(
+            height=200, style="Heading3.TLabelframe", text='Tuning', width=200)
+        self.downButton_Canvas = tk.Canvas(
+            self.tuningArrow_Labelframe,
+            name="downbutton_canvas")
         self.downButton_Canvas.configure(
             background="gray",
             borderwidth=0,
@@ -349,9 +361,18 @@ class mainScreenUI(ttk.Frame):
             highlightthickness=0,
             selectborderwidth=0,
             width=140)
-        self.downButton_Canvas.grid(column=0, row=0)
-        self.downButton_Canvas.bind("<Button>", self.downButton_CB, add="+")
-        self.upButton_Canvas = tk.Canvas(frame3, name="upbutton_canvas")
+        self.downButton_Canvas.pack(side="left")
+        self.downButton_Canvas.bind(
+            "<ButtonPress>",
+            self.downButtonPressed_CB,
+            add="+")
+        self.downButton_Canvas.bind(
+            "<ButtonRelease>",
+            self.downButtonReleased_CB,
+            add="")
+        self.upButton_Canvas = tk.Canvas(
+            self.tuningArrow_Labelframe,
+            name="upbutton_canvas")
         self.upButton_Canvas.configure(
             background="gray",
             borderwidth=0,
@@ -359,18 +380,25 @@ class mainScreenUI(ttk.Frame):
             highlightthickness=0,
             selectborderwidth=0,
             width=140)
-        self.upButton_Canvas.grid(column=1, row=0)
-        self.upButton_Canvas.bind("<Button>", self.upButton_CB, add="+")
-        self.logQSO_Button = ttk.Button(frame3, name="logqso_button")
-        self.logQSO_Button.configure(
-            style="Button2b.TButton",
-            text='\nLog QSO\n',
-            width=11)
-        self.logQSO_Button.grid(column=0, columnspan=2, row=1)
-        self.logQSO_Button.configure(command=self.logQSO_CB)
-        frame3.grid(columnspan=3, padx="650 0", row=1, rowspan=3, sticky="n")
+        self.upButton_Canvas.pack(side="left")
+        self.upButton_Canvas.bind(
+            "<ButtonPress>",
+            self.upButtonPressed_CB,
+            add="+")
+        self.upButton_Canvas.bind(
+            "<ButtonRelease>",
+            self.upButtonReleased_CB,
+            add="")
+        self.tuningArrow_Labelframe.grid(
+            column=0,
+            columnspan=3,
+            padx="650 0",
+            pady=0,
+            row=1,
+            rowspan=3,
+            sticky="sw")
         self.control_Meter_Tuning_Frame.grid(
-            column=0, padx="5 0", pady="10 0", row=1, sticky="w")
+            column=0, padx="5 0", row=1, sticky="nw")
         frame2.pack(
             anchor="n",
             expand=True,
@@ -584,7 +612,7 @@ class mainScreenUI(ttk.Frame):
             pady="0 10",
             side="top")
         self.cw_Info_Frame.bind("<1>", self.cwSettings_CB, add="")
-        self.cwInfoFrame.pack(pady="15 0", side="top")
+        self.cwInfoFrame.pack(padx="50 0", pady="15 0", side="top")
         self.ATT_IFS_Adjust_Frame.pack(
             anchor="w",
             expand=True,
@@ -646,13 +674,19 @@ class mainScreenUI(ttk.Frame):
     def rit_CB(self):
         pass
 
-    def downButton_CB(self, event=None):
-        pass
-
-    def upButton_CB(self, event=None):
-        pass
-
     def logQSO_CB(self):
+        pass
+
+    def downButtonPressed_CB(self, event=None):
+        pass
+
+    def downButtonReleased_CB(self, event=None):
+        pass
+
+    def upButtonPressed_CB(self, event=None):
+        pass
+
+    def upButtonReleased_CB(self, event=None):
         pass
 
     def updateATTValue_CB(self):

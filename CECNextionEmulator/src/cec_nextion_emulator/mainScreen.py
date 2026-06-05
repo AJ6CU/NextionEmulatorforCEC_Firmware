@@ -112,6 +112,17 @@ class mainScreen(baseui.mainScreenUI):
 
         self.lastPWRSWR_Reading = None              # tracks what was the last PWR/SWR reading received
 
+        #
+        #   Get the images for the 4 states of the VFO tuning buttons
+        #
+        self.arrow_down_normal = gv.get_image(gv.DOWNARROWBUTTONNORMAL)
+        self.arrow_down_pressed = gv.get_image(gv.DOWNARROWBUTTONPRESSED)
+        self.arrow_down_disabled = gv.get_image(gv.DOWNARROWBUTTONDISABLED)
+
+        self.arrow_up_normal = gv.get_image(gv.UPARROWBUTTONNORMAL)
+        self.arrow_up_pressed = gv.get_image(gv.UPARROWBUTTONPRESSED)
+        self.arrow_up_disabled = gv.get_image(gv.UPARROWBUTTONDISABLED)
+
 
 
 
@@ -191,14 +202,15 @@ class mainScreen(baseui.mainScreenUI):
         self.mainScreenCW_logger = cwLogger(self, self.decodedCWText, 100)
         self.consumerDSPdata.request_DSP_EEPROM_Data()          # Request data. If we get some, then DSP will be marked as exists
 
-        arrow_img_down = gv.get_image(gv.DOWNARROWBUTTON)
-        self.downButton = self.downButton_Canvas.create_image(5,5, image=arrow_img_down, anchor="nw")
-        self.downButton_Canvas.image_reference = arrow_img_down
+        #
+        #   Set up default VFO up/down buttons
+        #
 
+        self.downButton = self.downButton_Canvas.create_image(5,5, image=self.arrow_down_normal, anchor="nw")
+        # self.downButton_Canvas.image_reference = self.arrow_down_normal
 
-        arrow_img_up = gv.get_image(gv.UPARROWBUTTON)
-        self.upButton = self.upButton_Canvas.create_image(5,5, image=arrow_img_up, anchor="nw")
-        self.upButton_Canvas.image_reference = arrow_img_up
+        self.upButton = self.upButton_Canvas.create_image(5,5, image=self.arrow_up_normal, anchor="nw")
+        # self.upButton_Canvas.image_reference = self.arrow_up_normal
 
 
     def close_MainWindow (self):
@@ -416,29 +428,33 @@ class mainScreen(baseui.mainScreenUI):
            self.displayCWSettingsWindow()
 
 
-    def tuning_Jogwheel_CB(self):
-        # print("\n\nin tuning_Jogwheel_CB")
-        # print("intVFO =", self.theVFO_Object.getIntPrimaryVFO())
-        # print("tuning rate=", self.theVFO_Object.getCurrentVFO_Tuning_Rate())
-        # print("baselinejogvalue=",self.baselineJogValue )
-        # print("jogwheel valye=", self.tuning_Jogwheel.get() )
-        newFreq =  (self.theVFO_Object.getIntPrimaryVFO()
-                    - (self.theVFO_Object.getCurrentVFO_Tuning_Rate() * self.baselineJogValue))
+#MJH
 
-        newFreq += self.theVFO_Object.getCurrentVFO_Tuning_Rate() * self.tuning_Jogwheel.get()
-        # print("newFreq=", newFreq)
-        self.theRadio.Set_New_Frequency(newFreq)
+    def downButtonPressed_CB(self, event=None):
+        if self.downButton_Canvas.cget("state") == "normal":
+            self.downButton_Canvas.itemconfig(self.downButton, image=self.arrow_down_pressed)
+            self.downButton_Canvas.move(self.downButton, 10, 10)
 
+    def downButtonReleased_CB(self, event=None):
+        if self.downButton_Canvas.cget("state") == "normal":
+            self.downButton_Canvas.itemconfig(self.downButton, image=self.arrow_down_normal)
+            self.downButton_Canvas.move(self.downButton,-10,-10)
+            newFreq = self.theVFO_Object.getIntPrimaryVFO()-self.theVFO_Object.getCurrentVFO_Tuning_Rate()
+            # print("newFreq=", newFreq)
+            self.theRadio.Set_New_Frequency(newFreq)
 
-    def downButton_CB(self, event=None):
-        newFreq = self.theVFO_Object.getIntPrimaryVFO()-self.theVFO_Object.getCurrentVFO_Tuning_Rate()
-        # print("newFreq=", newFreq)
-        self.theRadio.Set_New_Frequency(newFreq)
+    def upButtonPressed_CB(self, event=None):
+        if self.upButton_Canvas.cget("state") == "normal":
+            self.upButton_Canvas.itemconfig(self.upButton, image=self.arrow_up_pressed)
+            self.upButton_Canvas.move(self.upButton, 10, 10)
 
-    def upButton_CB(self, event=None):
-        newFreq = self.theVFO_Object.getIntPrimaryVFO()+self.theVFO_Object.getCurrentVFO_Tuning_Rate()
-        # print("newFreq=", newFreq)
-        self.theRadio.Set_New_Frequency(newFreq)
+    def upButtonReleased_CB(self, event=None):
+        if self.upButton_Canvas.cget("state") == "normal":
+            self.upButton_Canvas.itemconfig(self.upButton, image=self.arrow_up_normal)
+            self.upButton_Canvas.move(self.upButton, -10, -10)
+            newFreq = self.theVFO_Object.getIntPrimaryVFO()+self.theVFO_Object.getCurrentVFO_Tuning_Rate()
+            # print("newFreq=", newFreq)
+            self.theRadio.Set_New_Frequency(newFreq)
 
 
 #
@@ -463,6 +479,9 @@ class mainScreen(baseui.mainScreenUI):
 
     def rit_CB(self):
         self.theRadio.Toggle_RIT()
+
+    def logQSO_CB(self):
+        print("logQSO_CB")
 
 
 
@@ -1092,7 +1111,12 @@ class mainScreen(baseui.mainScreenUI):
         self.channels_Button.configure(state="disabled")
         self.ATT_Jogwheel.setStateDisabled()
         self.IFS_Jogwheel.setStateDisabled()
-        self.tuning_Jogwheel.setStateDisabled()
+        self.downButton_Canvas.configure(state="disabled")
+        self.downButton_Canvas.itemconfig(self.downButton,image=self.arrow_down_disabled)
+
+        self.upButton_Canvas.configure(state="disabled")
+        self.upButton_Canvas.itemconfig(self.upButton, image=self.arrow_up_disabled)
+
         self.theVFO_Object.setVFOUXState("disabled")
         self.cwDecode_Button.configure(state="disabled")
         self.spectrumScan_Button.configure(state="disabled")
@@ -1117,7 +1141,11 @@ class mainScreen(baseui.mainScreenUI):
             self.ATT_Jogwheel.setStateNormal()
         if (self.IFS_Button_On == True):
             self.IFS_Jogwheel.setStateNormal()
-        self.tuning_Jogwheel.setStateNormal()
+
+        self.downButton_Canvas.configure(state="normal")
+        self.downButton_Canvas.itemconfig(self.downButton, image=self.arrow_down_normal)
+        self.upButton_Canvas.configure(state="normal")
+        self.upButton_Canvas.itemconfig(self.upButton, image=self.arrow_up_normal)
         self.theVFO_Object.setVFOUXState("normal")
         self.cwDecode_Button.configure(state="normal")
         self.spectrumScan_Button.configure(state="normal")
