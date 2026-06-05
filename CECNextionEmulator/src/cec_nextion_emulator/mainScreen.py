@@ -103,13 +103,6 @@ class mainScreen(baseui.mainScreenUI):
 
 
 
-
-        # self.tuning_Jogwheel.configure(scroll=True, touchOptimized=gv.config.get_VFO_Touch_Optimized())
-        # self.theVFO_Object.attachDial(self.tuning_Jogwheel)
-        # self.tuning_Jogwheel.grid_remove()
-        # gv.config.register_observer("VFO Touch Optimized", self.switchVFO_Tuning_Optimization)
-        # self.baselineJogValue = 0
-
         self.lastPWRSWR_Reading = None              # tracks what was the last PWR/SWR reading received
 
         #
@@ -1279,10 +1272,6 @@ class mainScreen(baseui.mainScreenUI):
             self.channelsWindow.update_Current_Frequency(self.theVFO_Object.getFormattedPrimaryVFO())
             # self.channelsWindow.update_Current_Frequency(gv.formatFrequency(self.primary_VFO_VAR.get()))
 
-
-    def switchVFO_Tuning_Optimization(self, value):
-        self.tuning_Jogwheel.configure(scroll=True, touchOptimized=value)
-
     #
     #   The "cc" command indicates a change to a new mode for primary (e.g. USB, LSB, etc.)
     #
@@ -1300,7 +1289,6 @@ class mainScreen(baseui.mainScreenUI):
         else:
             self.theVFO_Object.offsetVFOforTX(False)
 
-        # self.theVFO_Object.updateJogTracking()            # Since changed mode, may need to reset jogwheel to tx frequency
 
         if self.channelsWindow != None:
             # Only update frequency if the channel window has been created once

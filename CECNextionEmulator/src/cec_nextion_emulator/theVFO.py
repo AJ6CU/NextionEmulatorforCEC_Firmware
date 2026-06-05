@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 import tkinter as tk
 import tkinter.ttk as ttk
+
+from PIL.JpegPresets import presets
+
 import theVFOui as baseui
 import globalvars as gv
 
@@ -37,7 +40,7 @@ class theVFO(baseui.theVFOUI):
         }
 
         self.theRadio = None
-        self.virtualDial = None                     # pointer to the jogwheel (vfo dial)
+        # self.virtualDial = None                     # pointer to the jogwheel (vfo dial)
         self.mainWindow = None
 
         self.currentDigitPos = 0                    # Position of digit in VFO being edited
@@ -84,6 +87,7 @@ class theVFO(baseui.theVFOUI):
         self.update_Tuning_Preset_Menubutton_Label = True
 
 
+
     #
     #   This routine is called to finish some inits that have to be done after other values (e.g. current machine state, eeprom)
     #   have been read in
@@ -100,9 +104,9 @@ class theVFO(baseui.theVFOUI):
         if self.TXfreqOffset != 0:
             self.offsetVFOforTX(True)
 
-        self.setVirtualDialRateMultiplier()         # set the multiplier for each change in virtual dial
+        self.setRateMultiplier()         # set the multiplier for each change in virtual dial
         self.setTuningMultiplierLabel()             # set the Label text for the Tuning Select Button
-        self.manage_Tuning_Mode(self.currentDigitPos, True)    # turn on the virtual "LED" below the vfo digit
+        self.setLEDTuningHighlight(self.currentDigitPos, True)    # turn on the virtual "LED" below the vfo digit
 
 
         self.digit_delimiter_primary_VFO_VAR.set(gv.config.get_NUMBER_DELIMITER())
@@ -112,10 +116,10 @@ class theVFO(baseui.theVFOUI):
 
 
     #
-    #   This function defines how many Hz the primary frequency changes for every change of one unit in the virtual
-    #   dial (jogwheel)
+    #   This function defines how many Hz the primary frequency changes for every change of one unit click
+    #   of the up/down arrows
     #
-    def setVirtualDialRateMultiplier(self):
+    def setRateMultiplier(self):
         #
         #   Set the frequency multiplier
         #
@@ -128,11 +132,11 @@ class theVFO(baseui.theVFOUI):
                 self.theRadio.Set_Tuning_Preset(1)
             else:
                 self.currentVFO_Tuning_Rate = int(self.tuning_Preset_Label_VAR.get())
-    #
-    #   The Label on the Tuning Select Button (just above the virtual Dial), should reflect
-    #   the current multiplier for every notch change in the virtual Dial. This
-    #   routine makes sure that the Label of this button is correct.
-    #
+
+      # The Label on the Tuning Select Button (just to right of tuning preselects), should reflect
+      # the current multiplier for every notch change in the virtual Dial. This
+      # routine makes sure that the Label of this button is correct.
+
     def setTuningMultiplierLabel(self):
         if (self.currentVFO_Tuning_Rate < 1000):
             multiplier_string = str(int(self.currentVFO_Tuning_Rate)) + "Hz"
@@ -148,14 +152,17 @@ class theVFO(baseui.theVFOUI):
     #
     #*********Routines that manage the virtual LED's below the digits of the VFO
     #
-    #   There are three routines here. The lower level one is "manage_Tuning_mode" which is called
-    #   on an individual light to turn on or off. It also handles the situation where we have moved
-    #   back to digit "0" which is reserved for the classic preset tuning.
+    #   There are three routines here. The lower level one is "set_Tuning_mode". It sets the mode between "direct tune"
+    #   and "preset tune". When switching to direct tune, it needs to save the preset state. When switching to
+    #   preset tune, it needs to restore the last state
     #
-    #   The second routine "updateLEDTuningHighlight" manages the transistion from one LED to the next
-    #   and uses "manage_Tuning_Mode" to do the hard work.
+    #   The second routine "setNextLEDTuningHighlight" manages the transistion from one LED to the next. It also detects
+    #   changes between direct and preset tuning and calls set_Tuning_mode.
     #
-    #   The final teo routines are convenince routines used both internally and externally to save/restore the state
+    #   The routine setLEDTuningHighlight deals with actually changing an LED light on or off. This is required
+    #   because led(0) is actually the preset value and changing its state requires different styles.
+    #
+    #   The final two routines are convenince routines used both internally and externally to save/restore the state
     #   of the preset. This is necessary because the original software automatically truncates the digits below it.
     #   For example, if the dial was set for 100hz, then 10hz and 1hz would automatically get truncated to zero.
     #   So when the Virtual Dial is being used on an individual digit, we need to set the preset to the lowest available
@@ -167,76 +174,48 @@ class theVFO(baseui.theVFOUI):
     #
 
 
-    #
-    #   Ensures that all the proper labels are set based on the mode of the Tuning Select Button.
-    #   There is some trickery going on here as "light" can be between 0 and 7. The "0" means that
-    #   we are using the standard dial preset mode. A "1" means the 10Hz digit, "2" means, 100Hz, etc.
-    #   KD8CEC does not allow tuning in 1Hz's increments which means the "0" digit can be repurposed
-    #   for implying the use of the "classic" presets.
-    #
-    #   The "turnOn" parameter is used to turn on or off the respective LED indicator (or Button)
-
-    def manage_Tuning_Mode(self, lightNum, turnOn):
+    def set_Tuning_Mode(self, mode):
         #
-        #   This routine handles switching between Direct and "Preset" tuning mode
-        #   The complexity here comes from the original CEC software using the current
-        #   preset-1 (i.e. if Preset 3 was 100 and Preset 2 was 50, and we were on preset 3,
-        #   everything below Preset 3 would be zero'ed out. This means to allow direct
-        #   tune mode on the tens digit, we must first make the preset the lowest # (i.e. 1)
-        #   so that the tens digit is not masked out and turned to zero.
-        #   As a result, we need to save the state of the preset when we move to Direct Tune,
-        #   and then restore it as we exit Direct Tune and go into Preset mode.
-        #   Since the MCU can also force changes in preset, we must temporarily turn off
-        #   the updating of the label
+        #   Switching into direct tune mode and must save preset
         #
-        def set_Tuning_Mode( mode):
-            if (mode == "direct tune"):
-                if (self.saved_tuning_Preset_Selection == None):  # None value indicates we *are* in "preset tune" mode
-                    #
-                    #   save state prior to going into Direct Mode
-                    #
-                    self.savePresetState()
-                    #
-                    self.tuning_Preset_Label_VAR.set("Direct Tune")
-                    #   turn off any changes in the label due to a change in preset coming from the radio
-                    self.update_Tuning_Preset_Menubutton_Label = False
-                    #   Disable the tuning rate button so selected preset cannot be changed while in direct tune
-                    self.tuning_Preset_Menubutton.configure(state='disabled')
-                    #
-                    #   Select the lowest tuning rate of the presets. The need to do this is the result of the original
-                    #   CEC software using the rate preselects to truncate digits below the preset. For example.
-                    #   if a preset of 100 was selected, then it would be impossible to set the dial in increments of 20
-                    #   or 10 because it would be truncated to lower 100.
-                    #
-                    self.theRadio.Set_Tuning_Preset(1)
-
-            else:  # Switching into pre-set tuning mode and have to restore the state
-                if (self.saved_tuning_Preset_Selection != None):  # dont restore unless it was previously saved
-                    #   Allow updating of the Label for the selected preset
-                    self.update_Tuning_Preset_Menubutton_Label = True
-                    #   Restore the saved states
-
-                    self.restorePresetState()
-                    #   Re-enable the button to select a preset
-                    self.tuning_Preset_Menubutton.configure(state='enabled')
-                    #   indicate the saved states are now invalid
-                    self.saved_tuning_Preset_Selection = None
+        if (mode == "direct tune"):
+            if (self.saved_tuning_Preset_Selection == None):    # None value indicates we *are* in "preset tune" mode
+                                                                # and must save preset state before switching into direct
+                #
+                #   save state prior to going into Direct Mode
+                #
+                self.savePresetState()
+                #
+                self.tuning_Preset_Label_VAR.set("Direct Tune")
+                #   turn off any changes in the label due to a change in preset coming from the radio
+                self.update_Tuning_Preset_Menubutton_Label = False
+                #   Disable the tuning rate button so selected preset cannot be changed while in direct tune
+                self.tuning_Preset_Menubutton.configure(state='disabled')
+                #
+                #   Select the lowest tuning rate of the presets. The need to do this is the result of the original
+                #   CEC software using the rate preselects to truncate digits below the preset. For example.
+                #   if a preset of 100 was selected, then it would be impossible to set the dial in increments of 20
+                #   or 10 because it would be truncated to lower 100.
+                #
+                self.theRadio.Set_Tuning_Preset(1)
         #
-        #   End of convenience routine
+        #   Switching into preset tune mode and if a backup exists, restore it
         #
+        else:  # Switching into pre-set tuning mode and have to restore the state
 
-        if lightNum == 0:         # This means we are in "classic" preset mode
-            if turnOn:
-                self.rate_selection[0].configure(style='GreenButton2b.TButton')
-                set_Tuning_Mode("preset tune")  # go into preset tune mode
-            else:
-                self.rate_selection[0].configure(style='Button2b.TButton')
-        else:                       # We are toggling one of the digit LED lights
-            if turnOn:
-                self.rate_selection[lightNum].configure(style='OnLED.TLabel')
-                set_Tuning_Mode("direct tune")  # go into direct tune mode
-            else:
-                self.rate_selection[lightNum].configure(style='OffLED.TLabel')
+            if (self.saved_tuning_Preset_Selection != None):  # dont restore unless it was previously saved
+
+                #   Allow updating of the Label for the selected preset
+                self.update_Tuning_Preset_Menubutton_Label = True
+
+                #   Restore the saved states
+                self.restorePresetState()
+                #   Re-enable the button to select a preset
+
+                self.tuning_Preset_Menubutton.configure(state='enabled')
+
+                #   indicate the saved states are now invalid
+                self.saved_tuning_Preset_Selection = None
 
     #
     #   This routine handles the cycling thru of LED highlights for VFO Digits.
@@ -245,24 +224,56 @@ class theVFO(baseui.theVFOUI):
     #   It is a loop so when we reach the most signicatint digit, it loops back to 0 and
     #   we are in preset mode.
     #
-    def updateLEDTuningHighlight(self, tuning_Digit = None):
+    def setNextLEDTuningHighlight(self, lightnum=None):
+
+
         #
-        #   First turn off the old LED
+        #   Save current light number. This is needed to see if we transistioned into a different mode (direct vs preset)
         #
-        self.manage_Tuning_Mode(self.currentDigitPos, False)
+        savedLightNum = self.currentDigitPos
+
+        self.setLEDTuningHighlight(self.currentDigitPos, False)
         #
         #   IF increment mode (tuning_Digit == None)
         #   Increment to the next slot and turn its LED on, check for rollover, otherwise go directly to the indicated
         #   digit
         #
-        if tuning_Digit == None:
+        if lightnum == None:
             self.currentDigitPos += 1
             if self.currentDigitPos > len(self.rate_selection) - 1:
                 self.currentDigitPos = 0
         else:
-            self.currentDigitPos = tuning_Digit
+            self.currentDigitPos = lightnum
 
-        self.manage_Tuning_Mode(self.currentDigitPos, True)
+        self.setLEDTuningHighlight(self.currentDigitPos, True)
+
+        if self.currentDigitPos == 0:
+            # switched into preset mode
+            self.set_Tuning_Mode("preset mode")
+        elif savedLightNum == 0 and self.currentDigitPos != 0:
+            # switched into direct mode
+            self.set_Tuning_Mode("direct tune")
+        else:
+            # no mode change
+            pass
+
+    def setLEDTuningHighlight(self, lightNum, turnOn = True):
+        #
+        #   First turn off the old LED
+        #
+        if lightNum == 0:         # This means we are in "classic" preset mode
+
+            if turnOn:
+                self.rate_selection[0].configure(style='GreenButton2b.TButton')
+
+            else:
+                self.rate_selection[0].configure(style='Button2b.TButton')
+        else:                       # We are toggling one of the digit LED lights
+
+            if turnOn:
+                self.rate_selection[lightNum].configure(style='OnLED.TLabel')
+            else:
+                self.rate_selection[lightNum].configure(style='OffLED.TLabel')
 
     def savePresetState(self):
         self.saved_tuning_Preset_Selection = self.get_Active_Tuning_Preset()
@@ -281,25 +292,12 @@ class theVFO(baseui.theVFOUI):
     def attachMainWindow(self,mainWindow):
         self.mainWindow = mainWindow
 
-    def attachDial(self,dial):
-        self.virtualDial = dial
-
-
-    def setDelimiter(self, delimiter):
-        pass
-
     def setFirmwareVersion(self, firmwareVersion):
         self.firmwareVersion_VAR.set(firmwareVersion)
 
     def setCallsign(self, callsign):
         self.callSign_VAR.set(callsign)
 
-
-    # def setCWTone(self, tone):
-    #     self.tone = int(tone)
-
-    def setTuningPreset(self, tuningPreset, value):
-        pass
 
     #
     #   External routines to set states of Buttons
@@ -328,8 +326,6 @@ class theVFO(baseui.theVFOUI):
     #
     #   Get/Set routines
     #
-    def getPrimaryVFO(self):
-        pass
     def getIntPrimaryVFO(self):
         return self.intDisplayedPrimaryVFO
 
@@ -339,12 +335,7 @@ class theVFO(baseui.theVFOUI):
     def setPrimaryVFO(self, value):
         self.PrimaryVFO = int(value)
         self.update_VFO_Display(self.PrimaryVFO, self.TXfreqOffset)
-        # self.updateJogTracking()
 
-    def getSecondaryVFO(self):
-        pass
-    def getFormattedSecondaryVFO(self):
-        pass
     def setSecondaryVFO(self, value):
         self.SecondaryVFO = int(value)
         self.secondary_VFO_Formatted_VAR.set(gv.formatFrequency(self.SecondaryVFO, self.TXfreqOffset))
@@ -354,12 +345,6 @@ class theVFO(baseui.theVFOUI):
 
     def getCurrentVFO_Tuning_Rate(self):
         return self.currentVFO_Tuning_Rate
-
-
-    def setVFOA(self):
-        pass
-    def setVFOB(self):
-        pass
 
     def toggleVFO(self):
 
@@ -436,9 +421,9 @@ class theVFO(baseui.theVFOUI):
 
 
 
-        self.setVirtualDialRateMultiplier()  # set the multiplier for each change in virtual dial
+        self.setRateMultiplier()  # set the multiplier for each change in virtual dial
         self.setTuningMultiplierLabel()  # set the Label text for the Tuning Select Button
-        self.manage_Tuning_Mode(self.currentDigitPos, False)  # turn on the virtual "LED" below the vfo digit
+
 
 
     def reformatVFO(self, value):
@@ -468,15 +453,12 @@ class theVFO(baseui.theVFOUI):
         #
         #   First turn off the old LED, turn on new LED indicator for tuning
         #
-        self.updateLEDTuningHighlight()
+        self.setNextLEDTuningHighlight()
         #
-        #   Update rate multiplier for jogwheel
+        #   Update rate multiplier
         #
-        self.setVirtualDialRateMultiplier()
-        #
-        #   set tracking variables for new rate change
-        #
-        self.updateJogTracking()
+        self.setRateMultiplier()
+
         #
         #   Update the label on the tuning button selector
         #
@@ -488,18 +470,13 @@ class theVFO(baseui.theVFOUI):
     #
 
     def primary_vfo_direct_digit_set(self, digit):
+
+        self.setNextLEDTuningHighlight(digit)
         #
-        #   First turn off the old LED, turn on new LED indicator for tuning
+        # #   Update rate multiplier for jogwheel
         #
-        self.updateLEDTuningHighlight(digit)
-        #
-        #   Update rate multiplier for jogwheel
-        #
-        self.setVirtualDialRateMultiplier()
-        #
-        #   set tracking variables for new rate change
-        #
-        # self.updateJogTracking()
+        self.setRateMultiplier()
+
         #
         #   Update the label on the tuning button selector
         #
@@ -581,8 +558,6 @@ class theVFO(baseui.theVFOUI):
             self.RX_VFO_Visability(False)       # Turn off the RX frequency window
         self.update_VFO_Display(self.PrimaryVFO, self.TXfreqOffset)
 
-        # self.updateJogTracking()                # Since changed flag, may need to reset jogwheel position
-
 
 
     def update_VFO_Display (self, vfo, offset=0 ):
@@ -603,15 +578,6 @@ class theVFO(baseui.theVFOUI):
 
         self.RX_VFO_VAR.set(gv.formatFrequency(vfo))     # Update RX freq reminder displayed if TX Freq displayed
 
-
-
-
-
-    # def updateJogTracking(self,newBaseline=True):
-    #
-    #     self.virtualDial.set(self.getVFOdigit(), False)
-    #     if(newBaseline):
-    #         self.mainWindow.baselineJogValue = self.virtualDial.get()
 
     #
     #   this function returns a single digit integer that occupies the position
