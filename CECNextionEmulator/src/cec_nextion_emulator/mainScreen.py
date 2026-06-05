@@ -21,7 +21,7 @@ import globalvars as gv
 from tkinter import messagebox
 import sys
 import EEPROM as EEPROM
-# from src.cec_nextion_emulator.theVFO import theVFO
+import os
 
 
 class mainScreen(baseui.mainScreenUI):
@@ -104,11 +104,11 @@ class mainScreen(baseui.mainScreenUI):
 
 
 
-        self.tuning_Jogwheel.configure(scroll=True, touchOptimized=gv.config.get_VFO_Touch_Optimized())
-        self.theVFO_Object.attachDial(self.tuning_Jogwheel)
-        self.tuning_Jogwheel.grid_remove()
-        gv.config.register_observer("VFO Touch Optimized", self.switchVFO_Tuning_Optimization)
-        self.baselineJogValue = 0
+        # self.tuning_Jogwheel.configure(scroll=True, touchOptimized=gv.config.get_VFO_Touch_Optimized())
+        # self.theVFO_Object.attachDial(self.tuning_Jogwheel)
+        # self.tuning_Jogwheel.grid_remove()
+        # gv.config.register_observer("VFO Touch Optimized", self.switchVFO_Tuning_Optimization)
+        # self.baselineJogValue = 0
 
         self.lastPWRSWR_Reading = None              # tracks what was the last PWR/SWR reading received
 
@@ -190,6 +190,16 @@ class mainScreen(baseui.mainScreenUI):
         self.mainScreenPlotter = barPlotterBdata(self, self.spectrumCanvas, 63, 70)
         self.mainScreenCW_logger = cwLogger(self, self.decodedCWText, 100)
         self.consumerDSPdata.request_DSP_EEPROM_Data()          # Request data. If we get some, then DSP will be marked as exists
+
+        arrow_img_down = gv.get_image(gv.DOWNARROWBUTTON)
+        self.downButton = self.downButton_Canvas.create_image(5,5, image=arrow_img_down, anchor="nw")
+        self.downButton_Canvas.image_reference = arrow_img_down
+
+
+        arrow_img_up = gv.get_image(gv.UPARROWBUTTON)
+        self.upButton = self.upButton_Canvas.create_image(5,5, image=arrow_img_up, anchor="nw")
+        self.upButton_Canvas.image_reference = arrow_img_up
+
 
     def close_MainWindow (self):
         self.portHandle.close()         # Close connection to Radio
@@ -419,9 +429,21 @@ class mainScreen(baseui.mainScreenUI):
         # print("newFreq=", newFreq)
         self.theRadio.Set_New_Frequency(newFreq)
 
+
+    def downButton_CB(self, event=None):
+        newFreq = self.theVFO_Object.getIntPrimaryVFO()-self.theVFO_Object.getCurrentVFO_Tuning_Rate()
+        # print("newFreq=", newFreq)
+        self.theRadio.Set_New_Frequency(newFreq)
+
+    def upButton_CB(self, event=None):
+        newFreq = self.theVFO_Object.getIntPrimaryVFO()+self.theVFO_Object.getCurrentVFO_Tuning_Rate()
+        # print("newFreq=", newFreq)
+        self.theRadio.Set_New_Frequency(newFreq)
+
+
 #
 #   This function sends to the Radio a notice that a screen lock has been requested
-#   The actual locking of the screen waits until the Radio sends back a commond
+#   The actual locking of the screen waits until the Radio sends back a common
 #   to lock the screen. This ensures that the screen is not locked by the UX
 #   and the Radio never gets the request for some reason.
 #   The actual locking of screen is set performed by cl_UX_Lock_Screen()
@@ -1250,7 +1272,7 @@ class mainScreen(baseui.mainScreenUI):
         else:
             self.theVFO_Object.offsetVFOforTX(False)
 
-        self.theVFO_Object.updateJogTracking()            # Since changed mode, may need to reset jogwheel to tx frequency
+        # self.theVFO_Object.updateJogTracking()            # Since changed mode, may need to reset jogwheel to tx frequency
 
         if self.channelsWindow != None:
             # Only update frequency if the channel window has been created once

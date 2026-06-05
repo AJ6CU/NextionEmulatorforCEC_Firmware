@@ -6,19 +6,24 @@ import importlib.resources as pkg_resources
 # from pygubu.plugins import ptk
 import tkinter as tk
 import pkgutil
+from PIL import Image, ImageTk
+import io
 
 
 #application required files################################################
+#
+#   This handles finding an image in both development mode and package mode
+#   It always returns an image, either naticce PhotoImage or one that has been
+#   preprocessed by Pillow first and then by PhotoImage.
 
 def get_image(filename):
     image = pkgutil.get_data('cec_nextion_emulator', filename)
-
     if image is not None:
         return (tk.PhotoImage(data=image))
-
     else:
         imagepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), filename)
-        return tk.PhotoImage(file=imagepath)
+        return (tk.PhotoImage(file=imagepath))
+
 
 config = None
 
@@ -32,6 +37,8 @@ POPUP_WINDOW_OFFSET = "+50+50"
 VNUMERICKEYBOARD_OFFSET = "+600+160"        #"+550+160"
 VALPHAKEYBOARD_OFFSET = "+375+160"
 RELOADICON = "reloadicon.png"
+UPARROWBUTTON = "round_up_button.png"
+DOWNARROWBUTTON = "round_down_button.png"
 BAUD = 57600     #9600
 NUMBER_DELIMITER = ""               # Loaded with value from configuration file
 

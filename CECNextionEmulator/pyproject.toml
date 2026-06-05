@@ -48,7 +48,7 @@ classifiers = [
   #   3 - Alpha
   #   4 - Beta
   #   5 - Production/Stable
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 4 - Beta",
 
   # Indicate who your project is intended for
   "Intended Audience :: Ham",
@@ -69,7 +69,7 @@ classifiers = [
 #
 # For an analysis of this field vs pip's requirements files see:
 # https://packaging.python.org/discussions/install-requires-vs-requirements/
-dependencies = ["pyserial", "pygubu"]
+dependencies = ["pyserial", "pygubu", "pillow"]
 
 # List additional groups of dependencies here (e.g. development
 # dependencies). Users will be able to install these using the "extras"
@@ -115,4 +115,7 @@ where = ["src"]
 
 # If there are data files included in your packages that need to be
 # installed, specify them here.
-package-data = { "cec_nextion_emulator" = ["reloadicon.png"] }
+package-data = { "cec_nextion_emulator" = ["*.png"] }
+#package-data = { "cec_nextion_emulator" = ["src/images/*.png"] }
+#[tool.setuptools.package-data]
+#"cec_nextion_emulator"  = ["src/cec_nextion_emulator/images/*.png"]

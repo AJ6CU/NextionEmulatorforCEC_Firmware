@@ -339,7 +339,7 @@ class theVFO(baseui.theVFOUI):
     def setPrimaryVFO(self, value):
         self.PrimaryVFO = int(value)
         self.update_VFO_Display(self.PrimaryVFO, self.TXfreqOffset)
-        self.updateJogTracking()
+        # self.updateJogTracking()
 
     def getSecondaryVFO(self):
         pass
@@ -499,7 +499,7 @@ class theVFO(baseui.theVFOUI):
         #
         #   set tracking variables for new rate change
         #
-        self.updateJogTracking()
+        # self.updateJogTracking()
         #
         #   Update the label on the tuning button selector
         #
@@ -581,7 +581,7 @@ class theVFO(baseui.theVFOUI):
             self.RX_VFO_Visability(False)       # Turn off the RX frequency window
         self.update_VFO_Display(self.PrimaryVFO, self.TXfreqOffset)
 
-        self.updateJogTracking()                # Since changed flag, may need to reset jogwheel position
+        # self.updateJogTracking()                # Since changed flag, may need to reset jogwheel position
 
 
 
@@ -607,11 +607,11 @@ class theVFO(baseui.theVFOUI):
 
 
 
-    def updateJogTracking(self,newBaseline=True):
-
-        self.virtualDial.set(self.getVFOdigit(), False)
-        if(newBaseline):
-            self.mainWindow.baselineJogValue = self.virtualDial.get()
+    # def updateJogTracking(self,newBaseline=True):
+    #
+    #     self.virtualDial.set(self.getVFOdigit(), False)
+    #     if(newBaseline):
+    #         self.mainWindow.baselineJogValue = self.virtualDial.get()
 
     #
     #   this function returns a single digit integer that occupies the position

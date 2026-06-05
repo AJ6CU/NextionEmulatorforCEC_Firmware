@@ -170,23 +170,6 @@ class mainScreenUI(ttk.Frame):
             width=1250)
         self.theVFO_Object = theVFO(frame2, name="thevfo_object")
         self.theVFO_Object.grid(column=0, pady="5 0", row=0)
-        frame3 = ttk.Frame(frame2)
-        frame3.configure(height=200, style="Normal.TFrame", width=200)
-        self.tuning_Jogwheel = JogwheelCustom(
-            frame3,
-            start=0,
-            end=9,
-            divisions=10,
-            button_radius=25,
-            value=0,
-            progress=False,
-            scroll=True,
-            scroll_steps=1,
-            name="tuning_jogwheel")
-        self.tuning_Jogwheel.configure(state="normal", touchOptimized=True)
-        self.tuning_Jogwheel.pack(anchor="w", side="top")
-        self.tuning_Jogwheel.configure(command=self.tuning_Jogwheel_CB)
-        frame3.grid(columnspan=3, padx="650 0", row=1, rowspan=3, sticky="w")
         self.control_Meter_Tuning_Frame = ttk.Frame(
             frame2, name="control_meter_tuning_frame")
         self.control_Meter_Tuning_Frame.configure(
@@ -236,6 +219,22 @@ class mainScreenUI(ttk.Frame):
         def bandScan_Button_cmd_(): self.bandScan_Button_CB("bandScan_Button")
 
         self.bandScan_Button.configure(command=bandScan_Button_cmd_)
+        self.split_Button = ttk.Button(
+            self.signal_Control_Frame, name="split_button")
+        self.split_Button.configure(
+            style="Button2b.TButton",
+            text='\nSPLIT\n',
+            width=11)
+        self.split_Button.pack(anchor="nw", padx="0 20", side="left")
+        self.split_Button.configure(command=self.split_CB)
+        self.rit_Button = ttk.Button(
+            self.signal_Control_Frame, name="rit_button")
+        self.rit_Button.configure(
+            style="Button2b.TButton",
+            text='\nRIT\n',
+            width=11)
+        self.rit_Button.pack(anchor="nw", padx="0 20", side="left")
+        self.rit_Button.configure(command=self.rit_CB)
         self.signal_Control_Frame.grid(column=0, pady=10, row=0, sticky="n")
         self.secondary_menu_Frame.grid(column=0, padx=5, row=0)
         self.sMeter_Frame = ttk.Frame(
@@ -340,8 +339,38 @@ class mainScreenUI(ttk.Frame):
             pady="10 0",
             row=2,
             sticky="nw")
+        frame3 = ttk.Frame(self.control_Meter_Tuning_Frame)
+        frame3.configure(height=200, style="Normal.TFrame", width=200)
+        self.downButton_Canvas = tk.Canvas(frame3, name="downbutton_canvas")
+        self.downButton_Canvas.configure(
+            background="gray",
+            borderwidth=0,
+            height=140,
+            highlightthickness=0,
+            selectborderwidth=0,
+            width=140)
+        self.downButton_Canvas.grid(column=0, row=0)
+        self.downButton_Canvas.bind("<Button>", self.downButton_CB, add="+")
+        self.upButton_Canvas = tk.Canvas(frame3, name="upbutton_canvas")
+        self.upButton_Canvas.configure(
+            background="gray",
+            borderwidth=0,
+            height=140,
+            highlightthickness=0,
+            selectborderwidth=0,
+            width=140)
+        self.upButton_Canvas.grid(column=1, row=0)
+        self.upButton_Canvas.bind("<Button>", self.upButton_CB, add="+")
+        self.logQSO_Button = ttk.Button(frame3, name="logqso_button")
+        self.logQSO_Button.configure(
+            style="Button2b.TButton",
+            text='\nLog QSO\n',
+            width=11)
+        self.logQSO_Button.grid(column=0, columnspan=2, row=1)
+        self.logQSO_Button.configure(command=self.logQSO_CB)
+        frame3.grid(columnspan=3, padx="650 0", row=1, rowspan=3, sticky="n")
         self.control_Meter_Tuning_Frame.grid(
-            column=0, padx="5 0", row=1, sticky="nw")
+            column=0, padx="5 0", pady="10 0", row=1, sticky="w")
         frame2.pack(
             anchor="n",
             expand=True,
@@ -429,27 +458,6 @@ class mainScreenUI(ttk.Frame):
             fill="x",
             padx=10,
             side="left")
-        self.split_rit_Frame = ttk.Frame(
-            self.ATT_IFS_Adjust_Frame,
-            name="split_rit_frame")
-        self.split_rit_Frame.configure(
-            height=200, style="Normal.TFrame", width=200)
-        self.split_Button = ttk.Button(
-            self.split_rit_Frame, name="split_button")
-        self.split_Button.configure(
-            style="Button2b.TButton",
-            text='\nSPLIT\n',
-            width=11)
-        self.split_Button.pack(anchor="nw", padx="20 20", side="left")
-        self.split_Button.configure(command=self.split_CB)
-        self.rit_Button = ttk.Button(self.split_rit_Frame, name="rit_button")
-        self.rit_Button.configure(
-            style="Button2b.TButton",
-            text='\nRIT\n',
-            width=11)
-        self.rit_Button.pack(anchor="nw", padx="0 20", side="left")
-        self.rit_Button.configure(command=self.rit_CB)
-        self.split_rit_Frame.pack(side="top")
         self.cwInfoFrame = ttk.Frame(
             self.ATT_IFS_Adjust_Frame,
             name="cwinfoframe")
@@ -620,9 +628,6 @@ class mainScreenUI(ttk.Frame):
     def speaker_CB(self):
         pass
 
-    def tuning_Jogwheel_CB(self):
-        pass
-
     def channels_CB(self):
         pass
 
@@ -633,6 +638,21 @@ class mainScreenUI(ttk.Frame):
         pass
 
     def bandScan_Button_CB(self, widget_id):
+        pass
+
+    def split_CB(self):
+        pass
+
+    def rit_CB(self):
+        pass
+
+    def downButton_CB(self, event=None):
+        pass
+
+    def upButton_CB(self, event=None):
+        pass
+
+    def logQSO_CB(self):
         pass
 
     def updateATTValue_CB(self):
@@ -651,12 +671,6 @@ class mainScreenUI(ttk.Frame):
         pass
 
     def IFS_Jogwheel_ButtonReleased_CB(self, event=None):
-        pass
-
-    def split_CB(self):
-        pass
-
-    def rit_CB(self):
         pass
 
     def cwSettings_CB(self, event=None):
