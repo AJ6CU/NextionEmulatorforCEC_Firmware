@@ -7,6 +7,7 @@ from cwSettings import cwSettings
 from settingsMachine import settingsMachine
 from settingsGeneral import settingsGeneral
 from settingsBackup import settingsBackup
+from settingsLogbook import settingsLogbook
 from settingsAbout import settingsAbout
 from tkinter import messagebox
 import globalvars as gv
@@ -46,7 +47,8 @@ class settings(baseui.settingsUI):
         self.settingsGeneralWindow = None              # This is the "general" settings
         self.settingsChannelsWindow = None
         self.settingsBackupWindow = None
-        self.settingsFactoryResetWindow = None
+        self.settingsLogbookWindow = None
+
         self.settingsRebootWindow = None
         self.settingsAboutWindow = None
         #
@@ -93,6 +95,9 @@ class settings(baseui.settingsUI):
 
     def settingsBackup_CB(self):
         self.settingsBackupWindow = settingsBackup(self.master, self.mainWindow)
+
+    def SettingsLogbook_CB(self):
+        self.settingsLogbookWindow = settingsLogbook(self.master, self.mainWindow)
 
     def settingsReboot_CB(self):
         if messagebox.askokcancel("Reboot?", "Do you really want to reboot?", parent=self):

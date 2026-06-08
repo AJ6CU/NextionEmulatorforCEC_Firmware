@@ -109,11 +109,11 @@
                 <property name="text" translatable="yes">About</property>
                 <property name="width">15</property>
                 <layout manager="grid">
-                  <property name="column">2</property>
+                  <property name="column">1</property>
                   <property name="ipady">25</property>
                   <property name="padx">10</property>
                   <property name="pady">10</property>
-                  <property name="row">3</property>
+                  <property name="row">4</property>
                 </layout>
               </object>
             </child>
@@ -124,7 +124,7 @@
                 <property name="text" translatable="yes">Machine</property>
                 <property name="width">15</property>
                 <layout manager="grid">
-                  <property name="column">0</property>
+                  <property name="column">1</property>
                   <property name="ipady">25</property>
                   <property name="padx">10</property>
                   <property name="pady">10</property>
@@ -139,7 +139,36 @@
                 <property name="text" translatable="yes">Reboot</property>
                 <property name="width">15</property>
                 <layout manager="grid">
-                  <property name="column">1</property>
+                  <property name="column">0</property>
+                  <property name="ipady">25</property>
+                  <property name="padx">10</property>
+                  <property name="pady">10</property>
+                  <property name="row">4</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Button" id="logbook_Button" named="True">
+                <property name="command" type="command" cbtype="simple">SettingsLogbook_CB</property>
+                <property name="style">Button1Raised.TButton</property>
+                <property name="text" translatable="yes">Logbook</property>
+                <property name="width">15</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="ipady">25</property>
+                  <property name="padx">10</property>
+                  <property name="pady">10</property>
+                  <property name="row">3</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Button" id="TBD_Button" named="True">
+                <property name="style">Button1Raised.TButton</property>
+                <property name="text" translatable="yes">TBD</property>
+                <property name="width">15</property>
+                <layout manager="grid">
+                  <property name="column">2</property>
                   <property name="ipady">25</property>
                   <property name="padx">10</property>
                   <property name="pady">10</property>

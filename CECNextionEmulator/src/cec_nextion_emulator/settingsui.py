@@ -90,22 +90,37 @@ class settingsUI(ttk.Labelframe):
             text='About',
             width=15)
         self.settingsAbout_Button.grid(
-            column=2, ipady=25, padx=10, pady=10, row=3)
+            column=1, ipady=25, padx=10, pady=10, row=4)
         self.settingsAbout_Button.configure(command=self.settingsAbout_CB)
         self.settingsMachine_Button = ttk.Button(
             self.settingsButtons_Frame, name="settingsmachine_button")
         self.settingsMachine_Button.configure(
             style="Button1Raised.TButton", text='Machine', width=15)
         self.settingsMachine_Button.grid(
-            column=0, ipady=25, padx=10, pady=10, row=3)
+            column=1, ipady=25, padx=10, pady=10, row=3)
         self.settingsMachine_Button.configure(command=self.SettingsMachine_CB)
         self.settingsReboot_Button = ttk.Button(
             self.settingsButtons_Frame, name="settingsreboot_button")
         self.settingsReboot_Button.configure(
             style="Button1Raised.TButton", text='Reboot', width=15)
         self.settingsReboot_Button.grid(
-            column=1, ipady=25, padx=10, pady=10, row=3)
+            column=0, ipady=25, padx=10, pady=10, row=4)
         self.settingsReboot_Button.configure(command=self.settingsReboot_CB)
+        self.logbook_Button = ttk.Button(
+            self.settingsButtons_Frame,
+            name="logbook_button")
+        self.logbook_Button.configure(
+            style="Button1Raised.TButton", text='Logbook', width=15)
+        self.logbook_Button.grid(column=0, ipady=25, padx=10, pady=10, row=3)
+        self.logbook_Button.configure(command=self.SettingsLogbook_CB)
+        self.TBD_Button = ttk.Button(
+            self.settingsButtons_Frame,
+            name="tbd_button")
+        self.TBD_Button.configure(
+            style="Button1Raised.TButton",
+            text='TBD',
+            width=15)
+        self.TBD_Button.grid(column=2, ipady=25, padx=10, pady=10, row=3)
         self.settingsButtons_Frame.pack(
             anchor="center", expand=True, fill="both", side="top")
         self.settingsButtons_Frame.rowconfigure(3, weight=1)
@@ -151,6 +166,9 @@ class settingsUI(ttk.Labelframe):
         pass
 
     def settingsReboot_CB(self):
+        pass
+
+    def SettingsLogbook_CB(self):
         pass
 
     def settingsClose_CB(self):
