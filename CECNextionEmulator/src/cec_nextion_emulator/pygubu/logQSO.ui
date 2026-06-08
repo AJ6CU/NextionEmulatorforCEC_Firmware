@@ -1,0 +1,482 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.5" author="PygubuDesigner 0.41.4">
+  <project>
+    <settings>
+      <setting id="name">Log QSO</setting>
+      <setting id="description">Completes the logging of a QSO</setting>
+      <setting id="template">widget</setting>
+      <setting id="main_widget">logQSO_Labelframe</setting>
+      <setting id="module_namespace" />
+      <setting id="module_name">logQSO</setting>
+      <setting id="main_classname">logQSO</setting>
+      <setting id="output_dir">..</setting>
+      <setting id="builder_namespace">custom_widgets</setting>
+      <setting id="output_dir2">..</setting>
+      <setting id="generate_code_onsave">False</setting>
+      <setting id="use_i18n">False</setting>
+      <setting id="all_ids_attributes">False</setting>
+      <setting id="import_tkvariables">False</setting>
+      <setting id="use_ttk_styledefinition_file">True</setting>
+      <setting id="use_window_centering_code">False</setting>
+      <setting id="ttk_style_definition_file">../mystyles.py</setting>
+    </settings>
+    <customwidgets />
+    <resources />
+  </project>
+  <object class="tk.Toplevel" id="logQSO_Toplevel" named="True">
+    <property name="title" translatable="yes">Frequency Spectrum</property>
+    <child>
+      <object class="ttk.Labelframe" id="logQSO_Labelframe" named="True">
+        <property name="height">200</property>
+        <property name="style">Heading2.TLabelframe</property>
+        <property name="text" translatable="yes">Log QSO
+</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="expand">true</property>
+          <property name="fill">both</property>
+          <property name="padx">20</property>
+          <property name="pady">20</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="ttk.Frame" id="logData_Frame" named="True">
+            <property name="height">200</property>
+            <property name="style">NormalOutline.TFrame</property>
+            <property name="width">200</property>
+            <layout manager="pack">
+              <property name="padx">20</property>
+              <property name="side">top</property>
+            </layout>
+            <child>
+              <object class="ttk.Frame" id="callsign_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">10</property>
+                  <property name="pady">10 30</property>
+                  <property name="row">0</property>
+                </layout>
+                <child>
+                  <object class="ttk.Label" id="callsign_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">Callsign</property>
+                    <layout manager="pack">
+                      <property name="pady">0 5</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Entry" id="callsign_Entry" named="True">
+                    <property name="font">{Arial} 20 {}</property>
+                    <property name="style">Entry2b.TEntry</property>
+                    <property name="text" translatable="yes">AJ6CU/7</property>
+                    <property name="textvariable">string:callSign_VAR</property>
+                    <property name="width">12</property>
+                    <layout manager="pack" />
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="freq_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="padx">10</property>
+                  <property name="pady">0 30</property>
+                  <property name="row">1</property>
+                </layout>
+                <child>
+                  <object class="ttk.Label" id="band_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">Band</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="padx">0 15</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="frequency_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">Frequency</property>
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="mode_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">Mode</property>
+                    <layout manager="grid">
+                      <property name="column">3</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="imputedBand_Label" named="True">
+                    <property name="justify">right</property>
+                    <property name="style">Heading1b.TLabel</property>
+                    <property name="text" translatable="yes">40m</property>
+                    <property name="textvariable">string:bandName_VAR</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="padx">0 20</property>
+                      <property name="row">1</property>
+                      <property name="sticky">n</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Entry" id="frequency_entry" named="True">
+                    <property name="font">{Arial} 20 {}</property>
+                    <property name="justify">right</property>
+                    <property name="style">Entry2b.TEntry</property>
+                    <property name="text" translatable="yes">14.032</property>
+                    <property name="textvariable">string:frequency_VAR</property>
+                    <property name="width">7</property>
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="row">1</property>
+                      <property name="sticky">n</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="frequency_ext" named="True">
+                    <property name="justify">right</property>
+                    <property name="style">Heading1b.TLabel</property>
+                    <property name="text" translatable="yes">.000</property>
+                    <layout manager="grid">
+                      <property name="column">2</property>
+                      <property name="ipadx">10</property>
+                      <property name="padx">0 15</property>
+                      <property name="row">1</property>
+                      <property name="sticky">n</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Menubutton" id="mode_Menubutton" named="True">
+                    <property name="style">Heading0.TMenubutton</property>
+                    <property name="textvariable">string:commType_VAR</property>
+                    <property name="width">3</property>
+                    <layout manager="grid">
+                      <property name="column">3</property>
+                      <property name="row">1</property>
+                    </layout>
+                    <child>
+                      <object class="tk.Menu" id="mode_Menu" named="True">
+                        <property name="tearoff">false</property>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="SSB" named="True">
+                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">SSB</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="CW" named="True">
+                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">CW</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="FT8" named="True">
+                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">FT8</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="FT4" named="True">
+                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">FT4</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="FT2" named="True">
+                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">FT2</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="AM" named="True">
+                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">AM</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="FM" named="True">
+                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">FM</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="RTTY" named="True">
+                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">RTTY</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="PSK31" named="True">
+                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
+                            <property name="font">{Arial} 36 {}</property>
+                            <property name="label" translatable="yes">PSK31</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="timeDate_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">10</property>
+                  <property name="pady">0 30</property>
+                  <property name="row">10</property>
+                </layout>
+                <child>
+                  <object class="ttk.Label" id="qsoDate_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">Date</property>
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="pady">0 5</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="qsoTime_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">Time</property>
+                    <layout manager="grid">
+                      <property name="column">2</property>
+                      <property name="pady">0 5</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="localLabel" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">Local</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="padx">0 10</property>
+                      <property name="pady">0 10</property>
+                      <property name="row">1</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Entry" id="qsoDateLocal_Entry" named="True">
+                    <property name="font">{Arial} 20 {}</property>
+                    <property name="justify">center</property>
+                    <property name="style">Entry2b.TEntry</property>
+                    <property name="text" translatable="yes">12/28/2026</property>
+                    <property name="textvariable">string:localDate_VAR</property>
+                    <property name="width">9</property>
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="padx">0 15</property>
+                      <property name="pady">0 10</property>
+                      <property name="row">1</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Entry" id="qsoTimeLocal_Entry" named="True">
+                    <property name="font">{Arial} 20 {}</property>
+                    <property name="justify">center</property>
+                    <property name="style">Entry2b.TEntry</property>
+                    <property name="text" translatable="yes">230520</property>
+                    <property name="textvariable">string:localTime_VAR</property>
+                    <property name="width">8</property>
+                    <layout manager="grid">
+                      <property name="column">2</property>
+                      <property name="pady">0 10</property>
+                      <property name="row">1</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="utc_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">UTC:</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="padx">0 10</property>
+                      <property name="row">2</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Entry" id="qsoDateUTC_Entry" named="True">
+                    <property name="font">{Arial} 20 {}</property>
+                    <property name="justify">center</property>
+                    <property name="style">Entry2b.TEntry</property>
+                    <property name="text" translatable="yes">12/28/2026</property>
+                    <property name="textvariable">string:utcDate_VAR</property>
+                    <property name="width">9</property>
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="padx">0 15</property>
+                      <property name="row">2</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Entry" id="qsoTimeUTC_Entry" named="True">
+                    <property name="font">{Arial} 20 {}</property>
+                    <property name="justify">center</property>
+                    <property name="style">Entry2b.TEntry</property>
+                    <property name="text" translatable="yes">230520</property>
+                    <property name="textvariable">string:utcTime_VAR</property>
+                    <property name="width">8</property>
+                    <layout manager="grid">
+                      <property name="column">2</property>
+                      <property name="row">2</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="signalReport_Frame" named="True">
+                <property name="height">200</property>
+                <property name="style">Normal.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">10</property>
+                  <property name="pady">0 30</property>
+                  <property name="row">11</property>
+                </layout>
+                <child>
+                  <object class="ttk.Label" id="rstSend_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">RST Sent</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="padx">0 20</property>
+                      <property name="pady">0 5</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Label" id="rstRcvd_Label" named="True">
+                    <property name="style">Heading2b.TLabel</property>
+                    <property name="text" translatable="yes">RST Rcvd</property>
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="pady">0 5</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Entry" id="rstSend_Entry" named="True">
+                    <property name="font">{Arial} 20 {}</property>
+                    <property name="justify">center</property>
+                    <property name="style">Entry2b.TEntry</property>
+                    <property name="text" translatable="yes">599</property>
+                    <property name="textvariable">string:sentRST_VAR</property>
+                    <property name="width">4</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="padx">0 20</property>
+                      <property name="row">1</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Entry" id="rstRcvd_Entry" named="True">
+                    <property name="font">{Arial} 20 {}</property>
+                    <property name="justify">center</property>
+                    <property name="style">Entry2b.TEntry</property>
+                    <property name="text" translatable="yes">599</property>
+                    <property name="textvariable">string:rcvdRST_VAR</property>
+                    <property name="width">4</property>
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="row">1</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="closingFrame" named="True">
+            <property name="style">Normal.TFrame</property>
+            <layout manager="pack">
+              <property name="pady">20 15</property>
+              <property name="side">top</property>
+            </layout>
+            <containerlayout manager="grid">
+              <property name="anchor">center</property>
+            </containerlayout>
+            <child>
+              <object class="ttk.Button" id="logQSO_Button" named="True">
+                <property name="command" type="command" cbtype="simple">logQSO_CB</property>
+                <property name="style">Button2b.TButton</property>
+                <property name="text" translatable="yes">Log</property>
+                <property name="textvariable">string:startStopSpectrum_VAR</property>
+                <property name="width">10</property>
+                <layout manager="grid">
+                  <property name="padx">0 15</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Button" id="cancel_Button" named="True">
+                <property name="command" type="command" cbtype="simple">cancel_CB</property>
+                <property name="style">Button2b.TButton</property>
+                <property name="text" translatable="yes">Cancel</property>
+                <property name="width">10</property>
+                <layout manager="grid">
+                  <property name="column">3</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

@@ -126,7 +126,7 @@ def setup_ttk_styles(master=None):
     style.configure('ComboBox4White.TCombobox',font=fontList['Heading4'],foreground='white')
     style.configure('Normal.TEntry',font=fontList['Normal'])
 
-    style.configure('Entry1b.TEntry', font=fontList['Heading1b'])
+    style.configure('Entry1b.TEntry', font=fontList['Heading1'])
     style.configure('Entry2b.TEntry', font=fontList['Heading2'])
     style.configure('Entry2bCopy.TEntry', font=fontList['Heading2'],highlightthickness=0, borderwidth=0, background='red', readonlybackground='red',bd=0)
     style.configure('NoBorder.TEntry',font=fontList['Normal'], highlightthickness=0, borderwidth=0, bd=0)

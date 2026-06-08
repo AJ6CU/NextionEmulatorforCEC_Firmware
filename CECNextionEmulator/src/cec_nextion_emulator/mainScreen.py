@@ -10,6 +10,7 @@ from channels import channels
 from cwDecoder import cwDecoder
 from frequencySpectrum import frequencySpectrum
 from bandScanner import bandScanner
+from logQSO import logQSO
 
 from barPlotter import barPlotterBdata
 from cwLogger import cwLogger
@@ -44,6 +45,7 @@ class mainScreen(baseui.mainScreenUI):
         self.cwSettingsWindow = None    # Object pointer for the CW Settinge Window
         self.settingsWindow = None      # Object pointer for the General Settings Window
         self.channelsWindow = None      # object pointer for the Memory-> VFO Window
+        self.logQSOWindow = None
         self.spectrumWindow = None       #object point for the SpectrumScan Window
         self.consumerSpectrumdata = None #Object pointer to the current consumer of spectrum data
 
@@ -473,8 +475,7 @@ class mainScreen(baseui.mainScreenUI):
     def rit_CB(self):
         self.theRadio.Toggle_RIT()
 
-    def logQSO_CB(self):
-        print("logQSO_CB")
+
 
 
 
@@ -576,6 +577,10 @@ class mainScreen(baseui.mainScreenUI):
         #
         self.theRadio.Set_Spectrum_Mode(94)
         self.consumerSpectrumdata = bandScanner(self.master, self)
+
+    def logQSO_CB(self):
+        print("logQSO_CB")
+        self.logQSOWindow = logQSO(self.master, self)
 
 
 
