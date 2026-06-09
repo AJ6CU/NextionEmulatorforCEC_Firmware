@@ -90,7 +90,7 @@
                         <child>
                           <object class="tk.Menuitem.Command" id="selectDSP_On_Command" named="True">
                             <property name="command" type="command" cbtype="simple">selectDSP_On_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">True</property>
                             <property name="state">normal</property>
                           </object>
@@ -98,7 +98,7 @@
                         <child>
                           <object class="tk.Menuitem.Command" id="selectDSP_Off_Command" named="True">
                             <property name="command" type="command" cbtype="simple">selectDSP_Off_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">False</property>
                             <property name="state">normal</property>
                           </object>
@@ -168,7 +168,7 @@
                         <child>
                           <object class="tk.Menuitem.Command" id="enablePWR_SWR_Command" named="True">
                             <property name="command" type="command" cbtype="simple">enablePWR_SWR_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">True</property>
                             <property name="state">normal</property>
                           </object>
@@ -176,7 +176,7 @@
                         <child>
                           <object class="tk.Menuitem.Command" id="disablePWR_SWR_Command" named="True">
                             <property name="command" type="command" cbtype="simple">disablePWR_SWR_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">False</property>
                             <property name="state">normal</property>
                           </object>
@@ -202,7 +202,7 @@
                 </child>
                 <child>
                   <object class="ttk.Entry" id="PWR_Factor_Entry" named="True">
-                    <property name="font">{Arial} 36 {}</property>
+                    <property name="font">{Arial} 24 {}</property>
                     <property name="justify">right</property>
                     <property name="text" translatable="yes">0.0</property>
                     <property name="textvariable">string:PWR_Factor_VAR</property>
@@ -236,7 +236,7 @@
                 </child>
                 <child>
                   <object class="ttk.Entry" id="SWR_Factor_Entry" named="True">
-                    <property name="font">{Arial} 36 {}</property>
+                    <property name="font">{Arial} 24 {}</property>
                     <property name="justify">right</property>
                     <property name="text" translatable="yes">0.0</property>
                     <property name="textvariable">string:SWR_Factor_VAR</property>

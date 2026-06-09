@@ -72,7 +72,6 @@
                   <object class="ttk.Entry" id="callsign_Entry" named="True">
                     <property name="font">{Arial} 20 {}</property>
                     <property name="style">Entry2b.TEntry</property>
-                    <property name="text" translatable="yes">AJ6CU/7</property>
                     <property name="textvariable">string:callSign_VAR</property>
                     <property name="width">12</property>
                     <layout manager="pack" />
@@ -155,6 +154,7 @@
                     <property name="justify">right</property>
                     <property name="style">Heading1b.TLabel</property>
                     <property name="text" translatable="yes">.000</property>
+                    <property name="textvariable">string:lowFreqDigits</property>
                     <layout manager="grid">
                       <property name="column">2</property>
                       <property name="ipadx">10</property>
@@ -168,7 +168,7 @@
                   <object class="ttk.Menubutton" id="mode_Menubutton" named="True">
                     <property name="style">Heading0.TMenubutton</property>
                     <property name="textvariable">string:commType_VAR</property>
-                    <property name="width">3</property>
+                    <property name="width">6</property>
                     <layout manager="grid">
                       <property name="column">3</property>
                       <property name="row">1</property>
@@ -178,72 +178,72 @@
                         <property name="tearoff">false</property>
                         <child>
                           <object class="tk.Menuitem.Command" id="SSB" named="True">
-                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="command" type="command" cbtype="with_wid">selectMode_CB</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">SSB</property>
                             <property name="state">normal</property>
                           </object>
                         </child>
                         <child>
                           <object class="tk.Menuitem.Command" id="CW" named="True">
-                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="command" type="command" cbtype="with_wid">selectMode_CB</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">CW</property>
                             <property name="state">normal</property>
                           </object>
                         </child>
                         <child>
                           <object class="tk.Menuitem.Command" id="FT8" named="True">
-                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="command" type="command" cbtype="with_wid">selectMode_CB</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">FT8</property>
                             <property name="state">normal</property>
                           </object>
                         </child>
                         <child>
                           <object class="tk.Menuitem.Command" id="FT4" named="True">
-                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="command" type="command" cbtype="with_wid">selectMode_CB</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">FT4</property>
                             <property name="state">normal</property>
                           </object>
                         </child>
                         <child>
                           <object class="tk.Menuitem.Command" id="FT2" named="True">
-                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="command" type="command" cbtype="with_wid">selectMode_CB</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">FT2</property>
                             <property name="state">normal</property>
                           </object>
                         </child>
                         <child>
                           <object class="tk.Menuitem.Command" id="AM" named="True">
-                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="command" type="command" cbtype="with_wid">selectMode_CB</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">AM</property>
                             <property name="state">normal</property>
                           </object>
                         </child>
                         <child>
                           <object class="tk.Menuitem.Command" id="FM" named="True">
-                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="command" type="command" cbtype="with_wid">selectMode_CB</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">FM</property>
                             <property name="state">normal</property>
                           </object>
                         </child>
                         <child>
                           <object class="tk.Menuitem.Command" id="RTTY" named="True">
-                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="command" type="command" cbtype="with_wid">selectMode_CB</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">RTTY</property>
                             <property name="state">normal</property>
                           </object>
                         </child>
                         <child>
                           <object class="tk.Menuitem.Command" id="PSK31" named="True">
-                            <property name="command" type="command" cbtype="with_wid">selecMode_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="command" type="command" cbtype="with_wid">selectMode_CB</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">PSK31</property>
                             <property name="state">normal</property>
                           </object>

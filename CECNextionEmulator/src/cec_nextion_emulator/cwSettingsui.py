@@ -83,19 +83,19 @@ class cwSettingsUI(ttk.Labelframe):
         self.CW_Key_Type_Menu.add(
             "command",
             command=self.selectCWStraightKey_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='STRAIGHT',
             state="normal")
         self.CW_Key_Type_Menu.add(
             "command",
             command=self.selectCWIAMBICAKey_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='IAMBICA',
             state="normal")
         self.CW_Key_Type_Menu.add(
             "command",
             command=self.selectCWIAMBICBKey_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='IAMBICB ',
             state="normal")
         self.CW_Key_Type_Menubutton.configure(menu=self.CW_Key_Type_Menu)
@@ -214,13 +214,13 @@ class cwSettingsUI(ttk.Labelframe):
         self.CW_Freq_Display_Menu.add(
             "command",
             command=self.selectCWDisplayTX_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='TX',
             state="normal")
         self.CW_Freq_Display_Menu.add(
             "command",
             command=self.selectCWDisplayRX_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='RX',
             state="normal")
         self.CW_Freq_Display_Menubutton.configure(

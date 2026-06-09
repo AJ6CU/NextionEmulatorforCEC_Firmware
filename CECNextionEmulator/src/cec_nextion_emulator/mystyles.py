@@ -101,7 +101,7 @@ def setup_ttk_styles(master=None):
     style.configure('RadioButton4.TRadiobutton',font=fontList['Heading4'])
     style.configure('RadioButtonNormal.TRadiobutton',font=fontList['Normal'])
     style.configure('RadioButtonEmphasis.TRadiobutton',font=fontList['Emphasis'])
-    style.configure('Heading0.TMenubutton', font=fontList['Heading0'], anchor='center')
+    style.configure('Heading0.TMenubutton', font=fontList['Heading1Std'], anchor='center')
     style.configure('Heading1b.TMenubutton', font=fontList['Heading1b'], anchor='center')
     style.configure('Heading2b.TMenubutton',font=fontList['Heading2b'])
     style.configure('Submenu.TMenuitem.Command',font=fontList['Heading2b'])

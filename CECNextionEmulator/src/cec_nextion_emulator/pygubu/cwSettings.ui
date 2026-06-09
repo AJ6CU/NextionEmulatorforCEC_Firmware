@@ -81,7 +81,7 @@
                         <child>
                           <object class="tk.Menuitem.Command" id="selectStraight_Command" named="True">
                             <property name="command" type="command" cbtype="simple">selectCWStraightKey_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">STRAIGHT</property>
                             <property name="state">normal</property>
                           </object>
@@ -89,7 +89,7 @@
                         <child>
                           <object class="tk.Menuitem.Command" id="selectIAMBICA_Command" named="True">
                             <property name="command" type="command" cbtype="simple">selectCWIAMBICAKey_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">IAMBICA</property>
                             <property name="state">normal</property>
                           </object>
@@ -97,7 +97,7 @@
                         <child>
                           <object class="tk.Menuitem.Command" id="selectIAMBICB_Command" named="True">
                             <property name="command" type="command" cbtype="simple">selectCWIAMBICBKey_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">IAMBICB </property>
                             <property name="state">normal</property>
                           </object>
@@ -274,7 +274,7 @@ This setting will be reset to that stored in the EEPROM on reboot.  Use the Sett
                         <child>
                           <object class="tk.Menuitem.Command" id="CW_Freq_Display_SetTX_Command" named="True">
                             <property name="command" type="command" cbtype="simple">selectCWDisplayTX_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">TX</property>
                             <property name="state">normal</property>
                           </object>
@@ -282,7 +282,7 @@ This setting will be reset to that stored in the EEPROM on reboot.  Use the Sett
                         <child>
                           <object class="tk.Menuitem.Command" id="selectCWDisplayRX_Command" named="True">
                             <property name="command" type="command" cbtype="simple">selectCWDisplayRX_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">RX</property>
                             <property name="state">normal</property>
                           </object>

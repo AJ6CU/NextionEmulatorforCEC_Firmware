@@ -85,13 +85,13 @@ class settingsLogbookUI(ttk.Labelframe):
         self.logbookSwitch_Menu.add(
             "command",
             command=self.selectLogbookOn_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='True ',
             state="normal")
         self.logbookSwitch_Menu.add(
             "command",
             command=self.selectLogbookOff_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='False',
             state="normal")
         self.logbookSwitch_Menbutton.configure(menu=self.logbookSwitch_Menu)
@@ -120,13 +120,13 @@ class settingsLogbookUI(ttk.Labelframe):
         self.logbookType_Menu.add(
             "command",
             command=self.selectLogbookType_CSV_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='CSV',
             state="normal")
         self.logbookType_Menu.add(
             "command",
             command=self.selectLogbookType_ADI_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='ADI',
             state="normal")
         self.logbookType_Menubutton.configure(menu=self.logbookType_Menu)

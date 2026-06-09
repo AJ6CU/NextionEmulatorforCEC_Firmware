@@ -84,13 +84,13 @@ class settingsGeneralUI(ttk.Labelframe):
         self.Number_Delimiter_Menu.add(
             "command",
             command=self.selectCommaDelimiter_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='  ,  ',
             state="normal")
         self.Number_Delimiter_Menu.add(
             "command",
             command=self.selectPeriodDelimiter_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='  .  ',
             state="normal")
         self.Number_Delimiter_Menubutton.configure(
@@ -111,13 +111,13 @@ class settingsGeneralUI(ttk.Labelframe):
         self.Virtual_Keyboard_Menu.add(
             "command",
             command=self.selectVirtualKeyboardOn_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='True ',
             state="normal")
         self.Virtual_Keyboard_Menu.add(
             "command",
             command=self.selectVirtualKeyboardOff_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='False',
             state="normal")
         self.Virtual_Keyboard_Menubutton.configure(
@@ -155,13 +155,13 @@ class settingsGeneralUI(ttk.Labelframe):
         self.VFO_Touch_Optimized_Menu.add(
             "command",
             command=self.selectVFO_TouchOn_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='True ',
             state="normal")
         self.VFO_Touch_Optimized_Menu.add(
             "command",
             command=self.selectVFO_TouchOff_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='False',
             state="normal")
         self.VFO_Touch_Optimized_Menubutton.configure(
@@ -177,9 +177,10 @@ class settingsGeneralUI(ttk.Labelframe):
             text='Seconds on Frequency\nduring Scan')
         self.Time_On_Freq_Label.grid(
             column=0, padx=10, pady="40 20", row=3, sticky="e")
-        spinbox1 = ttk.Spinbox(self.general_Settings_Frame)
+        self.Time_On_Freq_Spinbox = ttk.Spinbox(
+            self.general_Settings_Frame, name="time_on_freq_spinbox")
         self.Time_On_Freq_VAR = tk.StringVar()
-        spinbox1.configure(
+        self.Time_On_Freq_Spinbox.configure(
             font="{Arial} 36 {}",
             from_=1,
             justify="right",
@@ -187,7 +188,8 @@ class settingsGeneralUI(ttk.Labelframe):
             textvariable=self.Time_On_Freq_VAR,
             to=20,
             width=2)
-        spinbox1.grid(column=1, padx="15 5", pady="40 20", row=3, sticky="w")
+        self.Time_On_Freq_Spinbox.grid(
+            column=1, padx="15 5", pady="40 20", row=3, sticky="w")
         self.general_Settings_Frame.pack(padx=10, pady=10, side="top")
         self.closingFrame = ttk.Frame(self, name="closingframe")
         self.closingFrame.configure(

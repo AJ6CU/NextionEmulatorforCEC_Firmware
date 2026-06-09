@@ -71,15 +71,12 @@ class logQSOUI(ttk.Labelframe):
         self.callsign_Label.pack(pady="0 5")
         self.callsign_Entry = ttk.Entry(
             self.callsign_Frame, name="callsign_entry")
-        self.callSign_VAR = tk.StringVar(value='AJ6CU/7')
+        self.callSign_VAR = tk.StringVar()
         self.callsign_Entry.configure(
             font="{Arial} 20 {}",
             style="Entry2b.TEntry",
             textvariable=self.callSign_VAR,
             width=12)
-        _text_ = 'AJ6CU/7'
-        self.callsign_Entry.delete("0", "end")
-        self.callsign_Entry.insert("0", _text_)
         self.callsign_Entry.pack()
         self.callsign_Frame.grid(column=0, padx=10, pady="10 30", row=0)
         self.freq_Frame = ttk.Frame(self.logData_Frame, name="freq_frame")
@@ -118,10 +115,12 @@ class logQSOUI(ttk.Labelframe):
         self.frequency_entry.insert("0", _text_)
         self.frequency_entry.grid(column=1, row=1, sticky="n")
         self.frequency_ext = ttk.Label(self.freq_Frame, name="frequency_ext")
+        self.lowFreqDigits = tk.StringVar(value='.000')
         self.frequency_ext.configure(
             justify="right",
             style="Heading1b.TLabel",
-            text='.000')
+            text='.000',
+            textvariable=self.lowFreqDigits)
         self.frequency_ext.grid(
             column=2,
             ipadx=10,
@@ -134,78 +133,78 @@ class logQSOUI(ttk.Labelframe):
         self.mode_Menubutton.configure(
             style="Heading0.TMenubutton",
             textvariable=self.commType_VAR,
-            width=3)
+            width=6)
         self.mode_Menu = tk.Menu(self.mode_Menubutton, name="mode_menu")
         self.mode_Menu.configure(tearoff=False)
-        def SSB_cmd(itemid="SSB"): self.selecMode_CB(itemid)
+        def SSB_cmd(itemid="SSB"): self.selectMode_CB(itemid)
         self.mode_Menu.add(
             "command",
             command=SSB_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='SSB',
             state="normal")
 
-        def CW_cmd(itemid="CW"): self.selecMode_CB(itemid)
+        def CW_cmd(itemid="CW"): self.selectMode_CB(itemid)
         self.mode_Menu.add(
             "command",
             command=CW_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='CW',
             state="normal")
 
-        def FT8_cmd(itemid="FT8"): self.selecMode_CB(itemid)
+        def FT8_cmd(itemid="FT8"): self.selectMode_CB(itemid)
         self.mode_Menu.add(
             "command",
             command=FT8_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='FT8',
             state="normal")
 
-        def FT4_cmd(itemid="FT4"): self.selecMode_CB(itemid)
+        def FT4_cmd(itemid="FT4"): self.selectMode_CB(itemid)
         self.mode_Menu.add(
             "command",
             command=FT4_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='FT4',
             state="normal")
 
-        def FT2_cmd(itemid="FT2"): self.selecMode_CB(itemid)
+        def FT2_cmd(itemid="FT2"): self.selectMode_CB(itemid)
         self.mode_Menu.add(
             "command",
             command=FT2_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='FT2',
             state="normal")
 
-        def AM_cmd(itemid="AM"): self.selecMode_CB(itemid)
+        def AM_cmd(itemid="AM"): self.selectMode_CB(itemid)
         self.mode_Menu.add(
             "command",
             command=AM_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='AM',
             state="normal")
 
-        def FM_cmd(itemid="FM"): self.selecMode_CB(itemid)
+        def FM_cmd(itemid="FM"): self.selectMode_CB(itemid)
         self.mode_Menu.add(
             "command",
             command=FM_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='FM',
             state="normal")
 
-        def RTTY_cmd(itemid="RTTY"): self.selecMode_CB(itemid)
+        def RTTY_cmd(itemid="RTTY"): self.selectMode_CB(itemid)
         self.mode_Menu.add(
             "command",
             command=RTTY_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='RTTY',
             state="normal")
 
-        def PSK31_cmd(itemid="PSK31"): self.selecMode_CB(itemid)
+        def PSK31_cmd(itemid="PSK31"): self.selectMode_CB(itemid)
         self.mode_Menu.add(
             "command",
             command=PSK31_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='PSK31',
             state="normal")
         self.mode_Menubutton.configure(menu=self.mode_Menu)
@@ -349,7 +348,7 @@ class logQSOUI(ttk.Labelframe):
             width=200)
         # Layout for 'logQSO_Labelframe' skipped in custom widget template.
 
-    def selecMode_CB(self, itemid):
+    def selectMode_CB(self, itemid):
         pass
 
     def logQSO_CB(self):

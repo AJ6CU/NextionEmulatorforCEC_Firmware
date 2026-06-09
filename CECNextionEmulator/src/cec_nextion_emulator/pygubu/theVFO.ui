@@ -565,30 +565,35 @@ STOP!
                     <child>
                       <object class="tk.Menuitem.Command" id="tuning_Preset_5_Command" named="True">
                         <property name="command" type="command" cbtype="simple">tuning_Preset_5_CB</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">50000</property>
                       </object>
                     </child>
                     <child>
                       <object class="tk.Menuitem.Command" id="tuning_Preset_4_Command" named="True">
                         <property name="command" type="command" cbtype="simple">tuning_Preset_4_CB</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">10000</property>
                       </object>
                     </child>
                     <child>
                       <object class="tk.Menuitem.Command" id="tuning_Preset_3_Command" named="True">
                         <property name="command" type="command" cbtype="simple">tuning_Preset_3_CB</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">5000</property>
                       </object>
                     </child>
                     <child>
                       <object class="tk.Menuitem.Command" id="tuning_Preset_2_Command" named="True">
                         <property name="command" type="command" cbtype="simple">tuning_Preset_2_CB</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">1000</property>
                       </object>
                     </child>
                     <child>
                       <object class="tk.Menuitem.Command" id="tuning_Preset_1_Command" named="True">
                         <property name="command" type="command" cbtype="simple">tuning_Preset_1_CB</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">100</property>
                       </object>
                     </child>

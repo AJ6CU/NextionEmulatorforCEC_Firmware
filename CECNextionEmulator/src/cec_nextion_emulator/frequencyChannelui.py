@@ -87,7 +87,7 @@ class frequencyChannelUI(ttk.Frame):
         self.channel_Name_Entry.grid(
             column=2, ipady=2, padx="5 0", row=0, sticky="w")
         _validatecmd = (self.channel_Name_Entry.register(
-            self.channel_Label_Validation_CB), "%P", "%V")
+            self.channel_Lavel_Validation_CB), "%P", "%V")
         self.channel_Name_Entry.configure(validatecommand=_validatecmd)
         self.channel_Name_Entry.bind(
             "<Button>", self.channel_Label_Entered_CB, add="+")
@@ -124,35 +124,35 @@ class frequencyChannelUI(ttk.Frame):
         self.mode_Menu.add(
             "command",
             command=DFT_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='DFT')
 
         def LSB_cmd(itemid="LSB"): self.Channel_Mode_Changed_CB(itemid)
         self.mode_Menu.add(
             "command",
             command=LSB_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='LSB')
 
         def USB_cmd(itemid="USB"): self.Channel_Mode_Changed_CB(itemid)
         self.mode_Menu.add(
             "command",
             command=USB_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='USB')
 
         def CWL_cmd(itemid="CWL"): self.Channel_Mode_Changed_CB(itemid)
         self.mode_Menu.add(
             "command",
             command=CWL_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='CWL')
 
         def CWU_cmd(itemid="CWU"): self.Channel_Mode_Changed_CB(itemid)
         self.mode_Menu.add(
             "command",
             command=CWU_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='CWU')
         self.mode_Menubutton.configure(menu=self.mode_Menu)
         self.mode_Menubutton.grid(column=4, padx="5 0", row=0)
@@ -172,14 +172,14 @@ class frequencyChannelUI(ttk.Frame):
         self.show_Label_Menu.add(
             "command",
             command=Yes_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='Yes')
 
         def No_cmd(itemid="No"): self.Channel_ShowLabel_Changed_CB(itemid)
         self.show_Label_Menu.add(
             "command",
             command=No_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='No')
         self.show_Label_Menubutton.configure(menu=self.show_Label_Menu)
         self.show_Label_Menubutton.grid(column=5, padx="5 0", row=0)
@@ -201,7 +201,7 @@ class frequencyChannelUI(ttk.Frame):
         self.scan_Set_Menu.add(
             "command",
             command=None_Command_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='None')
 
         def Scan1_Command_cmd(
@@ -209,7 +209,7 @@ class frequencyChannelUI(ttk.Frame):
         self.scan_Set_Menu.add(
             "command",
             command=Scan1_Command_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='Scan1')
 
         def Scan2_Command_cmd(
@@ -217,7 +217,7 @@ class frequencyChannelUI(ttk.Frame):
         self.scan_Set_Menu.add(
             "command",
             command=Scan2_Command_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='Scan2')
 
         def Scan3_Command_cmd(
@@ -225,14 +225,14 @@ class frequencyChannelUI(ttk.Frame):
         self.scan_Set_Menu.add(
             "command",
             command=Scan3_Command_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='Scan3')
         def Scan4_Command_cmd(
             itemid="Scan4_Command"): self.Channel_ScanSet_Changed_CB(itemid)
         self.scan_Set_Menu.add(
             "command",
             command=Scan4_Command_cmd,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='Scan4')
         self.scan_Set_Menubutton.configure(menu=self.scan_Set_Menu)
         self.scan_Set_Menubutton.grid(column=6, padx="5 0", row=0)
@@ -242,7 +242,7 @@ class frequencyChannelUI(ttk.Frame):
     def channel_Select_CB(self):
         pass
 
-    def channel_Label_Validation_CB(self, p_entry_value, v_condition):
+    def channel_Lavel_Validation_CB(self, p_entry_value, v_condition):
         pass
 
     def channel_Label_Entered_CB(self, event=None):

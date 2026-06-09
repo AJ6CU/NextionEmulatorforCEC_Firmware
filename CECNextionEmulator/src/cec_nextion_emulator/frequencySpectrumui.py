@@ -196,31 +196,31 @@ class frequencySpectrumUI(tk.Toplevel):
         self.bandwidth_Menu.add(
             "command",
             command=self.select_60k_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='60,000',
             state="normal")
         self.bandwidth_Menu.add(
             "command",
             command=self.select_120k_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='120,000',
             state="normal")
         self.bandwidth_Menu.add(
             "command",
             command=self.select_240k_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='240,000',
             state="normal")
         self.bandwidth_Menu.add(
             "command",
             command=self.select_360k_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='360,000',
             state="normal")
         self.bandwidth_Menu.add(
             "command",
             command=self.select_480k_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='480,000',
             state="normal")
         self.bandwidth_Menubutton.configure(menu=self.bandwidth_Menu)
@@ -237,37 +237,37 @@ class frequencySpectrumUI(tk.Toplevel):
         self.repeat_Menu.add(
             "command",
             command=self.select_Repeat_1x_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='1',
             state="normal")
         self.repeat_Menu.add(
             "command",
             command=self.select_Repeat_5x_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='5',
             state="normal")
         self.repeat_Menu.add(
             "command",
             command=self.select_Repeat_10x_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='10',
             state="normal")
         self.repeat_Menu.add(
             "command",
             command=self.select_Repeat_15x_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='15',
             state="normal")
         self.repeat_Menu.add(
             "command",
             command=self.select_Repeat_20x_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='20',
             state="normal")
         self.repeat_Menu.add(
             "command",
             command=self.select_Repeat_50x_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='50',
             state="normal")
         self.repeat_Menubutton.configure(menu=self.repeat_Menu)

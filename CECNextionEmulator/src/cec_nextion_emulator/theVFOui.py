@@ -1,19 +1,26 @@
 #!/usr/bin/python3
+"""
+theVFO
+
+A Nextion GUI emulator for CEC
+
+UI source file: theVFO.ui
+"""
 import tkinter as tk
 import tkinter.ttk as ttk
 
 
-def i18n_translator_noop(value):
+def safe_i18n_translator(value):
     """i18n - Setup translator in derived class file"""
     return value
 
 
-def first_object_callback_noop(widget):
+def safe_fo_callback(widget):
     """on first objec callback - Setup callback in derived class file."""
     pass
 
 
-def image_loader_default(master, image_name: str):
+def safe_image_loader(master, image_name: str):
     """Image loader - Setup image_loader in derived class file."""
     img = None
     try:
@@ -38,12 +45,12 @@ class theVFOUI(ttk.Frame):
         **kw
     ):
         if translator is None:
-            translator = i18n_translator_noop
+            translator = safe_i18n_translator
         _ = translator  # i18n string marker.
         if image_loader is None:
-            image_loader = image_loader_default
+            image_loader = safe_image_loader
         if on_first_object_cb is None:
-            on_first_object_cb = first_object_callback_noop
+            on_first_object_cb = safe_fo_callback
 
         super().__init__(master, **kw)
 
@@ -349,22 +356,27 @@ class theVFOUI(ttk.Frame):
         self.tuning_Preset_Menu.add(
             "command",
             command=self.tuning_Preset_5_CB,
+            font="{Arial} 24 {}",
             label='50000')
         self.tuning_Preset_Menu.add(
             "command",
             command=self.tuning_Preset_4_CB,
+            font="{Arial} 24 {}",
             label='10000')
         self.tuning_Preset_Menu.add(
             "command",
             command=self.tuning_Preset_3_CB,
+            font="{Arial} 24 {}",
             label='5000')
         self.tuning_Preset_Menu.add(
             "command",
             command=self.tuning_Preset_2_CB,
+            font="{Arial} 24 {}",
             label='1000')
         self.tuning_Preset_Menu.add(
             "command",
             command=self.tuning_Preset_1_CB,
+            font="{Arial} 24 {}",
             label='100')
         self.tuning_Preset_Menubutton.configure(menu=self.tuning_Preset_Menu)
         self.tuning_Preset_Menubutton.pack(side="left")

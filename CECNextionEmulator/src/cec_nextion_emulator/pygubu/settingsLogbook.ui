@@ -76,7 +76,7 @@
                     <child>
                       <object class="tk.Menuitem.Command" id="selectLogbookOn_Command" named="True">
                         <property name="command" type="command" cbtype="simple">selectLogbookOn_CB</property>
-                        <property name="font">{Arial} 36 {}</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">True </property>
                         <property name="state">normal</property>
                       </object>
@@ -84,7 +84,7 @@
                     <child>
                       <object class="tk.Menuitem.Command" id="selectLogbookOff_Command" named="True">
                         <property name="command" type="command" cbtype="simple">selectLogbookOff_CB</property>
-                        <property name="font">{Arial} 36 {}</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">False</property>
                         <property name="state">normal</property>
                       </object>
@@ -125,7 +125,7 @@
                     <child>
                       <object class="tk.Menuitem.Command" id="selectLogbookType_CSV_Command" named="True">
                         <property name="command" type="command" cbtype="simple">selectLogbookType_CSV_CB</property>
-                        <property name="font">{Arial} 36 {}</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">CSV</property>
                         <property name="state">normal</property>
                       </object>
@@ -133,7 +133,7 @@
                     <child>
                       <object class="tk.Menuitem.Command" id="selectLogbookType_ADI_Command" named="True">
                         <property name="command" type="command" cbtype="simple">selectLogbookType_ADI_CB</property>
-                        <property name="font">{Arial} 36 {}</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">ADI</property>
                         <property name="state">normal</property>
                       </object>

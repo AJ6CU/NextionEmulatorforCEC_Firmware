@@ -86,13 +86,13 @@ class settingsMachineUI(ttk.Labelframe):
         self.DSP_Enable_Menu.add(
             "command",
             command=self.selectDSP_On_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='True',
             state="normal")
         self.DSP_Enable_Menu.add(
             "command",
             command=self.selectDSP_Off_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='False',
             state="normal")
         self.DSP_Enable_Menubutton.configure(menu=self.DSP_Enable_Menu)
@@ -139,13 +139,13 @@ class settingsMachineUI(ttk.Labelframe):
         self.PWR_SWR_Menu.add(
             "command",
             command=self.enablePWR_SWR_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='True',
             state="normal")
         self.PWR_SWR_Menu.add(
             "command",
             command=self.disablePWR_SWR_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='False',
             state="normal")
         self.PWR_SWR_Menubutton.configure(menu=self.PWR_SWR_Menu)
@@ -167,7 +167,7 @@ class settingsMachineUI(ttk.Labelframe):
             self.PWR_SWR_Frame, name="pwr_factor_entry")
         self.PWR_Factor_VAR = tk.StringVar(value='0.0')
         self.PWR_Factor_Entry.configure(
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             justify="right",
             textvariable=self.PWR_Factor_VAR,
             validate="focusout",
@@ -194,7 +194,7 @@ class settingsMachineUI(ttk.Labelframe):
             self.PWR_SWR_Frame, name="swr_factor_entry")
         self.SWR_Factor_VAR = tk.StringVar(value='0.0')
         self.SWR_Factor_Entry.configure(
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             justify="right",
             textvariable=self.SWR_Factor_VAR,
             validate="focusout",

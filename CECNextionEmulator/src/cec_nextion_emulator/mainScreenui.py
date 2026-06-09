@@ -98,25 +98,25 @@ class mainScreenUI(ttk.Frame):
         menu1.add(
             "command",
             command=self.mode_lsb_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='LSB',
             state="normal")
         menu1.add(
             "command",
             command=self.mode_usb_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='USB',
             state="normal")
         menu1.add(
             "command",
             command=self.mode_cwl_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='CWL',
             state="normal")
         menu1.add(
             "command",
             command=self.mode_cwu_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='CWU',
             state="normal")
         self.mode_select_Menubutton.configure(menu=menu1)

@@ -892,7 +892,7 @@ File</property>
                         <child>
                           <object class="tk.Menuitem.Command" id="from_Factory_Command" named="True">
                             <property name="command" type="command" cbtype="simple">selectFrom_Factory_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">Factory</property>
                             <property name="state">normal</property>
                           </object>
@@ -900,7 +900,7 @@ File</property>
                         <child>
                           <object class="tk.Menuitem.Command" id="from_Current_Command" named="True">
                             <property name="command" type="command" cbtype="simple">selectFrom_Current_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">Current</property>
                             <property name="state">normal</property>
                           </object>
@@ -908,7 +908,7 @@ File</property>
                         <child>
                           <object class="tk.Menuitem.Command" id="from_ConfigFile_Command" named="True">
                             <property name="command" type="command" cbtype="simple">selectFrom_ConfigFile_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">ConfigFile</property>
                             <property name="state">normal</property>
                           </object>
@@ -936,7 +936,7 @@ File</property>
                         <child>
                           <object class="tk.Menuitem.Command" id="to_Current_Command" named="True">
                             <property name="command" type="command" cbtype="simple">selectTo_Current_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">Current</property>
                             <property name="state">normal</property>
                           </object>
@@ -944,7 +944,7 @@ File</property>
                         <child>
                           <object class="tk.Menuitem.Command" id="to_ConfigFile_Command" named="True">
                             <property name="command" type="command" cbtype="simple">selectTo_ConfigFile_CB</property>
-                            <property name="font">{Arial} 36 {}</property>
+                            <property name="font">{Arial} 24 {}</property>
                             <property name="label" translatable="yes">ConfigFile</property>
                             <property name="state">normal</property>
                           </object>

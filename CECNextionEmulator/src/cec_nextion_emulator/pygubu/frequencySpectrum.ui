@@ -265,7 +265,7 @@
                             <child>
                               <object class="tk.Menuitem.Command" id="select_60k_Command" named="True">
                                 <property name="command" type="command" cbtype="simple">select_60k_CB</property>
-                                <property name="font">{Arial} 36 {}</property>
+                                <property name="font">{Arial} 24 {}</property>
                                 <property name="label" translatable="yes">60,000</property>
                                 <property name="state">normal</property>
                               </object>
@@ -273,7 +273,7 @@
                             <child>
                               <object class="tk.Menuitem.Command" id="select_120k_Command" named="True">
                                 <property name="command" type="command" cbtype="simple">select_120k_CB</property>
-                                <property name="font">{Arial} 36 {}</property>
+                                <property name="font">{Arial} 24 {}</property>
                                 <property name="label" translatable="yes">120,000</property>
                                 <property name="state">normal</property>
                               </object>
@@ -281,7 +281,7 @@
                             <child>
                               <object class="tk.Menuitem.Command" id="select_240k_Command" named="True">
                                 <property name="command" type="command" cbtype="simple">select_240k_CB</property>
-                                <property name="font">{Arial} 36 {}</property>
+                                <property name="font">{Arial} 24 {}</property>
                                 <property name="label" translatable="yes">240,000</property>
                                 <property name="state">normal</property>
                               </object>
@@ -289,7 +289,7 @@
                             <child>
                               <object class="tk.Menuitem.Command" id="select_360k_Command" named="True">
                                 <property name="command" type="command" cbtype="simple">select_360k_CB</property>
-                                <property name="font">{Arial} 36 {}</property>
+                                <property name="font">{Arial} 24 {}</property>
                                 <property name="label" translatable="yes">360,000</property>
                                 <property name="state">normal</property>
                               </object>
@@ -297,7 +297,7 @@
                             <child>
                               <object class="tk.Menuitem.Command" id="select_480k_Command" named="True">
                                 <property name="command" type="command" cbtype="simple">select_480k_CB</property>
-                                <property name="font">{Arial} 36 {}</property>
+                                <property name="font">{Arial} 24 {}</property>
                                 <property name="label" translatable="yes">480,000</property>
                                 <property name="state">normal</property>
                               </object>
@@ -321,7 +321,7 @@
                             <child>
                               <object class="tk.Menuitem.Command" id="select_Repeat_1x_Command" named="True">
                                 <property name="command" type="command" cbtype="simple">select_Repeat_1x_CB</property>
-                                <property name="font">{Arial} 36 {}</property>
+                                <property name="font">{Arial} 24 {}</property>
                                 <property name="label" translatable="yes">1</property>
                                 <property name="state">normal</property>
                               </object>
@@ -329,7 +329,7 @@
                             <child>
                               <object class="tk.Menuitem.Command" id="select_Repeat_5x_Command" named="True">
                                 <property name="command" type="command" cbtype="simple">select_Repeat_5x_CB</property>
-                                <property name="font">{Arial} 36 {}</property>
+                                <property name="font">{Arial} 24 {}</property>
                                 <property name="label" translatable="yes">5</property>
                                 <property name="state">normal</property>
                               </object>
@@ -337,7 +337,7 @@
                             <child>
                               <object class="tk.Menuitem.Command" id="select_Repeat_10x_Command" named="True">
                                 <property name="command" type="command" cbtype="simple">select_Repeat_10x_CB</property>
-                                <property name="font">{Arial} 36 {}</property>
+                                <property name="font">{Arial} 24 {}</property>
                                 <property name="label" translatable="yes">10</property>
                                 <property name="state">normal</property>
                               </object>
@@ -345,7 +345,7 @@
                             <child>
                               <object class="tk.Menuitem.Command" id="select_Repeat_15x_Command" named="True">
                                 <property name="command" type="command" cbtype="simple">select_Repeat_15x_CB</property>
-                                <property name="font">{Arial} 36 {}</property>
+                                <property name="font">{Arial} 24 {}</property>
                                 <property name="label" translatable="yes">15</property>
                                 <property name="state">normal</property>
                               </object>
@@ -353,7 +353,7 @@
                             <child>
                               <object class="tk.Menuitem.Command" id="select_Repeat_20x_Command" named="True">
                                 <property name="command" type="command" cbtype="simple">select_Repeat_20x_CB</property>
-                                <property name="font">{Arial} 36 {}</property>
+                                <property name="font">{Arial} 24 {}</property>
                                 <property name="label" translatable="yes">20</property>
                                 <property name="state">normal</property>
                               </object>
@@ -361,7 +361,7 @@
                             <child>
                               <object class="tk.Menuitem.Command" id="select_Repeat_50x_Command" named="True">
                                 <property name="command" type="command" cbtype="simple">select_Repeat_50x_CB</property>
-                                <property name="font">{Arial} 36 {}</property>
+                                <property name="font">{Arial} 24 {}</property>
                                 <property name="label" translatable="yes">50</property>
                                 <property name="state">normal</property>
                               </object>

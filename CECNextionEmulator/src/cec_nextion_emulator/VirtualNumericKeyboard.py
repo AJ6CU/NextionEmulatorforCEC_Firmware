@@ -44,7 +44,10 @@ class VirtualNumericKeyboard(tk.Toplevel):
 
         self.mainframe = ttk.Frame(self)
         self.leftArrow = "\u2190"
-        self.decimalPoint = gv.config.get_NUMBER_DELIMITER()
+        if gv.config.get_NUMBER_DELIMITER() == ",":
+            self.decimalPoint = "."
+        else:
+            self.decimalPoint = ","
 
         if formatVFOFlag:
 

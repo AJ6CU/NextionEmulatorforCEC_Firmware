@@ -39,10 +39,16 @@ class settingsMachine(baseui.settingsMachineUI):
         self.saveMCU_Read_Wait_Period = gv.config.get_MCU_Read_Wait_Period()
 
         self.PWR_SWR_Enable_VAR.set(self.savePWR_SWR_Switch)
-        formatted_factor = self.savePWR_Factor.replace(".",gv.config.get_NUMBER_DELIMITER())
+
+        if gv.config.get_NUMBER_DELIMITER() == ",":
+            decimalDelim = "."
+        else:
+            decimalDelim = ","
+
+        formatted_factor = self.savePWR_Factor.replace(".",decimalDelim)
         self.PWR_Factor_VAR.set(formatted_factor)
 
-        formatted_factor = self.saveSWR_Factor.replace(".", gv.config.get_NUMBER_DELIMITER())
+        formatted_factor = self.saveSWR_Factor.replace(".", decimalDelim)
         self.SWR_Factor_VAR.set(formatted_factor)
 
         if self.PWR_SWR_Enable_VAR.get() == 'False':

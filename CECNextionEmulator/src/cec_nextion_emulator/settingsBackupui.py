@@ -566,19 +566,19 @@ class settingsBackupUI(ttk.Labelframe):
         self.from_Menu.add(
             "command",
             command=self.selectFrom_Factory_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='Factory',
             state="normal")
         self.from_Menu.add(
             "command",
             command=self.selectFrom_Current_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='Current',
             state="normal")
         self.from_Menu.add(
             "command",
             command=self.selectFrom_ConfigFile_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='ConfigFile',
             state="normal")
         self.from_Menubutton.configure(menu=self.from_Menu)
@@ -601,13 +601,13 @@ class settingsBackupUI(ttk.Labelframe):
         self.to_Menu.add(
             "command",
             command=self.selectTo_Current_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='Current',
             state="normal")
         self.to_Menu.add(
             "command",
             command=self.selectTo_ConfigFile_CB,
-            font="{Arial} 36 {}",
+            font="{Arial} 24 {}",
             label='ConfigFile',
             state="normal")
         self.to_Menubutton.configure(menu=self.to_Menu)

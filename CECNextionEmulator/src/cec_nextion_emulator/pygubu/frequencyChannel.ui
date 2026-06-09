@@ -124,35 +124,35 @@
             <child>
               <object class="tk.Menuitem.Command" id="DFT" named="True">
                 <property name="command" type="command" cbtype="with_wid">Channel_Mode_Changed_CB</property>
-                <property name="font">{Arial} 36 {}</property>
+                <property name="font">{Arial} 24 {}</property>
                 <property name="label" translatable="yes">DFT</property>
               </object>
             </child>
             <child>
               <object class="tk.Menuitem.Command" id="LSB" named="True">
                 <property name="command" type="command" cbtype="with_wid">Channel_Mode_Changed_CB</property>
-                <property name="font">{Arial} 36 {}</property>
+                <property name="font">{Arial} 24 {}</property>
                 <property name="label" translatable="yes">LSB</property>
               </object>
             </child>
             <child>
               <object class="tk.Menuitem.Command" id="USB" named="True">
                 <property name="command" type="command" cbtype="with_wid">Channel_Mode_Changed_CB</property>
-                <property name="font">{Arial} 36 {}</property>
+                <property name="font">{Arial} 24 {}</property>
                 <property name="label" translatable="yes">USB</property>
               </object>
             </child>
             <child>
               <object class="tk.Menuitem.Command" id="CWL" named="True">
                 <property name="command" type="command" cbtype="with_wid">Channel_Mode_Changed_CB</property>
-                <property name="font">{Arial} 36 {}</property>
+                <property name="font">{Arial} 24 {}</property>
                 <property name="label" translatable="yes">CWL</property>
               </object>
             </child>
             <child>
               <object class="tk.Menuitem.Command" id="CWU" named="True">
                 <property name="command" type="command" cbtype="with_wid">Channel_Mode_Changed_CB</property>
-                <property name="font">{Arial} 36 {}</property>
+                <property name="font">{Arial} 24 {}</property>
                 <property name="label" translatable="yes">CWU</property>
               </object>
             </child>
@@ -177,14 +177,14 @@
             <child>
               <object class="tk.Menuitem.Command" id="Yes" named="True">
                 <property name="command" type="command" cbtype="with_wid">Channel_ShowLabel_Changed_CB</property>
-                <property name="font">{Arial} 36 {}</property>
+                <property name="font">{Arial} 24 {}</property>
                 <property name="label" translatable="yes">Yes</property>
               </object>
             </child>
             <child>
               <object class="tk.Menuitem.Command" id="No" named="True">
                 <property name="command" type="command" cbtype="with_wid">Channel_ShowLabel_Changed_CB</property>
-                <property name="font">{Arial} 36 {}</property>
+                <property name="font">{Arial} 24 {}</property>
                 <property name="label" translatable="yes">No</property>
               </object>
             </child>
@@ -209,35 +209,35 @@
             <child>
               <object class="tk.Menuitem.Command" id="None_Command" named="True">
                 <property name="command" type="command" cbtype="with_wid">Channel_ScanSet_Changed_CB</property>
-                <property name="font">{Arial} 36 {}</property>
+                <property name="font">{Arial} 24 {}</property>
                 <property name="label" translatable="yes">None</property>
               </object>
             </child>
             <child>
               <object class="tk.Menuitem.Command" id="Scan1_Command" named="True">
                 <property name="command" type="command" cbtype="with_wid">Channel_ScanSet_Changed_CB</property>
-                <property name="font">{Arial} 36 {}</property>
+                <property name="font">{Arial} 24 {}</property>
                 <property name="label" translatable="yes">Scan1</property>
               </object>
             </child>
             <child>
               <object class="tk.Menuitem.Command" id="Scan2_Command" named="True">
                 <property name="command" type="command" cbtype="with_wid">Channel_ScanSet_Changed_CB</property>
-                <property name="font">{Arial} 36 {}</property>
+                <property name="font">{Arial} 24 {}</property>
                 <property name="label" translatable="yes">Scan2</property>
               </object>
             </child>
             <child>
               <object class="tk.Menuitem.Command" id="Scan3_Command" named="True">
                 <property name="command" type="command" cbtype="with_wid">Channel_ScanSet_Changed_CB</property>
-                <property name="font">{Arial} 36 {}</property>
+                <property name="font">{Arial} 24 {}</property>
                 <property name="label" translatable="yes">Scan3</property>
               </object>
             </child>
             <child>
               <object class="tk.Menuitem.Command" id="Scan4_Command" named="True">
                 <property name="command" type="command" cbtype="with_wid">Channel_ScanSet_Changed_CB</property>
-                <property name="font">{Arial} 36 {}</property>
+                <property name="font">{Arial} 24 {}</property>
                 <property name="label" translatable="yes">Scan4</property>
               </object>
             </child>

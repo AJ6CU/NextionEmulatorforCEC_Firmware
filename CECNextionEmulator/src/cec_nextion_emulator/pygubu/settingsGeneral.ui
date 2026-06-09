@@ -77,7 +77,7 @@
                     <child>
                       <object class="tk.Menuitem.Command" id="selectComma_Command" named="True">
                         <property name="command" type="command" cbtype="simple">selectCommaDelimiter_CB</property>
-                        <property name="font">{Arial} 36 {}</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">  ,  </property>
                         <property name="state">normal</property>
                       </object>
@@ -85,7 +85,7 @@
                     <child>
                       <object class="tk.Menuitem.Command" id="selectPeriod_Command" named="True">
                         <property name="command" type="command" cbtype="simple">selectPeriodDelimiter_CB</property>
-                        <property name="font">{Arial} 36 {}</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">  .  </property>
                         <property name="state">normal</property>
                       </object>
@@ -112,7 +112,7 @@
                     <child>
                       <object class="tk.Menuitem.Command" id="selectVirtualKeyboardOn_Command" named="True">
                         <property name="command" type="command" cbtype="simple">selectVirtualKeyboardOn_CB</property>
-                        <property name="font">{Arial} 36 {}</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">True </property>
                         <property name="state">normal</property>
                       </object>
@@ -120,7 +120,7 @@
                     <child>
                       <object class="tk.Menuitem.Command" id="selectVirtualKeyboardOff_Command" named="True">
                         <property name="command" type="command" cbtype="simple">selectVirtualKeyboardOff_CB</property>
-                        <property name="font">{Arial} 36 {}</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">False</property>
                         <property name="state">normal</property>
                       </object>
@@ -175,7 +175,7 @@
                     <child>
                       <object class="tk.Menuitem.Command" id="selectVFO_TouchOn_Command" named="True">
                         <property name="command" type="command" cbtype="simple">selectVFO_TouchOn_CB</property>
-                        <property name="font">{Arial} 36 {}</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">True </property>
                         <property name="state">normal</property>
                       </object>
@@ -183,7 +183,7 @@
                     <child>
                       <object class="tk.Menuitem.Command" id="selectVFO_TouchOff_Command" named="True">
                         <property name="command" type="command" cbtype="simple">selectVFO_TouchOff_CB</property>
-                        <property name="font">{Arial} 36 {}</property>
+                        <property name="font">{Arial} 24 {}</property>
                         <property name="label" translatable="yes">False</property>
                         <property name="state">normal</property>
                       </object>
