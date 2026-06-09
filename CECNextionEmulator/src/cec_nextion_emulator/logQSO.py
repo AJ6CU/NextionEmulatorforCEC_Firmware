@@ -11,6 +11,8 @@ import tkinter.ttk as ttk
 import logQSOui as baseui
 import globalvars as gv
 from datetime import datetime, UTC
+from QSOLogger import QSOLogger
+import os
 
 
 #
@@ -99,6 +101,20 @@ class logQSO(baseui.logQSOUI):
 
     def selectMode_CB(self, itemid):
         self.commType_VAR.set(itemid)
+
+    def logQSO_CB(self):
+        qso={}
+        qso['call'] = self.callSign_VAR.get()
+        qso['mode'] = self.commType_VAR.get()
+        qso['qso_date'] = self.utcDate_VAR.get().replace("-","")
+        qso['time_on'] = self.utcTime_VAR.get().replace(":","") + "00"
+        qso['freq'] = self.frequency_VAR.get()
+        qso['band'] = self.bandName_VAR.get()
+        qso['rst_sent'] = self.sentRST_VAR.get()
+        qso['rst_rcvd'] = self.rcvdRST_VAR.get()
+
+        'call', 'mode', 'qso_date', 'time_on', 'freq', 'rst_sent', 'rst_rcvd'
+        self.mainWindow.QSOLogger_Object.append_qso(qso)
 
     def cancel_CB(self):
         self.popup.destroy()

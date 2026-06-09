@@ -42,6 +42,30 @@ class QSOLogger:
 
         print(f"Logger target updated. Current output destination: '{self.filename}'")
 
+    def change_format(self, new_format):
+        """
+        Changes the output file extension on the fly while retaining
+        the underlying base filename.
+
+        :param new_format: String ('csv', 'adi', or 'adif')
+        """
+        # Validate input format string
+        clean_format = str(new_format).lower().strip()
+        if clean_format not in ['csv', 'adi', 'adif']:
+            self._show_gui_error(
+                "Invalid Format Selection",
+                f"'{new_format}' is not supported. Choose 'csv' or 'adif'."
+            )
+            return False
+
+        # Extract the current raw base name without its existing extension
+        current_base = os.path.splitext(self.filename)[0]
+
+        # Apply the new format preference and recalculate attributes
+        self.format_preference = clean_format
+        self.set_filename(current_base)
+        return True
+
     def _show_gui_error(self, title, error_message):
         """Displays a graphical error modal using Tkinter."""
         messagebox.showerror(title, error_message)
@@ -144,15 +168,16 @@ class QSOLogger:
     def append_qso(self, qso):
         """Validates, deduplicates, and saves a single QSO record down to disk."""
         try:
-            required_keys = ['call', 'mode', 'qso_date', 'time_on', 'freq', 'rst_sent', 'rst_rcvd']
+            required_keys = ['call', 'mode', 'qso_date', 'time_on', 'freq', 'rst_sent', 'rst_rcvd', 'band']
             missing_fields = [field for field in required_keys if field not in qso]
             if missing_fields:
                 raise ValueError(f"Missing required fields: {missing_fields}")
 
-            calculated_band = self._calculate_band_from_freq(qso['freq'])
-            band = str(qso.get('band', calculated_band)).lower().strip()
-            if band in ["unknown", "custom"]:
-                band = calculated_band
+            # calculated_band = self._calculate_band_from_freq(qso['freq'])
+            # band = str(qso.get('band', calculated_band)).lower().strip()
+            # if band in ["unknown", "custom"]:
+            #     band = calculated_band
+            band = qso['band'].lower().strip()
 
             call = str(qso['call']).upper().strip()
             qso_date = str(qso['qso_date']).strip()

@@ -14,6 +14,7 @@ from logQSO import logQSO
 
 from barPlotter import barPlotterBdata
 from cwLogger import cwLogger
+from QSOLogger import QSOLogger
 from Classic_uBITX_Control import Classic_uBITX_Control
 
 import mystyles  # Styles definition module
@@ -57,6 +58,7 @@ class mainScreen(baseui.mainScreenUI):
                                         # are active
         self.mainScreenPlotter = None   # Plot object for main window
         self.mainScreenCW_logger = None # CW display for the main window
+        self.QSOLogger_Object = None    # points to the object for the QSO logger
 
         self.frequencyDecodeScale = None
         self.frequencySigValue = None

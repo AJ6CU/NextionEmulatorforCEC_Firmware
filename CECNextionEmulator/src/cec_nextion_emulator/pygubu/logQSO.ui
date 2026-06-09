@@ -413,7 +413,7 @@
                     <property name="style">Entry2b.TEntry</property>
                     <property name="text" translatable="yes">599</property>
                     <property name="textvariable">string:sentRST_VAR</property>
-                    <property name="width">4</property>
+                    <property name="width">8</property>
                     <layout manager="grid">
                       <property name="column">0</property>
                       <property name="padx">0 20</property>
@@ -428,7 +428,7 @@
                     <property name="style">Entry2b.TEntry</property>
                     <property name="text" translatable="yes">599</property>
                     <property name="textvariable">string:rcvdRST_VAR</property>
-                    <property name="width">4</property>
+                    <property name="width">8</property>
                     <layout manager="grid">
                       <property name="column">1</property>
                       <property name="row">1</property>

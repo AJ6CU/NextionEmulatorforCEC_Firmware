@@ -10,6 +10,8 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import settingsLogbookui as baseui
 import globalvars as gv
+from QSOLogger import QSOLogger
+import os
 
 
 #
@@ -37,9 +39,17 @@ class settingsLogbook(baseui.settingsLogbookUI):
         self.popup.title("Logbook Settings")
 
         self.logbookSwitch_VAR.set(gv.config.get_logbook_Switch())
+        self.logbookSwitchSave = gv.config.get_logbook_Switch()
+
         self.logbookType_VAR.set(gv.config.get_logbook_Type())
+        self.logbookTypeSave = gv.config.get_logbook_Type()
+
         self.logbookName_VAR.set(gv.config.get_logbook_Name())
+        self.logbookNameSave = gv.config.get_logbook_Name()
+
         self.logbookLocation_Text.insert("1.0",gv.config.get_logbook_Location())
+        self.logbookLocationSave = gv.config.get_logbook_Location()
+
         self.logbookLocation_Text.configure(state="disabled")
 
         if self.logbookSwitch_VAR.get() == "False":
@@ -70,11 +80,11 @@ class settingsLogbook(baseui.settingsLogbookUI):
 
 
     def selectLogbookType_CSV_CB(self):
-        self.logbookType_VAR.set("CSV")
+        self.logbookType_VAR.set("csv")
 
 
     def selectLogbookType_ADI_CB(self):
-        self.logbookType_VAR.set("ADI")
+        self.logbookType_VAR.set("adi")
 
 
     def newLogbookLocation_CB(self, event=None):
@@ -86,10 +96,40 @@ class settingsLogbook(baseui.settingsLogbookUI):
 
 
     def apply_CB(self):
-        gv.config.set_logbook_Switch(self.logbookSwitch_VAR.get())
-        gv.config.set_logbook_Type(self.logbookType_VAR.get())
-        gv.config.set_logbook_Name(self.logbookName_VAR.get())
-        gv.config.set_logbook_Location(self.logbookLocation_Text.get("1.0", "end-1c"))
+
+        newType = False
+        newName = False
+
+        if self.logbookSwitchSave != self.logbookSwitch_VAR.get():
+            gv.config.set_logbook_Switch(self.logbookSwitch_VAR.get())
+
+        if self.logbookTypeSave != self.logbookType_VAR.get():
+            gv.config.set_logbook_Type(self.logbookType_VAR.get())
+            newType = True
+
+        if self.logbookNameSave != self.logbookName_VAR.get():
+            gv.config.set_logbook_Name(self.logbookName_VAR.get())
+            newName = True
+
+        if self.logbookLocationSave != self.logbookLocation_Text.get("1.0", "end-1c"):
+            gv.config.set_logbook_Location(self.logbookLocation_Text.get("1.0", "end-1c"))
+            newName = True
+
+        if (self.logbookSwitch_VAR.get() == "False"):
+            if (self.mainWindow.QSOLogger_Object != None):  # If turnoff logger, destroy the object
+                self.mainWindow.QSOLogger_Object = None
+
+        else:
+            theLogbook = os.path.expanduser(os.path.join(gv.config.get_logbook_Location(), self.logbookName_VAR.get()))
+
+            if self.mainWindow.QSOLogger_Object == None:           # Create new object
+                self.mainWindow.QSOLogger_Object = QSOLogger(self.logbookType_VAR.get(), theLogbook)
+            else:
+                if newType:
+                    self.mainWindow.QSOLogger_Object.change_format(self.logbookType_VAR.get())
+                if newName:
+                    self.mainWindow.QSOLogger_Object.set_filename(theLogbook)
+
         self.popup.destroy()
 
     def cancel_CB(self):

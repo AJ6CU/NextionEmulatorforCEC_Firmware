@@ -301,7 +301,7 @@ class logQSOUI(ttk.Labelframe):
             justify="center",
             style="Entry2b.TEntry",
             textvariable=self.sentRST_VAR,
-            width=4)
+            width=8)
         _text_ = '599'
         self.rstSend_Entry.delete("0", "end")
         self.rstSend_Entry.insert("0", _text_)
@@ -314,7 +314,7 @@ class logQSOUI(ttk.Labelframe):
             justify="center",
             style="Entry2b.TEntry",
             textvariable=self.rcvdRST_VAR,
-            width=4)
+            width=8)
         _text_ = '599'
         self.rstRcvd_Entry.delete("0", "end")
         self.rstRcvd_Entry.insert("0", _text_)

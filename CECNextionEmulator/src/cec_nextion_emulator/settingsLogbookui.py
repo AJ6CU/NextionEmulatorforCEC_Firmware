@@ -121,13 +121,13 @@ class settingsLogbookUI(ttk.Labelframe):
             "command",
             command=self.selectLogbookType_CSV_CB,
             font="{Arial} 24 {}",
-            label='CSV',
+            label='csv',
             state="normal")
         self.logbookType_Menu.add(
             "command",
             command=self.selectLogbookType_ADI_CB,
             font="{Arial} 24 {}",
-            label='ADI',
+            label='adi',
             state="normal")
         self.logbookType_Menubutton.configure(menu=self.logbookType_Menu)
         self.logbookType_Menubutton.grid(
