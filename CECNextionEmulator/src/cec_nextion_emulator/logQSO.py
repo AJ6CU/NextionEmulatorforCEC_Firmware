@@ -127,24 +127,24 @@ class logQSO(baseui.logQSOUI):
             self.vKeyboard = VirtualKeyboard(self, self.callSign_VAR, self.callSign_Vkeyboard_Validate, 12)
 
 
-    def callSign_Validate_CB(self, p_entry_value, v_condition):
-        if len(p_entry_value) > 12 or len(p_entry_value) == 0:
+    def callsign_Validate_CB(self, p_entry_value, v_condition):
+        if 0 < len(p_entry_value) <= 12 :
             return True
         else:
             return False
 
-    def callSign_Vkeyboard_Validate(self):
-        if len(self.callSign_VAR.get()) > 12 or len(self.callSign_VAR.get()) == 0:
+    def callsign_Vkeyboard_Validate(self):
+        if len(self.callsign_VAR.get()) > 12 or len(self.callsign_VAR.get()) == 0:
             messagebox.showinfo("Error - Invalid Callsign",
-                                "Callsign is empty or exceeds 12 characters. Input ignored resetting to prior value", parent=self)
-            self.callSign_VAR.set(self.callsign_save)
+                                "callsign is empty or exceeds 12 characters. Input ignored resetting to prior value", parent=self)
+            self.callsign_VAR.set(self.callsign_save)
 
-    def callSign_Invalid_CB(self, p_entry_value, v_condition):
+    def callsign_Invalid_CB(self, p_entry_value, v_condition):
 
         messagebox.showinfo("Error - Invalid Callsign",
                             "Callsign is empty or exceeds 12 characters. Input ignored resetting to prior value",
                             parent=self)
-        self.callSign_VAR.set(self.callsign_save)
+        self.callsign_VAR.set(self.callsign_save)
 
 
 
@@ -161,7 +161,7 @@ class logQSO(baseui.logQSOUI):
             return False
 
     def frequency_Vkeyboard_Validate(self):
-        if int(gv.unformatFrequency(self.frequency_VAR.get()) > round(gv.FREQ_BOUNDS['HIGH']/1000):
+        if int(gv.unformatFrequency(self.frequency_VAR.get())) > round(gv.FREQ_BOUNDS['HIGH']/1000):
             messagebox.showinfo("Error - Frequency is invalid",
                                 "Entered frequency exceeds 60mHZ. Resetting to prior value",
                                 parent=self)
@@ -182,6 +182,8 @@ class logQSO(baseui.logQSOUI):
 
     def utcDateYYYY_Validate_CB(self, p_entry_value, v_condition):
         if gv.validateNumber(int(p_entry_value), 2026, 2050):
+            print(p_entry_value, self.utcDateYYYY_VAR.get())
+            # self.after_idle(lambda: self.updateLocalDateTime())
             self.updateLocalDateTime()
             return True
         else:
@@ -222,9 +224,15 @@ class logQSO(baseui.logQSOUI):
         if gv.validateNumber(int(self.utcDateMM_VAR.get()), 1, 12):
             self.updateLocalDateTime()
         else:
+            messagebox.showinfo("Error - Illegal Month",
+                                "Entered month not in the range of 1-12. Resetting to prior value",
+                                parent=self)
             self.utcDateMM_VAR.set(self.utcDateMM_save)
 
     def utcDateMM_Invalid_CB(self, p_entry_value, v_condition):
+        messagebox.showinfo("Error - Illegal Month",
+                            "Entered month not in the range of 1-12. Resetting to prior value",
+                            parent=self)
         self.utcDateMM_VAR.set(self.utcDateMM_save)
 
 
@@ -247,9 +255,15 @@ class logQSO(baseui.logQSOUI):
         if self.is_valid_day(self.utcDateYYYY_VAR.get(), self.utcDateMM_VAR.get(), p_entry_value):
             self.updateLocalDateTime()
         else:
+            messagebox.showinfo("Error - Illegal Day",
+                                "Entered day is not valid for Year and Month. Resetting to prior value",
+                                parent=self)
             self.utcDateDD_VAR.set(self.utcDateDD_save)
 
     def utcDateDD_Invalid_CB(self, p_entry_value, v_condition):
+        messagebox.showinfo("Error - Illegal Day",
+                            "Entered day is not valid for Year and Month. Resetting to prior value",
+                            parent=self)
         self.utcDateDD_VAR.set(self.utcDateDD_save)
 
 
@@ -276,7 +290,7 @@ class logQSO(baseui.logQSOUI):
         return 1 <= iday <= max_days
 
     def updateLocalDateTime(self):
-
+        print("in update", self.utcDateYYYY_VAR.get())
         utc_string = (self.utcDateYYYY_VAR.get() + "-" + self.utcDateMM_VAR.get() + "-" + self.utcDateDD_VAR.get() +
                       "T" + self.utcTimeHH_VAR.get() +":" + self.utcTimeMM_VAR.get() +":00Z")
 
@@ -284,13 +298,8 @@ class logQSO(baseui.logQSOUI):
         # Convert to local time zone
         local_obj = utc_obj.astimezone()
 
-
-        self.utcDateYYYY_VAR.set(local_obj.strftime("%Y"))
-        self.utcDateMM_VAR.set(local_obj.strftime("%m"))
-        self.utcDateDD_VAR.set(local_obj.strftime("%d"))
-
-        self.utcTimeHH_VAR.set(local_obj.strftime("%H"))
-        self.utcTimeMM_VAR.set(local_obj.strftime("%M"))
+        self.localDate_VAR.set(local_obj.strftime("%Y-%m-%d"))
+        self.localTime_VAR.set(local_obj.strftime("%H:%M"))
 
 
     def utcTimeHH_Entered_CB(self, event=None):
@@ -307,12 +316,18 @@ class logQSO(baseui.logQSOUI):
             return False
 
     def utcTimeHH_Vkeyboard_Validate(self):
-        if gv.validateNumber(int(self.utcTimeHH_VAR.get()), 0, 24):
+        if gv.validateNumber(int(self.utcTimeHH_VAR.get()), 0, 23):
             self.updateLocalDateTime()
         else:
+            messagebox.showinfo("Error - Illegal Time",
+                                "Entered hour is not in range 0-23. Resetting to prior value",
+                                parent=self)
             self.utcTimeHH_VAR.set(self.utcTimeHH_save)
 
     def utcTimeHH_Invalid_CB(self, p_entry_value, v_condition):
+        messagebox.showinfo("Error - Illegal Time",
+                            "Entered hour is not in range 0-23. Resetting to prior value",
+                            parent=self)
         self.utcTimeHH_VAR.set(self.utcTimeHH_save)
 
 
@@ -333,12 +348,19 @@ class logQSO(baseui.logQSOUI):
 
 
     def utcTimeMM_Vkeyboard_Validate(self):
-        if gv.validateNumber(int(self.utcTimeMM_VAR.get()), 0, 60):
+        if gv.validateNumber(int(self.utcTimeMM_VAR.get()), 0, 59):
+            print("in minutes updating time", self.utcTimeMM_VAR.get())
             self.updateLocalDateTime()
         else:
+            messagebox.showinfo("Error - Illegal Time",
+                                "Entered minutes is not in range 0-59. Resetting to prior value",
+                                parent=self)
             self.utcTimeMM_VAR.set(self.utcTimeMM_save)
 
     def utcTimeMM_Invalid_CB(self, p_entry_value, v_condition):
+        messagebox.showinfo("Error - Illegal Time",
+                            "Entered minutes is not in range 0-59. Resetting to prior value",
+                            parent=self)
         self.utcTimeMM_VAR.set(self.utcTimeMM_save)
 
 
@@ -346,46 +368,67 @@ class logQSO(baseui.logQSOUI):
 
 
     def rstSend_Entered_CB(self, event=None):
+        self.rstSend_save = self.sendRST_VAR.get()
         if gv.config.get_Virtual_Keyboard_Switch() == "True":
             self.vKeyboard = VirtualKeyboard(self, self.sentRST_VAR, self.rstSend_Vkeyboard_Validate, 8)
 
-    def sentRST_Validate_CB(self, p_entry_value, v_condition):
-        pass
+    def rstSend_Validate_CB(self, p_entry_value, v_condition):
+        if 0 < len(p_entry_value) <= 8:
+            return True
+        else:
+            return False
 
     def rstSend_Vkeyboard_Validate(self):
-        pass
+        if len(self.rstSend_VAR.get()) > 12 or len(self.rstSend_VAR.get()) == 0:
+            messagebox.showinfo("Error - RST Sent",
+                                "Entered RST Sent has length of either 0 or more than 8 characters. Resetting to prior value",
+                                parent=self)
+            self.rstSend_VAR.set(self.rstSend_save)
 
-    def sentRST_Invalid_CB(self, p_entry_value, v_condition):
-        pass
+    def rstSend_Invalid_CB(self, p_entry_value, v_condition):
+        messagebox.showinfo("Error - RST Sent",
+                            "Entered RST Sent has length of either 0 or more than 8 characters. Resetting to prior value",
+                            parent=self)
+        self.sendRST_VAR.set(self.rstSend_save)
 
 
 
-    def rstRcvd_Entered_CB(self, event=None):
+    def rstReceived_Entered_CB(self, event=None):
+        self.rstReceived_save = self.rstReceived_VAR.get()
         if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vKeyboard = VirtualKeyboard(self, self.rcvdRST_VAR, self.rcvdRST_Vkeyboard_Validate, 8)
+            self.vKeyboard = VirtualKeyboard(self, self.rstReceived_VAR, self.rstReceived_Vkeyboard_Validate, 8)
 
-    def rcvdRST_Validate_CB(self, p_entry_value, v_condition):
-        pass
+    def rstReceived_Validate_CB(self, p_entry_value, v_condition):
+        if 0 < len(p_entry_value) <= 8:
+            return True
+        else:
+            return False
 
-    def rcvdRST_Vkeyboard_Validate(self):
-        pass
+    def rstReceived_Vkeyboard_Validate(self):
+        messagebox.showinfo("Error - RST Received",
+                            "Entered RST Received has length of either 0 or more than 8 characters. Resetting to prior value",
+                            parent=self)
+        self.rstReceived_VAR.set(self.rstReceived_save)
 
-    def rcvdRST_Invalid_CB(self, p_entry_value, v_condition):
-        pass
+    def rstReceived_Invalid_CB(self, p_entry_value, v_condition):
+        messagebox.showinfo("Error - RST Received",
+                            "Entered RST Received has length of either 0 or more than 8 characters. Resetting to prior value",
+                            parent=self)
+        self.rstReceived_VAR.set(self.rstReceived_save)
 
 
 
 
     def logQSO_CB(self):
         qso={}
-        qso['call'] = self.callSign_VAR.get()
+        qso['call'] = self.callsign_VAR.get()
         qso['mode'] = self.commType_VAR.get()
         qso['qso_date'] = self.utcDateYYYY_VAR.get()+self.utcDateMM_VAR.get()+self.utcDateDD_VAR.get()
         qso['time_on'] = self.utcTimeHH_VAR.get()+self.utcTimeMM_VAR.get()
         qso['freq'] = self.frequency_VAR.get()
         qso['band'] = self.bandName_VAR.get()
-        qso['rst_sent'] = self.sentRST_VAR.get()
-        qso['rst_rcvd'] = self.rcvdRST_VAR.get()
+        qso['rst_sent'] = self.rstSend_VAR_VAR.get()
+        qso['rst_rcvd'] = self.rstReceived_VAR.get()
 
         'call', 'mode', 'qso_date', 'time_on', 'freq', 'rst_sent', 'rst_rcvd'
         self.mainWindow.QSOLogger_Object.append_qso(qso)

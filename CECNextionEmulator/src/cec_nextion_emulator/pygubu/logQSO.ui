@@ -79,11 +79,11 @@
                 <child>
                   <object class="ttk.Entry" id="callsign_Entry" named="True">
                     <property name="font">{Arial} 20 {}</property>
-                    <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">callSign_Invalid_CB</property>
+                    <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">callsign_Invalid_CB</property>
                     <property name="style">Entry2b.TEntry</property>
-                    <property name="textvariable">string:callSign_VAR</property>
+                    <property name="textvariable">string:callsign_VAR</property>
                     <property name="validate">focusout</property>
-                    <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">callSign_Validate_CB</property>
+                    <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">callsign_Validate_CB</property>
                     <property name="width">12</property>
                     <bind sequence="&lt;Button&gt;" handler="callsign_Entered_CB" add="True" />
                     <layout manager="pack" />
@@ -462,6 +462,7 @@
                         <property name="style">Entry2b.TEntry</property>
                         <property name="text" translatable="yes">12</property>
                         <property name="textvariable">string:utcTimeMM_VAR</property>
+                        <property name="validate">focusout</property>
                         <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">utcTimeMM_Validate_CB</property>
                         <property name="width">2</property>
                         <bind sequence="&lt;Button&gt;" handler="utcTimeMM_Entered_CB" add="True" />
@@ -654,9 +655,9 @@
                     <property name="justify">center</property>
                     <property name="style">Entry2b.TEntry</property>
                     <property name="text" translatable="yes">599</property>
-                    <property name="textvariable">string:sentRST_VAR</property>
+                    <property name="textvariable">string:rstSend_VAR</property>
                     <property name="validate">focusout</property>
-                    <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">sentRST_Validate_CB</property>
+                    <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">rstSend_Validate_CB</property>
                     <property name="width">8</property>
                     <bind sequence="&lt;Button&gt;" handler="rstSend_Entered_CB" add="True" />
                     <layout manager="grid">
@@ -669,15 +670,15 @@
                 <child>
                   <object class="ttk.Entry" id="rstRcvd_Entry" named="True">
                     <property name="font">{Arial} 20 {}</property>
-                    <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">rcvdRST_Invalid_CB</property>
+                    <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">rstReceived_Invalid_CB</property>
                     <property name="justify">center</property>
                     <property name="style">Entry2b.TEntry</property>
                     <property name="text" translatable="yes">599</property>
-                    <property name="textvariable">string:rcvdRST_VAR</property>
+                    <property name="textvariable">string:rstReceived_VAR</property>
                     <property name="validate">focusout</property>
-                    <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">rcvdRST_Validate_CB</property>
+                    <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">rstReceived_Validate_CB</property>
                     <property name="width">8</property>
-                    <bind sequence="&lt;Button&gt;" handler="rstRcvd_Entered_CB" add="True" />
+                    <bind sequence="&lt;Button&gt;" handler="rstReceived_Entered_CB" add="True" />
                     <layout manager="grid">
                       <property name="column">1</property>
                       <property name="row">1</property>

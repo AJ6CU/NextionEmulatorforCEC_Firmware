@@ -78,21 +78,21 @@ class logQSOUI(ttk.Labelframe):
         self.callsign_Label.pack(pady="0 5")
         self.callsign_Entry = ttk.Entry(
             self.callsign_Frame, name="callsign_entry")
-        self.callSign_VAR = tk.StringVar()
+        self.callsign_VAR = tk.StringVar()
         self.callsign_Entry.configure(
             font="{Arial} 20 {}",
             style="Entry2b.TEntry",
-            textvariable=self.callSign_VAR,
+            textvariable=self.callsign_VAR,
             validate="focusout",
             width=12)
         self.callsign_Entry.pack()
         _validatecmd = (
             self.callsign_Entry.register(
-                self.callSign_Validate_CB), "%P", "%V")
+                self.callsign_Validate_CB), "%P", "%V")
         self.callsign_Entry.configure(validatecommand=_validatecmd)
         _validatecmd = (
             self.callsign_Entry.register(
-                self.callSign_Invalid_CB), "%P", "%V")
+                self.callsign_Invalid_CB), "%P", "%V")
         self.callsign_Entry.configure(invalidcommand=_validatecmd)
         self.callsign_Entry.bind("<Button>", self.callsign_Entered_CB, add="+")
         self.callsign_Frame.grid(column=0, padx=10, pady="10 30", row=0)
@@ -387,6 +387,7 @@ class logQSOUI(ttk.Labelframe):
             justify="center",
             style="Entry2b.TEntry",
             textvariable=self.utcTimeMM_VAR,
+            validate="focusout",
             width=2)
         _text_ = '12'
         self.entry5.delete("0", "end")
@@ -487,12 +488,12 @@ class logQSOUI(ttk.Labelframe):
         self.rstRcvd_Label.grid(column=1, pady="0 5", row=0)
         self.rstSend_Entry = ttk.Entry(
             self.signalReport_Frame, name="rstsend_entry")
-        self.sentRST_VAR = tk.StringVar(value='599')
+        self.rstSend_VAR = tk.StringVar(value='599')
         self.rstSend_Entry.configure(
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
-            textvariable=self.sentRST_VAR,
+            textvariable=self.rstSend_VAR,
             validate="focusout",
             width=8)
         _text_ = '599'
@@ -501,7 +502,7 @@ class logQSOUI(ttk.Labelframe):
         self.rstSend_Entry.grid(column=0, padx="0 20", row=1)
         _validatecmd = (
             self.rstSend_Entry.register(
-                self.sentRST_Validate_CB), "%P", "%V")
+                self.rstSend_Validate_CB), "%P", "%V")
         self.rstSend_Entry.configure(validatecommand=_validatecmd)
         _validatecmd = (
             self.rstSend_Entry.register(
@@ -510,27 +511,28 @@ class logQSOUI(ttk.Labelframe):
         self.rstSend_Entry.bind("<Button>", self.rstSend_Entered_CB, add="+")
         self.rstRcvd_Entry = ttk.Entry(
             self.signalReport_Frame, name="rstrcvd_entry")
-        self.rcvdRST_VAR = tk.StringVar(value='599')
+        self.rstReceived_VAR = tk.StringVar(value='599')
         self.rstRcvd_Entry.configure(
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
-            textvariable=self.rcvdRST_VAR,
+            textvariable=self.rstReceived_VAR,
             validate="focusout",
             width=8)
         _text_ = '599'
         self.rstRcvd_Entry.delete("0", "end")
         self.rstRcvd_Entry.insert("0", _text_)
         self.rstRcvd_Entry.grid(column=1, row=1)
-        _validatecmd = (
-            self.rstRcvd_Entry.register(
-                self.rcvdRST_Validate_CB), "%P", "%V")
+        _validatecmd = (self.rstRcvd_Entry.register(
+            self.rstReceived_Validate_CB), "%P", "%V")
         self.rstRcvd_Entry.configure(validatecommand=_validatecmd)
-        _validatecmd = (
-            self.rstRcvd_Entry.register(
-                self.rcvdRST_Invalid_CB), "%P", "%V")
+        _validatecmd = (self.rstRcvd_Entry.register(
+            self.rstReceived_Invalid_CB), "%P", "%V")
         self.rstRcvd_Entry.configure(invalidcommand=_validatecmd)
-        self.rstRcvd_Entry.bind("<Button>", self.rstRcvd_Entered_CB, add="+")
+        self.rstRcvd_Entry.bind(
+            "<Button>",
+            self.rstReceived_Entered_CB,
+            add="+")
         self.signalReport_Frame.grid(column=0, padx=10, pady="0 30", row=11)
         self.logData_Frame.pack(padx=20, side="top")
         self.closingFrame = ttk.Frame(self, name="closingframe")
@@ -560,10 +562,10 @@ class logQSOUI(ttk.Labelframe):
             width=200)
         # Layout for 'logQSO_Labelframe' skipped in custom widget template.
 
-    def callSign_Validate_CB(self, p_entry_value, v_condition):
+    def callsign_Validate_CB(self, p_entry_value, v_condition):
         pass
 
-    def callSign_Invalid_CB(self, p_entry_value, v_condition):
+    def callsign_Invalid_CB(self, p_entry_value, v_condition):
         pass
 
     def callsign_Entered_CB(self, event=None):
@@ -608,19 +610,13 @@ class logQSOUI(ttk.Labelframe):
     def utcDateDD_Entered_CB(self, event=None):
         pass
 
-
-
-    def utcTimeHH_Entered_CB(self, event=None):
-        pass
-
     def utcTimeHH_Validate_CB(self, p_entry_value, v_condition):
         pass
 
     def utcTimeHH_Invalid_CB(self, p_entry_value, v_condition):
         pass
 
-
-    def utcTimeMM_Entered_CB(self, event=None):
+    def utcTimeHH_Entered_CB(self, event=None):
         pass
 
     def utcTimeMM_Validate_CB(self, p_entry_value, v_condition):
@@ -629,28 +625,26 @@ class logQSOUI(ttk.Labelframe):
     def utcTimeMM_Invalid_CB(self, p_entry_value, v_condition):
         pass
 
-
-
-    def rstSend_Entered_CB(self, event=None):
+    def utcTimeMM_Entered_CB(self, event=None):
         pass
 
-    def sentRST_Validate_CB(self, p_entry_value, v_condition):
+    def rstSend_Validate_CB(self, p_entry_value, v_condition):
         pass
 
     def sentRST_Invalid_CB(self, p_entry_value, v_condition):
         pass
 
-
-    def rstRcvd_Entered_CB(self, event=None):
+    def rstSend_Entered_CB(self, event=None):
         pass
 
-    def rcvdRST_Validate_CB(self, p_entry_value, v_condition):
+    def rstReceived_Validate_CB(self, p_entry_value, v_condition):
         pass
 
-    def rcvdRST_Invalid_CB(self, p_entry_value, v_condition):
+    def rstReceived_Invalid_CB(self, p_entry_value, v_condition):
         pass
 
-
+    def rstReceived_Entered_CB(self, event=None):
+        pass
 
     def logQSO_CB(self):
         pass
