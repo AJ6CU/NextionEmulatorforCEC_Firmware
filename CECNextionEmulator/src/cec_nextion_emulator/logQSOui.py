@@ -90,6 +90,10 @@ class logQSOUI(ttk.Labelframe):
             self.callsign_Entry.register(
                 self.callSign_Validate_CB), "%P", "%V")
         self.callsign_Entry.configure(validatecommand=_validatecmd)
+        _validatecmd = (
+            self.callsign_Entry.register(
+                self.callSign_Invalid_CB), "%P", "%V")
+        self.callsign_Entry.configure(invalidcommand=_validatecmd)
         self.callsign_Entry.bind("<Button>", self.callsign_Entered_CB, add="+")
         self.callsign_Frame.grid(column=0, padx=10, pady="10 30", row=0)
         self.freq_Frame = ttk.Frame(self.logData_Frame, name="freq_frame")
@@ -144,6 +148,10 @@ class logQSOUI(ttk.Labelframe):
             self.frequency_entry.register(
                 self.frequency_Validate_CB), "%P", "%V")
         self.frequency_entry.configure(validatecommand=_validatecmd)
+        _validatecmd = (
+            self.frequency_entry.register(
+                self.frequency_Invalid_CB), "%P", "%V")
+        self.frequency_entry.configure(invalidcommand=_validatecmd)
         self.frequency_entry.bind(
             "<Button>", self.frequency_Entered_CB, add="+")
         self.frequency_ext = ttk.Label(self.freq_Frame, name="frequency_ext")
@@ -278,6 +286,9 @@ class logQSOUI(ttk.Labelframe):
         _validatecmd = (self.utcYYYY_Entry.register(
             self.utcDateYYYY_Validate_CB), "%P", "%V")
         self.utcYYYY_Entry.configure(validatecommand=_validatecmd)
+        _validatecmd = (self.utcYYYY_Entry.register(
+            self.utcDateYYYY_Invalid_CB), "%P", "%V")
+        self.utcYYYY_Entry.configure(invalidcommand=_validatecmd)
         self.utcYYYY_Entry.bind(
             "<Button>",
             self.utcDateYYYY_Entered_CB,
@@ -304,6 +315,12 @@ class logQSOUI(ttk.Labelframe):
             "%P",
             "%V")
         self.utcMM_Entry.configure(validatecommand=_validatecmd)
+        _validatecmd = (
+            self.utcMM_Entry.register(
+                self.utcDateMM_Invalid_CB),
+            "%P",
+            "%V")
+        self.utcMM_Entry.configure(invalidcommand=_validatecmd)
         self.utcMM_Entry.bind("<Button>", self.utcDateMM_Entered_CB, add="+")
         self.slash2_Label = ttk.Label(self.utcDate_Frame, name="slash2_label")
         self.slash2_Label.configure(style="Heading1b.TLabel", text='-')
@@ -324,6 +341,9 @@ class logQSOUI(ttk.Labelframe):
         _validatecmd = (self.utc_DD_Entry.register(
             self.utcDateDD_Validate_CB), "%P", "%V")
         self.utc_DD_Entry.configure(validatecommand=_validatecmd)
+        _validatecmd = (self.utc_DD_Entry.register(
+            self.utcDateDD_Invalid_CB), "%P", "%V")
+        self.utc_DD_Entry.configure(invalidcommand=_validatecmd)
         self.utc_DD_Entry.bind(
             "<ButtonPress>",
             self.utcDateDD_Entered_CB,
@@ -351,6 +371,10 @@ class logQSOUI(ttk.Labelframe):
             self.utcTimeHH_Entry.register(
                 self.utcTimeHH_Validate_CB), "%P", "%V")
         self.utcTimeHH_Entry.configure(validatecommand=_validatecmd)
+        _validatecmd = (
+            self.utcTimeHH_Entry.register(
+                self.utcTimeHH_Invalid_CB), "%P", "%V")
+        self.utcTimeHH_Entry.configure(invalidcommand=_validatecmd)
         self.utcTimeHH_Entry.bind(
             "<Button>", self.utcTimeHH_Entered_CB, add="+")
         self.colon1_Label = ttk.Label(self.utcTime_Frame, name="colon1_label")
@@ -374,6 +398,12 @@ class logQSOUI(ttk.Labelframe):
             "%P",
             "%V")
         self.entry5.configure(validatecommand=_validatecmd)
+        _validatecmd = (
+            self.entry5.register(
+                self.utcTimeMM_Invalid_CB),
+            "%P",
+            "%V")
+        self.entry5.configure(invalidcommand=_validatecmd)
         self.entry5.bind("<Button>", self.utcTimeMM_Entered_CB, add="+")
         self.utcTime_Frame.grid(column=2, padx=30, row=1, sticky="w")
         self.dateClue_Frame = ttk.Frame(
@@ -389,7 +419,7 @@ class logQSOUI(ttk.Labelframe):
         self.label12 = ttk.Label(self.dateClue_Frame, name="label12")
         self.label12.configure(style="Heading2b.TLabel", text='DD')
         self.label12.grid(column=5, padx="18 0", row=1)
-        self.dateClue_Frame.grid(column=1, row=2, sticky="w")
+        self.dateClue_Frame.grid(column=1, pady="0 15", row=2, sticky="w")
         self.timeClue_Frame = ttk.Frame(
             self.timeDate_Frame, name="timeclue_frame")
         self.timeClue_Frame.configure(
@@ -473,6 +503,10 @@ class logQSOUI(ttk.Labelframe):
             self.rstSend_Entry.register(
                 self.sentRST_Validate_CB), "%P", "%V")
         self.rstSend_Entry.configure(validatecommand=_validatecmd)
+        _validatecmd = (
+            self.rstSend_Entry.register(
+                self.sentRST_Invalid_CB), "%P", "%V")
+        self.rstSend_Entry.configure(invalidcommand=_validatecmd)
         self.rstSend_Entry.bind("<Button>", self.rstSend_Entered_CB, add="+")
         self.rstRcvd_Entry = ttk.Entry(
             self.signalReport_Frame, name="rstrcvd_entry")
@@ -492,6 +526,10 @@ class logQSOUI(ttk.Labelframe):
             self.rstRcvd_Entry.register(
                 self.rcvdRST_Validate_CB), "%P", "%V")
         self.rstRcvd_Entry.configure(validatecommand=_validatecmd)
+        _validatecmd = (
+            self.rstRcvd_Entry.register(
+                self.rcvdRST_Invalid_CB), "%P", "%V")
+        self.rstRcvd_Entry.configure(invalidcommand=_validatecmd)
         self.rstRcvd_Entry.bind("<Button>", self.rstRcvd_Entered_CB, add="+")
         self.signalReport_Frame.grid(column=0, padx=10, pady="0 30", row=11)
         self.logData_Frame.pack(padx=20, side="top")
@@ -525,10 +563,16 @@ class logQSOUI(ttk.Labelframe):
     def callSign_Validate_CB(self, p_entry_value, v_condition):
         pass
 
+    def callSign_Invalid_CB(self, p_entry_value, v_condition):
+        pass
+
     def callsign_Entered_CB(self, event=None):
         pass
 
     def frequency_Validate_CB(self, p_entry_value, v_condition):
+        pass
+
+    def frequency_Invalid_CB(self, p_entry_value, v_condition):
         pass
 
     def frequency_Entered_CB(self, event=None):
@@ -540,10 +584,16 @@ class logQSOUI(ttk.Labelframe):
     def utcDateYYYY_Validate_CB(self, p_entry_value, v_condition):
         pass
 
+    def utcDateYYYY_Invalid_CB(self, p_entry_value, v_condition):
+        pass
+
     def utcDateYYYY_Entered_CB(self, event=None):
         pass
 
     def utcDateMM_Validate_CB(self, p_entry_value, v_condition):
+        pass
+
+    def utcDateMM_Invalid_CB(self, p_entry_value, v_condition):
         pass
 
     def utcDateMM_Entered_CB(self, event=None):
@@ -552,32 +602,55 @@ class logQSOUI(ttk.Labelframe):
     def utcDateDD_Validate_CB(self, p_entry_value, v_condition):
         pass
 
+    def utcDateDD_Invalid_CB(self, p_entry_value, v_condition):
+        pass
+
     def utcDateDD_Entered_CB(self, event=None):
+        pass
+
+
+
+    def utcTimeHH_Entered_CB(self, event=None):
         pass
 
     def utcTimeHH_Validate_CB(self, p_entry_value, v_condition):
         pass
 
-    def utcTimeHH_Entered_CB(self, event=None):
+    def utcTimeHH_Invalid_CB(self, p_entry_value, v_condition):
+        pass
+
+
+    def utcTimeMM_Entered_CB(self, event=None):
         pass
 
     def utcTimeMM_Validate_CB(self, p_entry_value, v_condition):
         pass
 
-    def utcTimeMM_Entered_CB(self, event=None):
+    def utcTimeMM_Invalid_CB(self, p_entry_value, v_condition):
+        pass
+
+
+
+    def rstSend_Entered_CB(self, event=None):
         pass
 
     def sentRST_Validate_CB(self, p_entry_value, v_condition):
         pass
 
-    def rstSend_Entered_CB(self, event=None):
+    def sentRST_Invalid_CB(self, p_entry_value, v_condition):
+        pass
+
+
+    def rstRcvd_Entered_CB(self, event=None):
         pass
 
     def rcvdRST_Validate_CB(self, p_entry_value, v_condition):
         pass
 
-    def rstRcvd_Entered_CB(self, event=None):
+    def rcvdRST_Invalid_CB(self, p_entry_value, v_condition):
         pass
+
+
 
     def logQSO_CB(self):
         pass

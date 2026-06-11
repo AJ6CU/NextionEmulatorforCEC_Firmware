@@ -117,7 +117,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def set_Current_Master_Cal(self,value):
 
-        if gv.validateNumber(value, gv.MASTER_CAL_BOUNDS['LOW'], gv.MASTER_CAL_BOUNDS['HIGH'], "Master Cal"):
+        if gv.validateNumber(value, gv.MASTER_CAL_BOUNDS['LOW'], gv.MASTER_CAL_BOUNDS['HIGH']):
             self.mainWindow.theRadio.Set_Master_Cal(value)
             self.reboot = True
         else:   # Generate appropriate error message
@@ -146,7 +146,7 @@ class settingsBackup(baseui.settingsBackupUI):
 
     def set_Current_SSB_BFO(self,value):
 
-        if gv.validateNumber(value, gv.BFO_CAL_BOUNDS['LOW'], gv.BFO_CAL_BOUNDS['HIGH'], "SSB BFO"):
+        if gv.validateNumber(value, gv.BFO_CAL_BOUNDS['LOW'], gv.BFO_CAL_BOUNDS['HIGH']):
             self.mainWindow.theRadio.Set_SSB_BFO(value)
             self.reboot = True
         else:  # Generate appropriate error message
@@ -182,7 +182,7 @@ class settingsBackup(baseui.settingsBackupUI):
         return self.EEPROM_Current_CW_BFO_VAR.get()
 
     def set_Current_CW_BFO(self,value):
-        if gv.validateNumber(value, gv.CW_CAL_BOUNDS['LOW'], gv.CW_CAL_BOUNDS['HIGH'], "CW BFO"):
+        if gv.validateNumber(value, gv.CW_CAL_BOUNDS['LOW'], gv.CW_CAL_BOUNDS['HIGH']):
             self.mainWindow.theRadio.Set_CW_BFO(value)
             self.reboot = True
         else:   # Generate appropriate error message
@@ -255,7 +255,7 @@ class settingsBackup(baseui.settingsBackupUI):
         return self.mainWindow.key_speed_value_VAR.get()
 
     def set_Current_CW_Speed(self,value):
-        if gv.validateNumber(value, gv.CW_SPEED_WPM_BOUNDS['LOW'], gv.CW_SPEED_WPM_BOUNDS['HIGH'], "CW WPM"):
+        if gv.validateNumber(value, gv.CW_SPEED_WPM_BOUNDS['LOW'], gv.CW_SPEED_WPM_BOUNDS['HIGH']):
             self.mainWindow.theRadio.Set_CW_Speed(value)
         else:   # Generate appropriate error message
             self.invalidValue (value,"CW WPM", gv.CW_SPEED_WPM_BOUNDS['LOW'], gv.CW_SPEED_WPM_BOUNDS['HIGH'])
@@ -285,7 +285,7 @@ class settingsBackup(baseui.settingsBackupUI):
         return self.mainWindow.tone_value_VAR.get()
 
     def set_Current_CW_Tone(self, value):
-        if gv.validateNumber(value, gv.CW_TONE_BOUNDS['LOW'], gv.CW_TONE_BOUNDS['HIGH'], "CW Sidetone"):
+        if gv.validateNumber(value, gv.CW_TONE_BOUNDS['LOW'], gv.CW_TONE_BOUNDS['HIGH']):
             self.mainWindow.theRadio.Set_CW_Tone(value)
             self.reboot = True
         else:   # Generate appropriate error message
@@ -308,7 +308,7 @@ class settingsBackup(baseui.settingsBackupUI):
         return self.mainWindow.delay_starting_tx_value_VAR.get()
 
     def set_Current_CW_Delay_Before_TX(self, value):
-        if gv.validateNumber(value, gv.CW_START_TX_BOUNDS['LOW'], gv.CW_START_TX_BOUNDS['HIGH'], "Delay->TX"):
+        if gv.validateNumber(value, gv.CW_START_TX_BOUNDS['LOW'], gv.CW_START_TX_BOUNDS['HIGH']):
             self.mainWindow.theRadio.Set_CW_Delay_Starting_TX(value)
             self.reboot = True
         else:   # Generate appropriate error message
@@ -330,7 +330,7 @@ class settingsBackup(baseui.settingsBackupUI):
         return self.mainWindow.delay_returning_to_rx_value_VAR.get()
 
     def set_Current_CW_Delay_Returning_To_RX(self, value):
-        if gv.validateNumber(value, gv.CW_DELAY_Return_RX_BOUNDS['LOW'], gv.CW_DELAY_Return_RX_BOUNDS['HIGH'], "Delay->RX"):
+        if gv.validateNumber(value, gv.CW_DELAY_Return_RX_BOUNDS['LOW'], gv.CW_DELAY_Return_RX_BOUNDS['HIGH']):
             self.mainWindow.theRadio.Set_CW_Delay_Returning_To_RX(value)
             self.reboot = True
         else:   # Generate appropriate error message

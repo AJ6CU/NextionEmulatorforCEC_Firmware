@@ -149,7 +149,7 @@ def formatCombobox( combobox, family="Arial", size="36", weight="bold"):
     # #   configure popdown font
     # combobox.tk.call('%s.f.l' % popdown, 'co        self.popup.geometry(gv.POPUP_WINDOW_OFFSET)nfigure', '-font', combobox['font'])
 
-def validateNumber(value, lowbound, highbound, name):
+def validateNumber(value, lowbound, highbound):
     if str(value) == "":
         return False
     elif ((lowbound <= int(value)) & (highbound >= int(value))):

@@ -10,10 +10,12 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import logQSOui as baseui
 import globalvars as gv
-from datetime import datetime, UTC
+from datetime import datetime, UTC, timezone
 from QSOLogger import QSOLogger
 import os
-
+from VirtualNumericKeyboard import VirtualNumericKeyboard
+from VirtualKeyboard import VirtualKeyboard
+from tkinter import messagebox
 
 #
 # Manual user code
@@ -62,7 +64,7 @@ class logQSO(baseui.logQSOUI):
         self.utcDateDD_VAR.set(datetime.now(UTC).strftime("%d"))
 
         self.utcTimeHH_VAR.set(datetime.now(UTC).strftime("%H"))
-        self.utcTimeHH_VAR.set(datetime.now(UTC).strftime("%M"))
+        self.utcTimeMM_VAR.set(datetime.now(UTC).strftime("%M"))
 
 
         if self.mainWindow.primary_Mode_VAR.get() == "CWL" or self.mainWindow.primary_Mode_VAR.get() == "CWU":
@@ -117,6 +119,262 @@ class logQSO(baseui.logQSOUI):
 
     def selectMode_CB(self, itemid):
         self.commType_VAR.set(itemid)
+
+
+    def callsign_Entered_CB(self, event=None):
+        self.callsign_save = self.callsign_VAR.get()
+        if gv.config.get_Virtual_Keyboard_Switch() == "True":
+            self.vKeyboard = VirtualKeyboard(self, self.callSign_VAR, self.callSign_Vkeyboard_Validate, 12)
+
+
+    def callSign_Validate_CB(self, p_entry_value, v_condition):
+        if len(p_entry_value) > 12 or len(p_entry_value) == 0:
+            return True
+        else:
+            return False
+
+    def callSign_Vkeyboard_Validate(self):
+        if len(self.callSign_VAR.get()) > 12 or len(self.callSign_VAR.get()) == 0:
+            messagebox.showinfo("Error - Invalid Callsign",
+                                "Callsign is empty or exceeds 12 characters. Input ignored resetting to prior value", parent=self)
+            self.callSign_VAR.set(self.callsign_save)
+
+    def callSign_Invalid_CB(self, p_entry_value, v_condition):
+
+        messagebox.showinfo("Error - Invalid Callsign",
+                            "Callsign is empty or exceeds 12 characters. Input ignored resetting to prior value",
+                            parent=self)
+        self.callSign_VAR.set(self.callsign_save)
+
+
+
+
+    def frequency_Entered_CB(self, event=None):
+        self.frequency_save = self.frequency_VAR.get()
+        if gv.config.get_Virtual_Keyboard_Switch() == "True":
+            self.vNumericPad = VirtualNumericKeyboard(self, self.frequency_VAR, self.frequency_Vkeyboard_Validate, 7, True)
+
+    def frequency_Validate_CB(self, p_entry_value, v_condition):
+        if int(gv.unformatFrequency(p_entry_value))  <= round(gv.FREQ_BOUNDS['HIGH']/1000):
+            return True
+        else:
+            return False
+
+    def frequency_Vkeyboard_Validate(self):
+        if int(gv.unformatFrequency(self.frequency_VAR.get()) > round(gv.FREQ_BOUNDS['HIGH']/1000):
+            messagebox.showinfo("Error - Frequency is invalid",
+                                "Entered frequency exceeds 60mHZ. Resetting to prior value",
+                                parent=self)
+            self.frequency_VAR.set(self.frequency_save)
+
+    def frequency_Invalid_CB(self, p_entry_value, v_condition):
+        messagebox.showinfo("Error - Frequency is invalid",
+                            "Entered frequency exceeds 60mHZ. Resetting to prior value",
+                            parent=self)
+        self.frequency_VAR.set(self.frequency_save)
+
+
+
+    def utcDateYYYY_Entered_CB(self, event=None):
+        self.utcDateYYYY_save = self.utcDateYYYY_VAR.get()
+        if gv.config.get_Virtual_Keyboard_Switch() == "True":
+            self.vNumericPad = VirtualNumericKeyboard(self, self.utcDateYYYY_VAR, self.utcDateYYYY_Vkeyboard_Validate, 7, False)
+
+    def utcDateYYYY_Validate_CB(self, p_entry_value, v_condition):
+        if gv.validateNumber(int(p_entry_value), 2026, 2050):
+            self.updateLocalDateTime()
+            return True
+        else:
+            return False
+
+    def utcDateYYYY_Vkeyboard_Validate(self):
+        if gv.validateNumber(int(self.utcDateYYYY_VAR.get()), 2026, 2050):
+            self.updateLocalDateTime()
+        else:
+            messagebox.showinfo("Error - Illegal Year",
+                                "Entered year not in the range of 2026 - 2050. Resetting to prior value",
+                                parent=self)
+            self.utcDateYYYY_VAR.set(self.utcDateYYYY_save)
+
+    def utcDateYYYY_Invalid_CB(self, p_entry_value, v_condition):
+        messagebox.showinfo("Error - Illegal Year",
+                            "Entered year not in the range of 2026 - 2050. Resetting to prior value",
+                            parent=self)
+        self.utcDateYYYY_VAR.set(self.utcDateYYYY_save)
+
+
+
+
+    def utcDateMM_Entered_CB(self, event=None):
+        self.utcDateMM_save = self.utcDateMM_VAR.get()
+        if gv.config.get_Virtual_Keyboard_Switch() == "True":
+            self.vNumericPad = VirtualNumericKeyboard(self, self.utcDateMM_VAR, self.utcDateMM_Vkeyboard_Validate,
+                                                      2, False)
+
+    def utcDateMM_Validate_CB(self, p_entry_value, v_condition):
+        if gv.validateNumber(int(p_entry_value), 1, 12):
+            self.updateLocalDateTime()
+            return True
+        else:
+            return False
+
+    def utcDateMM_Vkeyboard_Validate(self):
+        if gv.validateNumber(int(self.utcDateMM_VAR.get()), 1, 12):
+            self.updateLocalDateTime()
+        else:
+            self.utcDateMM_VAR.set(self.utcDateMM_save)
+
+    def utcDateMM_Invalid_CB(self, p_entry_value, v_condition):
+        self.utcDateMM_VAR.set(self.utcDateMM_save)
+
+
+
+
+    def utcDateDD_Entered_CB(self, event=None):
+        self.utcDateDD_save = self.utcDateDD_VAR.get()
+        if gv.config.get_Virtual_Keyboard_Switch() == "True":
+            self.vNumericPad = VirtualNumericKeyboard(self, self.utcDateDD_VAR, self.utcDateDD_Vkeyboard_Validate,
+                                                      2, False)
+
+    def utcDateDD_Validate_CB(self, p_entry_value, v_condition):
+        if self.is_valid_day(self.utcDateYYYY_VAR.get(), self.utcDateMM_VAR.get(), p_entry_value):
+            self.updateLocalDateTime()
+            return True
+        else:
+            return False
+
+    def utcDateDD_Vkeyboard_Validate(self):
+        if self.is_valid_day(self.utcDateYYYY_VAR.get(), self.utcDateMM_VAR.get(), p_entry_value):
+            self.updateLocalDateTime()
+        else:
+            self.utcDateDD_VAR.set(self.utcDateDD_save)
+
+    def utcDateDD_Invalid_CB(self, p_entry_value, v_condition):
+        self.utcDateDD_VAR.set(self.utcDateDD_save)
+
+
+    def is_leap_year(self, year):
+        return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
+
+    def is_valid_day(self, year, month, day):
+        imonth = int(month)
+        iyear = int(year)
+        iday = int(day)
+
+        if imonth < 1 or imonth > 12:
+            return False
+
+        # Maps month index to days (February defaults to 28)
+        days_in_months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+        # Adjusts February if it's a leap year
+        if imonth == 2 and self.is_leap_year(iyear):
+            max_days = 29
+        else:
+            max_days = days_in_months[imonth - 1]
+
+        return 1 <= iday <= max_days
+
+    def updateLocalDateTime(self):
+
+        utc_string = (self.utcDateYYYY_VAR.get() + "-" + self.utcDateMM_VAR.get() + "-" + self.utcDateDD_VAR.get() +
+                      "T" + self.utcTimeHH_VAR.get() +":" + self.utcTimeMM_VAR.get() +":00Z")
+
+        utc_obj = datetime.fromisoformat(utc_string)
+        # Convert to local time zone
+        local_obj = utc_obj.astimezone()
+
+
+        self.utcDateYYYY_VAR.set(local_obj.strftime("%Y"))
+        self.utcDateMM_VAR.set(local_obj.strftime("%m"))
+        self.utcDateDD_VAR.set(local_obj.strftime("%d"))
+
+        self.utcTimeHH_VAR.set(local_obj.strftime("%H"))
+        self.utcTimeMM_VAR.set(local_obj.strftime("%M"))
+
+
+    def utcTimeHH_Entered_CB(self, event=None):
+        self.utcTimeHH_save = self.utcTimeHH_VAR.get()
+        if gv.config.get_Virtual_Keyboard_Switch() == "True":
+            self.vNumericPad = VirtualNumericKeyboard(self, self.utcTimeHH_VAR, self.utcTimeHH_Vkeyboard_Validate,
+                                                      2, False)
+
+    def utcTimeHH_Validate_CB(self, p_entry_value, v_condition):
+        if gv.validateNumber(int(p_entry_value), 0, 24):
+            self.updateLocalDateTime()
+            return True
+        else:
+            return False
+
+    def utcTimeHH_Vkeyboard_Validate(self):
+        if gv.validateNumber(int(self.utcTimeHH_VAR.get()), 0, 24):
+            self.updateLocalDateTime()
+        else:
+            self.utcTimeHH_VAR.set(self.utcTimeHH_save)
+
+    def utcTimeHH_Invalid_CB(self, p_entry_value, v_condition):
+        self.utcTimeHH_VAR.set(self.utcTimeHH_save)
+
+
+
+
+    def utcTimeMM_Entered_CB(self, event=None):
+        self.utcTimeMM_save = self.utcTimeMM_VAR.get()
+        if gv.config.get_Virtual_Keyboard_Switch() == "True":
+            self.vNumericPad = VirtualNumericKeyboard(self, self.utcTimeMM_VAR, self.utcTimeMM_Vkeyboard_Validate,
+                                                      2, False)
+
+    def utcTimeMM_Validate_CB(self, p_entry_value, v_condition):
+        if gv.validateNumber(int(p_entry_value), 0, 60):
+            self.updateLocalDateTime()
+            return True
+        else:
+            return False
+
+
+    def utcTimeMM_Vkeyboard_Validate(self):
+        if gv.validateNumber(int(self.utcTimeMM_VAR.get()), 0, 60):
+            self.updateLocalDateTime()
+        else:
+            self.utcTimeMM_VAR.set(self.utcTimeMM_save)
+
+    def utcTimeMM_Invalid_CB(self, p_entry_value, v_condition):
+        self.utcTimeMM_VAR.set(self.utcTimeMM_save)
+
+
+
+
+
+    def rstSend_Entered_CB(self, event=None):
+        if gv.config.get_Virtual_Keyboard_Switch() == "True":
+            self.vKeyboard = VirtualKeyboard(self, self.sentRST_VAR, self.rstSend_Vkeyboard_Validate, 8)
+
+    def sentRST_Validate_CB(self, p_entry_value, v_condition):
+        pass
+
+    def rstSend_Vkeyboard_Validate(self):
+        pass
+
+    def sentRST_Invalid_CB(self, p_entry_value, v_condition):
+        pass
+
+
+
+    def rstRcvd_Entered_CB(self, event=None):
+        if gv.config.get_Virtual_Keyboard_Switch() == "True":
+            self.vKeyboard = VirtualKeyboard(self, self.rcvdRST_VAR, self.rcvdRST_Vkeyboard_Validate, 8)
+
+    def rcvdRST_Validate_CB(self, p_entry_value, v_condition):
+        pass
+
+    def rcvdRST_Vkeyboard_Validate(self):
+        pass
+
+    def rcvdRST_Invalid_CB(self, p_entry_value, v_condition):
+        pass
+
+
+
 
     def logQSO_CB(self):
         qso={}

@@ -130,7 +130,7 @@ class frequencyChannel(baseui.frequencyChannelUI):
 
             unformatted_p_entry_value = gv.unformatFrequency(p_entry_value)
 
-            if(gv.validateNumber(unformatted_p_entry_value, gv.FREQ_BOUNDS['LOW'], gv.FREQ_BOUNDS['HIGH'], "Frequency")):
+            if(gv.validateNumber(unformatted_p_entry_value, gv.FREQ_BOUNDS['LOW'], gv.FREQ_BOUNDS['HIGH'])):
                 self.channel_Freq_VAR.set(gv.formatVFO(unformatted_p_entry_value))
                 if (unformatted_p_entry_value != self.channel_Freq_save):              #compare the unformatted string versions
                     self.channel_Dirty()
@@ -149,7 +149,7 @@ class frequencyChannel(baseui.frequencyChannelUI):
     def Channel_Freq_Changed_CB(self):
         unformatted_Freq_value = gv.unformatFrequency(self.channel_Freq_VAR.get())
 
-        if (gv.validateNumber(unformatted_Freq_value, gv.FREQ_BOUNDS['LOW'], gv.FREQ_BOUNDS['HIGH'], "Frequency")):
+        if (gv.validateNumber(unformatted_Freq_value, gv.FREQ_BOUNDS['LOW'], gv.FREQ_BOUNDS['HIGH'])):
 
             if (unformatted_Freq_value != self.channel_Freq_save):  # compare the unformatted string versions
                 self.channel_Freq_VAR.set(gv.formatVFO(unformatted_Freq_value))
