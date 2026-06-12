@@ -412,7 +412,7 @@ class logQSO(baseui.logQSOUI):
             return False
 
     def rstSend_Vkeyboard_Validate(self):
-        if self.is_valid_rst(self.rstSend_VAR.get()):
+        if not self.is_valid_rst(self.rstSend_VAR.get()):
             self.rstSend_Invalid_CB()
 
     def rstSend_Invalid_CB(self, p_entry_value=None, v_condition=None):
@@ -437,7 +437,7 @@ class logQSO(baseui.logQSOUI):
             return False
 
     def rstReceived_Vkeyboard_Validate(self):
-        if self.is_valid_rst(self.rstReceived_VAR.get()):
+        if not self.is_valid_rst(self.rstReceived_VAR.get()):
             self.rstReceived_Invalid_CB()
 
 
