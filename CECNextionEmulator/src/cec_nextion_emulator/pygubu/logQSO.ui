@@ -651,7 +651,7 @@
                 <child>
                   <object class="ttk.Entry" id="rstSend_Entry" named="True">
                     <property name="font">{Arial} 20 {}</property>
-                    <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">sentRST_Invalid_CB</property>
+                    <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">rstSend_Invalid_CB</property>
                     <property name="justify">center</property>
                     <property name="style">Entry2b.TEntry</property>
                     <property name="text" translatable="yes">599</property>

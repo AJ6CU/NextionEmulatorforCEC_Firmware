@@ -16,6 +16,7 @@ import os
 from VirtualNumericKeyboard import VirtualNumericKeyboard
 from VirtualKeyboard import VirtualKeyboard
 from tkinter import messagebox
+import re
 
 #
 # Manual user code
@@ -128,24 +129,48 @@ class logQSO(baseui.logQSOUI):
 
 
     def callsign_Validate_CB(self, p_entry_value, v_condition):
-        if 0 < len(p_entry_value) <= 12 :
-            return True
-        else:
-            return False
+        return self.is_valid_lotw_callsign(p_entry_value)
 
     def callsign_Vkeyboard_Validate(self):
-        if len(self.callsign_VAR.get()) > 12 or len(self.callsign_VAR.get()) == 0:
-            messagebox.showinfo("Error - Invalid Callsign",
-                                "callsign is empty or exceeds 12 characters. Input ignored resetting to prior value", parent=self)
-            self.callsign_VAR.set(self.callsign_save)
+        if not self.is_valid_lotw_callsign(self.callsign_VAR.get()):
+            self.callsign_VAR.set()
 
-    def callsign_Invalid_CB(self, p_entry_value, v_condition):
+    def callsign_Invalid_CB(self, p_entry_value=None, v_condition=None):
 
         messagebox.showinfo("Error - Invalid Callsign",
-                            "Callsign is empty or exceeds 12 characters. Input ignored resetting to prior value",
-                            parent=self)
+                            "callsign is empty, exceeds 20 characters, includes an illegal character" +
+                            " (something other than A-Z, 0-9, /) or bad format." +
+                            " Input ignored, resetting to prior value", parent=self)
         self.callsign_VAR.set(self.callsign_save)
 
+
+    def is_valid_lotw_callsign(self, callsign):
+        # 1. Clean the input: remove whitespace and convert to uppercase
+        call = callsign.strip().upper()
+
+        # 2. Check length constraint (LoTW minimum is 3, maximum is 20)
+        if not (3 <= len(call) <= 20):
+            return False
+
+        # 3. Check character rules: letters, digits, and exactly one slash separator
+        # Cannot start or end with a slash, and no consecutive slashes
+        if call.startswith('/') or call.endswith('/') or '//' in call:
+            return False
+
+        # 4. Enforce valid characters (A-Z, 0-9, /)
+        if not re.match(r'^[A-Z0-9/]+$', call):
+            return False
+
+        # 5. Check prefix exceptions: Base callsign cannot start with digit 0 or 1
+        # We split by '/' to evaluate the main base callsign blocks
+        parts = call.split('/')
+        for part in parts:
+            if part and part[0] in ('0', '1'):
+                # Only valid if it's an exceptional prefix like 1A, 1M, 1S
+                if not part.startswith(('1A', '1M', '1S')):
+                    return False
+
+        return True
 
 
 
@@ -155,23 +180,23 @@ class logQSO(baseui.logQSOUI):
             self.vNumericPad = VirtualNumericKeyboard(self, self.frequency_VAR, self.frequency_Vkeyboard_Validate, 7, True)
 
     def frequency_Validate_CB(self, p_entry_value, v_condition):
-        if int(gv.unformatFrequency(p_entry_value))  <= round(gv.FREQ_BOUNDS['HIGH']/1000):
-            return True
-        else:
-            return False
+        return self.is_valid_frequency(p_entry_value)
 
     def frequency_Vkeyboard_Validate(self):
-        if int(gv.unformatFrequency(self.frequency_VAR.get())) > round(gv.FREQ_BOUNDS['HIGH']/1000):
-            messagebox.showinfo("Error - Frequency is invalid",
-                                "Entered frequency exceeds 60mHZ. Resetting to prior value",
-                                parent=self)
-            self.frequency_VAR.set(self.frequency_save)
+        if not self.is_valid_frequency(self.frequency_VAR.get()):
+            self.frequency_Invalid_CB()
 
-    def frequency_Invalid_CB(self, p_entry_value, v_condition):
+    def frequency_Invalid_CB(self, p_entry_value=None, v_condition=None):
         messagebox.showinfo("Error - Frequency is invalid",
                             "Entered frequency exceeds 60mHZ. Resetting to prior value",
                             parent=self)
         self.frequency_VAR.set(self.frequency_save)
+
+    def is_valid_frequency(self, f):
+        if int(gv.unformatFrequency(f)) <= round(gv.FREQ_BOUNDS['HIGH'] / 1000):
+            return True
+        else:
+            return False
 
 
 
@@ -181,28 +206,29 @@ class logQSO(baseui.logQSOUI):
             self.vNumericPad = VirtualNumericKeyboard(self, self.utcDateYYYY_VAR, self.utcDateYYYY_Vkeyboard_Validate, 7, False)
 
     def utcDateYYYY_Validate_CB(self, p_entry_value, v_condition):
-        if gv.validateNumber(int(p_entry_value), 2026, 2050):
-            print(p_entry_value, self.utcDateYYYY_VAR.get())
-            # self.after_idle(lambda: self.updateLocalDateTime())
+        if self.is_valid_year(p_entry_value):
             self.updateLocalDateTime()
             return True
         else:
             return False
 
     def utcDateYYYY_Vkeyboard_Validate(self):
-        if gv.validateNumber(int(self.utcDateYYYY_VAR.get()), 2026, 2050):
+        if self.is_valid_year(self.utcDateYYYY_VAR.get()):
             self.updateLocalDateTime()
         else:
-            messagebox.showinfo("Error - Illegal Year",
-                                "Entered year not in the range of 2026 - 2050. Resetting to prior value",
-                                parent=self)
-            self.utcDateYYYY_VAR.set(self.utcDateYYYY_save)
+            self.utcDateYYYY_Invalid_CB()
 
-    def utcDateYYYY_Invalid_CB(self, p_entry_value, v_condition):
+    def utcDateYYYY_Invalid_CB(self, p_entry_value=None, v_condition=None):
         messagebox.showinfo("Error - Illegal Year",
                             "Entered year not in the range of 2026 - 2050. Resetting to prior value",
                             parent=self)
         self.utcDateYYYY_VAR.set(self.utcDateYYYY_save)
+
+    def is_valid_year(self, year):
+        if gv.validateNumber(int(year), 2026, 2050):
+            return True
+        else:
+            return False
 
 
 
@@ -214,27 +240,29 @@ class logQSO(baseui.logQSOUI):
                                                       2, False)
 
     def utcDateMM_Validate_CB(self, p_entry_value, v_condition):
-        if gv.validateNumber(int(p_entry_value), 1, 12):
+        if self.is_valid_month(p_entry_value):
             self.updateLocalDateTime()
             return True
         else:
             return False
 
     def utcDateMM_Vkeyboard_Validate(self):
-        if gv.validateNumber(int(self.utcDateMM_VAR.get()), 1, 12):
+        if self.is_valid_month(self.utcDateMM_VAR.get()):
             self.updateLocalDateTime()
         else:
-            messagebox.showinfo("Error - Illegal Month",
-                                "Entered month not in the range of 1-12. Resetting to prior value",
-                                parent=self)
-            self.utcDateMM_VAR.set(self.utcDateMM_save)
+            self.utcDateMM_Invalid_CB()
 
-    def utcDateMM_Invalid_CB(self, p_entry_value, v_condition):
+    def utcDateMM_Invalid_CB(self, p_entry_value=None, v_condition=None):
         messagebox.showinfo("Error - Illegal Month",
                             "Entered month not in the range of 1-12. Resetting to prior value",
                             parent=self)
         self.utcDateMM_VAR.set(self.utcDateMM_save)
 
+    def is_valid_month(self, month):
+        if gv.validateNumber(int(month), 1, 12):
+            return True
+        else:
+            return False
 
 
 
@@ -255,22 +283,19 @@ class logQSO(baseui.logQSOUI):
         if self.is_valid_day(self.utcDateYYYY_VAR.get(), self.utcDateMM_VAR.get(), p_entry_value):
             self.updateLocalDateTime()
         else:
-            messagebox.showinfo("Error - Illegal Day",
-                                "Entered day is not valid for Year and Month. Resetting to prior value",
-                                parent=self)
-            self.utcDateDD_VAR.set(self.utcDateDD_save)
+            self.utcDateDD_Invalid_CB()
 
-    def utcDateDD_Invalid_CB(self, p_entry_value, v_condition):
+    def utcDateDD_Invalid_CB(self, p_entry_value=None, v_condition=None):
         messagebox.showinfo("Error - Illegal Day",
                             "Entered day is not valid for Year and Month. Resetting to prior value",
                             parent=self)
         self.utcDateDD_VAR.set(self.utcDateDD_save)
 
 
-    def is_leap_year(self, year):
-        return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
-
     def is_valid_day(self, year, month, day):
+        def is_leap_year(year):
+            return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
+
         imonth = int(month)
         iyear = int(year)
         iday = int(day)
@@ -282,12 +307,84 @@ class logQSO(baseui.logQSOUI):
         days_in_months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
         # Adjusts February if it's a leap year
-        if imonth == 2 and self.is_leap_year(iyear):
+        if imonth == 2 and is_leap_year(iyear):
             max_days = 29
         else:
             max_days = days_in_months[imonth - 1]
 
         return 1 <= iday <= max_days
+
+
+
+    def utcTimeHH_Entered_CB(self, event=None):
+        self.utcTimeHH_save = self.utcTimeHH_VAR.get()
+        if gv.config.get_Virtual_Keyboard_Switch() == "True":
+            self.vNumericPad = VirtualNumericKeyboard(self, self.utcTimeHH_VAR, self.utcTimeHH_Vkeyboard_Validate,
+                                                      2, False)
+
+    def utcTimeHH_Validate_CB(self, p_entry_value, v_condition):
+        if self.is_valid_hour(p_entry_value):
+            self.updateLocalDateTime()
+            return True
+        else:
+            return False
+
+    def utcTimeHH_Vkeyboard_Validate(self):
+        if self.is_valid_hour(self.utcTimeHH_VAR.get()):
+            self.updateLocalDateTime()
+        else:
+            self.utcTimeHH_Invalid_CB()
+
+    def utcTimeHH_Invalid_CB(self, p_entry_value=None, v_condition=None):
+        messagebox.showinfo("Error - Illegal Time",
+                            "Entered hour is not in range 0-23. Resetting to prior value",
+                            parent=self)
+        self.utcTimeHH_VAR.set(self.utcTimeHH_save)
+
+    def is_valid_hour(self, hour):
+        if gv.validateNumber(int(hour), 0, 23):
+            return True
+        else:
+            return False
+
+
+
+
+    def utcTimeMM_Entered_CB(self, event=None):
+        self.utcTimeMM_save = self.utcTimeMM_VAR.get()
+        if gv.config.get_Virtual_Keyboard_Switch() == "True":
+            self.vNumericPad = VirtualNumericKeyboard(self, self.utcTimeMM_VAR, self.utcTimeMM_Vkeyboard_Validate,
+                                                      2, False)
+
+    def utcTimeMM_Validate_CB(self, p_entry_value, v_condition):
+        if self.is_valid_minutes(p_entry_value):
+            self.updateLocalDateTime()
+            return True
+        else:
+            return False
+
+
+    def utcTimeMM_Vkeyboard_Validate(self):
+        if self.is_valid_minutes(self.utcTimeMM_VAR.get()):
+            self.updateLocalDateTime()
+        else:
+            self.utcTimeMM_Invalid_CB()
+
+    def utcTimeMM_Invalid_CB(self, p_entry_value=None, v_condition=None):
+        messagebox.showinfo("Error - Illegal Time",
+                            "Entered minutes is not in range 0-59. Resetting to prior value",
+                            parent=self)
+        self.utcTimeMM_VAR.set(self.utcTimeMM_save)
+
+    def is_valid_minutes(self, minutes):
+        if gv.validateNumber(int(minutes), 0, 59):
+            return True
+        else:
+            return False
+
+
+
+
 
     def updateLocalDateTime(self):
         print("in update", self.utcDateYYYY_VAR.get())
@@ -302,119 +399,59 @@ class logQSO(baseui.logQSOUI):
         self.localTime_VAR.set(local_obj.strftime("%H:%M"))
 
 
-    def utcTimeHH_Entered_CB(self, event=None):
-        self.utcTimeHH_save = self.utcTimeHH_VAR.get()
-        if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vNumericPad = VirtualNumericKeyboard(self, self.utcTimeHH_VAR, self.utcTimeHH_Vkeyboard_Validate,
-                                                      2, False)
-
-    def utcTimeHH_Validate_CB(self, p_entry_value, v_condition):
-        if gv.validateNumber(int(p_entry_value), 0, 24):
-            self.updateLocalDateTime()
-            return True
-        else:
-            return False
-
-    def utcTimeHH_Vkeyboard_Validate(self):
-        if gv.validateNumber(int(self.utcTimeHH_VAR.get()), 0, 23):
-            self.updateLocalDateTime()
-        else:
-            messagebox.showinfo("Error - Illegal Time",
-                                "Entered hour is not in range 0-23. Resetting to prior value",
-                                parent=self)
-            self.utcTimeHH_VAR.set(self.utcTimeHH_save)
-
-    def utcTimeHH_Invalid_CB(self, p_entry_value, v_condition):
-        messagebox.showinfo("Error - Illegal Time",
-                            "Entered hour is not in range 0-23. Resetting to prior value",
-                            parent=self)
-        self.utcTimeHH_VAR.set(self.utcTimeHH_save)
-
-
-
-
-    def utcTimeMM_Entered_CB(self, event=None):
-        self.utcTimeMM_save = self.utcTimeMM_VAR.get()
-        if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vNumericPad = VirtualNumericKeyboard(self, self.utcTimeMM_VAR, self.utcTimeMM_Vkeyboard_Validate,
-                                                      2, False)
-
-    def utcTimeMM_Validate_CB(self, p_entry_value, v_condition):
-        if gv.validateNumber(int(p_entry_value), 0, 60):
-            self.updateLocalDateTime()
-            return True
-        else:
-            return False
-
-
-    def utcTimeMM_Vkeyboard_Validate(self):
-        if gv.validateNumber(int(self.utcTimeMM_VAR.get()), 0, 59):
-            print("in minutes updating time", self.utcTimeMM_VAR.get())
-            self.updateLocalDateTime()
-        else:
-            messagebox.showinfo("Error - Illegal Time",
-                                "Entered minutes is not in range 0-59. Resetting to prior value",
-                                parent=self)
-            self.utcTimeMM_VAR.set(self.utcTimeMM_save)
-
-    def utcTimeMM_Invalid_CB(self, p_entry_value, v_condition):
-        messagebox.showinfo("Error - Illegal Time",
-                            "Entered minutes is not in range 0-59. Resetting to prior value",
-                            parent=self)
-        self.utcTimeMM_VAR.set(self.utcTimeMM_save)
-
-
-
-
 
     def rstSend_Entered_CB(self, event=None):
-        self.rstSend_save = self.sendRST_VAR.get()
+        self.rstSend_save = self.rstSend_VAR.get()
         if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vKeyboard = VirtualKeyboard(self, self.sentRST_VAR, self.rstSend_Vkeyboard_Validate, 8)
+            self.vKeyboard = VirtualKeyboard(self, self.rstSend_VAR, self.rstSend_Vkeyboard_Validate, 8)
 
     def rstSend_Validate_CB(self, p_entry_value, v_condition):
-        if 0 < len(p_entry_value) <= 8:
+        if self.is_valid_rst(p_entry_value):
             return True
         else:
             return False
 
     def rstSend_Vkeyboard_Validate(self):
-        if len(self.rstSend_VAR.get()) > 12 or len(self.rstSend_VAR.get()) == 0:
-            messagebox.showinfo("Error - RST Sent",
-                                "Entered RST Sent has length of either 0 or more than 8 characters. Resetting to prior value",
-                                parent=self)
-            self.rstSend_VAR.set(self.rstSend_save)
+        if self.is_valid_rst(self.rstSend_VAR.get()):
+            self.rstSend_Invalid_CB()
 
-    def rstSend_Invalid_CB(self, p_entry_value, v_condition):
+    def rstSend_Invalid_CB(self, p_entry_value=None, v_condition=None):
         messagebox.showinfo("Error - RST Sent",
                             "Entered RST Sent has length of either 0 or more than 8 characters. Resetting to prior value",
                             parent=self)
-        self.sendRST_VAR.set(self.rstSend_save)
+        self.rstSend_VAR.set(self.rstSend_save)
+
 
 
 
     def rstReceived_Entered_CB(self, event=None):
+        print("Entered RST Received")
         self.rstReceived_save = self.rstReceived_VAR.get()
         if gv.config.get_Virtual_Keyboard_Switch() == "True":
             self.vKeyboard = VirtualKeyboard(self, self.rstReceived_VAR, self.rstReceived_Vkeyboard_Validate, 8)
 
     def rstReceived_Validate_CB(self, p_entry_value, v_condition):
-        if 0 < len(p_entry_value) <= 8:
+        if self.is_valid_rst(p_entry_value):
             return True
         else:
             return False
 
     def rstReceived_Vkeyboard_Validate(self):
+        if self.is_valid_rst(self.rstReceived_VAR.get()):
+            self.rstReceived_Invalid_CB()
+
+
+    def rstReceived_Invalid_CB(self, p_entry_value=None, v_condition=None):
         messagebox.showinfo("Error - RST Received",
                             "Entered RST Received has length of either 0 or more than 8 characters. Resetting to prior value",
                             parent=self)
         self.rstReceived_VAR.set(self.rstReceived_save)
 
-    def rstReceived_Invalid_CB(self, p_entry_value, v_condition):
-        messagebox.showinfo("Error - RST Received",
-                            "Entered RST Received has length of either 0 or more than 8 characters. Resetting to prior value",
-                            parent=self)
-        self.rstReceived_VAR.set(self.rstReceived_save)
+    def is_valid_rst(self,rst):
+        if 3<= len(rst) <= 8:
+            return True
+        else:
+            return False
 
 
 

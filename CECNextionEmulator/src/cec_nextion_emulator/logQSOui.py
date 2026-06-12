@@ -506,7 +506,7 @@ class logQSOUI(ttk.Labelframe):
         self.rstSend_Entry.configure(validatecommand=_validatecmd)
         _validatecmd = (
             self.rstSend_Entry.register(
-                self.sentRST_Invalid_CB), "%P", "%V")
+                self.rstSend_Invalid_CB), "%P", "%V")
         self.rstSend_Entry.configure(invalidcommand=_validatecmd)
         self.rstSend_Entry.bind("<Button>", self.rstSend_Entered_CB, add="+")
         self.rstRcvd_Entry = ttk.Entry(
@@ -631,7 +631,7 @@ class logQSOUI(ttk.Labelframe):
     def rstSend_Validate_CB(self, p_entry_value, v_condition):
         pass
 
-    def sentRST_Invalid_CB(self, p_entry_value, v_condition):
+    def rstSend_Invalid_CB(self, p_entry_value, v_condition):
         pass
 
     def rstSend_Entered_CB(self, event=None):
