@@ -78,7 +78,6 @@ class logQSO(baseui.logQSOUI):
         #
         #   Create a handler for each entry field
         #
-        #   (self, parent, widget_name, fieldWidth, vkeyboard, nextWidget=None, **kw)
         self.callsign_Object =      entryFieldHandler(self, "callsign", 20, VirtualKeyboard, self.logQSO_Button)
         self.frequency_Object =     entryFieldHandler(self, "frequency", 6, VirtualNumericKeyboard, self.popup) #sself.logQSO_Button) # self.logQSO_Button)
         self.utcDateYYYY_Object =   entryFieldHandler(self, "utcDateYYYY", 4, VirtualNumericKeyboard, self.popup) #s self.utcDateMM_Entry)
@@ -231,7 +230,6 @@ class logQSO(baseui.logQSOUI):
             return dateOrTime
 
     def updateLocalDateTime(self):
-        # print("in update", self.utcDateYYYY_VAR.get())
         utc_string = (self.utcDateYYYY_VAR.get() + "-" + self.utcDateMM_VAR.get() + "-" + self.utcDateDD_VAR.get() +
                       "T" + self.utcTimeHH_VAR.get() +":" + self.utcTimeMM_VAR.get() +":00Z")
 
@@ -248,15 +246,10 @@ class logQSO(baseui.logQSOUI):
     #
 
     def utcDateYYYY_validation(self):
-        print("utcDateYYYY validation")
-        print(self.utcDateYYYY_VAR.get())
-
         return self.is_valid_year(self.utcDateYYYY_VAR.get())
 
 
     def utcDateYYYY_errorHandler(self):
-        print("utcDateYYYY errorHandler")
-        print(self.utcDateYYYY_VAR.get())
         messagebox.showinfo("Error - Illegal Year",
                             "Entered year not in the range of 2026 - 2050. Resetting to prior value",
                             parent=self)
@@ -265,8 +258,6 @@ class logQSO(baseui.logQSOUI):
         return self.utcDateYYYY_VAR.get()
 
     def utcDateYYYY_postProcessor(self):
-        print("utcDateYYYY postProcessor")
-        print(self.utcDateYYYY_VAR.get())
         self.updateLocalDateTime()
     #
     #   utcDateYYYY validation routine
@@ -282,13 +273,9 @@ class logQSO(baseui.logQSOUI):
     #
 
     def utcDateMM_validation(self):
-        print("utcDateMM validation")
-        print(self.utcDateMM_VAR.get())
         return self.is_valid_month(self.utcDateMM_VAR.get())
 
     def utcDateMM_errorHandler(self):
-        print("utcDateMM errorHandler")
-        print(self.utcDateMM_VAR.get())
         messagebox.showinfo("Error - Illegal Month",
                             "Entered month not in the range of 1-12. Resetting to prior value",
                             parent=self)
@@ -297,8 +284,6 @@ class logQSO(baseui.logQSOUI):
         return self.utcDateMM_VAR.get()
 
     def utcDateMM_postProcessor(self):
-        print("utcDateMM postProcessor")
-        print(self.utcDateMM_VAR.get())
         self.utcDateMM_VAR.set(self.formatDateTime(self.utcDateMM_VAR.get()))   #   add leading zero if a single digit
         self.updateLocalDateTime()
 
@@ -309,22 +294,14 @@ class logQSO(baseui.logQSOUI):
     def is_valid_month(self, month):
         return gv.validateNumber(int(month), 1, 12)
 
-
-
-
-
     #
     #   utcDateDD processing routines
     #
 
     def utcDateDD_validation(self):
-        print("utcDateDD validation")
-        print(self.utcDateDD_VAR.get())
         return self.is_valid_day(self.utcDateYYYY_VAR.get(), self.utcDateMM_VAR.get(), self.utcDateDD_VAR.get())
 
     def utcDateDD_errorHandler(self):
-        print("utcDateDD errorHandler")
-        print(self.utcDateDD_VAR.get())
         messagebox.showinfo("Error - Illegal Day",
                             "Entered day is not valid for Year and Month. Resetting to prior value",
                             parent=self)
@@ -333,8 +310,6 @@ class logQSO(baseui.logQSOUI):
         return self.utcDateDD_VAR.get()
 
     def utcDateDD_postProcessor(self):
-        print("utcDateDD postProcessor")
-        print(self.utcDateDD_VAR.get())
         self.utcDateDD_VAR.set(self.formatDateTime(self.utcDateDD_VAR.get()))   #   add leading zero if a single digit
         self.updateLocalDateTime()
 
@@ -369,13 +344,9 @@ class logQSO(baseui.logQSOUI):
     #
 
     def utcTimeHH_validation(self):
-        print("utcTimeHH validation")
-        print(self.utcTimeHH_VAR.get())
         return self.is_valid_hour(self.utcTimeHH_VAR.get())
 
     def utcTimeHH_errorHandler(self):
-        print("utcTimeHH errorHandler")
-        print(self.utcTimeHH_VAR.get())
         messagebox.showinfo("Error - Illegal Time",
                             "Entered hour is not in range 0-23. Resetting to prior value",
                             parent=self)
@@ -385,8 +356,6 @@ class logQSO(baseui.logQSOUI):
         return self.utcTimeHH_VAR.get()
 
     def utcTimeHH_postProcessor(self):
-        print("utcTimeHH postProcessor")
-        print(self.utcTimeHH_VAR.get())
         self.utcTimeHH_VAR.set(self.formatDateTime(self.utcTimeHH_VAR.get()))  # add leading zero if a single digit
         self.updateLocalDateTime()
 
@@ -401,13 +370,9 @@ class logQSO(baseui.logQSOUI):
     #
 
     def utcTimeMM_validation(self):
-        print("utcTimeMM validation")
-        print(self.utcTimeMM_VAR.get())
         return True
 
     def utcTimeMM_errorHandler(self):
-        print("utcTimeMM errorHandler")
-        print(self.utcTimeMM_VAR.get())
         messagebox.showinfo("Error - Illegal Time",
                             "Entered hour is not in range 0-23. Resetting to prior value",
                             parent=self)
@@ -416,8 +381,6 @@ class logQSO(baseui.logQSOUI):
         return self.utcTimeMM_VAR.get()
 
     def utcTimeMM_postProcessor(self):
-        print("utcTimeMM postProcessor")
-        print(self.utcTimeMM_VAR.get())
         self.utcTimeMM_VAR.set(self.formatDateTime(self.utcTimeMM_VAR.get()))  # add leading zero if a single digit
         self.updateLocalDateTime()
 
@@ -441,13 +404,9 @@ class logQSO(baseui.logQSOUI):
     #
 
     def rstSend_validation(self):
-        print("rstSend validation")
-        print(self.rstSend_VAR.get())
         return self.is_valid_rst(self.rstSend_VAR.get())
 
     def rstSend_errorHandler(self):
-        print("rstSend errorHandler")
-        print(self.rstSend_VAR.get())
         messagebox.showinfo("Error - RST Sent",
                             "Entered RST Sent has length of either 0 or more than 8 characters. Resetting to prior value",
                             parent=self)
@@ -456,8 +415,6 @@ class logQSO(baseui.logQSOUI):
         return self.rstSend_VAR.get()
 
     def rstSend_postProcessor(self):
-        print("rstSend postProcessor")
-        print(self.rstSend_VAR.get())
         return self.rstSend_VAR.get()
 
         #
@@ -465,13 +422,9 @@ class logQSO(baseui.logQSOUI):
         #
 
     def rstRcvd_validation(self):
-        print("rstRecv validation")
-        print(self.rstRcvd_VAR.get())
         return self.is_valid_rst(self.rstRcvd_VAR.get())
 
     def rstRcvd_errorHandler(self):
-        print("rstRecv errorHandler")
-        print(self.rstRcvd_VAR.get())
         messagebox.showinfo("Error - RST Received",
                             "Entered RST Received has length of either 0 or more than 8 characters. Resetting to prior value",
                             parent=self)

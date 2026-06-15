@@ -29,10 +29,6 @@ class entryFieldHandler:
         self.saveVAR = None
 
     def focusInHandler(self, event):
-        print("focusInHandler:", self.widget_name)
-
-
-
 
         self.saveVAR= self.widget_VAR.get()
         self.widget_VAR.set(self.preProcessorCallback())
@@ -44,23 +40,15 @@ class entryFieldHandler:
 
 
     def focusOutHandler(self, event):
-        print("focusOutHandler:", self.widget_name)
-        # print(self.parent.focus_get())
-        # print(self.parent.focus_get().winfo_name())
 
-
-        print("value on way out=", self.widget_VAR.get())
         if (self.validationCallback()):
-            print("passed validation")
             self.postProcessorCallback()        #   Perform any post processing of values
             #
             #   Set focus to next logical widget
             #
-            print("managingFocus")
             self._manageFocus(self.nextWidget)   # this is the problem call
 
         else:
-            print("failed validation")
             self.widget.unbind("<FocusIn>")            #   Need to unbind to avoid focus in on return
             self.widget.unbind("<FocusOut>")           #   from error handling
 
@@ -78,7 +66,6 @@ class entryFieldHandler:
 
 
     def keyboardClosed(self, origValue, newValue):
-        print("keyboardClosed")
         self.widget_VAR.set(newValue)
 
         self.widget.bind("<FocusOut>", self.focusOutHandler)
@@ -86,9 +73,9 @@ class entryFieldHandler:
 
 
     def _manageFocus(self,target):
-        # print("_manageFocus", type(target))
-        # target.focus_set()
-        target.event_generate("<FocusIn>")
+
+        target.focus_set()
+        # target.event_generate("<FocusIn>")
 
 
 

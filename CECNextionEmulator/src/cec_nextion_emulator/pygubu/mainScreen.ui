@@ -63,6 +63,14 @@ SETTINGS
               <property name="row">0</property>
               <property name="sticky">ns</property>
             </layout>
+            <child>
+              <object class="pygubu.widgets.Tooltip" id="settings_Button_Tooltip" named="True">
+                <property name="padx">8</property>
+                <property name="relief">raised</property>
+                <property name="text" translatable="yes">Click to bring up a menu of settings that allow you to tune this software.</property>
+                <property name="wraplength">300</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
@@ -81,6 +89,14 @@ VFO
               <property name="row">0</property>
               <property name="sticky">ns</property>
             </layout>
+            <child>
+              <object class="pygubu.widgets.Tooltip" id="vfo_Button_Tooltip" named="True">
+                <property name="padx">8</property>
+                <property name="relief">raised</property>
+                <property name="text" translatable="yes">Click to switch between VFO-A and VFO-B</property>
+                <property name="wraplength">300</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
@@ -151,6 +167,14 @@ BAND UP
               <property name="row">0</property>
               <property name="sticky">ns</property>
             </layout>
+            <child>
+              <object class="pygubu.widgets.Tooltip" id="band_up_Tooltip" named="True">
+                <property name="padx">8</property>
+                <property name="relief">raised</property>
+                <property name="text" translatable="yes">Click to move the VFO to the next higher band</property>
+                <property name="wraplength">300</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
@@ -168,6 +192,14 @@ BAND DN
               <property name="row">0</property>
               <property name="sticky">ns</property>
             </layout>
+            <child>
+              <object class="pygubu.widgets.Tooltip" id="band_down_tooltip" named="True">
+                <property name="padx">8</property>
+                <property name="relief">raised</property>
+                <property name="text" translatable="yes">Click to move the VFO to the next lower band</property>
+                <property name="wraplength">300</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
@@ -185,6 +217,14 @@ LOCK
               <property name="row">0</property>
               <property name="sticky">ns</property>
             </layout>
+            <child>
+              <object class="pygubu.widgets.Tooltip" id="lock_Button_Tooltip" named="True">
+                <property name="padx">8</property>
+                <property name="relief">raised</property>
+                <property name="text" translatable="yes">Click to lock/unlock all the screen settings.</property>
+                <property name="wraplength">300</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
@@ -201,6 +241,14 @@ SPEAKER
               <property name="row">0</property>
               <property name="sticky">ns</property>
             </layout>
+            <child>
+              <object class="pygubu.widgets.Tooltip" id="speaker_Button_Tooltip" named="True">
+                <property name="padx">8</property>
+                <property name="relief">raised</property>
+                <property name="text" translatable="yes">Click to toggle between speaker output and mute</property>
+                <property name="wraplength">300</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>
@@ -278,6 +326,14 @@ CHANNELS
                           <property name="padx">0 10</property>
                           <property name="side">left</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="channels_Button_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Click to bring up the Channels window where you can edit your favorite frequencies and scan sets of channels.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -293,6 +349,14 @@ CW DECODE
                           <property name="padx">0 10</property>
                           <property name="side">left</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="cwDecode_Button_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Click to bring up a window that allows you to scan 240kHz and select an area to decode CW. This requires a second Nano.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -308,6 +372,14 @@ SPECTRUM
                           <property name="padx">0 10</property>
                           <property name="side">left</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="spectrumScan_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Click to bring up a window that allows you to scan 240kHZ of the band and look at average and peak signal levels.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -323,6 +395,14 @@ BAND SCAN
                           <property name="padx">0 10</property>
                           <property name="side">left</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="bandScan_Button_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Click to bring up a window that allows you to scan up to three sepeate bands for signals. </property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -338,6 +418,14 @@ SPLIT
                           <property name="padx">0 10</property>
                           <property name="side">left</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="split_Button_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Click to go into Split mode. </property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -353,6 +441,14 @@ RIT
                           <property name="padx">0 10</property>
                           <property name="side">left</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="rit_Button_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Click to go enable RIT</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -368,6 +464,14 @@ LOG QSO
                           <property name="padx">0 20</property>
                           <property name="side">left</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="log_QSO_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Click to bring up a window to Log a QSO.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -610,6 +714,14 @@ LOG QSO
                     </layout>
                   </object>
                 </child>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="tuning_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Click the up arrow to go up the current tuning factor. Down decreases the frequency by the tuning factor.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
@@ -680,6 +792,14 @@ LOG QSO
                     </layout>
                   </object>
                 </child>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="ATT_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Click to enable ATT. Move the dial to adjust the ATT. Click in plac to disable ATT.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -720,6 +840,15 @@ LOG QSO
                       <property name="anchor">center</property>
                       <property name="side">bottom</property>
                     </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="IFS_Tooltip" named="True">
+                    <property name="justify">left</property>
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Click to enable IFS. Move the dial to adjust the IFS. Click in plac to disable IFS.</property>
+                    <property name="wraplength">300</property>
                   </object>
                 </child>
               </object>
@@ -935,6 +1064,15 @@ LOG QSO
                       <property name="row">4</property>
                       <property name="sticky">w</property>
                     </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="cw_Settings_Frame_Tooltips" named="True">
+                    <property name="justify">left</property>
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Current CW Settings. Click to go into the CW Settings Menu to edit them.</property>
+                    <property name="wraplength">300</property>
                   </object>
                 </child>
               </object>

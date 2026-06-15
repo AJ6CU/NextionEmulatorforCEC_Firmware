@@ -102,6 +102,14 @@ STOP!
                   <property name="row">0</property>
                   <property name="rowspan">2</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="stop_Button_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Click this button to stop transmitting</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -409,6 +417,14 @@ STOP!
                 </child>
               </object>
             </child>
+            <child>
+              <object class="pygubu.widgets.Tooltip" id="VFO_Display_Tooltip" named="True">
+                <property name="padx">8</property>
+                <property name="relief">raised</property>
+                <property name="text" translatable="yes">Current frequency settings. Click on an individual number to move it up or down.</property>
+                <property name="wraplength">300</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>
@@ -491,6 +507,14 @@ STOP!
                   <property name="padx">10 0</property>
                   <property name="side">left</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="secondaty_VFO_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">This is the frequency of VFO-B.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -538,6 +562,14 @@ STOP!
                   <property name="anchor">center</property>
                   <property name="side">left</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="release_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Version of the MCU Firmware.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
@@ -602,16 +634,6 @@ STOP!
               </object>
             </child>
             <child>
-              <object class="ttk.Label" id="tuning_Preset_Units_Label" named="True">
-                <property name="style">Heading1.TLabel</property>
-                <property name="text" translatable="yes">Hz</property>
-                <layout manager="pack">
-                  <property name="padx">15</property>
-                  <property name="side">left</property>
-                </layout>
-              </object>
-            </child>
-            <child>
               <object class="ttk.Button" id="tuning_Multiplier_Button" named="True">
                 <property name="command" type="command" cbtype="simple">tuning_Multiplier_Button_CB</property>
                 <property name="style">Button2b.TButton</property>
@@ -625,6 +647,32 @@ x 100mhz</property>
                   <property name="padx">20 0</property>
                   <property name="side">left</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="current_Tuning_Rate_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Click to cycle thru different tuning rates. You can also directly click a digit in the VFO and this will be set automatically.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="tuning_Preset_Units_Label" named="True">
+                <property name="style">Heading1.TLabel</property>
+                <property name="text" translatable="yes">Hz</property>
+                <layout manager="pack">
+                  <property name="padx">15</property>
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="pygubu.widgets.Tooltip" id="tuning_Preset_Rate_Tooltip" named="True">
+                <property name="padx">8</property>
+                <property name="relief">raised</property>
+                <property name="text" translatable="yes">Controls which of the preset tuning rates has been selected.</property>
+                <property name="wraplength">300</property>
               </object>
             </child>
           </object>

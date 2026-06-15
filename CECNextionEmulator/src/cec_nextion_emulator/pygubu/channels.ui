@@ -152,6 +152,14 @@
                           <property name="padx">165 0</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="channel_Name_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Up to 5 characters to label a channel. Only available for first 9 channels.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -163,6 +171,14 @@
                           <property name="padx">95 0</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="frequency_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">The current frequency assigned to a channel.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -174,6 +190,14 @@
                           <property name="padx">80 0</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="mode_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Allows you to select the mode for the radio. DFT is for the default mode for the band.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -185,6 +209,14 @@
                           <property name="padx">75 0</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="visible_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Allows you to hide the channel name.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -197,6 +229,14 @@ Set</property>
                           <property name="padx">80 7</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="scanSet_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Allow you to assign the channel to one of 4 sets of channels to scan together.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -208,6 +248,14 @@ Set</property>
                           <property name="padx">30</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="dirty_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">If red, a chance has been made but it has not been saved. Green means the change has been saved.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -456,6 +504,14 @@ Set</property>
                           <property name="padx">0 15</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="channelToVRO_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Currently selected Channel will be written to the VFO.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -470,6 +526,14 @@ Set</property>
                           <property name="padx">0 15</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="VFOToChannel_Tooltup" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">The current VFO will be written to the selected channel.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -484,6 +548,14 @@ Set</property>
                           <property name="columnspan">2</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="scan_Button_tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">All the channels in the scan set selected on the right will be scanned until the Stop button is pushed.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -509,6 +581,14 @@ Set</property>
                           <property name="padx">0 15</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="save_Button_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">The contents of the selected channels will be saved. </property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -522,6 +602,14 @@ Set</property>
                           <property name="padx">0 15</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="saveAll_Button_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">All of the channels that have been saved will be saved.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -534,6 +622,14 @@ Set</property>
                           <property name="padx">0 15</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="refresh_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">The contents of the channels will be re-read from EEPROM. Any changes will be lost.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -545,6 +641,14 @@ Set</property>
                           <property name="column">3</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="closeButton_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Closes the window. Current changes are saved for this session until radio is power cycled.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -572,6 +676,14 @@ Set</property>
                       <property name="row">1</property>
                       <property name="sticky">e</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="scanSetLabel_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">Click the menu to select which set of channels to scan.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -636,6 +748,14 @@ Set</property>
                       <property name="row">2</property>
                       <property name="sticky">e</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="timeOnFrequency_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">Allows you to adjust how long each station will have before going onto the next one in the scan set.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>

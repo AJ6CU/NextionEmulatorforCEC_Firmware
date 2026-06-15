@@ -9,6 +9,7 @@ UI source file: mainScreen.ui
 import tkinter as tk
 import tkinter.ttk as ttk
 from JogwheelCustom import JogwheelCustom
+from pygubu.widgets.simpletooltip import Tooltip
 from theVFO import theVFO
 
 
@@ -73,6 +74,12 @@ class mainScreenUI(ttk.Frame):
             text='  \nSETTINGS\n  ',
             textvariable=self.settings_VAR,
             width=12)
+        self.settings_Button_Tooltip = Tooltip(self.settings_Button)
+        self.settings_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to bring up a menu of settings that allow you to tune this software.',
+            wraplength=300)
         self.settings_Button.grid(column=0, padx="0 2", row=0, sticky="ns")
         self.settings_Button.configure(command=self.settings_CB)
         self.vfo_Button = ttk.Button(self.menuBar_Frame, name="vfo_button")
@@ -83,6 +90,12 @@ class mainScreenUI(ttk.Frame):
             text='\nVFO\n',
             textvariable=self.vfo_VAR,
             width=12)
+        self.vfo_Button_Tooltip = Tooltip(self.vfo_Button)
+        self.vfo_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to switch between VFO-A and VFO-B',
+            wraplength=300)
         self.vfo_Button.grid(column=1, padx="0 2", row=0, sticky="ns")
         self.vfo_Button.configure(command=self.vfo_CB)
         self.mode_select_Menubutton = ttk.Menubutton(
@@ -130,6 +143,12 @@ class mainScreenUI(ttk.Frame):
             text='\nBAND UP\n',
             textvariable=self.band_up_VAR,
             width=12)
+        self.band_up_Tooltip = Tooltip(self.band_up_Button)
+        self.band_up_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to move the VFO to the next higher band',
+            wraplength=300)
         self.band_up_Button.grid(column=3, padx="0 2", row=0, sticky="ns")
         self.band_up_Button.configure(command=self.band_up_CB)
         self.band_down_Button = ttk.Button(
@@ -140,6 +159,12 @@ class mainScreenUI(ttk.Frame):
             text='\nBAND DN\n',
             textvariable=self.band_down_VAR,
             width=12)
+        self.band_down_tooltip = Tooltip(self.band_down_Button)
+        self.band_down_tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to move the VFO to the next lower band',
+            wraplength=300)
         self.band_down_Button.grid(column=4, padx="0 2", row=0, sticky="ns")
         self.band_down_Button.configure(command=self.band_down_CB)
         self.lock_Button = ttk.Button(self.menuBar_Frame, name="lock_button")
@@ -149,6 +174,12 @@ class mainScreenUI(ttk.Frame):
             text='\nLOCK\n',
             textvariable=self.lock_VAR,
             width=12)
+        self.lock_Button_Tooltip = Tooltip(self.lock_Button)
+        self.lock_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to lock/unlock all the screen settings.',
+            wraplength=300)
         self.lock_Button.grid(column=5, padx="0 2", row=0, sticky="ns")
         self.lock_Button.configure(command=self.lock_CB)
         self.speaker_Button = ttk.Button(
@@ -159,6 +190,12 @@ class mainScreenUI(ttk.Frame):
             text='\nSPEAKER\n',
             textvariable=self.speaker_VAR,
             width=12)
+        self.speaker_Button_Tooltip = Tooltip(self.speaker_Button)
+        self.speaker_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to toggle between speaker output and mute',
+            wraplength=300)
         self.speaker_Button.grid(column=6, row=0, sticky="ns")
         self.speaker_Button.configure(command=self.speaker_CB)
         self.menuBar_Frame.pack(anchor="n", expand=True, fill="x", side="top")
@@ -189,6 +226,12 @@ class mainScreenUI(ttk.Frame):
             style="Button2b.TButton",
             text='\nCHANNELS\n',
             width=11)
+        self.channels_Button_Tooltip = Tooltip(self.channels_Button)
+        self.channels_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to bring up the Channels window where you can edit your favorite frequencies and scan sets of channels.',
+            wraplength=300)
         self.channels_Button.pack(anchor="nw", padx="0 10", side="left")
         self.channels_Button.configure(command=self.channels_CB)
         self.cwDecode_Button = ttk.Button(
@@ -197,6 +240,12 @@ class mainScreenUI(ttk.Frame):
             style="Button2b.TButton",
             text='\nCW DECODE\n',
             width=11)
+        self.cwDecode_Button_Tooltip = Tooltip(self.cwDecode_Button)
+        self.cwDecode_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to bring up a window that allows you to scan 240kHz and select an area to decode CW. This requires a second Nano.',
+            wraplength=300)
         self.cwDecode_Button.pack(anchor="nw", padx="0 10", side="left")
         def cwDecode_Button_cmd_(): self.cwDecode_Button_CB("cwDecode_Button")
 
@@ -205,6 +254,12 @@ class mainScreenUI(ttk.Frame):
             self.signal_Control_Frame, name="spectrumscan_button")
         self.spectrumScan_Button.configure(
             style="Button2b.TButton", text='\nSPECTRUM\n', width=11)
+        self.spectrumScan_Tooltip = Tooltip(self.spectrumScan_Button)
+        self.spectrumScan_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to bring up a window that allows you to scan 240kHZ of the band and look at average and peak signal levels.',
+            wraplength=300)
         self.spectrumScan_Button.pack(anchor="nw", padx="0 10", side="left")
         def spectrumScan_Button_cmd_(): self.spectrumScan_Button_CB("spectrumScan_Button")
 
@@ -215,6 +270,12 @@ class mainScreenUI(ttk.Frame):
             style="Button2b.TButton",
             text='\nBAND SCAN\n',
             width=11)
+        self.bandScan_Button_Tooltip = Tooltip(self.bandScan_Button)
+        self.bandScan_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to bring up a window that allows you to scan up to three sepeate bands for signals. ',
+            wraplength=300)
         self.bandScan_Button.pack(anchor="nw", padx="0 10", side="left")
         def bandScan_Button_cmd_(): self.bandScan_Button_CB("bandScan_Button")
 
@@ -225,6 +286,12 @@ class mainScreenUI(ttk.Frame):
             style="Button2b.TButton",
             text='\nSPLIT\n',
             width=11)
+        self.split_Button_Tooltip = Tooltip(self.split_Button)
+        self.split_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to go into Split mode. ',
+            wraplength=300)
         self.split_Button.pack(anchor="nw", padx="0 10", side="left")
         self.split_Button.configure(command=self.split_CB)
         self.rit_Button = ttk.Button(
@@ -233,6 +300,12 @@ class mainScreenUI(ttk.Frame):
             style="Button2b.TButton",
             text='\nRIT\n',
             width=11)
+        self.rit_Button_Tooltip = Tooltip(self.rit_Button)
+        self.rit_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to go enable RIT',
+            wraplength=300)
         self.rit_Button.pack(anchor="nw", padx="0 10", side="left")
         self.rit_Button.configure(command=self.rit_CB)
         self.logQSO_Button = ttk.Button(
@@ -241,6 +314,12 @@ class mainScreenUI(ttk.Frame):
             style="Button2b.TButton",
             text='\nLOG QSO\n',
             width=11)
+        self.log_QSO_Tooltip = Tooltip(self.logQSO_Button)
+        self.log_QSO_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to bring up a window to Log a QSO.',
+            wraplength=300)
         self.logQSO_Button.pack(anchor="nw", padx="0 20", side="left")
         self.logQSO_Button.configure(command=self.logQSO_CB)
         self.signal_Control_Frame.grid(column=0, pady=10, row=0, sticky="n")
@@ -389,6 +468,12 @@ class mainScreenUI(ttk.Frame):
             "<ButtonRelease>",
             self.upButtonReleased_CB,
             add="")
+        self.tuning_Tooltip = Tooltip(self.tuningArrow_Labelframe)
+        self.tuning_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click the up arrow to go up the current tuning factor. Down decreases the frequency by the tuning factor.',
+            wraplength=300)
         self.tuningArrow_Labelframe.grid(
             column=0,
             columnspan=3,
@@ -447,6 +532,12 @@ class mainScreenUI(ttk.Frame):
             text='ATT (OFF)',
             textvariable=self.ATT_Status_VAR)
         self.ATT_Status_Label.pack(anchor="center", side="bottom")
+        self.ATT_Tooltip = Tooltip(self.ATT_Frame)
+        self.ATT_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to enable ATT. Move the dial to adjust the ATT. Click in plac to disable ATT.',
+            wraplength=300)
         self.ATT_Frame.pack(padx=30, side="left")
         self.IFS_Frame = ttk.Frame(self.att_ifs_Frame, name="ifs_frame")
         self.IFS_Frame.configure(height=200, style="Normal.TFrame", width=200)
@@ -479,6 +570,13 @@ class mainScreenUI(ttk.Frame):
             text='IFS (OFF)',
             textvariable=self.IFS_Status_VAR)
         self.IFS_Status_Label.pack(anchor="center", side="bottom")
+        self.IFS_Tooltip = Tooltip(self.IFS_Frame)
+        self.IFS_Tooltip.configure(
+            justify="left",
+            padx=8,
+            relief="raised",
+            text='Click to enable IFS. Move the dial to adjust the IFS. Click in plac to disable IFS.',
+            wraplength=300)
         self.IFS_Frame.pack(side="left")
         self.att_ifs_Frame.pack(
             anchor="nw",
@@ -605,6 +703,13 @@ class mainScreenUI(ttk.Frame):
         self.delay_starting_tx_units_Label.grid(column=2, row=4, sticky="w")
         self.delay_starting_tx_units_Label.bind(
             "<1>", self.cwSettings_CB, add="")
+        self.cw_Settings_Frame_Tooltips = Tooltip(self.cw_Info_Frame)
+        self.cw_Settings_Frame_Tooltips.configure(
+            justify="left",
+            padx=8,
+            relief="raised",
+            text='Current CW Settings. Click to go into the CW Settings Menu to edit them.',
+            wraplength=300)
         self.cw_Info_Frame.pack(
             anchor="nw",
             expand=False,

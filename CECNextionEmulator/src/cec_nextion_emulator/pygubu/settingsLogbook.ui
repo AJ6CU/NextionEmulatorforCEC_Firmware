@@ -322,6 +322,14 @@ Location</property>
                   <property name="padx">10</property>
                   <property name="side">left</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="apply_Button_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Accepts changes you made and closes the window</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -334,6 +342,14 @@ Location</property>
                   <property name="padx">10</property>
                   <property name="side">left</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="cancel_Button_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Closes the window without making any changes. </property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

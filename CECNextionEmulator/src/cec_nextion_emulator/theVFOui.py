@@ -8,6 +8,7 @@ UI source file: theVFO.ui
 """
 import tkinter as tk
 import tkinter.ttk as ttk
+from pygubu.widgets.simpletooltip import Tooltip
 
 
 def safe_i18n_translator(value):
@@ -88,6 +89,12 @@ class theVFOUI(ttk.Frame):
             style="RedButton2.TButton",
             text='\nSTOP!\n',
             width=6)
+        self.stop_Button_Tooltip = Tooltip(self.stop_Button)
+        self.stop_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click this button to stop transmitting',
+            wraplength=300)
         self.stop_Button.grid(column=1, padx="20 10", row=0, rowspan=2)
         self.stop_Button.configure(command=self.stop_CB)
         separator2 = ttk.Separator(self.rxTX_Status_Frame)
@@ -268,6 +275,12 @@ class theVFOUI(ttk.Frame):
         self.Tx_Freq_Alert_Label.pack(
             anchor="w", expand=True, fill="x", side="left")
         self.VFO_TX_Offset_Frame.grid(column=0, padx="0 10", row=4, sticky="w")
+        self.VFO_Display_Tooltip = Tooltip(self.vfo_display_Frame)
+        self.VFO_Display_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Current frequency settings. Click on an individual number to move it up or down.',
+            wraplength=300)
         self.vfo_display_Frame.grid(column=1, padx="0 0", row=0, sticky="ew")
         self.vfoA_Frame.grid(column=0, row=0, sticky="ew")
         self.vfoA_Frame.grid_anchor("w")
@@ -309,6 +322,12 @@ class theVFOUI(ttk.Frame):
             text='99.999.999',
             textvariable=self.secondary_VFO_Formatted_VAR,
             width=10)
+        self.secondaty_VFO_Tooltip = Tooltip(self.secondary_VFO_Label)
+        self.secondaty_VFO_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='This is the frequency of VFO-B.',
+            wraplength=300)
         self.secondary_VFO_Label.pack(anchor="nw", padx="10 0", side="left")
         self.secondary_Mode_Label = ttk.Label(
             self.vfo_Frame, name="secondary_mode_label")
@@ -336,6 +355,12 @@ class theVFOUI(ttk.Frame):
             style="Heading2b.TLabel",
             text='V2.0 RCLxyz',
             textvariable=self.firmwareVersion_VAR)
+        self.release_Tooltip = Tooltip(label6)
+        self.release_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Version of the MCU Firmware.',
+            wraplength=300)
         label6.pack(anchor="center", side="left")
         self.callsign_Frame.pack(padx="20 0", side="left")
         self.tuning_Step_Frame = ttk.Frame(
@@ -380,11 +405,6 @@ class theVFOUI(ttk.Frame):
             label='100')
         self.tuning_Preset_Menubutton.configure(menu=self.tuning_Preset_Menu)
         self.tuning_Preset_Menubutton.pack(side="left")
-        self.tuning_Preset_Units_Label = ttk.Label(
-            self.tuning_Step_Frame, name="tuning_preset_units_label")
-        self.tuning_Preset_Units_Label.configure(
-            style="Heading1.TLabel", text='Hz')
-        self.tuning_Preset_Units_Label.pack(padx=15, side="left")
         self.tuning_Multiplier_Button = ttk.Button(
             self.tuning_Step_Frame, name="tuning_multiplier_button")
         self.tuning_Multiplier_VAR = tk.StringVar(
@@ -393,10 +413,28 @@ class theVFOUI(ttk.Frame):
             style="Button2b.TButton",
             text='Dial Tuning\nx 100mhz',
             textvariable=self.tuning_Multiplier_VAR)
+        self.current_Tuning_Rate_Tooltip = Tooltip(
+            self.tuning_Multiplier_Button)
+        self.current_Tuning_Rate_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click to cycle thru different tuning rates. You can also directly click a digit in the VFO and this will be set automatically.',
+            wraplength=300)
         self.tuning_Multiplier_Button.pack(
             anchor="e", expand=True, fill="x", padx="20 0", side="left")
         self.tuning_Multiplier_Button.configure(
             command=self.tuning_Multiplier_Button_CB)
+        self.tuning_Preset_Units_Label = ttk.Label(
+            self.tuning_Step_Frame, name="tuning_preset_units_label")
+        self.tuning_Preset_Units_Label.configure(
+            style="Heading1.TLabel", text='Hz')
+        self.tuning_Preset_Units_Label.pack(padx=15, side="left")
+        self.tuning_Preset_Rate_Tooltip = Tooltip(self.tuning_Step_Frame)
+        self.tuning_Preset_Rate_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Controls which of the preset tuning rates has been selected.',
+            wraplength=300)
         self.tuning_Step_Frame.pack(padx="30 0", side="left")
         self.vfoB_Frame.grid(column=0, row=2, sticky="new")
         self.configure(height=200, style="Normal.TFrame", width=1250)

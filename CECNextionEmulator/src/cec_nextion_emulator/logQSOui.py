@@ -255,6 +255,12 @@ class logQSOUI(ttk.Labelframe):
         self.qsoTime_Label.grid(column=2, pady="0 5", row=0)
         self.utc_Label = ttk.Label(self.timeDate_Frame, name="utc_label")
         self.utc_Label.configure(style="Heading2b.TLabel", text='UTC:')
+        self.utc_Tooltip = Tooltip(self.utc_Label)
+        self.utc_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Automaticaly sets to the current UTC (assuming your timezone is set correctly). Adjust using these fields as necessary. Local time is provided below.',
+            wraplength=300)
         self.utc_Label.grid(column=0, row=1)
         self.utcDate_Frame = ttk.Frame(
             self.timeDate_Frame, name="utcdate_frame")
@@ -491,6 +497,12 @@ class logQSOUI(ttk.Labelframe):
             text='Log',
             textvariable=self.startStopSpectrum_VAR,
             width=10)
+        self.log_Button_Tooltip = Tooltip(self.logQSO_Button)
+        self.log_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='A log entry is written using the data above.',
+            wraplength=300)
         self.logQSO_Button.grid(padx="0 15", row=0)
         self.logQSO_Button.configure(command=self.logQSO_CB)
         self.cancel_Button = ttk.Button(
@@ -500,6 +512,12 @@ class logQSOUI(ttk.Labelframe):
             takefocus=True,
             text='Cancel',
             width=10)
+        self.cancel_Button_tooltip = Tooltip(self.cancel_Button)
+        self.cancel_Button_tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='No log entry is made. Window is closed.',
+            wraplength=300)
         self.cancel_Button.grid(column=3, row=0)
         self.cancel_Button.configure(command=self.cancel_CB)
         self.closingFrame.pack(pady="20 15", side="top")

@@ -146,13 +146,15 @@ class frequencyChannel(baseui.frequencyChannelUI):
         self.channel_Freq_VAR.set(gv.formatVFO(self.channel_Freq_save))
 
 
-    def Channel_Freq_Changed_CB(self):
+    def Channel_Freq_Changed_CB(self,original, newValue):
         unformatted_Freq_value = gv.unformatFrequency(self.channel_Freq_VAR.get())
 
-        if (gv.validateNumber(unformatted_Freq_value, gv.FREQ_BOUNDS['LOW'], gv.FREQ_BOUNDS['HIGH'])):
+        # if (gv.validateNumber(unformatted_Freq_value, gv.FREQ_BOUNDS['LOW'], gv.FREQ_BOUNDS['HIGH'])):
+        if (gv.validateNumber(newValue, gv.FREQ_BOUNDS['LOW'], gv.FREQ_BOUNDS['HIGH'])):
 
-            if (unformatted_Freq_value != self.channel_Freq_save):  # compare the unformatted string versions
-                self.channel_Freq_VAR.set(gv.formatVFO(unformatted_Freq_value))
+            if (newValue != self.channel_Freq_save):  # compare the unformatted string versions
+            # if (unformatted_Freq_value != self.channel_Freq_save):  # compare the unformatted string versions
+                self.channel_Freq_VAR.set(gv.formatVFO(newValue))
                 self.channel_Dirty()
         else:
             self.channel_Freq_Invalid_CB(self.channel_Freq_VAR.get())
@@ -204,8 +206,10 @@ class frequencyChannel(baseui.frequencyChannelUI):
             self.dirtyChannel_Label.configure(style="GreenLED.TLabel")
             self.dirty = False
 
-    def channel_Name_Changed_CB(self, event=None):
-        self.channel_Dirty()
+    def channel_Name_Changed_CB(self, original, newValue):
+        if original != newValue:
+            self.channel_Label_VAR.set(newValue.ljust(5))
+            self.channel_Dirty()
 
 
     def Channel_ShowLabel_Changed_CB(self, itemid):

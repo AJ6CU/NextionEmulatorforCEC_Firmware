@@ -269,11 +269,23 @@ class settingsLogbookUI(ttk.Labelframe):
             height=50, style="Normal.TFrame", width=200)
         self.apply_Button = ttk.Button(self.closingFrame, name="apply_button")
         self.apply_Button.configure(style="Button2b.TButton", text='Apply')
+        self.apply_Button_Tooltip = Tooltip(self.apply_Button)
+        self.apply_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Accepts changes you made and closes the window',
+            wraplength=300)
         self.apply_Button.pack(anchor="center", padx=10, side="left")
         self.apply_Button.configure(command=self.apply_CB)
         self.cancel_Buttom = ttk.Button(
             self.closingFrame, name="cancel_buttom")
         self.cancel_Buttom.configure(style="Button2b.TButton", text='Cancel')
+        self.cancel_Button_Tooltip = Tooltip(self.cancel_Buttom)
+        self.cancel_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Closes the window without making any changes. ',
+            wraplength=300)
         self.cancel_Buttom.pack(anchor="center", padx=10, side="left")
         self.cancel_Buttom.configure(command=self.cancel_CB)
         self.closingFrame.pack(

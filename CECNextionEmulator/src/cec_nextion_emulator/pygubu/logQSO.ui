@@ -329,6 +329,14 @@
                       <property name="column">0</property>
                       <property name="row">1</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="utc_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">Automaticaly sets to the current UTC (assuming your timezone is set correctly). Adjust using these fields as necessary. Local time is provided below.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -706,6 +714,14 @@
                   <property name="padx">0 15</property>
                   <property name="row">0</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="log_Button_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">A log entry is written using the data above.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -719,6 +735,14 @@
                   <property name="column">3</property>
                   <property name="row">0</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="cancel_Button_tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">No log entry is made. Window is closed.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

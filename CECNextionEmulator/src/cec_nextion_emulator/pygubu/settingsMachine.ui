@@ -71,11 +71,20 @@
                       <property name="row">0</property>
                       <property name="sticky">w</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="DSP_Enable_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">CW decoding requires a second processor running I2cmeter1 software. If you have this processor installed, set this switch to True. Otherwise set it to False.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
                   <object class="ttk.Menubutton" id="DSP_Enable_Menubutton" named="True">
                     <property name="style">Heading0.TMenubutton</property>
+                    <property name="takefocus">true</property>
                     <property name="textvariable">string:DSP_Enable_VAR</property>
                     <property name="width">5</property>
                     <layout manager="grid">
@@ -148,11 +157,20 @@
                       <property name="row">0</property>
                       <property name="sticky">w</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="PWR_SWR_Enable_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">It you have a PWR/SWR circuit connected (requires a second processor), you can set this switch to True.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
                   <object class="ttk.Menubutton" id="PWR_SWR_Menubutton" named="True">
                     <property name="style">Heading0.TMenubutton</property>
+                    <property name="takefocus">true</property>
                     <property name="textvariable">string:PWR_SWR_Enable_VAR</property>
                     <property name="width">5</property>
                     <layout manager="grid">
@@ -198,18 +216,24 @@
                       <property name="row">1</property>
                       <property name="sticky">w</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="PWR_Factor_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">This allows you to calibrate the PWR out reading to a known standard. 1.0 = No change. 0.9 would equal 90% while 2.0 would equal 200%.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
                   <object class="ttk.Entry" id="PWR_Factor_Entry" named="True">
                     <property name="font">{Arial} 24 {}</property>
                     <property name="justify">right</property>
+                    <property name="takefocus">true</property>
                     <property name="text" translatable="yes">0.0</property>
                     <property name="textvariable">string:PWR_Factor_VAR</property>
-                    <property name="validate">focusout</property>
-                    <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">PWR_Factor_Validation_CB</property>
                     <property name="width">5</property>
-                    <bind sequence="&lt;Button&gt;" handler="PWR_Factor_Entered_CB" add="True" />
                     <layout manager="grid">
                       <property name="column">1</property>
                       <property name="padx">10</property>
@@ -232,18 +256,25 @@
                       <property name="row">2</property>
                       <property name="sticky">w</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="SWR_Factor_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">This allows you to calibrate the SWR out reading to a known standard. 1.0 = No change. 0.9 would equal 90% while 2.0 would equal 200%.
+</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
                   <object class="ttk.Entry" id="SWR_Factor_Entry" named="True">
                     <property name="font">{Arial} 24 {}</property>
                     <property name="justify">right</property>
+                    <property name="takefocus">true</property>
                     <property name="text" translatable="yes">0.0</property>
                     <property name="textvariable">string:SWR_Factor_VAR</property>
-                    <property name="validate">focusout</property>
-                    <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">SWR_Factor_Validation_CB</property>
                     <property name="width">5</property>
-                    <bind sequence="&lt;Button&gt;" handler="SWR_Factor_Entered_CB" add="True" />
                     <layout manager="grid">
                       <property name="column">1</property>
                       <property name="padx">10</property>
@@ -280,6 +311,14 @@ Radio (ms):</property>
                       <property name="row">0</property>
                       <property name="sticky">w</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="MCU_Command_Headroom_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">The Raduino MCU can get overwhelmed with demands from the UX. If you start to see random errors on the log, increase this value slightly.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -288,6 +327,7 @@ Radio (ms):</property>
                     <property name="from_">1</property>
                     <property name="justify">right</property>
                     <property name="style">Custom.TSpinbox</property>
+                    <property name="takefocus">true</property>
                     <property name="textvariable">string:MCU_Command_Headroom_VAR</property>
                     <property name="to">20</property>
                     <property name="width">4</property>
@@ -312,6 +352,14 @@ UX changes (ms):</property>
                       <property name="row">2</property>
                       <property name="sticky">w</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="MCU_Update_Period_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">This controls how frequently the  system checks for changes made by the user. IF you notice changes in the user interface start to lag, you can try decreasing this number. If it is too small, it can also put a burden on the processor that will also create lag.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -320,6 +368,7 @@ UX changes (ms):</property>
                     <property name="from_">1</property>
                     <property name="justify">right</property>
                     <property name="style">Custom.TSpinbox</property>
+                    <property name="takefocus">true</property>
                     <property name="textvariable">string:MCU_Update_Period_VAR</property>
                     <property name="to">20</property>
                     <property name="width">4</property>
@@ -345,6 +394,14 @@ MCU/DPS (ms):</property>
                       <property name="row">3</property>
                       <property name="sticky">w</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="MCU_Read_Wait_Period_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">The processor hosting the User Interface can look for data prior to the Raduino completing the writing of the data. This allows you to increase the wait time for the Raduino to complete writing the data. Too short, will generate data errors that you will see in the log.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -353,6 +410,7 @@ MCU/DPS (ms):</property>
                     <property name="from_">1</property>
                     <property name="justify">right</property>
                     <property name="style">Custom.TSpinbox</property>
+                    <property name="takefocus">true</property>
                     <property name="textvariable">string:MCU_Read_Wait_Period_VAR</property>
                     <property name="to">20</property>
                     <property name="width">4</property>
@@ -384,24 +442,42 @@ MCU/DPS (ms):</property>
               <object class="ttk.Button" id="apply_Button" named="True">
                 <property name="command" type="command" cbtype="simple">apply_CB</property>
                 <property name="style">Button2b.TButton</property>
+                <property name="takefocus">true</property>
                 <property name="text" translatable="yes">Apply</property>
                 <layout manager="pack">
                   <property name="anchor">center</property>
                   <property name="padx">10</property>
                   <property name="side">left</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="apply_Button_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Updates the setting and closes the window.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
               <object class="ttk.Button" id="cancel_Buttom" named="True">
                 <property name="command" type="command" cbtype="simple">cancel_CB</property>
                 <property name="style">Button2b.TButton</property>
+                <property name="takefocus">true</property>
                 <property name="text" translatable="yes">Cancel</property>
                 <layout manager="pack">
                   <property name="anchor">center</property>
                   <property name="padx">10</property>
                   <property name="side">left</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="cancel_Button_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Exit without writing any changes.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

@@ -8,6 +8,7 @@ UI source file: settingsMachine.ui
 """
 import tkinter as tk
 import tkinter.ttk as ttk
+from pygubu.widgets.simpletooltip import Tooltip
 
 
 def safe_i18n_translator(value):
@@ -70,6 +71,12 @@ class settingsMachineUI(ttk.Labelframe):
             state="disabled",
             style="Heading1b.TLabel",
             text='Enable DSP Processor')
+        self.DSP_Enable_Tooltip = Tooltip(self.DSP_Enable_Label)
+        self.DSP_Enable_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='CW decoding requires a second processor running I2cmeter1 software. If you have this processor installed, set this switch to True. Otherwise set it to False.',
+            wraplength=300)
         self.DSP_Enable_Label.grid(
             column=0, padx=5, pady="5 0", row=0, sticky="w")
         self.DSP_Enable_Menubutton = ttk.Menubutton(
@@ -77,6 +84,7 @@ class settingsMachineUI(ttk.Labelframe):
         self.DSP_Enable_VAR = tk.StringVar()
         self.DSP_Enable_Menubutton.configure(
             style="Heading0.TMenubutton",
+            takefocus=True,
             textvariable=self.DSP_Enable_VAR,
             width=5)
         self.DSP_Enable_Menu = tk.Menu(
@@ -123,6 +131,12 @@ class settingsMachineUI(ttk.Labelframe):
             state="disabled",
             style="Heading1b.TLabel",
             text='Enable PWR/SWR Meter')
+        self.PWR_SWR_Enable_Tooltip = Tooltip(self.PWR_SWR_Enable_Label)
+        self.PWR_SWR_Enable_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='It you have a PWR/SWR circuit connected (requires a second processor), you can set this switch to True.',
+            wraplength=300)
         self.PWR_SWR_Enable_Label.grid(
             column=0, padx=5, pady="10 0", row=0, sticky="w")
         self.PWR_SWR_Menubutton = ttk.Menubutton(
@@ -130,6 +144,7 @@ class settingsMachineUI(ttk.Labelframe):
         self.PWR_SWR_Enable_VAR = tk.StringVar()
         self.PWR_SWR_Menubutton.configure(
             style="Heading0.TMenubutton",
+            takefocus=True,
             textvariable=self.PWR_SWR_Enable_VAR,
             width=5)
         self.PWR_SWR_Menu = tk.Menu(
@@ -157,6 +172,12 @@ class settingsMachineUI(ttk.Labelframe):
             state="disabled",
             style="Heading1b.TLabel",
             text='PWR Adjustment Factor\n(0.0-nn.nn)')
+        self.PWR_Factor_Tooltip = Tooltip(self.PWR_Factor_Label)
+        self.PWR_Factor_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='This allows you to calibrate the PWR out reading to a known standard. 1.0 = No change. 0.9 would equal 90% while 2.0 would equal 200%.',
+            wraplength=300)
         self.PWR_Factor_Label.grid(
             column=0,
             padx="20 5",
@@ -169,25 +190,26 @@ class settingsMachineUI(ttk.Labelframe):
         self.PWR_Factor_Entry.configure(
             font="{Arial} 24 {}",
             justify="right",
+            takefocus=True,
             textvariable=self.PWR_Factor_VAR,
-            validate="focusout",
             width=5)
         _text_ = '0.0'
         self.PWR_Factor_Entry.delete("0", "end")
         self.PWR_Factor_Entry.insert("0", _text_)
         self.PWR_Factor_Entry.grid(
             column=1, padx=10, pady="10 0", row=1, sticky="e")
-        _validatecmd = (self.PWR_Factor_Entry.register(
-            self.PWR_Factor_Validation_CB), "%P", "%V")
-        self.PWR_Factor_Entry.configure(validatecommand=_validatecmd)
-        self.PWR_Factor_Entry.bind(
-            "<Button>", self.PWR_Factor_Entered_CB, add="+")
         self.SWR_Factor_Label = ttk.Label(
             self.PWR_SWR_Frame, name="swr_factor_label")
         self.SWR_Factor_Label.configure(
             state="disabled",
             style="Heading1b.TLabel",
             text='SWR Adjustment Factor\n(0.0-nn.nn)')
+        self.SWR_Factor_Tooltip = Tooltip(self.SWR_Factor_Label)
+        self.SWR_Factor_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='This allows you to calibrate the SWR out reading to a known standard. 1.0 = No change. 0.9 would equal 90% while 2.0 would equal 200%.\n',
+            wraplength=300)
         self.SWR_Factor_Label.grid(
             column=0, padx="20 5", pady=10, row=2, sticky="w")
         self.SWR_Factor_Entry = ttk.Entry(
@@ -196,19 +218,14 @@ class settingsMachineUI(ttk.Labelframe):
         self.SWR_Factor_Entry.configure(
             font="{Arial} 24 {}",
             justify="right",
+            takefocus=True,
             textvariable=self.SWR_Factor_VAR,
-            validate="focusout",
             width=5)
         _text_ = '0.0'
         self.SWR_Factor_Entry.delete("0", "end")
         self.SWR_Factor_Entry.insert("0", _text_)
         self.SWR_Factor_Entry.grid(
             column=1, padx=10, pady=10, row=2, sticky="e")
-        _validatecmd = (self.SWR_Factor_Entry.register(
-            self.SWR_Factor_Validation_CB), "%P", "%V")
-        self.SWR_Factor_Entry.configure(validatecommand=_validatecmd)
-        self.SWR_Factor_Entry.bind(
-            "<Button>", self.SWR_Factor_Entered_CB, add="+")
         self.PWR_SWR_Frame.grid(
             column=0,
             columnspan=2,
@@ -223,6 +240,13 @@ class settingsMachineUI(ttk.Labelframe):
         self.MCU_Command_Headroom_Label.configure(
             style="Heading1b.TLabel",
             text='Minimum time between\ncommands sent to\nRadio (ms):')
+        self.MCU_Command_Headroom_Tooltip = Tooltip(
+            self.MCU_Command_Headroom_Label)
+        self.MCU_Command_Headroom_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='The Raduino MCU can get overwhelmed with demands from the UX. If you start to see random errors on the log, increase this value slightly.',
+            wraplength=300)
         self.MCU_Command_Headroom_Label.grid(
             column=0, padx=5, pady="10 0", row=0, sticky="w")
         self.MCU_Command_Headroom_Spinbox = ttk.Spinbox(
@@ -233,6 +257,7 @@ class settingsMachineUI(ttk.Labelframe):
             from_=1,
             justify="right",
             style="Custom.TSpinbox",
+            takefocus=True,
             textvariable=self.MCU_Command_Headroom_VAR,
             to=20,
             width=4)
@@ -243,6 +268,12 @@ class settingsMachineUI(ttk.Labelframe):
         self.MCU_Update_Period_Label.configure(
             style="Heading1b.TLabel",
             text='Frequency to check for\nUX changes (ms):')
+        self.MCU_Update_Period_Tooltip = Tooltip(self.MCU_Update_Period_Label)
+        self.MCU_Update_Period_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='This controls how frequently the  system checks for changes made by the user. IF you notice changes in the user interface start to lag, you can try decreasing this number. If it is too small, it can also put a burden on the processor that will also create lag.',
+            wraplength=300)
         self.MCU_Update_Period_Label.grid(
             column=0, padx=5, pady="15 0", row=2, sticky="w")
         self.MCU_Update_Period_Spinbox = ttk.Spinbox(
@@ -253,6 +284,7 @@ class settingsMachineUI(ttk.Labelframe):
             from_=1,
             justify="right",
             style="Custom.TSpinbox",
+            takefocus=True,
             textvariable=self.MCU_Update_Period_VAR,
             to=20,
             width=4)
@@ -263,6 +295,13 @@ class settingsMachineUI(ttk.Labelframe):
         self.MCU_Read_Wait_Period_Label.configure(
             style="Heading1b.TLabel",
             text='Wait time for completion \nof data transfer from\nMCU/DPS (ms):')
+        self.MCU_Read_Wait_Period_Tooltip = Tooltip(
+            self.MCU_Read_Wait_Period_Label)
+        self.MCU_Read_Wait_Period_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='The processor hosting the User Interface can look for data prior to the Raduino completing the writing of the data. This allows you to increase the wait time for the Raduino to complete writing the data. Too short, will generate data errors that you will see in the log.',
+            wraplength=300)
         self.MCU_Read_Wait_Period_Label.grid(
             column=0, padx=5, pady="15 10", row=3, sticky="w")
         self.MCU_Read_Wait_Period_Spinbox = ttk.Spinbox(
@@ -273,6 +312,7 @@ class settingsMachineUI(ttk.Labelframe):
             from_=1,
             justify="right",
             style="Custom.TSpinbox",
+            takefocus=True,
             textvariable=self.MCU_Read_Wait_Period_VAR,
             to=20,
             width=4)
@@ -295,12 +335,30 @@ class settingsMachineUI(ttk.Labelframe):
         self.closingFrame.configure(
             height=50, style="Normal.TFrame", width=200)
         self.apply_Button = ttk.Button(self.closingFrame, name="apply_button")
-        self.apply_Button.configure(style="Button2b.TButton", text='Apply')
+        self.apply_Button.configure(
+            style="Button2b.TButton",
+            takefocus=True,
+            text='Apply')
+        self.apply_Button_Tooltip = Tooltip(self.apply_Button)
+        self.apply_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Updates the setting and closes the window.',
+            wraplength=300)
         self.apply_Button.pack(anchor="center", padx=10, side="left")
         self.apply_Button.configure(command=self.apply_CB)
         self.cancel_Buttom = ttk.Button(
             self.closingFrame, name="cancel_buttom")
-        self.cancel_Buttom.configure(style="Button2b.TButton", text='Cancel')
+        self.cancel_Buttom.configure(
+            style="Button2b.TButton",
+            takefocus=True,
+            text='Cancel')
+        self.cancel_Button_Tooltip = Tooltip(self.cancel_Buttom)
+        self.cancel_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Exit without writing any changes.',
+            wraplength=300)
         self.cancel_Buttom.pack(anchor="center", padx=10, side="left")
         self.cancel_Buttom.configure(command=self.cancel_CB)
         self.closingFrame.pack(
@@ -324,18 +382,6 @@ class settingsMachineUI(ttk.Labelframe):
         pass
 
     def disablePWR_SWR_CB(self):
-        pass
-
-    def PWR_Factor_Validation_CB(self, p_entry_value, v_condition):
-        pass
-
-    def PWR_Factor_Entered_CB(self, event=None):
-        pass
-
-    def SWR_Factor_Validation_CB(self, p_entry_value, v_condition):
-        pass
-
-    def SWR_Factor_Entered_CB(self, event=None):
         pass
 
     def apply_CB(self):

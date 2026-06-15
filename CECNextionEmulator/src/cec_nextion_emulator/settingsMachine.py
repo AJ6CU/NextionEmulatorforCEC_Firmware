@@ -6,6 +6,7 @@ from configuration import configuration
 import globalvars as gv
 from VirtualNumericKeyboard import VirtualNumericKeyboard
 from tkinter import messagebox
+from entryFieldHandler import entryFieldHandler
 
 
 #
@@ -34,6 +35,10 @@ class settingsMachine(baseui.settingsMachineUI):
         self.savePWR_Factor = gv.config.get_PWR_Factor()
         self.saveSWR_Factor = gv.config.get_SWR_Factor()
 
+        self.PWR_Factor_Object = entryFieldHandler(self, "PWR_Factor", 3, VirtualNumericKeyboard, self.master)
+        self.SWR_Factor_Object = entryFieldHandler(self, "SWR_Factor", 3, VirtualNumericKeyboard, self.master)
+
+
         self.saveMCU_Command_Headroom = int(gv.config.get_MCU_Command_Headroom()*1000)
         self.saveMCU_Update_Period = gv.config.get_MCU_Update_Period()
         self.saveMCU_Read_Wait_Period = gv.config.get_MCU_Read_Wait_Period()
@@ -45,7 +50,7 @@ class settingsMachine(baseui.settingsMachineUI):
         else:
             decimalDelim = ","
 
-        formatted_factor = self.savePWR_Factor.replace(".",decimalDelim)
+        formatted_factor = self.savePWR_Factor.replace(".", decimalDelim)
         self.PWR_Factor_VAR.set(formatted_factor)
 
         formatted_factor = self.saveSWR_Factor.replace(".", decimalDelim)
@@ -55,6 +60,8 @@ class settingsMachine(baseui.settingsMachineUI):
             self.disablePWR_SWR_CB()
         else:
             self.enablePWR_SWR_CB()
+
+
 
 
         self.DSP_Enable_VAR.set(self.saveDSP_Enable)
@@ -107,79 +114,55 @@ class settingsMachine(baseui.settingsMachineUI):
         self.PWR_Factor_Entry.configure(state="disabled")
         self.SWR_Factor_Entry.configure(state="disabled")
 
-    def PWR_Factor_Validation_CB(self, p_entry_value, v_condition):
-        if (v_condition == "focusout") and (gv.config.get_Virtual_Keyboard_Switch() == "False"):
-            std_float_str = p_entry_value.replace(",",".")
-            if std_float_str.replace(".","").isdecimal():
-                if  std_float_str.count(".") <=1:
-                    if 10.0 >= float(std_float_str) >= 0.1:
-                        return True
-                    else:
-                        # Bad factor entered, generate warning message and reset
-                        messagebox.showinfo("Error Factor Out of bounds",
-                                            "PWR Factor must be a number in the range of 0.1 to 10.0 \n\n Reset to Prior value.", parent=self)
-                else:
-                    messagebox.showinfo("Error Bad Number",
-                                        "Number included more than one decimal points \n\n Reset to Prior value.", parent=self)
-            else:
-                messagebox.showinfo("Error Bad Number", "No a valid decimal number \n\n Reset to Prior value.", parent=self)
+        #
+        #   PWR Factor processing routines
+        #
 
-            self.PWR_Factor_VAR.set(self.PWR_Entered_Saved)
-            return False
-        else:
-            return True
+    def PWR_Factor_validation(self):
+        std_float_str = self.PWR_Factor_VAR.get().replace(",","").replace(".", "")
+        if 10.0 >= float(std_float_str)/10 >= 0.1:
+                return True
 
-    def PWR_Factor_Entered_CB(self, event=None):
-        self.PWR_Entered_Saved = self.PWR_Factor_VAR.get()          # Save the pre-edited version
-        if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vNumericPad = VirtualNumericKeyboard(self, self.PWR_Factor_VAR, self.PWR_Changed_CB, 4, False)
+        return False
 
-    def PWR_Changed_CB(self, event=None):
-        if float(self.PWR_Factor_VAR.get().replace(",",".")) > 10.0 or float(self.PWR_Factor_VAR.get().replace(",",".")) < 0.1:
-            messagebox.showinfo("Error Factor Out of bounds", "PWR Factor must be in range 0.1 to 10.0 \n\n Reset to Prior value.", parent=self)
-            self.PWR_Factor_VAR.set(self.PWR_Entered_Saved)
+    def PWR_Factor_errorHandler(self):
+        # Bad factor entered, generate warning message and reset
+        messagebox.showinfo("Error Illegal Factor",
+                            "PWR Factor must be a number in the range of 0.1 to 10.0 \n\n Resetting to Prior value.",
+                            parent=self)
 
-    def SWR_Changed_CB(self, event=None):
-        if float(self.SWR_Factor_VAR.get().replace(",",".")) > 10.0 or float(self.SWR_Factor_VAR.get().replace(",",".")) < 0.1:
-            messagebox.showinfo("Error Factor Out of bounds",
-                                "SWR Factor must be in range 0.1 to 10.0 \n\n Reset to Prior value.", parent=self)
-            self.SWR_Factor_VAR.set(self.SWR_Entered_Saved)
+    def PWR_Factor_preProcessor(self):
+        return self.PWR_Factor_VAR.get().replace(",", "").replace(".", "")
 
-    def SWR_Factor_Validation_CB(self, p_entry_value, v_condition):
+    def PWR_Factor_postProcessor(self):
+        factor = float(self.PWR_Factor_VAR.get())/10
+        self.PWR_Factor_VAR.set(f"{factor:.1f}")
 
-        if (v_condition == "focusout") and (gv.config.get_Virtual_Keyboard_Switch() == "False"):
-            std_float_str = p_entry_value.replace(",", ".")
-            if std_float_str.replace(".", "").isdecimal():
-                if std_float_str.count(".") <= 1:
-                    if 10.0 >= float(std_float_str) >= 0.1:
-                        return True
-                    else:
-                        # Bad factor entered, generate warning message and reset
-                        messagebox.showinfo("Error Factor Out of bounds",
-                                            "SWR Factor must be a number in the range of 0.1 to 10.0 \n\n Reset to Prior value.",
-                                            parent=self)
-                else:
-                    messagebox.showinfo("Error Bad Number",
-                                        "Number included more than one decimal points \n\n Reset to Prior value.",
-                                        parent=self)
-            else:
-                messagebox.showinfo("Error Bad Number", "No a valid decimal number \n\n Reset to Prior value.",
-                                    parent=self)
 
-            self.SWR_Factor_VAR.set(self.SWR_Entered_Saved)
-            return False
-        else:
-            return True
+    def SWR_Factor_validation(self):
+        std_float_str = self.SWR_Factor_VAR.get().replace(",","").replace(".", "")
+        if 10.0 >= float(std_float_str)/10 >= 0.1:
+                return True
 
-    def SWR_Factor_Entered_CB(self, event=None):
-        self.SWR_Entered_Saved = self.SWR_Factor_VAR.get()  # Save the pre-edited version
-        if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vNumericPad = VirtualNumericKeyboard(self, self.SWR_Factor_VAR, self.SWR_Changed_CB, 4, False)
+        return False
+
+    def SWR_Factor_errorHandler(self):
+        # Bad factor entered, generate warning message and reset
+        messagebox.showinfo("Error Illegal Factor",
+                            "SWR Factor must be a number in the range of 0.1 to 10.0 \n\n Resetting to Prior value.",
+                            parent=self)
+
+    def SWR_Factor_preProcessor(self):
+        return self.SWR_Factor_VAR.get().replace(",", "").replace(".", "")
+
+    def SWR_Factor_postProcessor(self):
+        factor = float(self.SWR_Factor_VAR.get())/10
+        self.SWR_Factor_VAR.set(f"{factor:.1f}")
+
 
     def apply_CB(self):
         if self.DSP_Enable_VAR.get() != self.saveDSP_Enable:
             gv.config.set_DSP_Switch(self.DSP_Enable_VAR.get())
-            print('changing DSP_Switch, new setting is', gv.config.get_DSP_Switch(), self.DSP_Enable_VAR.get())
             self.mainWindow.theRadio.Set_DSP_State(self.DSP_Enable_VAR.get())
 
             if self.DSP_Enable_VAR.get() == "True":

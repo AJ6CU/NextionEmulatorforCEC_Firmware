@@ -10,6 +10,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from frequencyChannel import frequencyChannel
 from pygubu.widgets.scrolledframe import ScrolledFrame
+from pygubu.widgets.simpletooltip import Tooltip
 
 
 def safe_i18n_translator(value):
@@ -120,30 +121,66 @@ class channelsUI(ttk.Labelframe):
         self.name_Header_Label = ttk.Label(
             self.header_Line_Frame, name="name_header_label")
         self.name_Header_Label.configure(style="Heading2b.TLabel", text='Name')
+        self.channel_Name_Tooltip = Tooltip(self.name_Header_Label)
+        self.channel_Name_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Up to 5 characters to label a channel. Only available for first 9 channels.',
+            wraplength=300)
         self.name_Header_Label.grid(column=1, padx="165 0", row=0)
         self.frequency_Header_Label = ttk.Label(
             self.header_Line_Frame, name="frequency_header_label")
         self.frequency_Header_Label.configure(
             style="Heading2b.TLabel", text='Freq')
+        self.frequency_Tooltip = Tooltip(self.frequency_Header_Label)
+        self.frequency_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='The current frequency assigned to a channel.',
+            wraplength=300)
         self.frequency_Header_Label.grid(column=2, padx="95 0", row=0)
         self.mode_Header_Label = ttk.Label(
             self.header_Line_Frame, name="mode_header_label")
         self.mode_Header_Label.configure(style="Heading2b.TLabel", text='Mode')
+        self.mode_Tooltip = Tooltip(self.mode_Header_Label)
+        self.mode_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Allows you to select the mode for the radio. DFT is for the default mode for the band.',
+            wraplength=300)
         self.mode_Header_Label.grid(column=4, padx="80 0", row=0)
         self.showLabel_Header_Label = ttk.Label(
             self.header_Line_Frame, name="showlabel_header_label")
         self.showLabel_Header_Label.configure(
             style="Heading2b.TLabel", text='Visible')
+        self.visible_Tooltip = Tooltip(self.showLabel_Header_Label)
+        self.visible_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Allows you to hide the channel name.',
+            wraplength=300)
         self.showLabel_Header_Label.grid(column=5, padx="75 0", row=0)
         self.scan_Set_Label = ttk.Label(
             self.header_Line_Frame, name="scan_set_label")
         self.scan_Set_Label.configure(
             style="Heading2b.TLabel", text='Scan\nSet')
+        self.scanSet_Tooltip = Tooltip(self.scan_Set_Label)
+        self.scanSet_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Allow you to assign the channel to one of 4 sets of channels to scan together.',
+            wraplength=300)
         self.scan_Set_Label.grid(column=6, padx="80 7", row=0)
         self.dirtyIndicator_Label = ttk.Label(
             self.header_Line_Frame, name="dirtyindicator_label")
         self.dirtyIndicator_Label.configure(
             style="Heading2b.TLabel", text='Saved')
+        self.dirty_Tooltip = Tooltip(self.dirtyIndicator_Label)
+        self.dirty_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='If red, a chance has been made but it has not been saved. Green means the change has been saved.',
+            wraplength=300)
         self.dirtyIndicator_Label.grid(column=7, padx=30, row=0)
         self.header_Line_Frame.pack(expand=True, fill="x")
         self.frameSizer = ttk.Frame(frame2, name="framesizer")
@@ -230,6 +267,12 @@ class channelsUI(ttk.Labelframe):
             style="Button2b.TButton",
             text='Channel->VFO',
             width=14)
+        self.channelToVRO_Tooltip = Tooltip(self.ChannelToVFO_Button)
+        self.channelToVRO_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Currently selected Channel will be written to the VFO.',
+            wraplength=300)
         self.ChannelToVFO_Button.grid(column=0, padx="0 15", row=0)
         self.ChannelToVFO_Button.configure(command=self.ChannelToVFO_CB)
         self.VFOToChannel_Button = ttk.Button(
@@ -239,6 +282,12 @@ class channelsUI(ttk.Labelframe):
             style="Button2b.TButton",
             text='VFO->Channel',
             width=14)
+        self.VFOToChannel_Tooltup = Tooltip(self.VFOToChannel_Button)
+        self.VFOToChannel_Tooltup.configure(
+            padx=8,
+            relief="raised",
+            text='The current VFO will be written to the selected channel.',
+            wraplength=300)
         self.VFOToChannel_Button.grid(column=1, padx="0 15", row=0)
         self.VFOToChannel_Button.configure(command=self.VFOToChannel_CB)
         self.scan_Button = ttk.Button(
@@ -249,6 +298,12 @@ class channelsUI(ttk.Labelframe):
             text='Run Scan',
             textvariable=self.scan_Channel_ButtonText_VAR,
             width=14)
+        self.scan_Button_tooltip = Tooltip(self.scan_Button)
+        self.scan_Button_tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='All the channels in the scan set selected on the right will be scanned until the Stop button is pushed.',
+            wraplength=300)
         self.scan_Button.grid(column=2, columnspan=2, row=0)
         self.scan_Button.configure(command=self.scan_Channel_CB)
         self.channelEdit_Frame.pack(expand=False, pady="5 15", side="top")
@@ -261,21 +316,45 @@ class channelsUI(ttk.Labelframe):
             state="normal",
             style="Button2b.TButton",
             text='Save Channel')
+        self.save_Button_Tooltip = Tooltip(self.saveChannel_Button)
+        self.save_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='The contents of the selected channels will be saved. ',
+            wraplength=300)
         self.saveChannel_Button.grid(column=0, padx="0 15", row=0)
         self.saveChannel_Button.configure(command=self.saveChannel_CB)
         self.saveAllChannels_Button = ttk.Button(
             self.closingFrame, name="saveallchannels_button")
         self.saveAllChannels_Button.configure(
             state="normal", style="Button2b.TButton", text='Save All')
+        self.saveAll_Button_Tooltip = Tooltip(self.saveAllChannels_Button)
+        self.saveAll_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='All of the channels that have been saved will be saved.',
+            wraplength=300)
         self.saveAllChannels_Button.grid(column=1, padx="0 15", row=0)
         self.saveAllChannels_Button.configure(command=self.saveAllChannels_CB)
         self.refresh_Button = ttk.Button(
             self.closingFrame, name="refresh_button")
         self.refresh_Button.configure(style="Button2b.TButton", text='Refresh')
+        self.refresh_Tooltip = Tooltip(self.refresh_Button)
+        self.refresh_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='The contents of the channels will be re-read from EEPROM. Any changes will be lost.',
+            wraplength=300)
         self.refresh_Button.grid(column=2, padx="0 15", row=0)
         self.refresh_Button.configure(command=self.refresh_Channel_CB)
         self.close_Button = ttk.Button(self.closingFrame, name="close_button")
         self.close_Button.configure(style="Button2b.TButton", text='Close')
+        self.closeButton_Tooltip = Tooltip(self.close_Button)
+        self.closeButton_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Closes the window. Current changes are saved for this session until radio is power cycled.',
+            wraplength=300)
         self.close_Button.grid(column=3, row=0)
         self.close_Button.configure(command=self.close_Channel_CB)
         self.closingFrame.pack(pady="30 15", side="left")
@@ -288,6 +367,12 @@ class channelsUI(ttk.Labelframe):
             self.scanSettings_Frame, name="scan_select_channel_label")
         self.scan_Select_Channel_Label.configure(
             style="Heading2b.TLabel", text='Select Scan Set')
+        self.scanSetLabel_Tooltip = Tooltip(self.scan_Select_Channel_Label)
+        self.scanSetLabel_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Click the menu to select which set of channels to scan.',
+            wraplength=300)
         self.scan_Select_Channel_Label.grid(
             column=0, padx=5, pady=15, row=1, sticky="e")
         self.scan_Select_Channel_Menubutton = ttk.Menubutton(
@@ -348,6 +433,12 @@ class channelsUI(ttk.Labelframe):
         self.Time_On_Freq_Label.configure(
             style="Heading2b.TLabel",
             text='Time on Freq(sec)')
+        self.timeOnFrequency_Tooltip = Tooltip(self.Time_On_Freq_Label)
+        self.timeOnFrequency_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Allows you to adjust how long each station will have before going onto the next one in the scan set.',
+            wraplength=300)
         self.Time_On_Freq_Label.grid(
             column=0, padx="5 0", pady="10 0", row=2, sticky="e")
         self.Time_On_Freq_Spinbox = ttk.Spinbox(
