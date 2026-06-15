@@ -8,6 +8,7 @@ UI source file: settingsGeneral.ui
 """
 import tkinter as tk
 import tkinter.ttk as ttk
+from pygubu.widgets.simpletooltip import Tooltip
 
 
 def safe_i18n_translator(value):
@@ -68,6 +69,12 @@ class settingsGeneralUI(ttk.Labelframe):
             justify="right",
             style="Heading1b.TLabel",
             text='Number Delimiter')
+        self.number_Delimiter_Tooltip = Tooltip(self.Number_Delimiter_Label)
+        self.number_Delimiter_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Allow the selection of the European delimiter for decimal.',
+            wraplength=300)
         self.Number_Delimiter_Label.grid(
             column=0, padx=10, pady=10, row=0, sticky="e")
         self.Number_Delimiter_Menubutton = ttk.Menubutton(
@@ -131,6 +138,12 @@ class settingsGeneralUI(ttk.Labelframe):
             justify="right",
             style="Heading1b.TLabel",
             text='Virtual Keyboard On')
+        self.virtualKeyboard_Tooltip = Tooltip(self.Virtual_Keyboard_Label)
+        self.virtualKeyboard_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='If true, an onscreen keyboard will be displayed when there is data to be entered. If false, you will need to use some other mechanism to enter data.',
+            wraplength=300)
         self.Virtual_Keyboard_Label.grid(
             column=0, padx=10, pady="40 20", row=1, sticky="e")
         self.VFO_Touch_Optimized_Label = ttk.Label(
@@ -139,6 +152,12 @@ class settingsGeneralUI(ttk.Labelframe):
             justify="right",
             style="Heading1b.TLabel",
             text='VFO Touch Optimized')
+        self.touchOptimized_Tooltip = Tooltip(self.VFO_Touch_Optimized_Label)
+        self.touchOptimized_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Certain user interface objects e.g. dials on main page can be optimized for touch or mouse. Selecting True results in sich objects being optimized for touchscreens.',
+            wraplength=300)
         self.VFO_Touch_Optimized_Label.grid(
             column=0, padx=10, pady="40 20", row=2, sticky="e")
         self.VFO_Touch_Optimized_Menubutton = ttk.Menubutton(
@@ -175,6 +194,12 @@ class settingsGeneralUI(ttk.Labelframe):
             justify="right",
             style="Heading1b.TLabel",
             text='Seconds on Frequency\nduring Scan')
+        self.timeOnFreq_Tooltip = Tooltip(self.Time_On_Freq_Label)
+        self.timeOnFreq_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Specified the defaul on-station time before moving on to the next during a channel scan.',
+            wraplength=300)
         self.Time_On_Freq_Label.grid(
             column=0, padx=10, pady="40 20", row=3, sticky="e")
         self.Time_On_Freq_Spinbox = ttk.Spinbox(
@@ -196,11 +221,23 @@ class settingsGeneralUI(ttk.Labelframe):
             height=50, style="Normal.TFrame", width=200)
         self.apply_Button = ttk.Button(self.closingFrame, name="apply_button")
         self.apply_Button.configure(style="Button2b.TButton", text='Apply')
+        self.apply_Button_Tooltip = Tooltip(self.apply_Button)
+        self.apply_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Accept the changes and close the window.',
+            wraplength=300)
         self.apply_Button.pack(anchor="center", padx=10, side="left")
         self.apply_Button.configure(command=self.apply_CB)
         self.cancel_Buttom = ttk.Button(
             self.closingFrame, name="cancel_buttom")
         self.cancel_Buttom.configure(style="Button2b.TButton", text='Cancel')
+        self.cancelButton_Tooltip = Tooltip(self.cancel_Buttom)
+        self.cancelButton_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Closes the window without saving any of your changes.',
+            wraplength=300)
         self.cancel_Buttom.pack(anchor="center", padx=10, side="left")
         self.cancel_Buttom.configure(command=self.cancel_CB)
         self.closingFrame.pack(

@@ -422,7 +422,7 @@ SPLIT
                           <object class="pygubu.widgets.Tooltip" id="split_Button_Tooltip" named="True">
                             <property name="padx">8</property>
                             <property name="relief">raised</property>
-                            <property name="text" translatable="yes">Click to go into Split mode. </property>
+                            <property name="text" translatable="yes">Click to go into Split mode. RX will be VFO A and TX will be on VFO B.</property>
                             <property name="wraplength">300</property>
                           </object>
                         </child>
@@ -445,7 +445,7 @@ RIT
                           <object class="pygubu.widgets.Tooltip" id="rit_Button_Tooltip" named="True">
                             <property name="padx">8</property>
                             <property name="relief">raised</property>
-                            <property name="text" translatable="yes">Click to go enable RIT</property>
+                            <property name="text" translatable="yes">Click to go enable RIT. TX will remain as before entering RIT while the tuned frequency will be used for RX.</property>
                             <property name="wraplength">300</property>
                           </object>
                         </child>

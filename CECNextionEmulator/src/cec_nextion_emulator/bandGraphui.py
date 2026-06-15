@@ -8,6 +8,7 @@ UI source file: bandGraph.ui
 """
 import tkinter as tk
 import tkinter.ttk as ttk
+from pygubu.widgets.simpletooltip import Tooltip
 
 
 def safe_i18n_translator(value):
@@ -75,6 +76,12 @@ class bandGraphUI(ttk.Labelframe):
             style="Custom.Horizontal.TScale",
             to=119,
             variable=self.band0Start_VAR)
+        self.bandScale_Tooltip = Tooltip(self.bandStart_Scale)
+        self.bandScale_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Allows you to start where the scan starts for this band.',
+            wraplength=300)
         self.bandStart_Scale.pack(expand=True, fill="x", side="top")
         self.bandStart_Scale.configure(command=self.bandStart_CB)
         self.scan_Frame = ttk.Frame(self.bandGraph_Frame, name="scan_frame")

@@ -62,7 +62,7 @@
                   <property name="anchor">center</property>
                 </containerlayout>
                 <child>
-                  <object class="ttk.Label" id="label29" named="True">
+                  <object class="ttk.Label" id="select_Label" named="True">
                     <property name="anchor">w</property>
                     <property name="justify">right</property>
                     <property name="style">Heading1b.TLabel</property>
@@ -73,10 +73,18 @@
                       <property name="row">0</property>
                       <property name="sticky">w</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="selectLabel_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">This column allows you to select individual settings to copy. Or you can click the bottom Select All to select all the settings.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Label" id="label14" named="True">
+                  <object class="ttk.Label" id="setting_Label" named="True">
                     <property name="anchor">w</property>
                     <property name="justify">right</property>
                     <property name="style">Heading1b.TLabel</property>
@@ -87,10 +95,18 @@
                       <property name="row">0</property>
                       <property name="sticky">w</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="setting_Label_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">Identifies the name of the individual settings you can copy.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Label" id="label15" named="True">
+                  <object class="ttk.Label" id="facotryValue_Label" named="True">
                     <property name="anchor">e</property>
                     <property name="justify">center</property>
                     <property name="style">Heading1b.TLabel</property>
@@ -101,10 +117,18 @@ Value</property>
                       <property name="row">0</property>
                       <property name="sticky">ew</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="factoryValue_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">This columns contains the Factory settings. If you replaced your Raduino, these values might be incorrect.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Label" id="label16" named="True">
+                  <object class="ttk.Label" id="currentSettings_Label" named="True">
                     <property name="anchor">e</property>
                     <property name="justify">center</property>
                     <property name="style">Heading1b.TLabel</property>
@@ -115,10 +139,18 @@ Value</property>
                       <property name="row">0</property>
                       <property name="sticky">ew</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="currentSettings_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">These are the current settings that are stored on EEPROM on your Raduino.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Label" id="label17" named="True">
+                  <object class="ttk.Label" id="configFile_Label" named="True">
                     <property name="anchor">e</property>
                     <property name="justify">center</property>
                     <property name="style">Heading1b.TLabel</property>
@@ -129,6 +161,14 @@ File</property>
                       <property name="row">0</property>
                       <property name="sticky">ew</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="configFile_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">The configuration file is an alternative location to backup and restore your settings. This is only maintained by this application. So save these values to Current if you want to use a traditional Nextion screen.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -830,6 +870,14 @@ File</property>
                         <layout manager="pack">
                           <property name="pady">15</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="sleectAll_Button_Label" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Selects all the values to copy. You will be notified by a popup window of those that cannot be copied or replaced when you push the Copy button.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -860,6 +908,14 @@ File</property>
                       <property name="padx">10 0</property>
                       <property name="row">0</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="from_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">This menu selects where the settings will COME FROM.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -871,6 +927,14 @@ File</property>
                       <property name="padx">40 0</property>
                       <property name="row">0</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="to_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">This menu selects where the settings will BE COPIED TO.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -967,7 +1031,7 @@ File</property>
                   <property name="side">top</property>
                 </layout>
                 <child>
-                  <object class="ttk.Button" id="apply_Button" named="True">
+                  <object class="ttk.Button" id="copy_Button" named="True">
                     <property name="command" type="command" cbtype="simple">copy_CB</property>
                     <property name="style">Button2b.TButton</property>
                     <property name="text" translatable="yes">Copy</property>
@@ -975,6 +1039,14 @@ File</property>
                       <property name="padx">10</property>
                       <property name="side">left</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="copyButton_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">Starts the copy from Source to Destination.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -986,6 +1058,14 @@ File</property>
                       <property name="padx">10</property>
                       <property name="side">left</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="cancelButton_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">Cancels the operation without making any changes.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

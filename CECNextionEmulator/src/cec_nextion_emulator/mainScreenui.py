@@ -290,7 +290,7 @@ class mainScreenUI(ttk.Frame):
         self.split_Button_Tooltip.configure(
             padx=8,
             relief="raised",
-            text='Click to go into Split mode. ',
+            text='Click to go into Split mode. RX will be VFO A and TX will be on VFO B.',
             wraplength=300)
         self.split_Button.pack(anchor="nw", padx="0 10", side="left")
         self.split_Button.configure(command=self.split_CB)
@@ -304,7 +304,7 @@ class mainScreenUI(ttk.Frame):
         self.rit_Button_Tooltip.configure(
             padx=8,
             relief="raised",
-            text='Click to go enable RIT',
+            text='Click to go enable RIT. TX will remain as before entering RIT while the tuned frequency will be used for RX.',
             wraplength=300)
         self.rit_Button.pack(anchor="nw", padx="0 10", side="left")
         self.rit_Button.configure(command=self.rit_CB)

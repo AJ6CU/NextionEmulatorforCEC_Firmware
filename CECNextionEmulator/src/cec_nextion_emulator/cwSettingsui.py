@@ -8,6 +8,7 @@ UI source file: cwSettings.ui
 """
 import tkinter as tk
 import tkinter.ttk as ttk
+from pygubu.widgets.simpletooltip import Tooltip
 
 
 def safe_i18n_translator(value):
@@ -68,6 +69,12 @@ class cwSettingsUI(ttk.Labelframe):
             name="cw_key_type_label")
         self.CW_KEY_TYPE_LABEL.configure(
             style="Heading1b.TLabel", text='Key Type')
+        self.keytype_Tooltip = Tooltip(self.CW_KEY_TYPE_LABEL)
+        self.keytype_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Select the type of key you are using.',
+            wraplength=300)
         self.CW_KEY_TYPE_LABEL.grid(column=0, pady="40 0", row=0, sticky="e")
         self.CW_Key_Type_Menubutton = ttk.Menubutton(
             self.General_CW_Settings_Frame, name="cw_key_type_menubutton")
@@ -107,6 +114,12 @@ class cwSettingsUI(ttk.Labelframe):
         self.CW_START_MS_LABEL.configure(
             style="Heading1b.TLabel",
             text='Delay Starting TX (ms)')
+        self.startCW_Tooltip = Tooltip(self.CW_START_MS_LABEL)
+        self.startCW_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='This allows you to select how long from start of TX after going into CW mode. Useful for amps or other systems that need some time to get ready for TX.',
+            wraplength=300)
         self.CW_START_MS_LABEL.grid(column=3, pady="40 0", row=0, sticky="e")
         self.CW_Start_TX_Spinbox = ttk.Spinbox(
             self.General_CW_Settings_Frame,
@@ -125,6 +138,12 @@ class cwSettingsUI(ttk.Labelframe):
             name="cw_sidetone_label")
         self.CW_SIDETONE_LABEL.configure(
             style="Heading1b.TLabel", text='Sidetone (HZ)')
+        self.sidetone_Tooltip = Tooltip(self.CW_SIDETONE_LABEL)
+        self.sidetone_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Select the frequency of the sidetone of the CW you prefer.',
+            wraplength=300)
         self.CW_SIDETONE_LABEL.grid(column=0, pady="40 0", row=2, sticky="e")
         self.CW_Sidetone_Spinbox = ttk.Spinbox(
             self.General_CW_Settings_Frame,
@@ -144,12 +163,24 @@ class cwSettingsUI(ttk.Labelframe):
         self.CW_DELAY_MS_LABEL.configure(
             style="Heading1b.TLabel",
             text='Delay Returning to RX (ms)')
+        self.cwDelayAfterTX_Tooltip = Tooltip(self.CW_DELAY_MS_LABEL)
+        self.cwDelayAfterTX_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='This allows you to select how long after the last item transmitted before leaving TX mode. This allows you think time between thoughts before the relays click off.',
+            wraplength=300)
         self.CW_DELAY_MS_LABEL.grid(column=3, pady="40 0", row=2, sticky="e")
         self.CW_SPEED_WPM_LABEL = ttk.Label(
             self.General_CW_Settings_Frame,
             name="cw_speed_wpm_label")
         self.CW_SPEED_WPM_LABEL.configure(
             style="Heading1b.TLabel", text='Speed (WPM)')
+        self.keyspeed_Tooltip = Tooltip(self.CW_SPEED_WPM_LABEL)
+        self.keyspeed_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Select the key speed.',
+            wraplength=300)
         self.CW_SPEED_WPM_LABEL.grid(column=0, pady="40 0", row=3, sticky="e")
         self.CW_Speed_WPM_Spinbox = ttk.Spinbox(
             self.General_CW_Settings_Frame,
@@ -234,11 +265,23 @@ class cwSettingsUI(ttk.Labelframe):
             height=50, style="Normal.TFrame", width=200)
         self.apply_Button = ttk.Button(self.closingFrame, name="apply_button")
         self.apply_Button.configure(style="Button2b.TButton", text='Apply')
+        self.applyButton_Tooltip = Tooltip(self.apply_Button)
+        self.applyButton_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Saves your changes and closes the window. Some changes may require a reboot to be effective.',
+            wraplength=300)
         self.apply_Button.pack(anchor="center", padx=10, side="left")
         self.apply_Button.configure(command=self.apply_CB)
         self.cancel_Buttom = ttk.Button(
             self.closingFrame, name="cancel_buttom")
         self.cancel_Buttom.configure(style="Button2b.TButton", text='Cancel')
+        self.cancelButton_Tooltip = Tooltip(self.cancel_Buttom)
+        self.cancelButton_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Discards your changes and closes the window.',
+            wraplength=300)
         self.cancel_Buttom.pack(anchor="center", padx=10, side="left")
         self.cancel_Buttom.configure(command=self.cancel_CB)
         self.closingFrame.pack(

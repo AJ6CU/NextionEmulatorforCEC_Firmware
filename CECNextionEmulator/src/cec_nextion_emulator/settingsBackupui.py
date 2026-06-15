@@ -8,6 +8,7 @@ UI source file: settingsBackup.ui
 """
 import tkinter as tk
 import tkinter.ttk as ttk
+from pygubu.widgets.simpletooltip import Tooltip
 
 
 def safe_i18n_translator(value):
@@ -63,41 +64,79 @@ class settingsBackupUI(ttk.Labelframe):
             frame1, name="backupsettings_frame")
         self.backupSettings_Frame.configure(
             height=200, style="Normal.TFrame", width=200)
-        self.label29 = ttk.Label(self.backupSettings_Frame, name="label29")
-        self.label29.configure(
+        self.select_Label = ttk.Label(
+            self.backupSettings_Frame,
+            name="select_label")
+        self.select_Label.configure(
             anchor="w",
             justify="right",
             style="Heading1b.TLabel",
             text='Select')
-        self.label29.grid(column=0, padx=5, row=0, sticky="w")
-        self.label14 = ttk.Label(self.backupSettings_Frame, name="label14")
-        self.label14.configure(
+        self.selectLabel_Tooltip = Tooltip(self.select_Label)
+        self.selectLabel_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='This column allows you to select individual settings to copy. Or you can click the bottom Select All to select all the settings.',
+            wraplength=300)
+        self.select_Label.grid(column=0, padx=5, row=0, sticky="w")
+        self.setting_Label = ttk.Label(
+            self.backupSettings_Frame,
+            name="setting_label")
+        self.setting_Label.configure(
             anchor="w",
             justify="right",
             style="Heading1b.TLabel",
             text='Setting')
-        self.label14.grid(column=1, padx=5, row=0, sticky="w")
-        self.label15 = ttk.Label(self.backupSettings_Frame, name="label15")
-        self.label15.configure(
+        self.setting_Label_Tooltip = Tooltip(self.setting_Label)
+        self.setting_Label_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Identifies the name of the individual settings you can copy.',
+            wraplength=300)
+        self.setting_Label.grid(column=1, padx=5, row=0, sticky="w")
+        self.facotryValue_Label = ttk.Label(
+            self.backupSettings_Frame, name="facotryvalue_label")
+        self.facotryValue_Label.configure(
             anchor="e",
             justify="center",
             style="Heading1b.TLabel",
             text='Factory\nValue')
-        self.label15.grid(column=2, row=0, sticky="ew")
-        self.label16 = ttk.Label(self.backupSettings_Frame, name="label16")
-        self.label16.configure(
+        self.factoryValue_Tooltip = Tooltip(self.facotryValue_Label)
+        self.factoryValue_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='This columns contains the Factory settings. If you replaced your Raduino, these values might be incorrect.',
+            wraplength=300)
+        self.facotryValue_Label.grid(column=2, row=0, sticky="ew")
+        self.currentSettings_Label = ttk.Label(
+            self.backupSettings_Frame, name="currentsettings_label")
+        self.currentSettings_Label.configure(
             anchor="e",
             justify="center",
             style="Heading1b.TLabel",
             text='Current\nValue')
-        self.label16.grid(column=3, row=0, sticky="ew")
-        self.label17 = ttk.Label(self.backupSettings_Frame, name="label17")
-        self.label17.configure(
+        self.currentSettings_Tooltip = Tooltip(self.currentSettings_Label)
+        self.currentSettings_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='These are the current settings that are stored on EEPROM on your Raduino.',
+            wraplength=300)
+        self.currentSettings_Label.grid(column=3, row=0, sticky="ew")
+        self.configFile_Label = ttk.Label(
+            self.backupSettings_Frame,
+            name="configfile_label")
+        self.configFile_Label.configure(
             anchor="e",
             justify="center",
             style="Heading1b.TLabel",
             text='Config\nFile')
-        self.label17.grid(column=4, row=0, sticky="ew")
+        self.configFile_Tooltip = Tooltip(self.configFile_Label)
+        self.configFile_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='The configuration file is an alternative location to backup and restore your settings. This is only maintained by this application. So save these values to Current if you want to use a traditional Nextion screen.',
+            wraplength=300)
+        self.configFile_Label.grid(column=4, row=0, sticky="ew")
         frame2 = ttk.Frame(self.backupSettings_Frame)
         frame2.configure(height=200, width=200)
         separator1 = ttk.Separator(frame2)
@@ -538,6 +577,12 @@ class settingsBackupUI(ttk.Labelframe):
             text='Select All',
             textvariable=self.select_All_VAR,
             width=10)
+        self.sleectAll_Button_Label = Tooltip(self.select_All)
+        self.sleectAll_Button_Label.configure(
+            padx=8,
+            relief="raised",
+            text='Selects all the values to copy. You will be notified by a popup window of those that cannot be copied or replaced when you push the Copy button.',
+            wraplength=300)
         self.select_All.pack(pady=15)
         self.select_All.configure(command=self.select_All_Checkbutton_CB)
         frame5.grid(column=0, columnspan=4, row=12, sticky="w")
@@ -549,9 +594,21 @@ class settingsBackupUI(ttk.Labelframe):
             height=200, style="Normal.TFrame", width=200)
         self.from_Label = ttk.Label(self.action_Frame, name="from_label")
         self.from_Label.configure(style="Heading1b.TLabel", text='Source:')
+        self.from_Tooltip = Tooltip(self.from_Label)
+        self.from_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='This menu selects where the settings will COME FROM.',
+            wraplength=300)
         self.from_Label.grid(column=2, padx="10 0", row=0)
         self.to_Label = ttk.Label(self.action_Frame, name="to_label")
         self.to_Label.configure(style="Heading1b.TLabel", text='Destination:')
+        self.to_Tooltip = Tooltip(self.to_Label)
+        self.to_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='This menu selects where the settings will BE COPIED TO.',
+            wraplength=300)
         self.to_Label.grid(column=4, padx="40 0", row=0)
         self.from_Menubutton = ttk.Menubutton(
             self.action_Frame, name="from_menubutton")
@@ -627,13 +684,25 @@ class settingsBackupUI(ttk.Labelframe):
         self.closingFrame = ttk.Frame(frame1, name="closingframe")
         self.closingFrame.configure(
             height=50, style="Normal.TFrame", width=200)
-        self.apply_Button = ttk.Button(self.closingFrame, name="apply_button")
-        self.apply_Button.configure(style="Button2b.TButton", text='Copy')
-        self.apply_Button.pack(padx=10, side="left")
-        self.apply_Button.configure(command=self.copy_CB)
+        self.copy_Button = ttk.Button(self.closingFrame, name="copy_button")
+        self.copy_Button.configure(style="Button2b.TButton", text='Copy')
+        self.copyButton_Tooltip = Tooltip(self.copy_Button)
+        self.copyButton_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Starts the copy from Source to Destination.',
+            wraplength=300)
+        self.copy_Button.pack(padx=10, side="left")
+        self.copy_Button.configure(command=self.copy_CB)
         self.cancel_Buttom = ttk.Button(
             self.closingFrame, name="cancel_buttom")
         self.cancel_Buttom.configure(style="Button2b.TButton", text='Cancel')
+        self.cancelButton_Tooltip = Tooltip(self.cancel_Buttom)
+        self.cancelButton_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Cancels the operation without making any changes.',
+            wraplength=300)
         self.cancel_Buttom.pack(padx=10, side="left")
         self.cancel_Buttom.configure(command=self.cancel_CB)
         self.closingFrame.pack(

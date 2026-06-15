@@ -61,6 +61,14 @@
                       <property name="row">0</property>
                       <property name="sticky">e</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="keytype_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">Select the type of key you are using.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -116,6 +124,14 @@
                       <property name="row">0</property>
                       <property name="sticky">e</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="startCW_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">This allows you to select how long from start of TX after going into CW mode. Useful for amps or other systems that need some time to get ready for TX.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -144,6 +160,14 @@
                       <property name="row">2</property>
                       <property name="sticky">e</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="sidetone_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">Select the frequency of the sidetone of the CW you prefer.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -172,6 +196,14 @@
                       <property name="row">2</property>
                       <property name="sticky">e</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="cwDelayAfterTX_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">This allows you to select how long after the last item transmitted before leaving TX mode. This allows you think time between thoughts before the relays click off.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -184,6 +216,14 @@
                       <property name="row">3</property>
                       <property name="sticky">e</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="keyspeed_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">Select the key speed.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -316,6 +356,14 @@ This setting will be reset to that stored in the EEPROM on reboot.  Use the Sett
                   <property name="padx">10</property>
                   <property name="side">left</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="applyButton_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Saves your changes and closes the window. Some changes may require a reboot to be effective.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -328,6 +376,14 @@ This setting will be reset to that stored in the EEPROM on reboot.  Use the Sett
                   <property name="padx">10</property>
                   <property name="side">left</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="cancelButton_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Discards your changes and closes the window.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

@@ -185,6 +185,14 @@
                     </child>
                   </object>
                 </child>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="frequency_tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Controls the tuning of the VFO from within this window.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
@@ -237,6 +245,14 @@
                           <property name="column">0</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="bandwidth_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Specifies the bandwidth covered by the scan. The larger the bandwidth, the larger frequency band each bar in  the graph will represent.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -247,6 +263,14 @@
                           <property name="column">1</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="repeat_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">The number of times the selected band area that will be scanned. The Peak/Average will be the accumulation of all the cycles.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -439,6 +463,14 @@
                     <layout manager="pack">
                       <property name="side">left</property>
                     </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="frequency_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">Display the currently tuned frequency.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -480,6 +512,14 @@
                   <property name="padx">0 15</property>
                   <property name="row">0</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="startStop_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Starts/stops the scan. Usually once the scan is started, it is not possible to stop it.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -493,6 +533,14 @@
                   <property name="padx">0 15</property>
                   <property name="row">0</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="recenter_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Puts the current frequency in the center of the scan area and reruns the scan.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -507,6 +555,14 @@
                   <property name="padx">0 15</property>
                   <property name="row">0</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="applyClose_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Closes the window and leaves the VFO at the current setting set in this window.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -519,6 +575,14 @@
                   <property name="column">3</property>
                   <property name="row">0</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="cancel_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Closes the window resets the VFO Frequency to the setting when this window was entered.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

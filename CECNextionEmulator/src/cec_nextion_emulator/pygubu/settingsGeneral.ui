@@ -57,6 +57,14 @@
                   <property name="row">0</property>
                   <property name="sticky">e</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="number_Delimiter_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Allow the selection of the European delimiter for decimal.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -141,6 +149,14 @@
                   <property name="row">1</property>
                   <property name="sticky">e</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="virtualKeyboard_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">If true, an onscreen keyboard will be displayed when there is data to be entered. If false, you will need to use some other mechanism to enter data.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -155,6 +171,14 @@
                   <property name="row">2</property>
                   <property name="sticky">e</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="touchOptimized_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Certain user interface objects e.g. dials on main page can be optimized for touch or mouse. Selecting True results in sich objects being optimized for touchscreens.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -205,6 +229,14 @@ during Scan</property>
                   <property name="row">3</property>
                   <property name="sticky">e</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="timeOnFreq_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Specified the defaul on-station time before moving on to the next during a channel scan.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -248,6 +280,14 @@ during Scan</property>
                   <property name="padx">10</property>
                   <property name="side">left</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="apply_Button_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Accept the changes and close the window.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -260,6 +300,14 @@ during Scan</property>
                   <property name="padx">10</property>
                   <property name="side">left</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="cancelButton_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Closes the window without saving any of your changes.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

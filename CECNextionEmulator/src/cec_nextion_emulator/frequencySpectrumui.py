@@ -8,6 +8,7 @@ UI source file: frequencySpectrum.ui
 """
 import tkinter as tk
 import tkinter.ttk as ttk
+from pygubu.widgets.simpletooltip import Tooltip
 
 
 def safe_i18n_translator(value):
@@ -150,6 +151,12 @@ class frequencySpectrumUI(tk.Toplevel):
             textvariable=self.stopFrequency_VAR)
         self.endFrequency_Label.pack(side="right")
         self.frequencyRange_Frame.grid(column=0, row=1, sticky="ew")
+        self.frequency_tooltip = Tooltip(self.freqTuneFrame)
+        self.frequency_tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Controls the tuning of the VFO from within this window.',
+            wraplength=300)
         self.freqTuneFrame.grid(column=0, row=2, sticky="ew")
         self.freqTuneFrame.columnconfigure(0, weight=1)
         self.frequencySpectrumFrame.grid(
@@ -176,11 +183,23 @@ class frequencySpectrumUI(tk.Toplevel):
         self.bandwidth_Label.configure(
             style="Heading2b.TLabel",
             text='Bandwidth (Hz)')
+        self.bandwidth_Tooltip = Tooltip(self.bandwidth_Label)
+        self.bandwidth_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Specifies the bandwidth covered by the scan. The larger the bandwidth, the larger frequency band each bar in  the graph will represent.',
+            wraplength=300)
         self.bandwidth_Label.grid(column=0, row=0)
         self.repeat_Label = ttk.Label(
             self.bandwidthControlFrame,
             name="repeat_label")
         self.repeat_Label.configure(style="Heading2b.TLabel", text='Repeat')
+        self.repeat_Tooltip = Tooltip(self.repeat_Label)
+        self.repeat_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='The number of times the selected band area that will be scanned. The Peak/Average will be the accumulation of all the cycles.',
+            wraplength=300)
         self.repeat_Label.grid(column=1, row=0)
         self.bandwidth_Menubutton = ttk.Menubutton(
             self.bandwidthControlFrame, name="bandwidth_menubutton")
@@ -322,6 +341,12 @@ class frequencySpectrumUI(tk.Toplevel):
             height=200, style="Normal.TFrame", width=200)
         self.freqLabel = ttk.Label(self.currentFreqFrame, name="freqlabel")
         self.freqLabel.configure(style="Heading1b.TLabel", text='Freq:')
+        self.frequency_Tooltip = Tooltip(self.freqLabel)
+        self.frequency_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Display the currently tuned frequency.',
+            wraplength=300)
         self.freqLabel.pack(side="left")
         self.currentFrequency_Label = ttk.Label(
             self.currentFreqFrame, name="currentfrequency_label")
@@ -351,12 +376,24 @@ class frequencySpectrumUI(tk.Toplevel):
             text='Scan',
             textvariable=self.startStopSpectrum_VAR,
             width=10)
+        self.startStop_Tooltip = Tooltip(self.startStop_Button)
+        self.startStop_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Starts/stops the scan. Usually once the scan is started, it is not possible to stop it.',
+            wraplength=300)
         self.startStop_Button.grid(padx="0 15", row=0)
         self.startStop_Button.configure(command=self.startSpectrum_CB)
         self.recenter_Button = ttk.Button(
             self.closingFrame, name="recenter_button")
         self.recenter_Button.configure(
             style="Button2b.TButton", text='Center', width=10)
+        self.recenter_Tooltip = Tooltip(self.recenter_Button)
+        self.recenter_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Puts the current frequency in the center of the scan area and reruns the scan.',
+            wraplength=300)
         self.recenter_Button.grid(column=1, padx="0 15", row=0)
         self.recenter_Button.configure(command=self.recenter_CB)
         self.applyClose_Button = ttk.Button(
@@ -367,12 +404,24 @@ class frequencySpectrumUI(tk.Toplevel):
             text='Close',
             textvariable=self.closeApply_Button_VAR,
             width=10)
+        self.applyClose_Tooltip = Tooltip(self.applyClose_Button)
+        self.applyClose_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Closes the window and leaves the VFO at the current setting set in this window.',
+            wraplength=300)
         self.applyClose_Button.grid(column=2, padx="0 15", row=0)
         self.applyClose_Button.configure(command=self.applyClose_CB)
         self.cancel_Button = ttk.Button(
             self.closingFrame, name="cancel_button")
         self.cancel_Button.configure(
             style="Button2b.TButton", text='Cancel', width=10)
+        self.cancel_Tooltip = Tooltip(self.cancel_Button)
+        self.cancel_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Closes the window resets the VFO Frequency to the setting when this window was entered.',
+            wraplength=300)
         self.cancel_Button.grid(column=3, row=0)
         self.cancel_Button.configure(command=self.cancel_CB)
         self.closingFrame.grid(

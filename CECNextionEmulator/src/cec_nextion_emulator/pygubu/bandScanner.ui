@@ -125,6 +125,14 @@
                     </layout>
                   </object>
                 </child>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="masterTune_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Controls the frequency on all selected bands.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
@@ -175,6 +183,14 @@
                           <property name="column">0</property>
                           <property name="row">0</property>
                         </layout>
+                        <child>
+                          <object class="pygubu.widgets.Tooltip" id="qsyBand0_Tooltip" named="True">
+                            <property name="padx">8</property>
+                            <property name="relief">raised</property>
+                            <property name="text" translatable="yes">Change frequency to this frequency.</property>
+                            <property name="wraplength">300</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -222,6 +238,14 @@
                         </layout>
                       </object>
                     </child>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="qsyBand1_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">Change frequency to this frequency.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -254,6 +278,14 @@
                           <property name="column">1</property>
                           <property name="row">0</property>
                         </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="qsyBand2_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">Change frequency to this frequency.</property>
+                        <property name="wraplength">300</property>
                       </object>
                     </child>
                   </object>
@@ -445,6 +477,14 @@
                     </child>
                   </object>
                 </child>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="selectBand_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Select up to 3 bands to be scanned. You must deselect a band to select a new one when you reach 3.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
@@ -475,6 +515,14 @@
                   <property name="padx">0 20</property>
                   <property name="side">left</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="scanButton_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Iniatites a scan of the bands selected on the right.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -487,6 +535,14 @@
                   <property name="padx">0 20</property>
                   <property name="side">left</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="close_Button_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Closes the window leaving the frequency set to the last value.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -498,6 +554,14 @@
                 <layout manager="pack">
                   <property name="side">left</property>
                 </layout>
+                <child>
+                  <object class="pygubu.widgets.Tooltip" id="cancel_Tooltip" named="True">
+                    <property name="padx">8</property>
+                    <property name="relief">raised</property>
+                    <property name="text" translatable="yes">Closes the window and resets the frequency to the setting when this window was first entered.</property>
+                    <property name="wraplength">300</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

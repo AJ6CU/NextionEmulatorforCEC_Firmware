@@ -9,6 +9,7 @@ UI source file: bandScanner.ui
 import tkinter as tk
 import tkinter.ttk as ttk
 from bandGraph import bandGraph
+from pygubu.widgets.simpletooltip import Tooltip
 
 
 def safe_i18n_translator(value):
@@ -103,6 +104,12 @@ class bandScannerUI(tk.Toplevel):
             pady="15 0",
             side="top")
         self.frequencyTuning_Scale.configure(command=self.frequencyTuning_CB)
+        self.masterTune_Tooltip = Tooltip(self.freqTuneFrame)
+        self.masterTune_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Controls the frequency on all selected bands.',
+            wraplength=300)
         self.freqTuneFrame.grid(column=0, row=3, sticky="ew")
         self.frequencySpectrumFrame.grid(
             column=0, padx="10 0", row=0, sticky="ew")
@@ -130,6 +137,12 @@ class bandScannerUI(tk.Toplevel):
             style="Heading2b.TLabel",
             textvariable=self.band0Frequency_VAR,
             width=10)
+        self.qsyBand0_Tooltip = Tooltip(self.band0Frequency_Label)
+        self.qsyBand0_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Change frequency to this frequency.',
+            wraplength=300)
         self.band0Frequency_Label.grid(column=0, row=0)
         self.band0GO_Button = ttk.Button(
             self.band0Select_Frame, name="band0go_button")
@@ -158,6 +171,12 @@ class bandScannerUI(tk.Toplevel):
         def band1GO_Button_cmd_(): self.bandGo_CB("band1GO_Button")
 
         self.band1GO_Button.configure(command=band1GO_Button_cmd_)
+        self.qsyBand1_Tooltip = Tooltip(self.band1Select_Frame)
+        self.qsyBand1_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Change frequency to this frequency.',
+            wraplength=300)
         self.band1Select_Frame.pack(anchor="w", pady="135 0", side="top")
         self.band2Select_Frame = ttk.Frame(
             self.bandStatus_Frame, name="band2select_frame")
@@ -178,6 +197,12 @@ class bandScannerUI(tk.Toplevel):
         def band2GO_Button_cmd_(): self.bandGo_CB("band2GO_Button")
 
         self.band2GO_Button.configure(command=band2GO_Button_cmd_)
+        self.qsyBand2_Tooltip = Tooltip(self.band2Select_Frame)
+        self.qsyBand2_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Change frequency to this frequency.',
+            wraplength=300)
         self.band2Select_Frame.pack(anchor="w", pady="120 0", side="top")
         self.bandStatus_Frame.pack(
             anchor="ne",
@@ -333,6 +358,12 @@ class bandScannerUI(tk.Toplevel):
 
         self.Band10m.configure(command=Band10m_cmd_)
         self.bandCheckbox_Frame.pack(side="top")
+        self.selectBand_Tooltip = Tooltip(self.bandSelectFrame)
+        self.selectBand_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Select up to 3 bands to be scanned. You must deselect a band to select a new one when you reach 3.',
+            wraplength=300)
         self.bandSelectFrame.pack(
             anchor="ne",
             expand=True,
@@ -360,11 +391,23 @@ class bandScannerUI(tk.Toplevel):
             text='Scan',
             textvariable=self.scan_Button_VAR,
             width=10)
+        self.scanButton_Tooltip = Tooltip(self.scan_Button)
+        self.scanButton_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Iniatites a scan of the bands selected on the right.',
+            wraplength=300)
         self.scan_Button.pack(padx="0 20", side="left")
         self.scan_Button.configure(command=self.scan_CB)
         self.close_Button = ttk.Button(self.closingFrame, name="close_button")
         self.close_Button.configure(
             style="Button2b.TButton", text='Close', width=10)
+        self.close_Button_Tooltip = Tooltip(self.close_Button)
+        self.close_Button_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Closes the window leaving the frequency set to the last value.',
+            wraplength=300)
         self.close_Button.pack(padx="0 20", side="left")
         def close_Button_cmd_(): self.close_CB("close_Button")
 
@@ -373,6 +416,12 @@ class bandScannerUI(tk.Toplevel):
             self.closingFrame, name="cancel_button")
         self.cancel_Button.configure(
             style="Button2b.TButton", text='Cancel', width=10)
+        self.cancel_Tooltip = Tooltip(self.cancel_Button)
+        self.cancel_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Closes the window and resets the frequency to the setting when this window was first entered.',
+            wraplength=300)
         self.cancel_Button.pack(side="left")
         def cancel_Button_cmd_(): self.close_CB("cancel_Button")
 

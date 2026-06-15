@@ -69,6 +69,14 @@
               <property name="fill">x</property>
               <property name="side">top</property>
             </layout>
+            <child>
+              <object class="pygubu.widgets.Tooltip" id="bandScale_Tooltip" named="True">
+                <property name="padx">8</property>
+                <property name="relief">raised</property>
+                <property name="text" translatable="yes">Allows you to start where the scan starts for this band.</property>
+                <property name="wraplength">300</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
