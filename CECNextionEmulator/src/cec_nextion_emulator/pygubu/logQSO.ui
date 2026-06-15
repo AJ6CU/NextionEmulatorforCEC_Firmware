@@ -80,7 +80,7 @@
                   <object class="ttk.Entry" id="callsign_Entry" named="True">
                     <property name="font">{Arial} 20 {}</property>
                     <property name="style">Entry2b.TEntry</property>
-                    <property name="takefocus">false</property>
+                    <property name="takefocus">true</property>
                     <property name="textvariable">string:callsign_VAR</property>
                     <property name="validate">focusout</property>
                     <property name="width">12</property>
@@ -168,7 +168,7 @@
                     <property name="font">{Arial} 20 {}</property>
                     <property name="justify">right</property>
                     <property name="style">Entry2b.TEntry</property>
-                    <property name="takefocus">false</property>
+                    <property name="takefocus">true</property>
                     <property name="text" translatable="yes">14.032</property>
                     <property name="textvariable">string:frequency_VAR</property>
                     <property name="validate">focusout</property>
@@ -200,7 +200,7 @@
                 <child>
                   <object class="ttk.Menubutton" id="mode_Menubutton" named="True">
                     <property name="style">Heading0.TMenubutton</property>
-                    <property name="takefocus">false</property>
+                    <property name="takefocus">true</property>
                     <property name="textvariable">string:commType_VAR</property>
                     <property name="width">6</property>
                     <layout manager="grid">
@@ -346,7 +346,7 @@
                         <property name="font">{Arial} 20 {}</property>
                         <property name="justify">center</property>
                         <property name="style">Entry2b.TEntry</property>
-                        <property name="takefocus">false</property>
+                        <property name="takefocus">true</property>
                         <property name="text" translatable="yes">2026</property>
                         <property name="textvariable">string:utcDateYYYY_VAR</property>
                         <property name="width">4</property>
@@ -373,7 +373,7 @@
                         <property name="font">{Arial} 20 {}</property>
                         <property name="justify">center</property>
                         <property name="style">Entry2b.TEntry</property>
-                        <property name="takefocus">false</property>
+                        <property name="takefocus">true</property>
                         <property name="text" translatable="yes">12</property>
                         <property name="textvariable">string:utcDateMM_VAR</property>
                         <property name="width">2</property>
@@ -400,7 +400,7 @@
                         <property name="font">{Arial} 20 {}</property>
                         <property name="justify">center</property>
                         <property name="style">Entry2b.TEntry</property>
-                        <property name="takefocus">false</property>
+                        <property name="takefocus">true</property>
                         <property name="text" translatable="yes">28</property>
                         <property name="textvariable">string:utcDateDD_VAR</property>
                         <property name="validate">focusout</property>
@@ -430,7 +430,7 @@
                         <property name="font">{Arial} 20 {}</property>
                         <property name="justify">center</property>
                         <property name="style">Entry2b.TEntry</property>
-                        <property name="takefocus">false</property>
+                        <property name="takefocus">true</property>
                         <property name="text" translatable="yes">23</property>
                         <property name="textvariable">string:utcTimeHH_VAR</property>
                         <property name="validate">focusout</property>
@@ -457,7 +457,7 @@
                         <property name="font">{Arial} 20 {}</property>
                         <property name="justify">center</property>
                         <property name="style">Entry2b.TEntry</property>
-                        <property name="takefocus">false</property>
+                        <property name="takefocus">true</property>
                         <property name="text" translatable="yes">12</property>
                         <property name="textvariable">string:utcTimeMM_VAR</property>
                         <property name="validate">focusout</property>
@@ -650,7 +650,7 @@
                     <property name="font">{Arial} 20 {}</property>
                     <property name="justify">center</property>
                     <property name="style">Entry2b.TEntry</property>
-                    <property name="takefocus">false</property>
+                    <property name="takefocus">true</property>
                     <property name="text" translatable="yes">599</property>
                     <property name="textvariable">string:rstSend_VAR</property>
                     <property name="validate">focusout</property>
@@ -668,7 +668,7 @@
                     <property name="font">{Arial} 20 {}</property>
                     <property name="justify">center</property>
                     <property name="style">Entry2b.TEntry</property>
-                    <property name="takefocus">false</property>
+                    <property name="takefocus">true</property>
                     <property name="text" translatable="yes">599</property>
                     <property name="textvariable">string:rstRcvd_VAR</property>
                     <property name="validate">focusout</property>
@@ -698,6 +698,7 @@
               <object class="ttk.Button" id="logQSO_Button" named="True">
                 <property name="command" type="command" cbtype="simple">logQSO_CB</property>
                 <property name="style">Button2b.TButton</property>
+                <property name="takefocus">true</property>
                 <property name="text" translatable="yes">Log</property>
                 <property name="textvariable">string:startStopSpectrum_VAR</property>
                 <property name="width">10</property>
@@ -711,6 +712,7 @@
               <object class="ttk.Button" id="cancel_Button" named="True">
                 <property name="command" type="command" cbtype="simple">cancel_CB</property>
                 <property name="style">Button2b.TButton</property>
+                <property name="takefocus">true</property>
                 <property name="text" translatable="yes">Cancel</property>
                 <property name="width">10</property>
                 <layout manager="grid">

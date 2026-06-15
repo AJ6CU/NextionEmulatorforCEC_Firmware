@@ -82,7 +82,7 @@ class logQSOUI(ttk.Labelframe):
         self.callsign_Entry.configure(
             font="{Arial} 20 {}",
             style="Entry2b.TEntry",
-            takefocus=False,
+            takefocus=True,
             textvariable=self.callsign_VAR,
             validate="focusout",
             width=12)
@@ -132,7 +132,7 @@ class logQSOUI(ttk.Labelframe):
             font="{Arial} 20 {}",
             justify="right",
             style="Entry2b.TEntry",
-            takefocus=False,
+            takefocus=True,
             textvariable=self.frequency_VAR,
             validate="focusout",
             width=7)
@@ -162,7 +162,7 @@ class logQSOUI(ttk.Labelframe):
         self.commType_VAR = tk.StringVar()
         self.mode_Menubutton.configure(
             style="Heading0.TMenubutton",
-            takefocus=False,
+            takefocus=True,
             textvariable=self.commType_VAR,
             width=6)
         self.mode_Menu = tk.Menu(self.mode_Menubutton, name="mode_menu")
@@ -267,7 +267,7 @@ class logQSOUI(ttk.Labelframe):
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
-            takefocus=False,
+            takefocus=True,
             textvariable=self.utcDateYYYY_VAR,
             width=4)
         _text_ = '2026'
@@ -288,7 +288,7 @@ class logQSOUI(ttk.Labelframe):
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
-            takefocus=False,
+            takefocus=True,
             textvariable=self.utcDateMM_VAR,
             width=2)
         _text_ = '12'
@@ -311,7 +311,7 @@ class logQSOUI(ttk.Labelframe):
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
-            takefocus=False,
+            takefocus=True,
             textvariable=self.utcDateDD_VAR,
             validate="focusout",
             width=2)
@@ -333,7 +333,7 @@ class logQSOUI(ttk.Labelframe):
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
-            takefocus=False,
+            takefocus=True,
             textvariable=self.utcTimeHH_VAR,
             validate="focusout",
             width=2)
@@ -353,7 +353,7 @@ class logQSOUI(ttk.Labelframe):
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
-            takefocus=False,
+            takefocus=True,
             textvariable=self.utcTimeMM_VAR,
             validate="focusout",
             width=2)
@@ -450,7 +450,7 @@ class logQSOUI(ttk.Labelframe):
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
-            takefocus=False,
+            takefocus=True,
             textvariable=self.rstSend_VAR,
             validate="focusout",
             width=8)
@@ -466,7 +466,7 @@ class logQSOUI(ttk.Labelframe):
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
-            takefocus=False,
+            takefocus=True,
             textvariable=self.rstRcvd_VAR,
             validate="focusout",
             width=8)
@@ -487,6 +487,7 @@ class logQSOUI(ttk.Labelframe):
         self.startStopSpectrum_VAR = tk.StringVar(value='Log')
         self.logQSO_Button.configure(
             style="Button2b.TButton",
+            takefocus=True,
             text='Log',
             textvariable=self.startStopSpectrum_VAR,
             width=10)
@@ -495,7 +496,10 @@ class logQSOUI(ttk.Labelframe):
         self.cancel_Button = ttk.Button(
             self.closingFrame, name="cancel_button")
         self.cancel_Button.configure(
-            style="Button2b.TButton", text='Cancel', width=10)
+            style="Button2b.TButton",
+            takefocus=True,
+            text='Cancel',
+            width=10)
         self.cancel_Button.grid(column=3, row=0)
         self.cancel_Button.configure(command=self.cancel_CB)
         self.closingFrame.pack(pady="20 15", side="top")

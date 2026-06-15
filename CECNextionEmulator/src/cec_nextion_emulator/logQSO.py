@@ -19,104 +19,19 @@ from VirtualNumericKeyboard import VirtualNumericKeyboard
 from VirtualKeyboard import VirtualKeyboard
 from tkinter import messagebox
 import re
+from entryFieldHandler import entryFieldHandler
 
 #
 # Manual user code
 #
-class _entryFieldHandler:
-    def __init__(self, parent, widget_name, fieldWidth, vkeyboard, nextWidget=None, **kw):
-        self.parent = parent
-        self.widget_name = widget_name
-        self.fieldWidth = fieldWidth
-        self.vkeyboard = vkeyboard
-        self.nextWidget = nextWidget
-
-        #
-        #   Inferred/required methods
-        #
-        self.widget = getattr(self.parent, self.widget_name + "_Entry")
-        self.widget_VAR = getattr(self.parent, self.widget_name + "_VAR")
-        self.validationCallback = getattr(self.parent, self.widget_name + "_validation")
-        self.errorHandlerCallback = getattr(self.parent, self.widget_name + "_errorHandler")
-        self.preProcessorCallback = getattr(self.parent, self.widget_name + "_preProcessor")
-        self.postProcessorCallback = getattr(self.parent, self.widget_name + "_postProcessor")
-
-        self.widget.bind("<FocusIn>", self.focusInHandler)
-        self.widget.bind("<FocusOut>",self.focusOutHandler)
-
-        self.saveVAR = None
-
-    def focusInHandler(self, event):
-        print("focusInHandler:", self.widget_name)
-
-        self.saveVAR= self.widget_VAR.get()
-        self.widget_VAR.set(self.preProcessorCallback())
-
-        if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.widget.unbind("<FocusOut>")    # necessary to avoid generating focusout with virtual keyboard
-            self.vKeyboard = self.vkeyboard(self.parent, self.widget_VAR, self.keyboardClosed, self.fieldWidth)
-        else:
-            if isinstance(self.widget, ttk.Entry):
-                self.widget.icursor(tk.END)
-
-
-    def focusOutHandler(self, event):
-        print("focusOutHandler:", self.widget_name)
-
-        print("value on way out=", self.widget_VAR.get())
-        if (self.validationCallback()):
-            print("passed validation")
-            self.postProcessorCallback()        #   Perform any post processing of values
-            #
-            #   Set focus to next logical widget
-            #
-            print("managingFocus")
-            self._manageFocus(self.nextWidget)
-
-        else:
-            print("failed validation")
-            self.widget.unbind("<FocusIn>")            #   Need to unbind to avoid focus in on return
-            self.widget.unbind("<FocusOut>")           #   from error handling
-
-
-            self.errorHandlerCallback()         # Generate error message and clean up things
-            self._restoreSaveValue()
-            #
-            #   Reset focus to end of entry field
-            #
-
-            self.widget.bind("<FocusIn>", self.focusInHandler)
-            self.widget.bind("<FocusOut>", self.focusOutHandler)
-
-            self._manageFocus(self.widget)
-
-
-    def keyboardClosed(self, origValue, newValue):
-        print("keyboardClosed")
-        self.widget_VAR.set(newValue)
-
-        self.widget.bind("<FocusOut>", self.focusOutHandler)
-        self.widget.event_generate("<FocusOut>")
-
-
-    def _manageFocus(self,target):
-        target.focus_set()
-        # target.event_generate("<FocusIn>")
-        if isinstance(target, ttk.Entry):
-            target.icursor(tk.END)
-
-    def _restoreSaveValue(self):
-        self.widget_VAR.set(self.saveVAR)
-
-
 
 
 class logQSO(baseui.logQSOUI):
-    def __init__(self, master=None, mainWindow = None, **kw):
-        self.master = master
+    def __init__(self, parent=None, mainWindow = None, **kw):
+        self.parent = parent
         self.mainWindow = mainWindow
 
-        self.popup = tk.Toplevel(self.master)
+        self.popup = tk.Toplevel(self.parent)
 
         super().__init__(self.popup, **kw)
 
@@ -164,15 +79,15 @@ class logQSO(baseui.logQSOUI):
         #   Create a handler for each entry field
         #
         #   (self, parent, widget_name, fieldWidth, vkeyboard, nextWidget=None, **kw)
-        self.callsign_Object =      _entryFieldHandler(self, "callsign", 20, VirtualKeyboard, self.logQSO_Button)
-        self.frequency_Object =     _entryFieldHandler(self, "frequency", 6, VirtualNumericKeyboard, self.logQSO_Button)
-        self.utcDateYYYY_Object =   _entryFieldHandler(self, "utcDateYYYY", 4, VirtualNumericKeyboard, self.utcDateMM_Entry)
-        self.utcDateMM_Object =     _entryFieldHandler(self, "utcDateMM", 2, VirtualNumericKeyboard, self.utcDateDD_Entry)
-        self.utcDateDD_Object =     _entryFieldHandler(self, "utcDateDD", 2, VirtualNumericKeyboard, self.utcTimeHH_Entry)
-        self.utcTimeHH_Object =     _entryFieldHandler(self, "utcTimeHH", 2, VirtualNumericKeyboard, self.utcTimeMM_Entry)
-        self.utcTimeMM_Object =     _entryFieldHandler(self, "utcTimeMM", 2, VirtualNumericKeyboard, self.logQSO_Button)
-        self.rstSend_Object =       _entryFieldHandler(self, "rstSend", 8, VirtualKeyboard, self.rstRcvd_Entry)
-        self.rstRcvd_Object =       _entryFieldHandler(self, "rstRcvd", 8, VirtualKeyboard, self.logQSO_Button)
+        self.callsign_Object =      entryFieldHandler(self, "callsign", 20, VirtualKeyboard, self.logQSO_Button)
+        self.frequency_Object =     entryFieldHandler(self, "frequency", 6, VirtualNumericKeyboard, self.popup) #sself.logQSO_Button) # self.logQSO_Button)
+        self.utcDateYYYY_Object =   entryFieldHandler(self, "utcDateYYYY", 4, VirtualNumericKeyboard, self.popup) #s self.utcDateMM_Entry)
+        self.utcDateMM_Object =     entryFieldHandler(self, "utcDateMM", 2, VirtualNumericKeyboard,  self.popup) #sself.utcDateDD_Entry)
+        self.utcDateDD_Object =     entryFieldHandler(self, "utcDateDD", 2, VirtualNumericKeyboard,  self.popup) #sself.utcTimeHH_Entry)
+        self.utcTimeHH_Object =     entryFieldHandler(self, "utcTimeHH", 2, VirtualNumericKeyboard,  self.popup) #sself.utcTimeMM_Entry)
+        self.utcTimeMM_Object =     entryFieldHandler(self, "utcTimeMM", 2, VirtualNumericKeyboard,  self.popup) #sself.logQSO_Button)
+        self.rstSend_Object =       entryFieldHandler(self, "rstSend", 8, VirtualKeyboard,  self.popup) #sself.rstRcvd_Entry)
+        self.rstRcvd_Object =       entryFieldHandler(self, "rstRcvd", 8, VirtualKeyboard, self.popup) #sself.logQSO_Button)
 
 
         self.popup.geometry(gv.POPUP_WINDOW_OFFSET)
