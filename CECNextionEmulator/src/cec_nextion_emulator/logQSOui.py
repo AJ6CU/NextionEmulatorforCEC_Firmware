@@ -82,25 +82,19 @@ class logQSOUI(ttk.Labelframe):
         self.callsign_Entry.configure(
             font="{Arial} 20 {}",
             style="Entry2b.TEntry",
+            takefocus=False,
             textvariable=self.callsign_VAR,
             validate="focusout",
             width=12)
         self.callsign_Entry.pack()
-        _validatecmd = (
-            self.callsign_Entry.register(
-                self.callsign_Validate_CB), "%P", "%V")
-        self.callsign_Entry.configure(validatecommand=_validatecmd)
-        _validatecmd = (
-            self.callsign_Entry.register(
-                self.callsign_Invalid_CB), "%P", "%V")
-        self.callsign_Entry.configure(invalidcommand=_validatecmd)
-        self.callsign_Entry.bind("<Button>", self.callsign_Entered_CB, add="+")
+        self.callsign_Entry.bind(
+            "<FocusIn>", self.callsign_FocusIn_CB, add="+")
         self.callsign_Frame.grid(column=0, padx=10, pady="10 30", row=0)
         self.freq_Frame = ttk.Frame(self.logData_Frame, name="freq_frame")
         self.freq_Frame.configure(height=200, style="Normal.TFrame", width=200)
         self.band_Label = ttk.Label(self.freq_Frame, name="band_label")
         self.band_Label.configure(style="Heading2b.TLabel", text='Band')
-        self.band_Label.grid(column=0, padx="0 15", row=0)
+        self.band_Label.grid(column=0, padx="0 15", row=0, sticky="w")
         self.frequency_Label = ttk.Label(
             self.freq_Frame, name="frequency_label")
         self.frequency_Label.configure(
@@ -125,35 +119,31 @@ class logQSOUI(ttk.Labelframe):
             self.freq_Frame, name="imputedband_label")
         self.bandName_VAR = tk.StringVar(value='40m')
         self.imputedBand_Label.configure(
-            justify="right",
+            justify="center",
             style="Heading1b.TLabel",
             text='40m',
-            textvariable=self.bandName_VAR)
-        self.imputedBand_Label.grid(column=0, padx="0 20", row=1, sticky="n")
-        self.frequency_entry = ttk.Entry(
+            textvariable=self.bandName_VAR,
+            width=7)
+        self.imputedBand_Label.grid(column=0, padx="0 15", row=1, sticky="n")
+        self.frequency_Entry = ttk.Entry(
             self.freq_Frame, name="frequency_entry")
         self.frequency_VAR = tk.StringVar(value='14.032')
-        self.frequency_entry.configure(
+        self.frequency_Entry.configure(
             font="{Arial} 20 {}",
             justify="right",
             style="Entry2b.TEntry",
+            takefocus=False,
             textvariable=self.frequency_VAR,
             validate="focusout",
             width=7)
         _text_ = '14.032'
-        self.frequency_entry.delete("0", "end")
-        self.frequency_entry.insert("0", _text_)
-        self.frequency_entry.grid(column=1, row=1, sticky="n")
-        _validatecmd = (
-            self.frequency_entry.register(
-                self.frequency_Validate_CB), "%P", "%V")
-        self.frequency_entry.configure(validatecommand=_validatecmd)
-        _validatecmd = (
-            self.frequency_entry.register(
-                self.frequency_Invalid_CB), "%P", "%V")
-        self.frequency_entry.configure(invalidcommand=_validatecmd)
-        self.frequency_entry.bind(
+        self.frequency_Entry.delete("0", "end")
+        self.frequency_Entry.insert("0", _text_)
+        self.frequency_Entry.grid(column=1, row=1, sticky="n")
+        self.frequency_Entry.bind(
             "<Button>", self.frequency_Entered_CB, add="+")
+        self.frequency_Entry.bind(
+            "<FocusIn>", self.frequency_FocusIn_CB, add="+")
         self.frequency_ext = ttk.Label(self.freq_Frame, name="frequency_ext")
         self.lowFreqDigits = tk.StringVar(value='.000')
         self.frequency_ext.configure(
@@ -172,6 +162,7 @@ class logQSOUI(ttk.Labelframe):
         self.commType_VAR = tk.StringVar()
         self.mode_Menubutton.configure(
             style="Heading0.TMenubutton",
+            takefocus=False,
             textvariable=self.commType_VAR,
             width=6)
         self.mode_Menu = tk.Menu(self.mode_Menubutton, name="mode_menu")
@@ -269,85 +260,67 @@ class logQSOUI(ttk.Labelframe):
             self.timeDate_Frame, name="utcdate_frame")
         self.utcDate_Frame.configure(
             height=200, style="Normal.TFrame", width=200)
-        self.utcYYYY_Entry = ttk.Entry(
-            self.utcDate_Frame, name="utcyyyy_entry")
+        self.utcDateYYYY_Entry = ttk.Entry(
+            self.utcDate_Frame, name="utcdateyyyy_entry")
         self.utcDateYYYY_VAR = tk.StringVar(value='2026')
-        self.utcYYYY_Entry.configure(
+        self.utcDateYYYY_Entry.configure(
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
+            takefocus=False,
             textvariable=self.utcDateYYYY_VAR,
-            validate="focusout",
             width=4)
         _text_ = '2026'
-        self.utcYYYY_Entry.delete("0", "end")
-        self.utcYYYY_Entry.insert("0", _text_)
-        self.utcYYYY_Entry.grid(column=1, row=0)
-        _validatecmd = (self.utcYYYY_Entry.register(
-            self.utcDateYYYY_Validate_CB), "%P", "%V")
-        self.utcYYYY_Entry.configure(validatecommand=_validatecmd)
-        _validatecmd = (self.utcYYYY_Entry.register(
-            self.utcDateYYYY_Invalid_CB), "%P", "%V")
-        self.utcYYYY_Entry.configure(invalidcommand=_validatecmd)
-        self.utcYYYY_Entry.bind(
-            "<Button>",
-            self.utcDateYYYY_Entered_CB,
-            add="+")
+        self.utcDateYYYY_Entry.delete("0", "end")
+        self.utcDateYYYY_Entry.insert("0", _text_)
+        self.utcDateYYYY_Entry.grid(column=1, row=0)
+        self.utcDateYYYY_Entry.bind(
+            "<FocusIn>", self.utcDateYYYY_FocusIn_CB, add="+")
+        self.utcDateYYYY_Entry.bind(
+            "<FocusOut>", self.utcDateYYYY_Validate_CB, add="+")
         self.slash1_label = ttk.Label(self.utcDate_Frame, name="slash1_label")
         self.slash1_label.configure(style="Heading1b.TLabel", text='-')
         self.slash1_label.grid(column=2, row=0)
-        self.utcMM_Entry = ttk.Entry(self.utcDate_Frame, name="utcmm_entry")
+        self.utcDateMM_Entry = ttk.Entry(
+            self.utcDate_Frame, name="utcdatemm_entry")
         self.utcDateMM_VAR = tk.StringVar(value='12')
-        self.utcMM_Entry.configure(
+        self.utcDateMM_Entry.configure(
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
+            takefocus=False,
             textvariable=self.utcDateMM_VAR,
-            validate="focusout",
             width=2)
         _text_ = '12'
-        self.utcMM_Entry.delete("0", "end")
-        self.utcMM_Entry.insert("0", _text_)
-        self.utcMM_Entry.grid(column=3, row=0)
-        _validatecmd = (
-            self.utcMM_Entry.register(
-                self.utcDateMM_Validate_CB),
-            "%P",
-            "%V")
-        self.utcMM_Entry.configure(validatecommand=_validatecmd)
-        _validatecmd = (
-            self.utcMM_Entry.register(
-                self.utcDateMM_Invalid_CB),
-            "%P",
-            "%V")
-        self.utcMM_Entry.configure(invalidcommand=_validatecmd)
-        self.utcMM_Entry.bind("<Button>", self.utcDateMM_Entered_CB, add="+")
+        self.utcDateMM_Entry.delete("0", "end")
+        self.utcDateMM_Entry.insert("0", _text_)
+        self.utcDateMM_Entry.grid(column=3, row=0)
+        self.utcDateMM_Entry.bind(
+            "<FocusIn>", self.utcDateMM_FocusIn_CB, add="+")
+        self.utcDateMM_Entry.bind(
+            "<FocusOut>",
+            self.utcDateMM_Validate_CB,
+            add="+")
         self.slash2_Label = ttk.Label(self.utcDate_Frame, name="slash2_label")
         self.slash2_Label.configure(style="Heading1b.TLabel", text='-')
         self.slash2_Label.grid(column=4, row=0)
-        self.utc_DD_Entry = ttk.Entry(self.utcDate_Frame, name="utc_dd_entry")
+        self.utcDateDD_Entry = ttk.Entry(
+            self.utcDate_Frame, name="utcdatedd_entry")
         self.utcDateDD_VAR = tk.StringVar(value='28')
-        self.utc_DD_Entry.configure(
+        self.utcDateDD_Entry.configure(
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
+            takefocus=False,
             textvariable=self.utcDateDD_VAR,
             validate="focusout",
             width=2)
         _text_ = '28'
-        self.utc_DD_Entry.delete("0", "end")
-        self.utc_DD_Entry.insert("0", _text_)
-        self.utc_DD_Entry.grid(column=5, row=0)
-        _validatecmd = (self.utc_DD_Entry.register(
-            self.utcDateDD_Validate_CB), "%P", "%V")
-        self.utc_DD_Entry.configure(validatecommand=_validatecmd)
-        _validatecmd = (self.utc_DD_Entry.register(
-            self.utcDateDD_Invalid_CB), "%P", "%V")
-        self.utc_DD_Entry.configure(invalidcommand=_validatecmd)
-        self.utc_DD_Entry.bind(
-            "<ButtonPress>",
-            self.utcDateDD_Entered_CB,
-            add="+")
+        self.utcDateDD_Entry.delete("0", "end")
+        self.utcDateDD_Entry.insert("0", _text_)
+        self.utcDateDD_Entry.grid(column=5, row=0)
+        self.utcDateDD_Entry.bind(
+            "<FocusIn>", self.utcDateDD_FocusIn_CB, add="+")
         self.utcDate_Frame.grid(column=1, row=1, sticky="w")
         self.utcTime_Frame = ttk.Frame(
             self.timeDate_Frame, name="utctime_frame")
@@ -360,6 +333,7 @@ class logQSOUI(ttk.Labelframe):
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
+            takefocus=False,
             textvariable=self.utcTimeHH_VAR,
             validate="focusout",
             width=2)
@@ -367,45 +341,28 @@ class logQSOUI(ttk.Labelframe):
         self.utcTimeHH_Entry.delete("0", "end")
         self.utcTimeHH_Entry.insert("0", _text_)
         self.utcTimeHH_Entry.grid(column=1, row=0)
-        _validatecmd = (
-            self.utcTimeHH_Entry.register(
-                self.utcTimeHH_Validate_CB), "%P", "%V")
-        self.utcTimeHH_Entry.configure(validatecommand=_validatecmd)
-        _validatecmd = (
-            self.utcTimeHH_Entry.register(
-                self.utcTimeHH_Invalid_CB), "%P", "%V")
-        self.utcTimeHH_Entry.configure(invalidcommand=_validatecmd)
         self.utcTimeHH_Entry.bind(
-            "<Button>", self.utcTimeHH_Entered_CB, add="+")
+            "<FocusIn>", self.utcTimeHH_FocusIn_CB, add="+")
         self.colon1_Label = ttk.Label(self.utcTime_Frame, name="colon1_label")
         self.colon1_Label.configure(style="Heading1b.TLabel", text=':')
         self.colon1_Label.grid(column=2, row=0)
-        self.entry5 = ttk.Entry(self.utcTime_Frame, name="entry5")
+        self.utcTimeMM_Entry = ttk.Entry(
+            self.utcTime_Frame, name="utctimemm_entry")
         self.utcTimeMM_VAR = tk.StringVar(value='12')
-        self.entry5.configure(
+        self.utcTimeMM_Entry.configure(
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
+            takefocus=False,
             textvariable=self.utcTimeMM_VAR,
             validate="focusout",
             width=2)
         _text_ = '12'
-        self.entry5.delete("0", "end")
-        self.entry5.insert("0", _text_)
-        self.entry5.grid(column=3, row=0)
-        _validatecmd = (
-            self.entry5.register(
-                self.utcTimeMM_Validate_CB),
-            "%P",
-            "%V")
-        self.entry5.configure(validatecommand=_validatecmd)
-        _validatecmd = (
-            self.entry5.register(
-                self.utcTimeMM_Invalid_CB),
-            "%P",
-            "%V")
-        self.entry5.configure(invalidcommand=_validatecmd)
-        self.entry5.bind("<Button>", self.utcTimeMM_Entered_CB, add="+")
+        self.utcTimeMM_Entry.delete("0", "end")
+        self.utcTimeMM_Entry.insert("0", _text_)
+        self.utcTimeMM_Entry.grid(column=3, row=0)
+        self.utcTimeMM_Entry.bind(
+            "<FocusIn>", self.utcTimeMM_FocusIn_CB, add="+")
         self.utcTime_Frame.grid(column=2, padx=30, row=1, sticky="w")
         self.dateClue_Frame = ttk.Frame(
             self.timeDate_Frame, name="dateclue_frame")
@@ -493,6 +450,7 @@ class logQSOUI(ttk.Labelframe):
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
+            takefocus=False,
             textvariable=self.rstSend_VAR,
             validate="focusout",
             width=8)
@@ -500,38 +458,25 @@ class logQSOUI(ttk.Labelframe):
         self.rstSend_Entry.delete("0", "end")
         self.rstSend_Entry.insert("0", _text_)
         self.rstSend_Entry.grid(column=0, padx="0 20", row=1)
-        _validatecmd = (
-            self.rstSend_Entry.register(
-                self.rstSend_Validate_CB), "%P", "%V")
-        self.rstSend_Entry.configure(validatecommand=_validatecmd)
-        _validatecmd = (
-            self.rstSend_Entry.register(
-                self.rstSend_Invalid_CB), "%P", "%V")
-        self.rstSend_Entry.configure(invalidcommand=_validatecmd)
-        self.rstSend_Entry.bind("<Button>", self.rstSend_Entered_CB, add="+")
+        self.rstSend_Entry.bind("<FocusIn>", self.rstSend_FocusIn_CB, add="+")
         self.rstRcvd_Entry = ttk.Entry(
             self.signalReport_Frame, name="rstrcvd_entry")
-        self.rstReceived_VAR = tk.StringVar(value='599')
+        self.rstRcvd_VAR = tk.StringVar(value='599')
         self.rstRcvd_Entry.configure(
             font="{Arial} 20 {}",
             justify="center",
             style="Entry2b.TEntry",
-            textvariable=self.rstReceived_VAR,
+            takefocus=False,
+            textvariable=self.rstRcvd_VAR,
             validate="focusout",
             width=8)
         _text_ = '599'
         self.rstRcvd_Entry.delete("0", "end")
         self.rstRcvd_Entry.insert("0", _text_)
         self.rstRcvd_Entry.grid(column=1, row=1)
-        _validatecmd = (self.rstRcvd_Entry.register(
-            self.rstReceived_Validate_CB), "%P", "%V")
-        self.rstRcvd_Entry.configure(validatecommand=_validatecmd)
-        _validatecmd = (self.rstRcvd_Entry.register(
-            self.rstReceived_Invalid_CB), "%P", "%V")
-        self.rstRcvd_Entry.configure(invalidcommand=_validatecmd)
         self.rstRcvd_Entry.bind(
-            "<Button>",
-            self.rstReceived_Entered_CB,
+            "<FocusIn>",
+            self.rstReceived_FocusIn_CB,
             add="+")
         self.signalReport_Frame.grid(column=0, padx=10, pady="0 30", row=11)
         self.logData_Frame.pack(padx=20, side="top")
@@ -562,88 +507,43 @@ class logQSOUI(ttk.Labelframe):
             width=200)
         # Layout for 'logQSO_Labelframe' skipped in custom widget template.
 
-    def callsign_Validate_CB(self, p_entry_value, v_condition):
-        pass
-
-    def callsign_Invalid_CB(self, p_entry_value, v_condition):
-        pass
-
-    def callsign_Entered_CB(self, event=None):
-        pass
-
-    def frequency_Validate_CB(self, p_entry_value, v_condition):
-        pass
-
-    def frequency_Invalid_CB(self, p_entry_value, v_condition):
+    def callsign_FocusIn_CB(self, event=None):
         pass
 
     def frequency_Entered_CB(self, event=None):
         pass
 
+    def frequency_FocusIn_CB(self, event=None):
+        pass
+
     def selectMode_CB(self, itemid):
         pass
 
-    def utcDateYYYY_Validate_CB(self, p_entry_value, v_condition):
+    def utcDateYYYY_FocusIn_CB(self, event=None):
         pass
 
-    def utcDateYYYY_Invalid_CB(self, p_entry_value, v_condition):
+    def utcDateYYYY_Validate_CB(self, event=None):
         pass
 
-    def utcDateYYYY_Entered_CB(self, event=None):
+    def utcDateMM_FocusIn_CB(self, event=None):
         pass
 
-    def utcDateMM_Validate_CB(self, p_entry_value, v_condition):
+    def utcDateMM_Validate_CB(self, event=None):
         pass
 
-    def utcDateMM_Invalid_CB(self, p_entry_value, v_condition):
+    def utcDateDD_FocusIn_CB(self, event=None):
         pass
 
-    def utcDateMM_Entered_CB(self, event=None):
+    def utcTimeHH_FocusIn_CB(self, event=None):
         pass
 
-    def utcDateDD_Validate_CB(self, p_entry_value, v_condition):
+    def utcTimeMM_FocusIn_CB(self, event=None):
         pass
 
-    def utcDateDD_Invalid_CB(self, p_entry_value, v_condition):
+    def rstSend_FocusIn_CB(self, event=None):
         pass
 
-    def utcDateDD_Entered_CB(self, event=None):
-        pass
-
-    def utcTimeHH_Validate_CB(self, p_entry_value, v_condition):
-        pass
-
-    def utcTimeHH_Invalid_CB(self, p_entry_value, v_condition):
-        pass
-
-    def utcTimeHH_Entered_CB(self, event=None):
-        pass
-
-    def utcTimeMM_Validate_CB(self, p_entry_value, v_condition):
-        pass
-
-    def utcTimeMM_Invalid_CB(self, p_entry_value, v_condition):
-        pass
-
-    def utcTimeMM_Entered_CB(self, event=None):
-        pass
-
-    def rstSend_Validate_CB(self, p_entry_value, v_condition):
-        pass
-
-    def rstSend_Invalid_CB(self, p_entry_value, v_condition):
-        pass
-
-    def rstSend_Entered_CB(self, event=None):
-        pass
-
-    def rstReceived_Validate_CB(self, p_entry_value, v_condition):
-        pass
-
-    def rstReceived_Invalid_CB(self, p_entry_value, v_condition):
-        pass
-
-    def rstReceived_Entered_CB(self, event=None):
+    def rstReceived_FocusIn_CB(self, event=None):
         pass
 
     def logQSO_CB(self):

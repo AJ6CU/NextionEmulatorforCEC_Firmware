@@ -12,18 +12,17 @@ import globalvars as gv
 
 
 class VirtualKeyboard(tk.Toplevel):
-    def __init__(self, master=None, fieldStrVar=None, dirtyCallback=None, maxChars=None, **kw):
+    def __init__(self, master=None, fieldStrVar=None, postProcessor=None, maxChars=None,  **kw):
         self.master = master
         self.fieldStrVar = fieldStrVar
         self.localStrVar = StringVar()      # we work with this local value and then write it back into the original on "enter" key
-        self.dirty_CB = dirtyCallback
+        self.postProcessor = postProcessor
         self.maxChars = maxChars
 
         self.localStrVar.set(self.fieldStrVar.get().replace(" ",""))        # Labels are blank padded to 5 chars
         self.currentPos = len(self.localStrVar.get())
 
 
-        self.cursor = "\u2581"                           # Cursor current a space, but could change this
         self.shift_status = False                   # tracks the shift key. When true, use upper case. click on/off to toggle
 
         self.uppercase ={                           # Used to map to upper case if shift key is on
@@ -345,35 +344,37 @@ class VirtualKeyboard(tk.Toplevel):
     #
     def backspace(self):
         if self.currentPos != 0:
-            first_half = self.localStrVar.get()[:self.currentPos-1].replace(self.cursor, '')
-            second_half = self.localStrVar.get()[self.currentPos + 1:].replace(self.cursor, '')
-            self.localStrVar.set(first_half + self.cursor + second_half)
+            first_half = self.localStrVar.get()[:self.currentPos-1].replace(gv.CURSOR, '')
+            second_half = self.localStrVar.get()[self.currentPos + 1:].replace(gv.CURSOR, '')
+            self.localStrVar.set(first_half + gv.CURSOR + second_half)
             self.currentPos -= 1
     #
     #   Enter key writes the result back to the appropriate field in the parent widget
     #   Calls a function in the parent to indicate if the value is now "dirty"
     #
     def enter(self,event=None):
-        # label = self.localStrVar.get().replace(self.cursor, '')
-        self.localStrVar.set(self.localStrVar.get().replace(self.cursor, ''))
-        if self.localStrVar.get() !=self.fieldStrVar.get():
-            self.fieldStrVar.set(self.localStrVar.get())
-            if self.dirty_CB != None:
-                self.dirty_CB()
+        # label = self.localStrVar.get().replace(gv.CURSOR, '')
+        self.localStrVar.set(self.localStrVar.get().replace(gv.CURSOR, ''))
+        # if self.localStrVar.get() !=self.fieldStrVar.get():
+        #     self.fieldStrVar.set(self.localStrVar.get())
+        #     if self.dirty_CB != None:
+        #         self.dirty_CB()
+
+        self.postProcessor(self.fieldStrVar.get(), self.localStrVar.get())
         self.destroy()
     #
     #   Moves the cursor to beginning of field
     #
     def home(self):
-        label = self.localStrVar.get().replace(self.cursor, "")
-        self.localStrVar.set(self.cursor + label)
+        label = self.localStrVar.get().replace(gv.CURSOR, "")
+        self.localStrVar.set(gv.CURSOR + label)
         self.currentPos = 0
     #
     #   Moves the cursor to the end of the field
     #
     def end(self):
-        label = self.localStrVar.get().replace(self.cursor, "")
-        self.localStrVar.set(label+self.cursor)
+        label = self.localStrVar.get().replace(gv.CURSOR, "")
+        self.localStrVar.set(label+gv.CURSOR)
         self.currentPos = len(self.localStrVar.get())-1
     #
     #   Moves the cursor left one character without deleting anything
@@ -382,9 +383,9 @@ class VirtualKeyboard(tk.Toplevel):
         if self.currentPos == 0:
             return
         self.currentPos -= 1
-        first_half = self.localStrVar.get()[:self.currentPos].replace(self.cursor, '')
-        second_half = self.localStrVar.get()[self.currentPos:].replace(self.cursor, '')
-        self.localStrVar.set(first_half + self.cursor + second_half)
+        first_half = self.localStrVar.get()[:self.currentPos].replace(gv.CURSOR, '')
+        second_half = self.localStrVar.get()[self.currentPos:].replace(gv.CURSOR, '')
+        self.localStrVar.set(first_half + gv.CURSOR + second_half)
     #
     #   Moves the cursor to the right one character without adding or deleting characts
     #
@@ -392,20 +393,20 @@ class VirtualKeyboard(tk.Toplevel):
         if self.currentPos == self.maxChars:
             return
         self.currentPos += 1
-        label = self.localStrVar.get().replace(self.cursor, "")
+        label = self.localStrVar.get().replace(gv.CURSOR, "")
         self.localStrVar.set(label)
-        first_half = self.localStrVar.get()[:self.currentPos].replace(self.cursor, '')
+        first_half = self.localStrVar.get()[:self.currentPos].replace(gv.CURSOR, '')
 
-        second_half = self.localStrVar.get()[self.currentPos:].replace(self.cursor, '')
+        second_half = self.localStrVar.get()[self.currentPos:].replace(gv.CURSOR, '')
 
-        self.localStrVar.set(first_half + self.cursor + second_half)
+        self.localStrVar.set(first_half + gv.CURSOR + second_half)
 
     #
     #   Handles the pressing of a typical key. Maps lower to upper case based on setting of shift flag
     #   Forbids the entry of backslash
 
     def vpresskey(self,t):
-        if len(self.localStrVar.get().replace(self.cursor,"")) < self.maxChars:
+        if len(self.localStrVar.get().replace(gv.CURSOR,"")) < self.maxChars:
             if t == "\\":
                 warning = messagebox.showinfo("Warning", self.messageNoBackslash, parent=self)
                 return
@@ -416,9 +417,9 @@ class VirtualKeyboard(tk.Toplevel):
                 else:
                     t = self.uppercase[t]
 
-            first_half = self.localStrVar.get()[:self.currentPos].replace(self.cursor,'')
-            second_half = self.localStrVar.get()[self.currentPos+1:].replace(self.cursor,'')
-            self.localStrVar.set(first_half + t + self.cursor + second_half)
+            first_half = self.localStrVar.get()[:self.currentPos].replace(gv.CURSOR,'')
+            second_half = self.localStrVar.get()[self.currentPos+1:].replace(gv.CURSOR,'')
+            self.localStrVar.set(first_half + t + gv.CURSOR + second_half)
             self.currentPos += 1
         else:
             warning = messagebox.showinfo("Warning", self.messageTooLong, parent=self)

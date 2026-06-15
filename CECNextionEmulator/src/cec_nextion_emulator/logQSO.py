@@ -8,6 +8,8 @@ UI source file: logQSO.ui
 """
 import tkinter as tk
 import tkinter.ttk as ttk
+from multiprocessing.process import parent_process
+
 import logQSOui as baseui
 import globalvars as gv
 from datetime import datetime, UTC, timezone
@@ -21,6 +23,93 @@ import re
 #
 # Manual user code
 #
+class _entryFieldHandler:
+    def __init__(self, parent, widget_name, fieldWidth, vkeyboard, nextWidget=None, **kw):
+        self.parent = parent
+        self.widget_name = widget_name
+        self.fieldWidth = fieldWidth
+        self.vkeyboard = vkeyboard
+        self.nextWidget = nextWidget
+
+        #
+        #   Inferred/required methods
+        #
+        self.widget = getattr(self.parent, self.widget_name + "_Entry")
+        self.widget_VAR = getattr(self.parent, self.widget_name + "_VAR")
+        self.validationCallback = getattr(self.parent, self.widget_name + "_validation")
+        self.errorHandlerCallback = getattr(self.parent, self.widget_name + "_errorHandler")
+        self.preProcessorCallback = getattr(self.parent, self.widget_name + "_preProcessor")
+        self.postProcessorCallback = getattr(self.parent, self.widget_name + "_postProcessor")
+
+        self.widget.bind("<FocusIn>", self.focusInHandler)
+        self.widget.bind("<FocusOut>",self.focusOutHandler)
+
+        self.saveVAR = None
+
+    def focusInHandler(self, event):
+        print("focusInHandler:", self.widget_name)
+
+        self.saveVAR= self.widget_VAR.get()
+        self.widget_VAR.set(self.preProcessorCallback())
+
+        if gv.config.get_Virtual_Keyboard_Switch() == "True":
+            self.widget.unbind("<FocusOut>")    # necessary to avoid generating focusout with virtual keyboard
+            self.vKeyboard = self.vkeyboard(self.parent, self.widget_VAR, self.keyboardClosed, self.fieldWidth)
+        else:
+            if isinstance(self.widget, ttk.Entry):
+                self.widget.icursor(tk.END)
+
+
+    def focusOutHandler(self, event):
+        print("focusOutHandler:", self.widget_name)
+
+        print("value on way out=", self.widget_VAR.get())
+        if (self.validationCallback()):
+            print("passed validation")
+            self.postProcessorCallback()        #   Perform any post processing of values
+            #
+            #   Set focus to next logical widget
+            #
+            print("managingFocus")
+            self._manageFocus(self.nextWidget)
+
+        else:
+            print("failed validation")
+            self.widget.unbind("<FocusIn>")            #   Need to unbind to avoid focus in on return
+            self.widget.unbind("<FocusOut>")           #   from error handling
+
+
+            self.errorHandlerCallback()         # Generate error message and clean up things
+            self._restoreSaveValue()
+            #
+            #   Reset focus to end of entry field
+            #
+
+            self.widget.bind("<FocusIn>", self.focusInHandler)
+            self.widget.bind("<FocusOut>", self.focusOutHandler)
+
+            self._manageFocus(self.widget)
+
+
+    def keyboardClosed(self, origValue, newValue):
+        print("keyboardClosed")
+        self.widget_VAR.set(newValue)
+
+        self.widget.bind("<FocusOut>", self.focusOutHandler)
+        self.widget.event_generate("<FocusOut>")
+
+
+    def _manageFocus(self,target):
+        target.focus_set()
+        # target.event_generate("<FocusIn>")
+        if isinstance(target, ttk.Entry):
+            target.icursor(tk.END)
+
+    def _restoreSaveValue(self):
+        self.widget_VAR.set(self.saveVAR)
+
+
+
 
 class logQSO(baseui.logQSOUI):
     def __init__(self, master=None, mainWindow = None, **kw):
@@ -50,12 +139,11 @@ class logQSO(baseui.logQSOUI):
 
         # self.frequency_VAR.set(self.mainWindow.theVFO_Object.getFormattedPrimaryVFO()[:-3].rstrip("\r\n"))
         self.frequency_VAR.set(self.mainWindow.theVFO_Object.getFormattedPrimaryVFO()[:-4])
-        if gv.NUMBER_DELIMITER == ",":
+        if gv.config.get_NUMBER_DELIMITER() == ",":
             self.lowFreqDigits.set(",000")
         else:
             self.lowFreqDigits.set(".000")
 
-        self.bandName_VAR.set(self._calculate_band_from_freq(self.frequency_VAR.get().replace(",",".")))
 
         self.localDate_VAR.set(datetime.now().strftime("%Y-%m-%d"))
         self.localTime_VAR.set(datetime.now().strftime("%H:%M"))
@@ -72,6 +160,19 @@ class logQSO(baseui.logQSOUI):
             self.commType_VAR.set("CW")
         else:
             self.commType_VAR.set("SSB")
+        #
+        #   Create a handler for each entry field
+        #
+        #   (self, parent, widget_name, fieldWidth, vkeyboard, nextWidget=None, **kw)
+        self.callsign_Object =      _entryFieldHandler(self, "callsign", 20, VirtualKeyboard, self.logQSO_Button)
+        self.frequency_Object =     _entryFieldHandler(self, "frequency", 6, VirtualNumericKeyboard, self.logQSO_Button)
+        self.utcDateYYYY_Object =   _entryFieldHandler(self, "utcDateYYYY", 4, VirtualNumericKeyboard, self.utcDateMM_Entry)
+        self.utcDateMM_Object =     _entryFieldHandler(self, "utcDateMM", 2, VirtualNumericKeyboard, self.utcDateDD_Entry)
+        self.utcDateDD_Object =     _entryFieldHandler(self, "utcDateDD", 2, VirtualNumericKeyboard, self.utcTimeHH_Entry)
+        self.utcTimeHH_Object =     _entryFieldHandler(self, "utcTimeHH", 2, VirtualNumericKeyboard, self.utcTimeMM_Entry)
+        self.utcTimeMM_Object =     _entryFieldHandler(self, "utcTimeMM", 2, VirtualNumericKeyboard, self.logQSO_Button)
+        self.rstSend_Object =       _entryFieldHandler(self, "rstSend", 8, VirtualKeyboard, self.rstRcvd_Entry)
+        self.rstRcvd_Object =       _entryFieldHandler(self, "rstRcvd", 8, VirtualKeyboard, self.logQSO_Button)
 
 
         self.popup.geometry(gv.POPUP_WINDOW_OFFSET)
@@ -83,10 +184,97 @@ class logQSO(baseui.logQSOUI):
 
         self.pack(expand=tk.YES, fill=tk.BOTH)
 
+    #
+    #   Callsign processing routines
+    #
+
+
+    def callsign_validation(self):
+        if self.is_valid_lotw_callsign(self.callsign_VAR.get()):
+            return True
+        else:
+            return False
+
+    def callsign_errorHandler(self):
+
+        messagebox.showinfo("Error - Invalid Callsign",
+                            "Callsign is empty, exceeds 20 characters, includes an illegal character" +
+                            " (something other than A-Z, 0-9, /) or bad format." +
+                            " Input ignored, resetting to prior value", parent=self)
+
+    def callsign_preProcessor(self):
+        return self.callsign_VAR.get()
+
+    def callsign_postProcessor(self):
+        self.callsign_VAR.set(self.callsign_VAR.get().upper())
+
+    #
+    #   Callsign validation
+    #
+
+    def is_valid_lotw_callsign(self, callsign):
+        # 1. Clean the input: remove whitespace and convert to uppercase
+        call = callsign.strip().upper()
+        if (len(call) == 0):        # special case of empty callsign when log window appears.
+            return True             # If the user tries to log with an empty callsign, caught at logging stage
+
+        # 2. Check length constraint (LoTW minimum is 3, maximum is 20)
+        if not (3 <= len(call) <= 20):
+            return False
+
+        # 3. Check character rules: letters, digits, and exactly one slash separator
+        # Cannot start or end with a slash, and no consecutive slashes
+        if call.startswith('/') or call.endswith('/') or '//' in call:
+            return False
+
+        # 4. Enforce valid characters (A-Z, 0-9, /)
+        if not re.match(r'^[A-Z0-9/]+$', call):
+            return False
+
+        # 5. Check prefix exceptions: Base callsign cannot start with digit 0 or 1
+        # We split by '/' to evaluate the main base callsign blocks
+        parts = call.split('/')
+        for part in parts:
+            if part and part[0] in ('0', '1'):
+                # Only valid if it's an exceptional prefix like 1A, 1M, 1S
+                if not part.startswith(('1A', '1M', '1S')):
+                    return False
+
+        return True
+
+
+    #
+    #   frequency processing routines
+    #
+
+    def frequency_validation(self):
+        if int(self.frequency_VAR.get()) <= round(gv.FREQ_BOUNDS['HIGH'] / 1000):
+            return True
+        else:
+            return False
+
+    def frequency_errorHandler(self):
+        messagebox.showinfo("Error - Frequency is invalid",
+                            "Entered frequency exceeds 60mHZ. Resetting to prior value",
+                            parent=self)
+    def frequency_preProcessor(self):
+        return self.frequency_VAR.get().replace(",","").replace(".","")
+
+    def frequency_postProcessor(self):
+        freq = float(self.frequency_VAR.get())/1000
+        self.frequency_VAR.set(f"{freq:.3f}")
+        self.bandName_VAR.set(self._calculate_band_from_freq(self.frequency_VAR.get()))
+        self.frequency_VAR.set(self.frequency_VAR.get().replace(".", gv.NUMBER_DELIMITER))
+
+    #
+    #   Frequency utilities
+    #
+
     def _calculate_band_from_freq(self, freq_mhz):
         """Internal frequency-to-band string calculator."""
+        freq_mhz_STD = freq_mhz.replace(",", ".")
         try:
-            f = float(freq_mhz)
+            f = float(freq_mhz_STD)
             if 1.8 <= f <= 2.0:
                 return "160m"
             elif 3.5 <= f <= 4.0:
@@ -118,180 +306,126 @@ class logQSO(baseui.logQSOUI):
         except (ValueError, TypeError):
             return "Unknown"
 
-    def selectMode_CB(self, itemid):
-        self.commType_VAR.set(itemid)
-
-
-    def callsign_Entered_CB(self, event=None):
-        self.callsign_save = self.callsign_VAR.get()
-        if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vKeyboard = VirtualKeyboard(self, self.callSign_VAR, self.callSign_Vkeyboard_Validate, 12)
-
-
-    def callsign_Validate_CB(self, p_entry_value, v_condition):
-        return self.is_valid_lotw_callsign(p_entry_value)
-
-    def callsign_Vkeyboard_Validate(self):
-        if not self.is_valid_lotw_callsign(self.callsign_VAR.get()):
-            self.callsign_VAR.set()
-
-    def callsign_Invalid_CB(self, p_entry_value=None, v_condition=None):
-
-        messagebox.showinfo("Error - Invalid Callsign",
-                            "callsign is empty, exceeds 20 characters, includes an illegal character" +
-                            " (something other than A-Z, 0-9, /) or bad format." +
-                            " Input ignored, resetting to prior value", parent=self)
-        self.callsign_VAR.set(self.callsign_save)
-
-
-    def is_valid_lotw_callsign(self, callsign):
-        # 1. Clean the input: remove whitespace and convert to uppercase
-        call = callsign.strip().upper()
-
-        # 2. Check length constraint (LoTW minimum is 3, maximum is 20)
-        if not (3 <= len(call) <= 20):
-            return False
-
-        # 3. Check character rules: letters, digits, and exactly one slash separator
-        # Cannot start or end with a slash, and no consecutive slashes
-        if call.startswith('/') or call.endswith('/') or '//' in call:
-            return False
-
-        # 4. Enforce valid characters (A-Z, 0-9, /)
-        if not re.match(r'^[A-Z0-9/]+$', call):
-            return False
-
-        # 5. Check prefix exceptions: Base callsign cannot start with digit 0 or 1
-        # We split by '/' to evaluate the main base callsign blocks
-        parts = call.split('/')
-        for part in parts:
-            if part and part[0] in ('0', '1'):
-                # Only valid if it's an exceptional prefix like 1A, 1M, 1S
-                if not part.startswith(('1A', '1M', '1S')):
-                    return False
-
-        return True
-
-
-
-    def frequency_Entered_CB(self, event=None):
-        self.frequency_save = self.frequency_VAR.get()
-        if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vNumericPad = VirtualNumericKeyboard(self, self.frequency_VAR, self.frequency_Vkeyboard_Validate, 7, True)
-
-    def frequency_Validate_CB(self, p_entry_value, v_condition):
-        return self.is_valid_frequency(p_entry_value)
-
-    def frequency_Vkeyboard_Validate(self):
-        if not self.is_valid_frequency(self.frequency_VAR.get()):
-            self.frequency_Invalid_CB()
-
-    def frequency_Invalid_CB(self, p_entry_value=None, v_condition=None):
-        messagebox.showinfo("Error - Frequency is invalid",
-                            "Entered frequency exceeds 60mHZ. Resetting to prior value",
-                            parent=self)
-        self.frequency_VAR.set(self.frequency_save)
-
-    def is_valid_frequency(self, f):
-        if int(gv.unformatFrequency(f)) <= round(gv.FREQ_BOUNDS['HIGH'] / 1000):
-            return True
+    #
+    #   General utilities used by date/time routines
+    #
+    def formatDateTime(self, dateOrTime):
+        if len(dateOrTime) == 1:
+            return "0"+dateOrTime
         else:
-            return False
+            return dateOrTime
+
+    def updateLocalDateTime(self):
+        # print("in update", self.utcDateYYYY_VAR.get())
+        utc_string = (self.utcDateYYYY_VAR.get() + "-" + self.utcDateMM_VAR.get() + "-" + self.utcDateDD_VAR.get() +
+                      "T" + self.utcTimeHH_VAR.get() +":" + self.utcTimeMM_VAR.get() +":00Z")
+
+        utc_obj = datetime.fromisoformat(utc_string)
+        # Convert to local time zone
+        local_obj = utc_obj.astimezone()
+
+        self.localDate_VAR.set(local_obj.strftime("%Y-%m-%d"))
+        self.localTime_VAR.set(local_obj.strftime("%H:%M"))
 
 
+    #
+    #   utcDateYYYY processing routines
+    #
 
-    def utcDateYYYY_Entered_CB(self, event=None):
-        self.utcDateYYYY_save = self.utcDateYYYY_VAR.get()
-        if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vNumericPad = VirtualNumericKeyboard(self, self.utcDateYYYY_VAR, self.utcDateYYYY_Vkeyboard_Validate, 7, False)
+    def utcDateYYYY_validation(self):
+        print("utcDateYYYY validation")
+        print(self.utcDateYYYY_VAR.get())
 
-    def utcDateYYYY_Validate_CB(self, p_entry_value, v_condition):
-        if self.is_valid_year(p_entry_value):
-            self.updateLocalDateTime()
-            return True
-        else:
-            return False
+        return self.is_valid_year(self.utcDateYYYY_VAR.get())
 
-    def utcDateYYYY_Vkeyboard_Validate(self):
-        if self.is_valid_year(self.utcDateYYYY_VAR.get()):
-            self.updateLocalDateTime()
-        else:
-            self.utcDateYYYY_Invalid_CB()
 
-    def utcDateYYYY_Invalid_CB(self, p_entry_value=None, v_condition=None):
+    def utcDateYYYY_errorHandler(self):
+        print("utcDateYYYY errorHandler")
+        print(self.utcDateYYYY_VAR.get())
         messagebox.showinfo("Error - Illegal Year",
                             "Entered year not in the range of 2026 - 2050. Resetting to prior value",
                             parent=self)
-        self.utcDateYYYY_VAR.set(self.utcDateYYYY_save)
 
+    def utcDateYYYY_preProcessor(self):
+        return self.utcDateYYYY_VAR.get()
+
+    def utcDateYYYY_postProcessor(self):
+        print("utcDateYYYY postProcessor")
+        print(self.utcDateYYYY_VAR.get())
+        self.updateLocalDateTime()
+    #
+    #   utcDateYYYY validation routine
+    #
     def is_valid_year(self, year):
         if gv.validateNumber(int(year), 2026, 2050):
             return True
         else:
             return False
 
+    #
+    #   utcDateMM processing routines
+    #
 
+    def utcDateMM_validation(self):
+        print("utcDateMM validation")
+        print(self.utcDateMM_VAR.get())
+        return self.is_valid_month(self.utcDateMM_VAR.get())
 
-
-    def utcDateMM_Entered_CB(self, event=None):
-        self.utcDateMM_save = self.utcDateMM_VAR.get()
-        if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vNumericPad = VirtualNumericKeyboard(self, self.utcDateMM_VAR, self.utcDateMM_Vkeyboard_Validate,
-                                                      2, False)
-
-    def utcDateMM_Validate_CB(self, p_entry_value, v_condition):
-        if self.is_valid_month(p_entry_value):
-            self.updateLocalDateTime()
-            return True
-        else:
-            return False
-
-    def utcDateMM_Vkeyboard_Validate(self):
-        if self.is_valid_month(self.utcDateMM_VAR.get()):
-            self.updateLocalDateTime()
-        else:
-            self.utcDateMM_Invalid_CB()
-
-    def utcDateMM_Invalid_CB(self, p_entry_value=None, v_condition=None):
+    def utcDateMM_errorHandler(self):
+        print("utcDateMM errorHandler")
+        print(self.utcDateMM_VAR.get())
         messagebox.showinfo("Error - Illegal Month",
                             "Entered month not in the range of 1-12. Resetting to prior value",
                             parent=self)
-        self.utcDateMM_VAR.set(self.utcDateMM_save)
 
+    def utcDateMM_preProcessor(self):
+        return self.utcDateMM_VAR.get()
+
+    def utcDateMM_postProcessor(self):
+        print("utcDateMM postProcessor")
+        print(self.utcDateMM_VAR.get())
+        self.utcDateMM_VAR.set(self.formatDateTime(self.utcDateMM_VAR.get()))   #   add leading zero if a single digit
+        self.updateLocalDateTime()
+
+
+    #
+    #   utcMonth Validation routines
+    #
     def is_valid_month(self, month):
-        if gv.validateNumber(int(month), 1, 12):
-            return True
-        else:
-            return False
+        return gv.validateNumber(int(month), 1, 12)
 
 
 
-    def utcDateDD_Entered_CB(self, event=None):
-        self.utcDateDD_save = self.utcDateDD_VAR.get()
-        if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vNumericPad = VirtualNumericKeyboard(self, self.utcDateDD_VAR, self.utcDateDD_Vkeyboard_Validate,
-                                                      2, False)
 
-    def utcDateDD_Validate_CB(self, p_entry_value, v_condition):
-        if self.is_valid_day(self.utcDateYYYY_VAR.get(), self.utcDateMM_VAR.get(), p_entry_value):
-            self.updateLocalDateTime()
-            return True
-        else:
-            return False
 
-    def utcDateDD_Vkeyboard_Validate(self):
-        if self.is_valid_day(self.utcDateYYYY_VAR.get(), self.utcDateMM_VAR.get(), p_entry_value):
-            self.updateLocalDateTime()
-        else:
-            self.utcDateDD_Invalid_CB()
+    #
+    #   utcDateDD processing routines
+    #
 
-    def utcDateDD_Invalid_CB(self, p_entry_value=None, v_condition=None):
+    def utcDateDD_validation(self):
+        print("utcDateDD validation")
+        print(self.utcDateDD_VAR.get())
+        return self.is_valid_day(self.utcDateYYYY_VAR.get(), self.utcDateMM_VAR.get(), self.utcDateDD_VAR.get())
+
+    def utcDateDD_errorHandler(self):
+        print("utcDateDD errorHandler")
+        print(self.utcDateDD_VAR.get())
         messagebox.showinfo("Error - Illegal Day",
                             "Entered day is not valid for Year and Month. Resetting to prior value",
                             parent=self)
-        self.utcDateDD_VAR.set(self.utcDateDD_save)
 
+    def utcDateDD_preProcessor(self):
+        return self.utcDateDD_VAR.get()
 
+    def utcDateDD_postProcessor(self):
+        print("utcDateDD postProcessor")
+        print(self.utcDateDD_VAR.get())
+        self.utcDateDD_VAR.set(self.formatDateTime(self.utcDateDD_VAR.get()))   #   add leading zero if a single digit
+        self.updateLocalDateTime()
+
+    #
+    #   utcDate validation routine
+    #
     def is_valid_day(self, year, month, day):
         def is_leap_year(year):
             return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
@@ -313,163 +447,155 @@ class logQSO(baseui.logQSOUI):
             max_days = days_in_months[imonth - 1]
 
         return 1 <= iday <= max_days
+    #
 
+    #
+    #   utcTimeHH processing routines
+    #
 
+    def utcTimeHH_validation(self):
+        print("utcTimeHH validation")
+        print(self.utcTimeHH_VAR.get())
+        return self.is_valid_hour(self.utcTimeHH_VAR.get())
 
-    def utcTimeHH_Entered_CB(self, event=None):
-        self.utcTimeHH_save = self.utcTimeHH_VAR.get()
-        if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vNumericPad = VirtualNumericKeyboard(self, self.utcTimeHH_VAR, self.utcTimeHH_Vkeyboard_Validate,
-                                                      2, False)
-
-    def utcTimeHH_Validate_CB(self, p_entry_value, v_condition):
-        if self.is_valid_hour(p_entry_value):
-            self.updateLocalDateTime()
-            return True
-        else:
-            return False
-
-    def utcTimeHH_Vkeyboard_Validate(self):
-        if self.is_valid_hour(self.utcTimeHH_VAR.get()):
-            self.updateLocalDateTime()
-        else:
-            self.utcTimeHH_Invalid_CB()
-
-    def utcTimeHH_Invalid_CB(self, p_entry_value=None, v_condition=None):
+    def utcTimeHH_errorHandler(self):
+        print("utcTimeHH errorHandler")
+        print(self.utcTimeHH_VAR.get())
         messagebox.showinfo("Error - Illegal Time",
                             "Entered hour is not in range 0-23. Resetting to prior value",
                             parent=self)
-        self.utcTimeHH_VAR.set(self.utcTimeHH_save)
 
+
+    def utcTimeHH_preProcessor(self):
+        return self.utcTimeHH_VAR.get()
+
+    def utcTimeHH_postProcessor(self):
+        print("utcTimeHH postProcessor")
+        print(self.utcTimeHH_VAR.get())
+        self.utcTimeHH_VAR.set(self.formatDateTime(self.utcTimeHH_VAR.get()))  # add leading zero if a single digit
+        self.updateLocalDateTime()
+
+    #
+    #   utcTimeHH validation routines
+    #
     def is_valid_hour(self, hour):
-        if gv.validateNumber(int(hour), 0, 23):
-            return True
-        else:
-            return False
+        return gv.validateNumber(int(hour), 0, 23)
 
+    #
+    #   utcTimeMM processing routines
+    #
 
+    def utcTimeMM_validation(self):
+        print("utcTimeMM validation")
+        print(self.utcTimeMM_VAR.get())
+        return True
 
-
-    def utcTimeMM_Entered_CB(self, event=None):
-        self.utcTimeMM_save = self.utcTimeMM_VAR.get()
-        if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vNumericPad = VirtualNumericKeyboard(self, self.utcTimeMM_VAR, self.utcTimeMM_Vkeyboard_Validate,
-                                                      2, False)
-
-    def utcTimeMM_Validate_CB(self, p_entry_value, v_condition):
-        if self.is_valid_minutes(p_entry_value):
-            self.updateLocalDateTime()
-            return True
-        else:
-            return False
-
-
-    def utcTimeMM_Vkeyboard_Validate(self):
-        if self.is_valid_minutes(self.utcTimeMM_VAR.get()):
-            self.updateLocalDateTime()
-        else:
-            self.utcTimeMM_Invalid_CB()
-
-    def utcTimeMM_Invalid_CB(self, p_entry_value=None, v_condition=None):
+    def utcTimeMM_errorHandler(self):
+        print("utcTimeMM errorHandler")
+        print(self.utcTimeMM_VAR.get())
         messagebox.showinfo("Error - Illegal Time",
-                            "Entered minutes is not in range 0-59. Resetting to prior value",
+                            "Entered hour is not in range 0-23. Resetting to prior value",
                             parent=self)
-        self.utcTimeMM_VAR.set(self.utcTimeMM_save)
 
+    def utcTimeMM_preProcessor(self):
+        return self.utcTimeMM_VAR.get()
+
+    def utcTimeMM_postProcessor(self):
+        print("utcTimeMM postProcessor")
+        print(self.utcTimeMM_VAR.get())
+        self.utcTimeMM_VAR.set(self.formatDateTime(self.utcTimeMM_VAR.get()))  # add leading zero if a single digit
+        self.updateLocalDateTime()
+
+    #
+    #   utcTime Validation Routine
+    #
     def is_valid_minutes(self, minutes):
-        if gv.validateNumber(int(minutes), 0, 59):
-            return True
-        else:
-            return False
+        return gv.validateNumber(int(minutes), 0, 59)
 
-
-
-
-
-    def updateLocalDateTime(self):
-        print("in update", self.utcDateYYYY_VAR.get())
-        utc_string = (self.utcDateYYYY_VAR.get() + "-" + self.utcDateMM_VAR.get() + "-" + self.utcDateDD_VAR.get() +
-                      "T" + self.utcTimeHH_VAR.get() +":" + self.utcTimeMM_VAR.get() +":00Z")
-
-        utc_obj = datetime.fromisoformat(utc_string)
-        # Convert to local time zone
-        local_obj = utc_obj.astimezone()
-
-        self.localDate_VAR.set(local_obj.strftime("%Y-%m-%d"))
-        self.localTime_VAR.set(local_obj.strftime("%H:%M"))
-
-
-
-    def rstSend_Entered_CB(self, event=None):
-        self.rstSend_save = self.rstSend_VAR.get()
-        if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vKeyboard = VirtualKeyboard(self, self.rstSend_VAR, self.rstSend_Vkeyboard_Validate, 8)
-
-    def rstSend_Validate_CB(self, p_entry_value, v_condition):
-        if self.is_valid_rst(p_entry_value):
-            return True
-        else:
-            return False
-
-    def rstSend_Vkeyboard_Validate(self):
-        if not self.is_valid_rst(self.rstSend_VAR.get()):
-            self.rstSend_Invalid_CB()
-
-    def rstSend_Invalid_CB(self, p_entry_value=None, v_condition=None):
-        messagebox.showinfo("Error - RST Sent",
-                            "Entered RST Sent has length of either 0 or more than 8 characters. Resetting to prior value",
-                            parent=self)
-        self.rstSend_VAR.set(self.rstSend_save)
-
-
-
-
-    def rstReceived_Entered_CB(self, event=None):
-        print("Entered RST Received")
-        self.rstReceived_save = self.rstReceived_VAR.get()
-        if gv.config.get_Virtual_Keyboard_Switch() == "True":
-            self.vKeyboard = VirtualKeyboard(self, self.rstReceived_VAR, self.rstReceived_Vkeyboard_Validate, 8)
-
-    def rstReceived_Validate_CB(self, p_entry_value, v_condition):
-        if self.is_valid_rst(p_entry_value):
-            return True
-        else:
-            return False
-
-    def rstReceived_Vkeyboard_Validate(self):
-        if not self.is_valid_rst(self.rstReceived_VAR.get()):
-            self.rstReceived_Invalid_CB()
-
-
-    def rstReceived_Invalid_CB(self, p_entry_value=None, v_condition=None):
-        messagebox.showinfo("Error - RST Received",
-                            "Entered RST Received has length of either 0 or more than 8 characters. Resetting to prior value",
-                            parent=self)
-        self.rstReceived_VAR.set(self.rstReceived_save)
-
+    #
+    #   RST utilities used by both fields
+    #
     def is_valid_rst(self,rst):
         if 3<= len(rst) <= 8:
             return True
         else:
             return False
 
+    #
+    #   rstSend processing routines
+    #
+
+    def rstSend_validation(self):
+        print("rstSend validation")
+        print(self.rstSend_VAR.get())
+        return self.is_valid_rst(self.rstSend_VAR.get())
+
+    def rstSend_errorHandler(self):
+        print("rstSend errorHandler")
+        print(self.rstSend_VAR.get())
+        messagebox.showinfo("Error - RST Sent",
+                            "Entered RST Sent has length of either 0 or more than 8 characters. Resetting to prior value",
+                            parent=self)
+
+    def rstSend_preProcessor(self):
+        return self.rstSend_VAR.get()
+
+    def rstSend_postProcessor(self):
+        print("rstSend postProcessor")
+        print(self.rstSend_VAR.get())
+        return self.rstSend_VAR.get()
+
+        #
+        #   Callsign processing routines
+        #
+
+    def rstRcvd_validation(self):
+        print("rstRecv validation")
+        print(self.rstRcvd_VAR.get())
+        return self.is_valid_rst(self.rstRcvd_VAR.get())
+
+    def rstRcvd_errorHandler(self):
+        print("rstRecv errorHandler")
+        print(self.rstRcvd_VAR.get())
+        messagebox.showinfo("Error - RST Received",
+                            "Entered RST Received has length of either 0 or more than 8 characters. Resetting to prior value",
+                            parent=self)
+
+    def rstRcvd_preProcessor(self):
+        return self.rstRcvd_VAR.get()
+
+    def rstRcvd_postProcessor(self):
+        return self.rstRcvd_VAR.get()
 
 
+
+
+    #
+    #   Rest of the callbacks
+    #
+
+    def selectMode_CB(self, itemid):
+        self.commType_VAR.set(itemid)
 
     def logQSO_CB(self):
-        qso={}
-        qso['call'] = self.callsign_VAR.get()
-        qso['mode'] = self.commType_VAR.get()
-        qso['qso_date'] = self.utcDateYYYY_VAR.get()+self.utcDateMM_VAR.get()+self.utcDateDD_VAR.get()
-        qso['time_on'] = self.utcTimeHH_VAR.get()+self.utcTimeMM_VAR.get()
-        qso['freq'] = self.frequency_VAR.get()
-        qso['band'] = self.bandName_VAR.get()
-        qso['rst_sent'] = self.rstSend_VAR_VAR.get()
-        qso['rst_rcvd'] = self.rstReceived_VAR.get()
+        if len(self.callsign_VAR.get()) == 0:
+            messagebox.showinfo("Error - Empty callsign",
+                                "No callsign entered. Please enter a valid callsign and try again",
+                                parent=self)
+            return
+        else:
+            qso={}
+            qso['call'] = self.callsign_VAR.get()
+            qso['mode'] = self.commType_VAR.get()
+            qso['qso_date'] = self.utcDateYYYY_VAR.get()+self.utcDateMM_VAR.get()+self.utcDateDD_VAR.get()
+            qso['time_on'] = self.utcTimeHH_VAR.get()+self.utcTimeMM_VAR.get()
+            qso['freq'] = self.frequency_VAR.get().replace(",", ".")
+            qso['band'] = self.bandName_VAR.get()
+            qso['rst_sent'] = self.rstSend_VAR.get()
+            qso['rst_rcvd'] = self.rstRcvd_VAR.get()
 
-        'call', 'mode', 'qso_date', 'time_on', 'freq', 'rst_sent', 'rst_rcvd'
-        self.mainWindow.QSOLogger_Object.append_qso(qso)
-        self.popup.destroy()
+            self.mainWindow.QSOLogger_Object.append_qso(qso)
+            self.popup.destroy()
 
     def cancel_CB(self):
         self.popup.destroy()

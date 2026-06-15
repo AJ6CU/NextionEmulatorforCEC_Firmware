@@ -79,13 +79,12 @@
                 <child>
                   <object class="ttk.Entry" id="callsign_Entry" named="True">
                     <property name="font">{Arial} 20 {}</property>
-                    <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">callsign_Invalid_CB</property>
                     <property name="style">Entry2b.TEntry</property>
+                    <property name="takefocus">false</property>
                     <property name="textvariable">string:callsign_VAR</property>
                     <property name="validate">focusout</property>
-                    <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">callsign_Validate_CB</property>
                     <property name="width">12</property>
-                    <bind sequence="&lt;Button&gt;" handler="callsign_Entered_CB" add="True" />
+                    <bind sequence="&lt;FocusIn&gt;" handler="callsign_FocusIn_CB" add="True" />
                     <layout manager="pack" />
                   </object>
                 </child>
@@ -109,6 +108,7 @@
                       <property name="column">0</property>
                       <property name="padx">0 15</property>
                       <property name="row">0</property>
+                      <property name="sticky">w</property>
                     </layout>
                   </object>
                 </child>
@@ -150,30 +150,31 @@
                 </child>
                 <child>
                   <object class="ttk.Label" id="imputedBand_Label" named="True">
-                    <property name="justify">right</property>
+                    <property name="justify">center</property>
                     <property name="style">Heading1b.TLabel</property>
                     <property name="text" translatable="yes">40m</property>
                     <property name="textvariable">string:bandName_VAR</property>
+                    <property name="width">7</property>
                     <layout manager="grid">
                       <property name="column">0</property>
-                      <property name="padx">0 20</property>
+                      <property name="padx">0 15</property>
                       <property name="row">1</property>
                       <property name="sticky">n</property>
                     </layout>
                   </object>
                 </child>
                 <child>
-                  <object class="ttk.Entry" id="frequency_entry" named="True">
+                  <object class="ttk.Entry" id="frequency_Entry" named="True">
                     <property name="font">{Arial} 20 {}</property>
-                    <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">frequency_Invalid_CB</property>
                     <property name="justify">right</property>
                     <property name="style">Entry2b.TEntry</property>
+                    <property name="takefocus">false</property>
                     <property name="text" translatable="yes">14.032</property>
                     <property name="textvariable">string:frequency_VAR</property>
                     <property name="validate">focusout</property>
-                    <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">frequency_Validate_CB</property>
                     <property name="width">7</property>
                     <bind sequence="&lt;Button&gt;" handler="frequency_Entered_CB" add="True" />
+                    <bind sequence="&lt;FocusIn&gt;" handler="frequency_FocusIn_CB" add="True" />
                     <layout manager="grid">
                       <property name="column">1</property>
                       <property name="row">1</property>
@@ -199,6 +200,7 @@
                 <child>
                   <object class="ttk.Menubutton" id="mode_Menubutton" named="True">
                     <property name="style">Heading0.TMenubutton</property>
+                    <property name="takefocus">false</property>
                     <property name="textvariable">string:commType_VAR</property>
                     <property name="width">6</property>
                     <layout manager="grid">
@@ -340,17 +342,16 @@
                       <property name="sticky">w</property>
                     </layout>
                     <child>
-                      <object class="ttk.Entry" id="utcYYYY_Entry" named="True">
+                      <object class="ttk.Entry" id="utcDateYYYY_Entry" named="True">
                         <property name="font">{Arial} 20 {}</property>
-                        <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">utcDateYYYY_Invalid_CB</property>
                         <property name="justify">center</property>
                         <property name="style">Entry2b.TEntry</property>
+                        <property name="takefocus">false</property>
                         <property name="text" translatable="yes">2026</property>
                         <property name="textvariable">string:utcDateYYYY_VAR</property>
-                        <property name="validate">focusout</property>
-                        <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">utcDateYYYY_Validate_CB</property>
                         <property name="width">4</property>
-                        <bind sequence="&lt;Button&gt;" handler="utcDateYYYY_Entered_CB" add="True" />
+                        <bind sequence="&lt;FocusIn&gt;" handler="utcDateYYYY_FocusIn_CB" add="True" />
+                        <bind sequence="&lt;FocusOut&gt;" handler="utcDateYYYY_Validate_CB" add="True" />
                         <layout manager="grid">
                           <property name="column">1</property>
                           <property name="row">0</property>
@@ -368,17 +369,16 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Entry" id="utcMM_Entry" named="True">
+                      <object class="ttk.Entry" id="utcDateMM_Entry" named="True">
                         <property name="font">{Arial} 20 {}</property>
-                        <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">utcDateMM_Invalid_CB</property>
                         <property name="justify">center</property>
                         <property name="style">Entry2b.TEntry</property>
+                        <property name="takefocus">false</property>
                         <property name="text" translatable="yes">12</property>
                         <property name="textvariable">string:utcDateMM_VAR</property>
-                        <property name="validate">focusout</property>
-                        <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">utcDateMM_Validate_CB</property>
                         <property name="width">2</property>
-                        <bind sequence="&lt;Button&gt;" handler="utcDateMM_Entered_CB" add="True" />
+                        <bind sequence="&lt;FocusIn&gt;" handler="utcDateMM_FocusIn_CB" add="True" />
+                        <bind sequence="&lt;FocusOut&gt;" handler="utcDateMM_Validate_CB" add="True" />
                         <layout manager="grid">
                           <property name="column">3</property>
                           <property name="row">0</property>
@@ -396,17 +396,16 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Entry" id="utc_DD_Entry" named="True">
+                      <object class="ttk.Entry" id="utcDateDD_Entry" named="True">
                         <property name="font">{Arial} 20 {}</property>
-                        <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">utcDateDD_Invalid_CB</property>
                         <property name="justify">center</property>
                         <property name="style">Entry2b.TEntry</property>
+                        <property name="takefocus">false</property>
                         <property name="text" translatable="yes">28</property>
                         <property name="textvariable">string:utcDateDD_VAR</property>
                         <property name="validate">focusout</property>
-                        <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">utcDateDD_Validate_CB</property>
                         <property name="width">2</property>
-                        <bind sequence="&lt;ButtonPress&gt;" handler="utcDateDD_Entered_CB" add="True" />
+                        <bind sequence="&lt;FocusIn&gt;" handler="utcDateDD_FocusIn_CB" add="True" />
                         <layout manager="grid">
                           <property name="column">5</property>
                           <property name="row">0</property>
@@ -429,15 +428,14 @@
                     <child>
                       <object class="ttk.Entry" id="utcTimeHH_Entry" named="True">
                         <property name="font">{Arial} 20 {}</property>
-                        <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">utcTimeHH_Invalid_CB</property>
                         <property name="justify">center</property>
                         <property name="style">Entry2b.TEntry</property>
+                        <property name="takefocus">false</property>
                         <property name="text" translatable="yes">23</property>
                         <property name="textvariable">string:utcTimeHH_VAR</property>
                         <property name="validate">focusout</property>
-                        <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">utcTimeHH_Validate_CB</property>
                         <property name="width">2</property>
-                        <bind sequence="&lt;Button&gt;" handler="utcTimeHH_Entered_CB" add="True" />
+                        <bind sequence="&lt;FocusIn&gt;" handler="utcTimeHH_FocusIn_CB" add="True" />
                         <layout manager="grid">
                           <property name="column">1</property>
                           <property name="row">0</property>
@@ -455,17 +453,16 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Entry" id="entry5" named="True">
+                      <object class="ttk.Entry" id="utcTimeMM_Entry" named="True">
                         <property name="font">{Arial} 20 {}</property>
-                        <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">utcTimeMM_Invalid_CB</property>
                         <property name="justify">center</property>
                         <property name="style">Entry2b.TEntry</property>
+                        <property name="takefocus">false</property>
                         <property name="text" translatable="yes">12</property>
                         <property name="textvariable">string:utcTimeMM_VAR</property>
                         <property name="validate">focusout</property>
-                        <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">utcTimeMM_Validate_CB</property>
                         <property name="width">2</property>
-                        <bind sequence="&lt;Button&gt;" handler="utcTimeMM_Entered_CB" add="True" />
+                        <bind sequence="&lt;FocusIn&gt;" handler="utcTimeMM_FocusIn_CB" add="True" />
                         <layout manager="grid">
                           <property name="column">3</property>
                           <property name="row">0</property>
@@ -651,15 +648,14 @@
                 <child>
                   <object class="ttk.Entry" id="rstSend_Entry" named="True">
                     <property name="font">{Arial} 20 {}</property>
-                    <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">rstSend_Invalid_CB</property>
                     <property name="justify">center</property>
                     <property name="style">Entry2b.TEntry</property>
+                    <property name="takefocus">false</property>
                     <property name="text" translatable="yes">599</property>
                     <property name="textvariable">string:rstSend_VAR</property>
                     <property name="validate">focusout</property>
-                    <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">rstSend_Validate_CB</property>
                     <property name="width">8</property>
-                    <bind sequence="&lt;Button&gt;" handler="rstSend_Entered_CB" add="True" />
+                    <bind sequence="&lt;FocusIn&gt;" handler="rstSend_FocusIn_CB" add="True" />
                     <layout manager="grid">
                       <property name="column">0</property>
                       <property name="padx">0 20</property>
@@ -670,15 +666,14 @@
                 <child>
                   <object class="ttk.Entry" id="rstRcvd_Entry" named="True">
                     <property name="font">{Arial} 20 {}</property>
-                    <property name="invalidcommand" type="command" cbtype="entry_validate" args="%P %V">rstReceived_Invalid_CB</property>
                     <property name="justify">center</property>
                     <property name="style">Entry2b.TEntry</property>
+                    <property name="takefocus">false</property>
                     <property name="text" translatable="yes">599</property>
-                    <property name="textvariable">string:rstReceived_VAR</property>
+                    <property name="textvariable">string:rstRcvd_VAR</property>
                     <property name="validate">focusout</property>
-                    <property name="validatecommand" type="command" cbtype="entry_validate" args="%P %V">rstReceived_Validate_CB</property>
                     <property name="width">8</property>
-                    <bind sequence="&lt;Button&gt;" handler="rstReceived_Entered_CB" add="True" />
+                    <bind sequence="&lt;FocusIn&gt;" handler="rstReceived_FocusIn_CB" add="True" />
                     <layout manager="grid">
                       <property name="column">1</property>
                       <property name="row">1</property>
