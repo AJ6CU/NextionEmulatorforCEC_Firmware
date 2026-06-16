@@ -64,16 +64,19 @@ class theVFO(baseui.theVFOUI):
         #
         #   Secondary VFO Variables
         #
-        self.secondary_VFO = 0                      # This is the integer version of the secondart VFO with no offset
+        self.secondary_VFO = 0                      # This is the integer version of the secondary VFO with no offset
                                                     # for CW TX mode. It also does not contain any delimiters (it is an
                                                     # Integer!)
 
         
         self.tone = 0                               # Current CW Tone value in HZ
         self.TXfreqOffset = 0                       # used to save the offset on the main dial. Only non-zero for CWL/CWU
+        self.TXfreqOffsetSaved = None               # when moving in and out of RIT and Split, need to save this to be later
+                                                    # restored
         self.cwTX_Tweak = 0                         # A user can add an additional tweak on the offset as stored in eeprom
                                                     # This is not really supported here, but coded in for possible
                                                     # future use.
+        self.saveLastOffsetFlag = "CW_Off"          # Saves the last offset flag
 
 
         self.saved_tuning_Preset_Selection = None       # This is a tristate variable.
@@ -85,6 +88,9 @@ class theVFO(baseui.theVFOUI):
         self.saved_tuning_Preset_Label = None
 
         self.update_Tuning_Preset_Menubutton_Label = True
+
+        self.RITmode = False                        # Saves whether RIT is on or off
+        self.SPLITmode = False                      # Saves whether SPLIT mode is on or off
 
 
 
@@ -102,7 +108,7 @@ class theVFO(baseui.theVFOUI):
         #   in TX offset mode, then need to re-set the frequency to use the correct CW Tone value
         #
         if self.TXfreqOffset != 0:
-            self.offsetVFOforTX(True)
+            self.offsetVFOforTX("CW_ON")
 
         self.setRateMultiplier()         # set the multiplier for each change in virtual dial
         self.setTuningMultiplierLabel()             # set the Label text for the Tuning Select Button
@@ -540,22 +546,101 @@ class theVFO(baseui.theVFOUI):
     #   frequency.
     #   In the case of a CWL or CWU, it calculates the offset being either + (CWL) or - (CWU).
     #
+    def _CW(self, switch, tone=None):
+        if switch == "ON":
+            self.saveLastOffsetFlag = switch # Save last state to restore if exiting from RIT or SPLIT
+            self.Tx_Freq_Alert_VAR.set("TX Freq")
+            self.RX_VFO_Visability(True)  # make the RX frequency frame visible
+            if self.mainWindow.primary_Mode_VAR.get() == 'CWL':
+                self.TXfreqOffset = tone + self.cwTX_Tweak
+
+            elif self.mainWindow.primary_Mode_VAR.get() == 'CWU':
+                self.TXfreqOffset = -(tone + self.cwTX_Tweak)
+        else:
+            self.saveLastOffsetFlag = switch  # Save last state to restore if exiting from RIT or SPLIT
+            self.Tx_Freq_Alert_VAR.set("       ")
+            self.TXfreqOffset = 0
+            self.RX_VFO_Visability(False)  # Turn off the RX frequency window
+
+    def _RIT(self, switch):
+        if switch == "ON":
+            self.RITmode = True  # Saves whether RIT is on or off
+            self.Tx_Freq_Alert_VAR.set("RIT RX ")
+            self.RX_Freq_VAR.set("RIT TX Freq:")
+            self.RX_VFO_Visability(True)  # make the RX frequency frame visible
+            if self.TXfreqOffset != 0:
+                self.TXfreqOffsetSaved = self.TXfreqOffset
+                self.TXfreqOffset = 0
+                self.update_VFO_Display(self.PrimaryVFO, self.TXfreqOffset)
+
+        else:
+            self.RITmode = False
+
+            self.Tx_Freq_Alert_VAR.set("       ")
+            self.RX_Freq_VAR.set("RX Freq:")
+            self.RX_VFO_Visability(False)  # Turn off the RX frequency window
+            if self.SPLITmode:
+                self._SPLIT("ON")
+            else:
+                if self.TXfreqOffsetSaved != None:
+                    self.TXfreqOffset = self.TXfreqOffsetSaved
+                    self.TXfreqOffsetSaved = None
+                    self._CW("ON", int(self.mainWindow.tone_value_VAR.get()))
+                    self.update_VFO_Display(self.PrimaryVFO, self.TXfreqOffset)
+
+
+    def _SPLIT(self, switch):
+        if switch == "ON":
+            if self.RITmode:
+                self._RIT("OFF")
+            self.SPLITmode = True
+            self.Tx_Freq_Alert_VAR.set("SPLT RX")
+            self.split_TX_VAR.set("SPLT TX")
+            self.RX_VFO_Visability(False)  # make the RX frequency frame visible
+            if self.TXfreqOffsetSaved == None:
+                self.TXfreqOffsetSaved = self.TXfreqOffset
+                self.TXfreqOffset = 0
+                self.update_VFO_Display(self.PrimaryVFO, self.TXfreqOffset)
+        else:
+            self.SPLITmode = False  # Saves whether SPLIT mode is on or off
+
+            self.Tx_Freq_Alert_VAR.set("       ")
+            self.split_TX_VAR.set("       ")
+            self.RX_VFO_Visability(False)  # Turn off the RX frequency window
+            if self.RITmode:
+                self._RIT("ON")
+            else:
+                if self.TXfreqOffsetSaved != None:
+                    self.TXfreqOffset = self.TXfreqOffsetSaved
+                    self.TXfreqOffsetSaved = None
+                    self._CW("ON", int(self.mainWindow.tone_value_VAR.get()))
+                    self.update_VFO_Display(self.PrimaryVFO, self.TXfreqOffset)
+
 
     def offsetVFOforTX (self, flag):
 
         tone = int(self.mainWindow.tone_value_VAR.get())
-        if flag:            # indicates we need to offset VFO by the Tone and Tweak
-            self.Tx_Freq_Alert_VAR.set("TX Freq")
-            self.RX_VFO_Visability(True)        # make the RX frequency frame visible
-            if self.mainWindow.primary_Mode_VAR.get() == 'CWL':
-                self.TXfreqOffset  = tone + self.cwTX_Tweak
 
-            elif self.mainWindow.primary_Mode_VAR.get() == 'CWU':
-                self.TXfreqOffset =  -(tone + self.cwTX_Tweak)
-        else:
-            self.Tx_Freq_Alert_VAR.set("       ")
-            self.TXfreqOffset = 0
-            self.RX_VFO_Visability(False)       # Turn off the RX frequency window
+        match flag:
+            case "CW_ON":
+                self._CW("ON", tone)
+
+            case "CW_OFF":
+                self._CW("OFF")
+
+            case "RIT_ON":
+                self._RIT("ON")
+
+            case "RIT_OFF":
+                self._RIT("OFF")
+
+            case "SPLIT_ON":
+                self._SPLIT("ON")
+
+            case "SPLIT_OFF":
+                self._SPLIT("OFF")
+
+
         self.update_VFO_Display(self.PrimaryVFO, self.TXfreqOffset)
 
 
@@ -577,6 +662,30 @@ class theVFO(baseui.theVFOUI):
         self.digit7_primary_VFO_VAR.set(paddedVFO[0])
 
         self.RX_VFO_VAR.set(gv.formatFrequency(vfo))     # Update RX freq reminder displayed if TX Freq displayed
+
+    def setRITmode(self, RITmode):
+        if RITmode:
+            self.offsetVFOforTX("RIT_ON")
+        else:
+            self.offsetVFOforTX("RIT_OFF")
+        # pack RX_VFO_Frame
+        # Set label to TX Freq
+        # copy vfo TX to RX freq
+        # Turn off updating of RX freq
+        # If mode changes, will need to change TX offset
+        # set TX_Freq_AlertLabel to "RX Freq"
+        pass
+
+    def setSplitmode(self, SPLITmode):
+        if SPLITmode:
+            self.offsetVFOforTX("SPLIT_ON")
+        else:
+            self.offsetVFOforTX("SPLIT_OFF")
+
+        # Set VFO TX Alert Label to RX
+        # Set flag on VFO B to indicate TX
+        # REmove CW offset on VFO A since it is recieve
+        # add VFO offset to VFO B to indicates CW tone offset.
 
 
     #

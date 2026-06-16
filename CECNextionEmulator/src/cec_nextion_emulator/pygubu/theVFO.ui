@@ -406,7 +406,7 @@ STOP!
                     <property name="style">Heading2bi.TLabel</property>
                     <property name="text" translatable="yes">       </property>
                     <property name="textvariable">string:Tx_Freq_Alert_VAR</property>
-                    <property name="width">7</property>
+                    <property name="width">8</property>
                     <layout manager="pack">
                       <property name="anchor">w</property>
                       <property name="expand">true</property>
@@ -451,6 +451,7 @@ STOP!
               <object class="ttk.Label" id="RX_Freq_Label" named="True">
                 <property name="style">Heading2bi.TLabel</property>
                 <property name="text" translatable="yes">RX Freq:</property>
+                <property name="textvariable">string:RX_Freq_VAR</property>
                 <layout manager="pack">
                   <property name="side">left</property>
                 </layout>
@@ -496,6 +497,20 @@ STOP!
             <layout manager="pack">
               <property name="side">left</property>
             </layout>
+            <child>
+              <object class="ttk.Label" id="split_TX_Labrl" named="True">
+                <property name="style">Heading2bi.TLabel</property>
+                <property name="text" translatable="yes">       </property>
+                <property name="textvariable">string:split_TX_VAR</property>
+                <property name="width">8</property>
+                <layout manager="pack">
+                  <property name="anchor">w</property>
+                  <property name="expand">true</property>
+                  <property name="fill">x</property>
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
             <child>
               <object class="ttk.Label" id="secondary_VFO_Label" named="True">
                 <property name="style">Heading1Fixed.TLabel</property>

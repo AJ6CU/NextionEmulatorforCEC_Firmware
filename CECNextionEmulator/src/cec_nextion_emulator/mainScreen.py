@@ -1177,9 +1177,11 @@ class mainScreen(baseui.mainScreenUI):
         if (self.split_Button_On):
             self.split_Button_On = False
             self.split_Button.configure(style='Button2b.TButton', state="normal")
+            self.theVFO_Object.setSplitmode(False)
         else:
             self.split_Button_On = True
             self.split_Button.configure(style='GreenButton2b.TButton', state="pressed")
+            self.theVFO_Object.setSplitmode(True)
     #
     #   This appears to be a no-op command. If the last rit TX frequency does not equal
     #   the current frequency, this is called to set the VFO to the RIT TX frequency which happens to be
@@ -1187,8 +1189,8 @@ class mainScreen(baseui.mainScreenUI):
     #
     def vr_UX_Update_RIT_Freq(self, buffer):
         # if self.CurrentDebug:
-        #     print("vr called")  # command is rit related
-        #     print(buffer)
+        print("vr called")  # command is rit related
+        print(buffer)
         pass
 
 
@@ -1196,9 +1198,11 @@ class mainScreen(baseui.mainScreenUI):
         if (self.rit_Button_On):
             self.rit_Button_On = False
             self.rit_Button.configure(style='Button2b.TButton', state="normal")
+            self.theVFO_Object.setRITmode(False)
         else:
             self.rit_Button_On = True
             self.rit_Button.configure(style='GreenButton2b.TButton', state="pressed")
+            self.theVFO_Object.setRITmode(True)
 
     def vf_UX_ATT_Level(self, buffer):
 
@@ -1281,6 +1285,7 @@ class mainScreen(baseui.mainScreenUI):
     #
     def vc_UX_Set_Primary_VFO_Frequency(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
+        print(value)
         self.theVFO_Object.setPrimaryVFO(value)
 
 
@@ -1301,9 +1306,9 @@ class mainScreen(baseui.mainScreenUI):
             #
             #   We are showing the TX frequency on the VFO so need to offset it
             #
-            self.theVFO_Object.offsetVFOforTX(True)
+            self.theVFO_Object.offsetVFOforTX("CW_ON")
         else:
-            self.theVFO_Object.offsetVFOforTX(False)
+            self.theVFO_Object.offsetVFOforTX("CW_OFF")
 
 
         if self.channelsWindow != None:

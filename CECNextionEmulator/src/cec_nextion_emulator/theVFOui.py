@@ -271,7 +271,7 @@ class theVFOUI(ttk.Frame):
             style="Heading2bi.TLabel",
             text='       ',
             textvariable=self.Tx_Freq_Alert_VAR,
-            width=7)
+            width=8)
         self.Tx_Freq_Alert_Label.pack(
             anchor="w", expand=True, fill="x", side="left")
         self.VFO_TX_Offset_Frame.grid(column=0, padx="0 10", row=4, sticky="w")
@@ -291,8 +291,11 @@ class theVFOUI(ttk.Frame):
         self.RX_VFO_Frame.configure(
             height=200, style="Normal.TFrame", width=200)
         self.RX_Freq_Label = ttk.Label(self.RX_VFO_Frame, name="rx_freq_label")
+        self.RX_Freq_VAR = tk.StringVar(value='RX Freq:')
         self.RX_Freq_Label.configure(
-            style="Heading2bi.TLabel", text='RX Freq:')
+            style="Heading2bi.TLabel",
+            text='RX Freq:',
+            textvariable=self.RX_Freq_VAR)
         self.RX_Freq_Label.pack(side="left")
         self.RX_Freq_VFO_Label = ttk.Label(
             self.RX_VFO_Frame, name="rx_freq_vfo_label")
@@ -314,6 +317,18 @@ class theVFOUI(ttk.Frame):
         self.vfoB_Frame.configure(borderwidth=3, style="NormalOutline.TFrame")
         self.vfo_Frame = ttk.Frame(self.vfoB_Frame, name="vfo_frame")
         self.vfo_Frame.configure(style="Normal.TFrame")
+        self.split_TX_Labrl = ttk.Label(self.vfo_Frame, name="split_tx_labrl")
+        self.split_TX_VAR = tk.StringVar(value='       ')
+        self.split_TX_Labrl.configure(
+            style="Heading2bi.TLabel",
+            text='       ',
+            textvariable=self.split_TX_VAR,
+            width=8)
+        self.split_TX_Labrl.pack(
+            anchor="w",
+            expand=True,
+            fill="x",
+            side="left")
         self.secondary_VFO_Label = ttk.Label(
             self.vfo_Frame, name="secondary_vfo_label")
         self.secondary_VFO_Formatted_VAR = tk.StringVar(value='99.999.999')
