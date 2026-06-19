@@ -1,5 +1,6 @@
 default_config_data = {
         "CW BFO": "",
+        "CW Copy VFOA to VFOB on Split":"True",
         "CW Delay Before TX": "500",
         "CW Delay Returning to RX": "5000",
         "CW Key Type": "STRAIGHT",

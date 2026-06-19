@@ -6,6 +6,8 @@ from PIL.JpegPresets import presets
 
 import theVFOui as baseui
 import globalvars as gv
+from time import sleep
+from EEPROM import Text_To_ModeNum
 
 
 #
@@ -77,7 +79,7 @@ class theVFO(baseui.theVFOUI):
         self.cwTX_Tweak = 0                         # A user can add an additional tweak on the offset as stored in eeprom
                                                     # This is not really supported here, but coded in for possible
                                                     # future use.
-        # self.saveLastOffsetFlag = "CW_Off"          # Saves the last offset flag
+
         self.CW_VFOA_Offset_On = True
         self.CW_VFOAUX_Offset_On = True
 
@@ -577,7 +579,6 @@ class theVFO(baseui.theVFOUI):
             if self.RITmode:
                 if switch == "ON":
                     # Need to adjust the secondary info TX to reflect new offset
-                    print("RIT and then CW")
 
                     self.RX_VFO_VAR.set(gv.formatFrequency(self.PrimaryVFO+self.TXfreqOffset))
 
@@ -585,7 +586,6 @@ class theVFO(baseui.theVFOUI):
 
                     self.update_VFO_Display(self.PrimaryVFO, self.TXfreqOffset)
                 else:
-                    print("switch off")
                     #
                     #   Need to update Secondary VFO field since offset has changed
                     #
@@ -595,7 +595,6 @@ class theVFO(baseui.theVFOUI):
                 # Need to adjust vfo B by TX offset
                 pass
         else:
-            print("CW Labels", switch)
             #
             # Just a change in Mode. can handle it directly
             #
@@ -707,8 +706,25 @@ class theVFO(baseui.theVFOUI):
             # else:  # CW offset must be on
             if switch == "ON":
                 self.SPLITmode = True
+
+
                 self.CW_VFOA_Offset_On = False
                 self.CW_VFOAUX_Offset_On = False
+
+                if gv.config.get_VFOA_Copy() == "True":       # user wants to automatically copy VFOA to VFOB on split
+                    f1 = self.intDisplayedPrimaryVFO
+                    f2 = self.PrimaryVFO
+
+                    m = Text_To_ModeNum[self.mainWindow.primary_Mode_VAR.get()]
+                    self.theRadio.Toggle_VFO()
+
+                    self.theRadio.Set_New_Frequency(f1)
+                    self.theRadio.Set_Mode(m)
+                    self.theRadio.Toggle_VFO()
+                    self.theRadio.Set_New_Frequency(f2)
+
+
+
 
                 self._SPLIT_ManageLabels(switch)
             else:
@@ -724,9 +740,25 @@ class theVFO(baseui.theVFOUI):
         else:  # Simple SPlIT mode on and off
             if switch == "ON":
                 self.SPLITmode = True
+
+
                 self.CW_VFOA_Offset_On = False
                 self.CW_VFOAUX_Offset_On = False
+
+                if gv.config.get_VFOA_Copy() == "True":       # user wants to automatically copy VFOA to VFOB on split
+                    f1 = self.intDisplayedPrimaryVFO
+                    f2 = self.PrimaryVFO
+
+                    m = Text_To_ModeNum[self.mainWindow.primary_Mode_VAR.get()]
+                    self.theRadio.Toggle_VFO()
+
+                    self.theRadio.Set_New_Frequency(f1)
+                    self.theRadio.Set_Mode(m)
+                    self.theRadio.Toggle_VFO()
+                    self.theRadio.Set_New_Frequency(f2)
+
                 self._SPLIT_ManageLabels(switch)
+
 
 
             else:  # Exiting Split mode, must unwind

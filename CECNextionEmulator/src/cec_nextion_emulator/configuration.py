@@ -208,6 +208,18 @@ class configuration:
         self.config_data["CW Speed"] = value
         self.saveConfig()
 
+    def get_VFOA_Copy(self):
+        if "CW Copy VFOA to VFOB on Split" in self.config_data:
+            return self.config_data["CW Copy VFOA to VFOB on Split"]
+        else:
+            self.config_data["CW Copy VFOA to VFOB on Split"] = "True"
+            self.saveConfig()
+            return self.config_data["CW Copy VFOA to VFOB on Split"]
+
+    def set_VFOA_Copy(self, value):
+        self.config_data["CW Copy VFOA to VFOB on Split"] = value
+        self.saveConfig()
+
 
     def get_Keytype(self):
         return self.config_data["CW Key Type"]

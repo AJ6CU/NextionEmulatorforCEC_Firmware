@@ -49,6 +49,9 @@ class cwSettings(baseui.cwSettingsUI):
         self.delay_returning_to_rx = None
         self.offset_Freq_Flag = None
 
+        self.orig_copy_VFOA_Flag = None
+        self.copy_VFOA_Flag = None
+
         #
         #   Can now kickoff the UX
         #
@@ -127,6 +130,9 @@ class cwSettings(baseui.cwSettingsUI):
         else:
             self.CW_Display_TXFreq_VAR.set("RX")
 
+        self.orig_copy_VFOA_Flag = gv.config.get_VFOA_Copy()
+        self.CopyVFOonSplit_VAR.set(self.orig_copy_VFOA_Flag)
+
 
     def dirty_DisplayCWSettings (self):
         reboot_required = False
@@ -159,6 +165,9 @@ class cwSettings(baseui.cwSettingsUI):
             self.mainWindow.cwTX_OffsetFlag = True
             (self.mainWindow.theVFO_Object.set_CW_OffsetforTX("ON"))
 
+        if self.orig_copy_VFOA_Flag != self.CopyVFOonSplit_VAR.get():
+            gv.config.set_VFOA_Copy(self.copy_VFOA_Flag)
+
 
 
         if(reboot_required):
@@ -185,6 +194,12 @@ class cwSettings(baseui.cwSettingsUI):
 
     def selectCWDisplayRX_CB(self):
         self.CW_Display_TXFreq_VAR.set('RX')
+
+    def CopyVFOAtoVFOBonSplit_CB(self, itemid):
+        if itemid == "Copy":
+            self.CopyVFOonSplit_VAR.set("True")
+        else:
+            self.CopyVFOonSplit_VAR.set("False")
 
     def apply_CB(self):
         self.dirty_DisplayCWSettings()

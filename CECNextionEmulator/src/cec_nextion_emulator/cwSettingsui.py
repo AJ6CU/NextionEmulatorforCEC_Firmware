@@ -258,6 +258,49 @@ class cwSettingsUI(ttk.Labelframe):
             menu=self.CW_Freq_Display_Menu)
         self.CW_Freq_Display_Menubutton.grid(
             column=4, padx="20 0", pady="40 0", row=3, sticky="w")
+        self.copyVFOonSplit_Label = ttk.Label(
+            self.General_CW_Settings_Frame,
+            name="copyvfoonsplit_label")
+        self.copyVFOonSplit_Label.configure(
+            style="Heading1b.TLabel",
+            text='Copy VFO-A to\nVFO-B on Split')
+        self.copyVFOonSplit_Tooltip = Tooltip(self.copyVFOonSplit_Label)
+        self.copyVFOonSplit_Tooltip.configure(
+            padx=8,
+            relief="raised",
+            text='Should VFO-A be copied to VFO-B on split? Under Split, VFO-B is TX and VFO-B is RX.',
+            wraplength=300)
+        self.copyVFOonSplit_Label.grid(
+            column=0, pady="40 0", row=4, sticky="e")
+        self.CopyVFOonSplit_Menubutton = ttk.Menubutton(
+            self.General_CW_Settings_Frame, name="copyvfoonsplit_menubutton")
+        self.CopyVFOonSplit_VAR = tk.StringVar()
+        self.CopyVFOonSplit_Menubutton.configure(
+            style="Heading0.TMenubutton",
+            textvariable=self.CopyVFOonSplit_VAR,
+            width=5)
+        self.CopyVFOonSplit_Menu = tk.Menu(
+            self.CopyVFOonSplit_Menubutton,
+            name="copyvfoonsplit_menu")
+        self.CopyVFOonSplit_Menu.configure(tearoff=False)
+        def Copy_cmd(itemid="Copy"): self.CopyVFOAtoVFOBonSplit_CB(itemid)
+        self.CopyVFOonSplit_Menu.add(
+            "command",
+            command=Copy_cmd,
+            font="{Arial} 24 {}",
+            label='True ',
+            state="normal")
+        def DoNotCopy_cmd(
+            itemid="DoNotCopy"): self.CopyVFOAtoVFOBonSplit_CB(itemid)
+        self.CopyVFOonSplit_Menu.add(
+            "command",
+            command=DoNotCopy_cmd,
+            font="{Arial} 24 {}",
+            label='False',
+            state="normal")
+        self.CopyVFOonSplit_Menubutton.configure(menu=self.CopyVFOonSplit_Menu)
+        self.CopyVFOonSplit_Menubutton.grid(
+            column=1, padx="20 0", pady="40 0", row=4, sticky="w")
         self.General_CW_Settings_Frame.pack(padx="50 0", side="top")
         frame1.pack(side="top")
         self.closingFrame = ttk.Frame(self, name="closingframe")
@@ -309,6 +352,9 @@ class cwSettingsUI(ttk.Labelframe):
         pass
 
     def selectCWDisplayRX_CB(self):
+        pass
+
+    def CopyVFOAtoVFOBonSplit_CB(self, itemid):
         pass
 
     def apply_CB(self):

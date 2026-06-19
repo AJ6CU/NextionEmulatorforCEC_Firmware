@@ -1189,8 +1189,8 @@ class mainScreen(baseui.mainScreenUI):
     #
     def vr_UX_Update_RIT_Freq(self, buffer):
         # if self.CurrentDebug:
-        print("vr called")  # command is rit related
-        print(buffer)
+        # print("vr called")  # command is rit related
+        # print(buffer)
         pass
 
 
@@ -1285,7 +1285,6 @@ class mainScreen(baseui.mainScreenUI):
     #
     def vc_UX_Set_Primary_VFO_Frequency(self, buffer):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
-        print(value)
         self.theVFO_Object.setPrimaryVFO(value)
 
 

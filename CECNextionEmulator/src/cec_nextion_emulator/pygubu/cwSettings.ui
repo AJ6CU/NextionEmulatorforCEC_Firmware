@@ -331,6 +331,62 @@ This setting will be reset to that stored in the EEPROM on reboot.  Use the Sett
                     </child>
                   </object>
                 </child>
+                <child>
+                  <object class="ttk.Label" id="copyVFOonSplit_Label" named="True">
+                    <property name="style">Heading1b.TLabel</property>
+                    <property name="text" translatable="yes">Copy VFO-A to
+VFO-B on Split</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="pady">40 0</property>
+                      <property name="row">4</property>
+                      <property name="sticky">e</property>
+                    </layout>
+                    <child>
+                      <object class="pygubu.widgets.Tooltip" id="copyVFOonSplit_Tooltip" named="True">
+                        <property name="padx">8</property>
+                        <property name="relief">raised</property>
+                        <property name="text" translatable="yes">Should VFO-A be copied to VFO-B on split? Under Split, VFO-B is TX and VFO-B is RX.</property>
+                        <property name="wraplength">300</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Menubutton" id="CopyVFOonSplit_Menubutton" named="True">
+                    <property name="style">Heading0.TMenubutton</property>
+                    <property name="textvariable">string:CopyVFOonSplit_VAR</property>
+                    <property name="width">5</property>
+                    <layout manager="grid">
+                      <property name="column">1</property>
+                      <property name="padx">20 0</property>
+                      <property name="pady">40 0</property>
+                      <property name="row">4</property>
+                      <property name="sticky">w</property>
+                    </layout>
+                    <child>
+                      <object class="tk.Menu" id="CopyVFOonSplit_Menu" named="True">
+                        <property name="tearoff">false</property>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="Copy" named="True">
+                            <property name="command" type="command" cbtype="with_wid">CopyVFOAtoVFOBonSplit_CB</property>
+                            <property name="font">{Arial} 24 {}</property>
+                            <property name="label" translatable="yes">True </property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="tk.Menuitem.Command" id="DoNotCopy" named="True">
+                            <property name="command" type="command" cbtype="with_wid">CopyVFOAtoVFOBonSplit_CB</property>
+                            <property name="font">{Arial} 24 {}</property>
+                            <property name="label" translatable="yes">False</property>
+                            <property name="state">normal</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
