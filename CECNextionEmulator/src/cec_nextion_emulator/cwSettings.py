@@ -154,10 +154,10 @@ class cwSettings(baseui.cwSettingsUI):
         #
         if (self.CW_Display_TXFreq_VAR.get()) == 'RX' and self.offset_Freq_Flag:
             self.mainWindow.cwTX_OffsetFlag = False
-            self.mainWindow.theVFO_Object.offsetVFOforTX("CW_OFF")
+            self.mainWindow.theVFO_Object.set_CW_OffsetforTX("OFF")
         elif (self.CW_Display_TXFreq_VAR.get()) == 'TX' and not self.offset_Freq_Flag:
             self.mainWindow.cwTX_OffsetFlag = True
-            self.mainWindow.theVFO_Object.offsetVFOforTX("CW_ON")
+            (self.mainWindow.theVFO_Object.set_CW_OffsetforTX("ON"))
 
 
 
