@@ -1,7 +1,9 @@
 import socket
 import json
 import os
+import sys
 import time
+import subprocess
 from datetime import datetime
 from typing import List, Dict, Union
 
@@ -10,7 +12,7 @@ class SDRPlusPlusController:
     """
     An advanced object-oriented controller to interface with SDR++ using
     the Hamlib RigCTL network protocol wrapper driven natively by Tkinter's .after() loop.
-    Part 1: Initialization, Log Storage, and Dynamic Channel Management.
+    Part 1: Initialization, Disk Storage, and Labeled Channel Memory Registries.
     """
 
     HAM_BANDS = {
@@ -63,7 +65,7 @@ class SDRPlusPlusController:
         self.on_filter_change = None
         self.on_scan_step = None
         self.on_disconnect = None
-        self.on_incompatible_mode = None  # Bidirectional verification callback
+        self.on_incompatible_mode = None
 
     def connect(self) -> bool:
         if self.sock:
@@ -103,24 +105,6 @@ class SDRPlusPlusController:
             self.stop_scan()
             if self.on_disconnect: self.on_disconnect()
 
-    def set_mode_fallback_width(self, mode: str, fallback_hz: int) -> bool:
-        clean_mode = mode.upper().strip()
-        if not clean_mode or int(fallback_hz) <= 0: return False
-        self.DEFAULT_FILTER_FALLBACKS[clean_mode] = int(fallback_hz)
-        if clean_mode in ["CW_L", "CW_U"]:
-            self.DEFAULT_FILTER_FALLBACKS["CW"] = int(fallback_hz)
-
-        if self.is_connected:
-            if clean_mode == self.current_mode or (clean_mode in ["CW_L", "CW_U"] and self.current_mode == "CW"):
-                self.set_filter_width_hz(int(fallback_hz))
-        return True
-
-    def get_all_mode_fallbacks(self) -> Dict[str, int]:
-        return self.DEFAULT_FILTER_FALLBACKS
-
-    def reset_fallbacks_to_factory(self):
-        self.DEFAULT_FILTER_FALLBACKS = dict(self.FACTORY_DEFAULTS)
-
     def _load_channels_from_json(self):
         if os.path.exists(self.JSON_FILE):
             try:
@@ -135,6 +119,7 @@ class SDRPlusPlusController:
                 json.dump(self.scan_channels, f, indent=4)
         except Exception:
             pass
+
     def add_channel(self, label: str, freq_hz: int, mode: str, filter_hz: int, name: str) -> bool:
         clean_label = label.strip().upper()
         if not clean_label: return False
@@ -176,6 +161,139 @@ class SDRPlusPlusController:
             }
         return channels_dict
 
+    # =========================================================================
+    #  CROSS-PLATFORM NATIVE HARDWARE SYSTEM VOLUME UTILITIES
+    # =========================================================================
+    def get_system_volume(self) -> int:
+        """Queries the OS audio subsystem directly to determine the initialization volume level."""
+        default_vol = 50
+        if sys.platform == "darwin":
+            try:
+                cmd = "osascript -e 'output volume of (get volume settings)'"
+                res = subprocess.check_output(cmd, shell=True).decode('utf-8').strip()
+                if res.isdigit(): return int(res)
+            except Exception:
+                return default_vol
+        elif sys.platform == "win32":
+            return default_vol
+        elif sys.platform.startswith("linux"):
+            try:
+                res = subprocess.check_output("amixer sget Master", shell=True).decode('utf-8')
+                if "[" in res:
+                    return int(res.split("[")[1].split("%]")[0])
+            except Exception:
+                return default_vol
+        return default_vol
+
+    def get_all_mode_fallbacks(self) -> Dict[str, int]:
+        """
+        Public method to expose the active fallback lookup dictionary map.
+        Resolves the AttributeError during startup configuration sync passes.
+        """
+        return self.DEFAULT_FILTER_FALLBACKS
+
+
+    def set_volume(self, volume_float: float) -> bool:
+        """Pipes slider metrics natively into macOS, Windows, or Linux sound systems."""
+        vol_float = max(0.0, min(1.0, float(volume_float)))
+        vol_percentage = int(vol_float * 100)
+
+        if sys.platform == "darwin":
+            try:
+                subprocess.run(f"osascript -e 'set volume output volume {vol_percentage}'", shell=True, check=True,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                return True
+            except Exception:
+                return False
+        elif sys.platform == "win32":
+            try:
+                cmd = f'powershell -Command "$wsh = New-Object -ComObject WScript.Shell; if ({vol_percentage} -eq 0) {{ [void]$wsh.SendKeys([char]173) }} else {{ [void]$wsh.SendKeys([char]174)*50; [void]$wsh.SendKeys([char]175)*{int(vol_percentage / 2)}) }}"'
+                subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                return True
+            except Exception:
+                return False
+        elif sys.platform.startswith("linux"):
+            try:
+                subprocess.run(f"amixer -q sset Master {vol_percentage}%", shell=True, check=True,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                return True
+            except Exception:
+                try:
+                    subprocess.run(f"pactl set-sink-volume @DEFAULT_SINK@ {vol_percentage}%", shell=True, check=True,
+                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                    return True
+                except Exception:
+                    return False
+        return False
+
+    def mute(self) -> bool:
+        """Forces hardware mixer speaker channels to an absolute muted state."""
+        if sys.platform == "darwin":
+            try:
+                subprocess.run("osascript -e 'set volume with output muted'", shell=True, check=True,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                return True
+            except Exception:
+                return False
+        elif sys.platform == "win32":
+            try:
+                subprocess.run(
+                    'powershell -Command "$wsh = New-Object -ComObject WScript.Shell; $wsh.SendKeys([char]173)"',
+                    shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                return True
+            except Exception:
+                return False
+        elif sys.platform.startswith("linux"):
+            try:
+                subprocess.run("amixer -q sset Master mute", shell=True, check=True, stdout=subprocess.DEVNULL,
+                               stderr=subprocess.DEVNULL)
+                return True
+            except Exception:
+                try:
+                    subprocess.run("pactl set-sink-mute @DEFAULT_SINK@ 1", shell=True, check=True,
+                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                    return True
+                except Exception:
+                    return False
+        return False
+
+    def unmute(self, restore_volume: float = 0.5) -> bool:
+        """Releases the hardware attenuation lock and re-establishes volume parameters."""
+        if sys.platform == "darwin":
+            try:
+                subprocess.run("osascript -e 'set volume without output muted'", shell=True, check=True,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except Exception:
+                pass
+        elif sys.platform == "win32":
+            try:
+                subprocess.run(
+                    'powershell -Command "$wsh = New-Object -ComObject WScript.Shell; $wsh.SendKeys([char]173)"',
+                    shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except Exception:
+                pass
+        elif sys.platform.startswith("linux"):
+            try:
+                subprocess.run("amixer -q sset Master unmute", shell=True, check=True, stdout=subprocess.DEVNULL,
+                               stderr=subprocess.DEVNULL)
+            except Exception:
+                try:
+                    subprocess.run("pactl set-sink-mute @DEFAULT_SINK@ 0", shell=True, check=True,
+                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                except Exception:
+                    pass
+        return self.set_volume(restore_volume)
+
+    def set_mode_fallback_width(self, mode: str, fallback_hz: int) -> bool:
+        clean_mode = mode.upper().strip()
+        if not clean_mode or int(fallback_hz) <= 0: return False
+        self.DEFAULT_FILTER_FALLBACKS[clean_mode] = int(fallback_hz)
+        if clean_mode in ["CW_L", "CW_U"]: self.DEFAULT_FILTER_FALLBACKS["CW"] = int(fallback_hz)
+        if self.is_connected:
+            if clean_mode == self.current_mode or (clean_mode in ["CW_L", "CW_U"] and self.current_mode == "CW"):
+                self.set_filter_width_hz(int(fallback_hz))
+        return True
+
     def log_current_state(self, description: str = "Manual Log Entry") -> Dict[str, Union[str, int, float]]:
         hz_key = self.current_frequency
         log_entry = {
@@ -186,53 +304,35 @@ class SDRPlusPlusController:
         self.logged_signals[hz_key] = log_entry
         return log_entry
 
-    def query_logs(self, freq_hz: int) -> Union[Dict[str, Union[str, int, float]], None]:
-        return self.logged_signals.get(int(freq_hz), None)
+    def get_all_logs(self) -> Dict[int, Dict[str, Union[str, int, float]]]:
+        return self.logged_signals
 
     def clear_logs(self):
         self.logged_signals.clear()
 
-    def get_all_logs(self) -> Dict[int, Dict[str, Union[str, int, float]]]:
-        return self.logged_signals
-
-    # =========================================================================
-    #  Part 3: Core Tuning Commands, Memory Scanning, and Telemetry Loop Threads
-    # =========================================================================
-
     def set_frequency_hz(self, hz: int) -> bool:
         if not self.is_connected: return False
         try:
-            cmd = f"F {int(hz)}\n".encode('ascii')
-            self.sock.sendall(cmd)
+            self.sock.sendall(f"F {int(hz)}\n".encode('ascii'))
             self.sock.recv(1024)
             return True
         except socket.error:
             self._handle_unexpected_disconnect()
             return False
 
-    def set_frequency_mhz(self, mhz: float) -> bool:
-        return self.set_frequency_hz(int(mhz * 1_000_000))
-
     def set_mode(self, mode: str, passband_hz: int = 0) -> bool:
         if not self.is_connected: return False
         input_mode = mode.upper().strip()
-
         if input_mode in ["CW", "CW_L", "CW_U"]:
-            target_lookup_mode = "CW"
-            network_mode = "CW"
+            target_lookup_mode, network_mode = "CW", "CW"
         else:
-            target_lookup_mode = input_mode
-            network_mode = input_mode
+            target_lookup_mode, network_mode = input_mode, input_mode
 
         if passband_hz == 0:
             passband_hz = self.DEFAULT_FILTER_FALLBACKS.get(target_lookup_mode, 2400)
-
-        self.current_mode = target_lookup_mode
-        self.current_filter_width = passband_hz
-
+        self.current_mode, self.current_filter_width = target_lookup_mode, passband_hz
         try:
-            cmd = f"M {network_mode} {int(passband_hz)}\n".encode('ascii')
-            self.sock.sendall(cmd)
+            self.sock.sendall(f"M {network_mode} {int(passband_hz)}\n".encode('ascii'))
             self.sock.recv(1024)
             return True
         except socket.error:
@@ -240,18 +340,11 @@ class SDRPlusPlusController:
             return False
 
     def set_filter_width_hz(self, passband_hz: int) -> bool:
-        if not self.is_connected or self.current_mode == "UNKNOWN":
-            return False
-
+        if not self.is_connected or self.current_mode == "UNKNOWN": return False
         target_width = max(50, passband_hz)
         target_mode = self.current_mode
-
         if "CW" in self.current_mode or self.current_mode == "USB":
-            if target_width > 500:
-                target_mode = "USB"
-            else:
-                target_mode = "CW"
-
+            target_mode = "USB" if target_width > 500 else "CW"
         return self.set_mode(target_mode, target_width)
 
     def get_filter_width_hz(self) -> int:
@@ -266,21 +359,9 @@ class SDRPlusPlusController:
         active_step = 50 if "CW" in self.current_mode or self.current_filter_width <= 500 else step_hz
         return self.set_filter_width_hz(self.current_filter_width - active_step)
 
-    def change_band(self, band_name: str) -> bool:
-        self.stop_scan()
-        band = band_name.lower().strip()
-        if band in self.HAM_BANDS:
-            hz, mode, default_width = self.HAM_BANDS[band]
-            self.set_frequency_hz(hz)
-            self.set_mode(mode, default_width)
-            return True
-        return False
-
     def start_memory_scan(self, delay_ms: int = 2500):
         if not self.is_connected or not self.scan_channels: return
-        self.scan_delay_ms = delay_ms
-        self.scan_idx = 0
-        self.is_scanning = True
+        self.scan_delay_ms, self.scan_idx, self.is_scanning = delay_ms, 0, True
         self._tkinter_scan_tick()
 
     def stop_scan(self):
@@ -289,15 +370,10 @@ class SDRPlusPlusController:
     def _tkinter_scan_tick(self):
         if not self.is_scanning or not self.is_connected: return
         if self.scan_idx >= len(self.scan_channels): self.scan_idx = 0
-        if not self.scan_channels:
-            self.is_scanning = False
-            return
-
         current_ch = self.scan_channels[self.scan_idx]
         self.set_frequency_hz(current_ch["freq_hz"])
         self.set_mode(current_ch["mode"], current_ch.get("filter_hz", 0))
         if self.on_scan_step: self.on_scan_step(current_ch)
-
         self.scan_idx = (self.scan_idx + 1) % len(self.scan_channels)
         self.root.after(self.scan_delay_ms, self._tkinter_scan_tick)
 
@@ -307,26 +383,14 @@ class SDRPlusPlusController:
             self.sock.sendall(b'm\n')
             mode_resp = self.sock.recv(1024).decode('utf-8').strip()
             clean_lines = mode_resp.replace('\r', '').replace('RPRT 0', '').strip().split('\n')
-
             if clean_lines and len(clean_lines) >= 1:
                 raw_mode = clean_lines[0].strip().upper()
-                is_compatible = True
-
-                if "CW" in raw_mode:
-                    mapped_mode = "CW"
-                elif raw_mode in ["LSB"]:
-                    mapped_mode = "LSB"
-                elif raw_mode in ["USB"]:
-                    mapped_mode = "USB"
-                else:
-                    mapped_mode = "USB"
-                    is_compatible = False
-
+                is_compatible = "CW" in raw_mode or raw_mode in ["LSB", "USB"]
+                mapped_mode = "CW" if "CW" in raw_mode else ("LSB" if raw_mode == "LSB" else "USB")
                 if not is_compatible:
                     if self.on_incompatible_mode: self.on_incompatible_mode(raw_mode, mapped_mode)
                     self.set_mode(mapped_mode, passband_hz=0)
                     return
-
                 if mapped_mode != self.current_mode:
                     self.current_mode = mapped_mode
                     self.current_filter_width = self.DEFAULT_FILTER_FALLBACKS.get(raw_mode, 2400)
@@ -338,59 +402,36 @@ class SDRPlusPlusController:
         if not self.is_connected or not self.is_running: return
         try:
             if not self.is_scanning:
-                # 1. Poll Frequency
                 self.sock.sendall(b'f\n')
                 freq_resp = self.sock.recv(1024).decode('utf-8').strip()
                 clean_freq = freq_resp.replace('\r', '').replace('RPRT 0', '').strip()
-                if clean_freq.isdigit():
-                    freq_val = int(clean_freq)
-                    if freq_val != self.current_frequency:
-                        self.current_frequency = freq_val
-                        if self.on_frequency_change: self.on_frequency_change(freq_val)
+                if clean_freq.isdigit() and int(clean_freq) != self.current_frequency:
+                    self.current_frequency = int(clean_freq)
+                    if self.on_frequency_change: self.on_frequency_change(self.current_frequency)
 
-                # 2. Poll Mode and Filter Attributes Safely
                 self.sock.sendall(b'm\n')
                 mode_resp = self.sock.recv(1024).decode('utf-8').strip()
                 clean_lines = mode_resp.replace('\r', '').replace('RPRT 0', '').strip().split('\n')
-
                 if clean_lines and len(clean_lines) >= 1:
                     raw_mode = clean_lines[0].strip().upper()
-                    is_compatible = True
-
-                    if "CW" in raw_mode:
-                        mapped_mode = "CW"
-                    elif raw_mode in ["LSB"]:
-                        mapped_mode = "LSB"
-                    elif raw_mode in ["USB"]:
-                        mapped_mode = "USB"
-                    else:
-                        mapped_mode = "USB"
-                        is_compatible = False
-
-                    # FIXED: If incompatible, re-queue the next loop cycle BEFORE returning!
+                    is_compatible = "CW" in raw_mode or raw_mode in ["LSB", "USB"]
+                    mapped_mode = "CW" if "CW" in raw_mode else ("LSB" if raw_mode == "LSB" else "USB")
                     if not is_compatible:
                         if self.on_incompatible_mode: self.on_incompatible_mode(raw_mode, mapped_mode)
                         self.set_mode(mapped_mode, passband_hz=0)
-                        self.root.after(200, self._tkinter_tick_loop)  # Loop stays alive!
+                        self.root.after(200, self._tkinter_tick_loop)
                         return
-
                     if mapped_mode != self.current_mode:
                         self.current_mode = mapped_mode
                         if self.on_mode_change: self.on_mode_change(mapped_mode)
-
-                if clean_lines and len(clean_lines) >= 2:
-                    second_line = clean_lines[1].strip()
-                    if second_line.isdigit():
-                        width_val = int(second_line)
-                        if width_val != self.current_filter_width:
-                            self.current_filter_width = width_val
-                            if self.on_filter_change: self.on_filter_change(width_val)
-
+                if clean_lines and len(clean_lines) >= 2 and clean_lines[1].strip().isdigit():
+                    width_val = int(clean_lines[1].strip())
+                    if width_val != self.current_filter_width:
+                        self.current_filter_width = width_val
+                        if self.on_filter_change: self.on_filter_change(width_val)
         except socket.timeout:
             pass
         except socket.error:
             self._handle_unexpected_disconnect()
             return
-
-        # Standard re-queue path for valid modes
         self.root.after(200, self._tkinter_tick_loop)
