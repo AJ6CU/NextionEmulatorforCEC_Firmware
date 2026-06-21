@@ -16,6 +16,7 @@ from barPlotter import barPlotterBdata
 from cwLogger import cwLogger
 from QSOLogger import QSOLogger
 from Classic_uBITX_Control import Classic_uBITX_Control
+from SDRPlusPlusController import SDRPlusPlusController
 
 import mystyles  # Styles definition module
 from time import sleep
@@ -24,6 +25,9 @@ from tkinter import messagebox
 import sys
 import EEPROM as EEPROM
 import os
+import subprocess
+import platform
+import psutil
 
 
 class mainScreen(baseui.mainScreenUI):
@@ -42,6 +46,8 @@ class mainScreen(baseui.mainScreenUI):
         self.startingspectrum = False
 
         self.theRadio = None            # Object pointer for the Radio
+        self.theSDR = None              # Object pointer to the SDR
+        self.sdrplusplus_handle = None # process handle for launch of sdr++
         self.theVFO_Object.attachMainWindow(self)
         self.cwSettingsWindow = None    # Object pointer for the CW Settinge Window
         self.settingsWindow = None      # Object pointer for the General Settings Window
@@ -212,8 +218,77 @@ class mainScreen(baseui.mainScreenUI):
         if gv.config.get_Logbook_Switch() == "False":               # Disable the Log QSO button on startup if log is disabled
             self.logQSO_Button.configure(state="disabled")
 
+        self.sdrplusplus_handle = self._launch_sdr_application()
+        print(type(self.sdrplusplus_handle))
+
+
+
+    def _launch_sdr_application(self):
+        """
+        Checks the OS task manager to see if SDR++ is already running.
+        If it is, it safely returns the existing process handle.
+        If not, it spawns a fresh instance with the autostart flag enabled.
+
+        Returns:
+            psutil.Process or subprocess.Popen: The active process tracker handle,
+                                                or None if it cannot be found/started.
+        """
+        os_type = platform.system().lower()
+        target_names = ["sdrpp", "sdrpp.exe", "sdr++"]
+
+        # 1. SCAN THE OS PROCESS MATRIX FOR AN EXISTING INSTANCE
+        print("[*] Task Manager: Checking if an instance of SDR++ is already open...")
+        for proc in psutil.process_iter(['pid', 'name']):
+            try:
+                if proc.info['name'] and proc.info['name'].lower() in target_names:
+                    print(f"[✔ SYSTEM LINK] SDR++ is already running! Binding to existing PID: {proc.info['pid']}")
+                    return proc  # Returns the existing system process handle safely
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                pass
+
+        # 2. IF NOT RUNNING, RESOLVE ABSOLUTE BINARY PATH STRINGS
+        print("[*] Process Monitor: No running instance detected. Preparing fresh launch...")
+        launch_cmd = []
+        if os_type == "darwin":  # macOS
+            launch_cmd = ["/Applications/SDR++.app/Contents/MacOS/sdrpp", "--autostart"]
+        elif os_type == "windows":
+            launch_cmd = [r"C:\SDRPlusPlus\sdrpp.exe", "--autostart"]
+        elif os_type == "linux":
+            launch_cmd = ["sdrpp", "--autostart"]
+        else:
+            print(f"[-] Unsupported OS environment framework detected: {os_type}")
+            return None
+
+        # 3. FRESH LAUNCH PIPELINE INJECTION
+        try:
+            print(f"[*] Spawning clean SDR++ background process -> {' '.join(launch_cmd)}")
+            sdr_process = subprocess.Popen(
+                launch_cmd,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            return sdr_process
+        except FileNotFoundError:
+            print(f"[-] Execution Error: Could not find the SDR++ application binary.")
+            print(f"    Please verify the installation path mapping inside the script.")
+            return None
 
     def close_MainWindow (self):
+        if isinstance(self.sdrplusplus_handle, subprocess.Popen):
+            if self.sdrplusplus_handle.poll() is None:
+                print("[*] Cleanup Action: Terminating the SDR++ window spawned by this script.")
+                self.sdrplusplus_handle.terminate()
+                self.sdrplusplus_handle.wait(timeout=2.0)
+                print("[✔] SDR++ closed successfully.")
+
+            # Scenario B: The user already had SDR++ open beforehand
+        elif isinstance(self.sdrplusplus_handle, psutil.Process):
+            try:
+                if self.sdrplusplus_handle.is_running():
+                    print(
+                        f"[*] Cleanup Action: Leaving pre-existing SDR++ instance (PID: {self.sdrplusplus_handle.pid}) running clean.")
+            except Exception:
+                pass
         self.portHandle.close()         # Close connection to Radio
         self.master.destroy()           # Close Window
 
@@ -587,10 +662,51 @@ class mainScreen(baseui.mainScreenUI):
         # print("logQSO_CB")
         self.logQSOWindow = logQSO(self.master, self)
 
+    def sdr_frequency_change_callback(self,new_frequency_hz):
+        """
+        This function executes automatically the millisecond a user twists
+        the VFO dial or clicks a signal peak inside the SDR++ GUI window.
+        """
+        # print("My custom frequency callback called", new_frequency_hz)
+        mhz = new_frequency_hz / 1_000_000
+        # print(f"\n[CALLBACK] Alert! SDR++ GUI frequency altered: {mhz:.4f} MHz ({new_frequency_hz} Hz)")
 
+        self.theRadio.Set_New_Frequency(new_frequency_hz)
 
+    def sdr_mode_change_callback(self, new_mode_string):
+        """
+        This function executes automatically the millisecond a user clicks
+        a different modulation mode button (e.g., WFM, AM, USB) inside SDR++.
+        """
+        # print("My custom mode callback called", new_mode_string)
+        # print(f"\n[CALLBACK] Alert! SDR++ GUI receiver mode changed: {new_mode_string}")
 
-########################################################################################
+        # Example application trigger: Adjust external DSP settings based on mode
+        # if new_mode_string == "CW":
+        #     print("   -> Narrow digital CW decoding filters activated.")
+
+        if new_mode_string == "USB" or new_mode_string == "LSB":
+                intMode = EEPROM.Text_To_ModeNum[new_mode_string]
+        else:
+            if int(self.theVFO_Object.getIntPrimaryVFO()) >= 10000000:
+                intMode = EEPROM.Text_To_ModeNum["CWU"]
+            else:
+                intMode = EEPROM.Text_To_ModeNum["CWL"]
+        self.theRadio.Set_Mode(intMode)
+
+    def bandFilter_change_callback(self, new_mode_string):
+        """
+        This function executes automatically the millisecond a user clicks
+        a different modulation mode button (e.g., WFM, AM, USB) inside SDR++.
+        """
+        print("My custom mode callback called", new_mode_string)
+        print(f"\n[CALLBACK] Alert! SDR++ GUI receiver mode changed: {new_mode_string}")
+
+        # Example application trigger: Adjust external DSP settings based on mode
+        if new_mode_string == "CW":
+            print("   -> Narrow digital CW decoding filters activated.")
+
+    ########################################################################################
 #   End of Callbacks executed by the UX
 ########################################################################################
 
@@ -1167,10 +1283,25 @@ class mainScreen(baseui.mainScreenUI):
             self.speaker_Button_On = False
             self.speaker_Button.configure(style='Button2b.TButton', state="normal")
             self.speaker_VAR.set("\nSPEAKER\n")
+            if self.theSDR != None:
+                self.theSDR.disconnect()
+                del self.theSDR
         else:
             self.speaker_Button_On = True
             self.speaker_Button.configure(style='RedButton2b.TButton', state="pressed")
-            self.speaker_VAR.set("\nSPK MUTED\n")
+            self.speaker_VAR.set("\nSDR\n")
+            self.theSDR = SDRPlusPlusController(self.master, host='127.0.0.1', port=4532)
+            if self.theSDR.connect():
+                print("sdr connected")
+                self.theSDR.set_frequency_hz(int(self.theVFO_Object.getIntPrimaryVFO()))
+                self.theSDR.set_mode(self.primary_Mode_VAR.get().replace("CWL","CW").replace("CWU","CW"))
+                self.theSDR.on_frequency_change = self.sdr_frequency_change_callback
+                self.theSDR.on_mode_change = self.sdr_mode_change_callback
+
+            else:
+                print("sdr not connected")
+
+
 
 
     def cs_UX_SPLIT_Toggle(self, buffer):
@@ -1287,6 +1418,10 @@ class mainScreen(baseui.mainScreenUI):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
         self.theVFO_Object.setPrimaryVFO(value)
 
+        if self.theSDR != None:
+            self.theSDR.set_frequency_hz(int(value))
+
+
 
         if self.channelsWindow != None:      #  Only update frequency if the channel window has been created once
             self.channelsWindow.update_Current_Frequency(self.theVFO_Object.getFormattedPrimaryVFO())
@@ -1310,6 +1445,8 @@ class mainScreen(baseui.mainScreenUI):
         else:
             self.theVFO_Object.set_CW_OffsetforTX("OFF")
 
+        if self.theSDR != None:
+            self.theSDR.set_mode(self.primary_Mode_VAR.get().replace("CWL", "CW").replace("CWU", "CW"))
 
         if self.channelsWindow != None:
             # Only update frequency if the channel window has been created once

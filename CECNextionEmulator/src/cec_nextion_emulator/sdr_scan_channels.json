@@ -1,0 +1,23 @@
+[
+    {
+        "label": "WX1",
+        "freq_hz": 162550000,
+        "mode": "FM",
+        "filter_hz": 15000,
+        "name": "NOAA Weather 1"
+    },
+    {
+        "label": "HAM2",
+        "freq_hz": 145000000,
+        "mode": "FM",
+        "filter_hz": 12500,
+        "name": "2m Hailing"
+    },
+    {
+        "label": "FT8",
+        "freq_hz": 7074000,
+        "mode": "USB",
+        "filter_hz": 3000,
+        "name": "40m Ham Digital"
+    }
+]
