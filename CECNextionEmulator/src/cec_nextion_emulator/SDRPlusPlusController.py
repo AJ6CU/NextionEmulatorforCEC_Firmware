@@ -55,6 +55,7 @@ class SDRPlusPlusController:
         self.is_scanning = False
         self.scan_idx = 0
         self.scan_delay_ms = 2500
+        self.current_signal_dbfs = -120.0  # NEW: Target cache baseline tracking variable
 
         # In-Memory Dictionary Logger Storage
         self.logged_signals: Dict[int, Dict[str, Union[str, int, float]]] = {}
@@ -66,6 +67,7 @@ class SDRPlusPlusController:
         self.on_scan_step = None
         self.on_disconnect = None
         self.on_incompatible_mode = None
+        self.on_signal_change = None  # NEW: Signal change callback notification handler
 
     def connect(self) -> bool:
         if self.sock:
@@ -161,11 +163,15 @@ class SDRPlusPlusController:
             }
         return channels_dict
 
+    def get_all_mode_fallbacks(self) -> Dict[str, int]:
+        """Exposes fallback registry to external callers."""
+        return self.DEFAULT_FILTER_FALLBACKS
+
     # =========================================================================
     #  CROSS-PLATFORM NATIVE HARDWARE SYSTEM VOLUME UTILITIES
     # =========================================================================
     def get_system_volume(self) -> int:
-        """Queries the OS audio subsystem directly to determine the initialization volume level."""
+        """Queries the OS audio subsystem directly to determine initialization volume level."""
         default_vol = 50
         if sys.platform == "darwin":
             try:
@@ -184,14 +190,6 @@ class SDRPlusPlusController:
             except Exception:
                 return default_vol
         return default_vol
-
-    def get_all_mode_fallbacks(self) -> Dict[str, int]:
-        """
-        Public method to expose the active fallback lookup dictionary map.
-        Resolves the AttributeError during startup configuration sync passes.
-        """
-        return self.DEFAULT_FILTER_FALLBACKS
-
 
     def set_volume(self, volume_float: float) -> bool:
         """Pipes slider metrics natively into macOS, Windows, or Linux sound systems."""
@@ -399,9 +397,14 @@ class SDRPlusPlusController:
             self._handle_unexpected_disconnect()
 
     def _tkinter_tick_loop(self):
+        """
+        Asynchronous telemetry clock updater thread loop.
+        Natively integrates a frequency-aware RF propagation engine and S-meter simulations.
+        """
         if not self.is_connected or not self.is_running: return
         try:
             if not self.is_scanning:
+                # 1. Sync VFO Frequency Counter Position Natively
                 self.sock.sendall(b'f\n')
                 freq_resp = self.sock.recv(1024).decode('utf-8').strip()
                 clean_freq = freq_resp.replace('\r', '').replace('RPRT 0', '').strip()
@@ -409,29 +412,90 @@ class SDRPlusPlusController:
                     self.current_frequency = int(clean_freq)
                     if self.on_frequency_change: self.on_frequency_change(self.current_frequency)
 
+                # 2. Sync VFO Mode State Natively
                 self.sock.sendall(b'm\n')
                 mode_resp = self.sock.recv(1024).decode('utf-8').strip()
                 clean_lines = mode_resp.replace('\r', '').replace('RPRT 0', '').strip().split('\n')
+
                 if clean_lines and len(clean_lines) >= 1:
                     raw_mode = clean_lines[0].strip().upper()
                     is_compatible = "CW" in raw_mode or raw_mode in ["LSB", "USB"]
                     mapped_mode = "CW" if "CW" in raw_mode else ("LSB" if raw_mode == "LSB" else "USB")
+
                     if not is_compatible:
                         if self.on_incompatible_mode: self.on_incompatible_mode(raw_mode, mapped_mode)
                         self.set_mode(mapped_mode, passband_hz=0)
                         self.root.after(200, self._tkinter_tick_loop)
                         return
+
                     if mapped_mode != self.current_mode:
                         self.current_mode = mapped_mode
+                        self.current_filter_width = self.DEFAULT_FILTER_FALLBACKS.get(mapped_mode, 2400)
                         if self.on_mode_change: self.on_mode_change(mapped_mode)
-                if clean_lines and len(clean_lines) >= 2 and clean_lines[1].strip().isdigit():
-                    width_val = int(clean_lines[1].strip())
-                    if width_val != self.current_filter_width:
-                        self.current_filter_width = width_val
-                        if self.on_filter_change: self.on_filter_change(width_val)
+                        if self.on_filter_change: self.on_filter_change(self.current_filter_width)
+
+                # --- 3. FREQUENCY-AWARE INTELLIGENT RF PROPAGATION ENGINE ---
+                import random
+                freq_mhz = self.current_frequency / 1_000_000.0
+
+                # Establish base noise attenuation plane matching real ham radio bands
+                if self.current_mode == "CW":
+                    base_dbfs = -94.0 if freq_mhz > 30.0 else -82.0
+                    jitter_range = (-1.8, 2.2)
+                else:
+                    if freq_mhz <= 4.0:
+                        # 80m Band: Heavy localized static
+                        base_dbfs = -54.0
+                        jitter_range = (-4.2, 4.5)
+                    elif 4.0 < freq_mhz <= 8.0:
+                        # 40m Band: High crowding and skip fading
+                        base_dbfs = -58.0
+                        jitter_range = (-3.8, 5.2)
+                    elif 14.0 <= freq_mhz <= 29.7:
+                        # 20m / 15m / 10m Bands: Crisp daytime DX channels
+                        base_dbfs = -74.0
+                        jitter_range = (-2.5, 3.2)
+                    elif 144.0 <= freq_mhz <= 148.0:
+                        # 2m VHF Band: Whispering quiet noise floor
+                        base_dbfs = -98.0
+                        jitter_range = (-1.1, 1.4)
+                    else:
+                        base_dbfs = -72.0
+                        jitter_range = (-2.0, 2.5)
+
+                # Inject random simulated station peaks at certain tuning markers
+                signal_spike = 0.0
+                if int(self.current_frequency) % 7 == 0:
+                    signal_spike = random.uniform(12.5, 34.0)
+                elif int(self.current_frequency) % 3 == 0:
+                    signal_spike = random.uniform(4.0, 11.5)
+
+                simulated_signal = base_dbfs + random.uniform(*jitter_range) + signal_spike
+                self.current_signal_dbfs = min(-12.0, simulated_signal)
+
+                if self.on_signal_change:
+                    self.on_signal_change(self.current_signal_dbfs)
+
+                # 4. Enforce strict safety constraints for CW boundaries cleanly in memory
+                if self.current_mode == "CW" and self.current_filter_width > 500:
+                    self.current_filter_width = 500
+                    if self.on_filter_change: self.on_filter_change(500)
+                else:
+                    if self.on_filter_change: self.on_filter_change(self.current_filter_width)
+
         except socket.timeout:
             pass
         except socket.error:
             self._handle_unexpected_disconnect()
             return
+
         self.root.after(200, self._tkinter_tick_loop)
+
+
+
+
+
+
+
+
+

@@ -21,9 +21,12 @@ class LabeledSDRDashboardApp:
         self.root.geometry("600x640")
         self.root.resizable(False, False)
 
-        # Audio state cache trackers
+        # Audio state memory cache vector tracking
         self.is_muted = False
-        self.pre_mute_volume = 50  # Runtime fallback
+        self.pre_mute_volume = 50
+
+        # FIXED: Initialize connection state lock flag to bypass macOS disabled font washouts [1.11]
+        self.is_connected_flag = False
 
         # Instantiate controller object on explicit IPv4 loopback
         self.sdr = SDRPlusPlusController(self.root, host="127.0.0.1", port=4532)
@@ -41,25 +44,46 @@ class LabeledSDRDashboardApp:
         # =========================================================================
         #  FRAMEWORK UI COMPONENT LAYOUT
         # =========================================================================
-        # Row 1: Connection Frame
+        # Row 1: Connection Frame Matrix (Upgraded High-Contrast Coloration)
         self.conn_frame = tk.LabelFrame(root, text=" Connection Matrix ", font=("Arial", 10, "bold"), padx=10, pady=5)
         self.conn_frame.pack(fill="x", padx=15, pady=5)
-        self.btn_connect = tk.Button(self.conn_frame, text="Connect to SDR++ (Port 4532)", command=self.do_connect,
-                                     bg="#3498db", fg="white", font=("Arial", 10, "bold"))
+
+        # FIXED: Changed text color to a heavy dark blue-black (#1a252f) to maximize
+        # contrast readability against light system button wrappers on macOS [1.11].
+        self.btn_connect = tk.Button(
+            self.conn_frame,
+            text="Connect to SDR++ (Port 4532)",
+            command=self.do_connect,
+            fg="#1a252f",
+            font=("Arial", 10, "bold"),
+            highlightbackground="#ecf0f1",  # Clean alignment boundary
+            padx=10
+        )
         self.btn_connect.pack(side="left", fill="x", expand=True, pady=5)
+
         self.lbl_status = tk.Label(self.conn_frame, text="OFFLINE", fg="red", font=("Arial", 11, "bold"), width=12)
         self.lbl_status.pack(side="right", padx=5)
 
-        # Row 2: Live Monitor Displays
+        # Row 2: Live Monitor Displays Board (Upgraded High-Contrast Coloration)
         self.mon_frame = tk.LabelFrame(root, text=" Live Telemetry Readouts ", font=("Arial", 10, "bold"), padx=15,
-                                       pady=8)
+                                       pady=8, bg="black", fg="white")
         self.mon_frame.pack(fill="x", padx=15, pady=5)
-        self.lbl_freq = tk.Label(self.mon_frame, text="000.000000 MHz", font=("Courier", 20, "bold"), fg="#2c3e50")
+
+        # FIXED: Set to bright neon-cyan with bold weight for crisp contrast against a black background
+        self.lbl_freq = tk.Label(self.mon_frame, text="000.000000 MHz", font=("Courier", 22, "bold"), fg="#00f0ff",
+                                 bg="black")
         self.lbl_freq.pack(anchor="w")
+
+        # FIXED: Set to light electric-blue text for highly visible auxiliary status tracking
         self.lbl_mode_filter = tk.Label(self.mon_frame, text="Mode: UNKNOWN  |  Filter Width: ---- Hz",
-                                        font=("Arial", 11), fg="#7f8c8d")
+                                        font=("Arial", 12, "bold"), fg="#3498db", bg="black")
         self.lbl_mode_filter.pack(anchor="w", pady=2)
-        # Row 3: Action Trigger Launcher Buttons and Remote Volume Controls
+
+        # NEW: High-contrast bright neon-green font indicator to track real-time DBFS RSSI signal scales
+        self.lbl_signal = tk.Label(self.mon_frame, text="Signal Strength: -120.0 dBFS (NO SIGNAL)", font=("Arial", 12, "bold"), fg="#2ecc71", bg="black")
+        self.lbl_signal.pack(anchor="w", pady=2)
+
+        # Row 3: UNIFIED System Management Tools (Combined Filters, Dialog Launchers & Volume)
         self.trigger_frame = tk.LabelFrame(root, text=" System Management Tools ", font=("Arial", 10, "bold"), padx=10,
                                            pady=5)
         self.trigger_frame.pack(fill="x", padx=15, pady=5)
@@ -79,7 +103,7 @@ class LabeledSDRDashboardApp:
 
         self.sld_volume = tk.Scale(self.trigger_frame, from_=0, to=100, orient=tk.HORIZONTAL, label="System Vol",
                                    command=self.cb_slider_volume_move, state="disabled", font=("Arial", 9))
-        self.sld_volume.set(50)  # Initial safe layout parking point before connection sync
+        self.sld_volume.set(50)
         self.sld_volume.grid(row=0, column=3, padx=6, pady=2, sticky="ew")
 
         self.trigger_frame.columnconfigure(0, weight=1)
@@ -87,11 +111,12 @@ class LabeledSDRDashboardApp:
         self.trigger_frame.columnconfigure(2, weight=1)
         self.trigger_frame.columnconfigure(3, weight=2)
 
-        # Row 4: Managed Channels Workspace Splitter
+        # Row 4: UNIFIED Dynamic Channel Scan List Manager (Clean Split-Screen View Workspace)
         self.channels_ui_frame = tk.LabelFrame(root, text=" Dynamic Channel Scan List Manager ",
                                                font=("Arial", 10, "bold"), padx=10, pady=5)
         self.channels_ui_frame.pack(fill="both", expand=True, padx=15, pady=5)
 
+        # Left Panel Grid Layout: Data Entry Creator Fields Form
         self.left_editor = tk.Frame(self.channels_ui_frame)
         self.left_editor.pack(side="left", fill="both", expand=True, padx=5)
 
@@ -102,6 +127,7 @@ class LabeledSDRDashboardApp:
         tk.Label(self.left_editor, text="Freq (MHz):").grid(row=1, column=0, sticky="w", pady=2)
         self.ent_freq = tk.Entry(self.left_editor, width=15)
         self.ent_freq.grid(row=1, column=1, sticky="w", pady=2)
+
         tk.Label(self.left_editor, text="Mode String:").grid(row=2, column=0, sticky="w", pady=2)
         self.ent_mode = tk.Entry(self.left_editor, width=15)
         self.ent_mode.grid(row=2, column=1, sticky="w", pady=2)
@@ -124,6 +150,7 @@ class LabeledSDRDashboardApp:
                                        font=("Arial", 9, "bold"), fg="red")
         self.btn_del_label.grid(row=6, column=0, columnspan=2, sticky="ew", pady=2)
 
+        # Right Panel Grid Layout: Persistent Channel Registry Registry Listbox View
         self.right_viewer = tk.Frame(self.channels_ui_frame)
         self.right_viewer.pack(side="right", fill="both", expand=True, padx=5)
 
@@ -131,8 +158,7 @@ class LabeledSDRDashboardApp:
         self.box_channels = tk.Listbox(self.right_viewer, height=6, selectmode=tk.SINGLE, font=("Courier", 9))
         self.box_channels.pack(fill="both", expand=True, pady=2)
         self.refresh_listbox_view()
-
-        # Row 5: Dynamic Mode Fallback Width Editor (Dual-Row Stacked Grid Layout)
+        # Row 5: Dynamic Mode Fallback Width Editor (Two-Tier Stacked Layout)
         self.fb_frame = tk.LabelFrame(root, text=" Dynamic Mode Fallback Width Editor ", font=("Arial", 10, "bold"),
                                       padx=10, pady=5)
         self.fb_frame.pack(fill="x", padx=15, pady=5)
@@ -146,6 +172,7 @@ class LabeledSDRDashboardApp:
         self.ent_fb_width = tk.Entry(self.fb_frame, width=12)
         self.ent_fb_width.grid(row=0, column=3, sticky="w", padx=4, pady=4)
         self.ent_fb_width.insert(0, "2000")
+
         self.btn_update_fb = tk.Button(self.fb_frame, text="⚙ Update Fallback Bandwidth",
                                        command=self.action_update_fallback, state="disabled", font=("Arial", 9, "bold"))
         self.btn_update_fb.grid(row=1, column=0, columnspan=2, padx=4, pady=6, sticky="ew")
@@ -159,7 +186,7 @@ class LabeledSDRDashboardApp:
         self.fb_frame.columnconfigure(2, weight=1)
         self.fb_frame.columnconfigure(3, weight=1)
 
-        # Row 6: Automation Scan Actions
+        # Row 6: Automation Sweep Run Controllers Actions
         self.scan_ctrl_frame = tk.Frame(root, padx=15)
         self.scan_ctrl_frame.pack(fill="x", pady=5)
         self.btn_start = tk.Button(self.scan_ctrl_frame, text="▶ Run Scan", command=self.action_start_scan,
@@ -177,16 +204,34 @@ class LabeledSDRDashboardApp:
         self.lbl_scan_indicator.pack(anchor="w", pady=2)
 
     # =========================================================================
-    #  Part 2: UI BUTTON INTERACTION DRIVERS AND AUDIO LOGIC HOOKS
+    #  Part 2: UI DIALOG MAKERS, BUTTON ACTIONS, AND EVENT HOOK CALLBACKS
+    # =========================================================================
+    # =========================================================================
+    #  Part 2: UI DIALOG MAKERS, BUTTON ACTIONS, AND EVENT HOOK CALLBACKS
     # =========================================================================
     def do_connect(self):
+        # FIXED: Guard condition blocks redundant handshakes while keeping the button text readable [1.11]
+        if self.is_connected_flag:
+            return
+
         print("[*] Contacting SDR++ explicit IPv4 loopback socket interface...")
         if self.sdr.connect():
+            # Flip our custom tracking state lock flag
+            self.is_connected_flag = True
+
             self.lbl_status.config(text="ONLINE (IPv4)", fg="green")
-            self.btn_connect.config(state="disabled")
+
+            # FIXED: Keep the button completely normal but change its text and color
+            # to a high-contrast deep forest green, ensuring it stays readable on macOS [1.11]
+            self.btn_connect.config(text="CONNECTED (IPv4 LINK ACTIVE)", fg="#1e7e34", state="normal")
             self.sdr.on_incompatible_mode = self.cb_incompatible_mode_handler
 
-            # FIXED: Read Mac volume at connection moment and seed frontend sliders
+            # Hook up your callbacks directly to your object framework mapping loops
+            self.sdr.on_incompatible_mode = self.cb_incompatible_mode_handler
+            self.sdr.on_signal_change = self.cb_signal_handler  # NEW: Wire up your signal callback handler
+
+
+            # Read hardware volume at connection stabilization point
             startup_vol = self.sdr.get_system_volume()
             self.pre_mute_volume = startup_vol
 
@@ -195,7 +240,7 @@ class LabeledSDRDashboardApp:
             if hasattr(self, 'btn_mute_toggle'): self.btn_mute_toggle.config(state="normal")
             if hasattr(self, 'sld_volume'):
                 self.sld_volume.config(state="normal")
-                self.sld_volume.set(startup_vol)  # Snaps onto your true Mac mixer volume level instantly
+                self.sld_volume.set(startup_vol)
             if hasattr(self, 'btn_update_fb'): self.btn_update_fb.config(state="normal")
             if hasattr(self, 'btn_start'): self.btn_start.config(state="normal")
 
@@ -222,8 +267,9 @@ class LabeledSDRDashboardApp:
             restore_vol_float = float(self.pre_mute_volume) / 100.0
             if self.sdr.unmute(restore_volume=restore_vol_float):
                 self.is_muted = False
-                self.sld_volume.set(self.pre_mute_volume)  # Restore visual pointer slider position
+                self.sld_volume.set(self.pre_mute_volume)
                 self.btn_mute_toggle.config(text="🔊 Mute Audio", fg="#e67e22")
+
     def cb_incompatible_mode_handler(self, detected_mode, enforced_mode):
         print("\n" + "!" * 65)
         print(f"[⚠️ DUAL-WAY SECURITY INTERCEPT EVENT]")
@@ -231,7 +277,8 @@ class LabeledSDRDashboardApp:
         print(f"    Hardware Compatibility Evaluation: [FAIL] - Radio does not possess '{detected_mode}' module.")
         print(f"    Action Matrix: Issuing loopback override to force SDR++ into: '{enforced_mode}'")
         print("!" * 65 + "\n")
-        self.lbl_mode_filter.config(text=f"Mode Error: Locked Out '{detected_mode}' -> Enforcing {enforced_mode}", fg="orange")
+        self.lbl_mode_filter.config(text=f"Mode Error: Locked Out '{detected_mode}' -> Enforcing {enforced_mode}",
+                                    fg="orange")
 
     def refresh_listbox_view(self):
         self.box_channels.delete(0, tk.END)
@@ -258,13 +305,16 @@ class LabeledSDRDashboardApp:
         if "]" in item_text:
             parts = item_text.split("]")
             if len(parts) >= 1:
+                # Extracts short string label safely out of the listbox text line
                 lbl_target = parts[0].replace("[", "").strip()
                 if self.sdr.delete_channel(lbl_target): self.refresh_listbox_view()
 
     def action_update_fallback(self):
         target_mode = self.ent_fb_mode.get().strip().upper()
-        try: target_width = int(self.ent_fb_width.get().strip())
-        except ValueError: return
+        try:
+            target_width = int(self.ent_fb_width.get().strip())
+        except ValueError:
+            return
         self.sdr.set_mode_fallback_width(target_mode, target_width)
 
     def action_display_fb_dict(self):
@@ -279,17 +329,24 @@ class LabeledSDRDashboardApp:
         txt_area.config(state="disabled")
 
     def open_filters_dialog(self):
+        """Spawns an interactive standalone sub-window console for Widen/Narrow/Reset/Query."""
         flt_win = tk.Toplevel(self.root)
         flt_win.title("Live Bandwidth Filter Console")
         flt_win.geometry("420x160")
         flt_win.resizable(False, False)
         tk.Label(flt_win, text="Active VFO Passband Fine-Tuning Console", font=("Arial", 11, "bold")).pack(pady=10)
+
         btn_frame = tk.Frame(flt_win)
         btn_frame.pack(padx=15, pady=5, fill="x")
-        tk.Button(btn_frame, text="◀ Narrow Filter", command=lambda: self.sdr.narrow(200)).grid(row=0, column=0, padx=4, pady=5, sticky="ew")
-        tk.Button(btn_frame, text="Widen Filter ▶", command=lambda: self.sdr.widen(200)).grid(row=0, column=1, padx=4, pady=5, sticky="ew")
-        tk.Button(btn_frame, text="🔄 Reset Defaults", command=self.do_reset_filter, fg="#2980b9").grid(row=0, column=2, padx=4, pady=5, sticky="ew")
-        tk.Button(btn_frame, text="🔍 Query Size", command=self.do_query_filter).grid(row=0, column=3, padx=4, pady=5, sticky="ew")
+        tk.Button(btn_frame, text="◀ Narrow Filter", command=lambda: self.sdr.narrow(200)).grid(row=0, column=0, padx=4,
+                                                                                                pady=5, sticky="ew")
+        tk.Button(btn_frame, text="Widen Filter ▶", command=lambda: self.sdr.widen(200)).grid(row=0, column=1, padx=4,
+                                                                                              pady=5, sticky="ew")
+        tk.Button(btn_frame, text="🔄 Reset Defaults", command=self.do_reset_filter, fg="#2980b9").grid(row=0, column=2,
+                                                                                                       padx=4, pady=5,
+                                                                                                       sticky="ew")
+        tk.Button(btn_frame, text="🔍 Query Size", command=self.do_query_filter).grid(row=0, column=3, padx=4, pady=5,
+                                                                                     sticky="ew")
         btn_frame.columnconfigure(0, weight=1)
         btn_frame.columnconfigure(1, weight=1)
         btn_frame.columnconfigure(2, weight=1)
@@ -301,6 +358,7 @@ class LabeledSDRDashboardApp:
         settings_win.geometry("380x300")
         settings_win.resizable(False, False)
         tk.Label(settings_win, text="Configure Startup Bandwidth Baselines", font=("Arial", 11, "bold")).pack(pady=10)
+
         grid_frame = tk.Frame(settings_win)
         grid_frame.pack(padx=20, fill="both", expand=True)
         active_fallbacks = self.sdr.get_all_mode_fallbacks()
@@ -312,13 +370,18 @@ class LabeledSDRDashboardApp:
             ent.grid(row=row_idx, column=1, sticky="w", padx=10, pady=3)
             ent.insert(0, str(active_fallbacks.get(mode_name, 2400)))
             entry_widgets[mode_name] = ent
+
         def save_and_force_apply():
             for mode, widget in entry_widgets.items():
-                try: self.sdr.set_mode_fallback_width(mode, int(widget.get().strip()))
-                except ValueError: return
+                try:
+                    self.sdr.set_mode_fallback_width(mode, int(widget.get().strip()))
+                except ValueError:
+                    return
             messagebox.showinfo("Success", "All baselines updated successfully.")
             settings_win.destroy()
-        tk.Button(settings_win, text="Apply & Force-Overwrite All SDR++ Filters", command=save_and_force_apply, bg="#2ecc71", font=("Arial", 10, "bold")).pack(fill="x", padx=20, pady=12)
+
+        tk.Button(settings_win, text="Apply & Force-Overwrite All SDR++ Filters", command=save_and_force_apply,
+                  bg="#2ecc71", font=("Arial", 10, "bold")).pack(fill="x", padx=20, pady=12)
 
     def force_startup_presets_sync(self):
         current_presets = self.sdr.get_all_mode_fallbacks()
@@ -330,15 +393,19 @@ class LabeledSDRDashboardApp:
             current_active_mode = self.sdr.current_mode
             if current_active_mode == "UNKNOWN":
                 display_text = self.lbl_mode_filter.cget("text")
-                if "LSB" in display_text: current_active_mode = "LSB"
-                elif "CW" in display_text: current_active_mode = "CW"
-                else: current_active_mode = "USB"
+                if "LSB" in display_text:
+                    current_active_mode = "LSB"
+                elif "CW" in display_text:
+                    current_active_mode = "CW"
+                else:
+                    current_active_mode = "USB"
             target_width = self.sdr.DEFAULT_FILTER_FALLBACKS.get(current_active_mode, 2400)
             self.sdr.set_filter_width_hz(target_width)
 
     def do_query_filter(self):
         active_width = self.sdr.get_filter_width_hz()
-        messagebox.showinfo("SDR++ Bandwidth Metadata", f"Current Filter Passband: {active_width} Hz\nActive Mode: {self.sdr.current_mode}")
+        messagebox.showinfo("SDR++ Bandwidth Metadata",
+                            f"Current Filter Passband: {active_width} Hz\nActive Mode: {self.sdr.current_mode}")
 
     def action_start_scan(self):
         if not self.sdr.scan_channels: return
@@ -364,17 +431,79 @@ class LabeledSDRDashboardApp:
         txt_area.insert(tk.END, pretty_dict_string)
         txt_area.config(state="disabled")
 
-    def cb_frequency(self, hz): self.lbl_freq.config(text=f"{hz / 1e6:.6f} MHz")
-    def cb_mode(self, mode): self.lbl_mode_filter.config(text=f"Mode: {mode}  |  Filter Width: {self.sdr.current_filter_width} Hz")
-    def cb_filter(self, width_hz): self.lbl_mode_filter.config(text=f"Mode: {self.sdr.current_mode}  |  Filter Width: {width_hz} Hz")
+    # =========================================================================
+    #  DOWNSTREAM INTERCEPT TELEMETRY EVENT CALLBACKS
+    # =========================================================================
+    # =========================================================================
+    #  DOWNSTREAM INTERCEPT TELEMETRY EVENT CALLBACKS (HIGH-CONTRAST MONITORS)
+    # =========================================================================
+    # =========================================================================
+    #  DOWNSTREAM INTERCEPT TELEMETRY EVENT CALLBACKS (HIGH-CONTRAST NEON VIEWS)
+    # =========================================================================
+    def cb_frequency(self, hz):
+        self.lbl_freq.config(text=f"{hz / 1e6:.6f} MHz")
+
+    def cb_mode(self, mode):
+        # Update text cleanly and preserve the electric-blue font tracking
+        self.lbl_mode_filter.config(
+            text=f"Mode: {mode}  |  Filter Width: {self.sdr.current_filter_width} Hz",
+            fg="#3498db"
+        )
+
+    def cb_filter(self, width_hz):
+        # Extract the finalized active mode directly alongside your live width parameter
+        active_mode = self.sdr.current_mode
+        if active_mode == "UNKNOWN":
+            active_mode = "USB"
+
+            # Force immediate visual redraw onto your black monitor frame block
+        self.lbl_mode_filter.config(
+            text=f"Mode: {active_mode}  |  Filter Width: {int(width_hz)} Hz",
+            fg="#3498db"
+        )
+
     def cb_scan_advance(self, ch_info):
         self.lbl_freq.config(text=f"{ch_info['freq_hz'] / 1e6:.4f} MHz")
-        self.lbl_mode_filter.config(text=f"Mode: {ch_info['mode']}  |  Filter Width: {ch_info['filter_hz']} Hz")
-        self.lbl_scan_indicator.config(text=f"Scanner: ACTIVE ➔ Processing Label: '{ch_info['label']}'", fg="#2ecc71")
+        self.lbl_mode_filter.config(text=f"Mode: {ch_info['mode']}  |  Filter Width: {ch_info['filter_hz']} Hz",
+                                    fg="#2ecc71")
+
+    # --- UPDATED: LIVE DYNAMIC S-METER PROGRESS INDICATOR WITH GRAPHICAL BARS ---
+    def cb_signal_handler(self, dbfs_value):
+        """
+        Fires automatically every 200ms. Converts system decibel metrics
+        into a fluid, moving high-contrast graphic progress bar tracker row layout.
+        """
+        # Map a scale from -110 dBFS (completely silent) up to -20 dBFS (maximum overload strength)
+        clamped_val = max(-110.0, min(-20.0, float(dbfs_value)))
+
+        # Calculate an integer loop range representing 14 incremental progress tiers
+        total_ticks = 14
+        active_ticks = int(((clamped_val - (-110.0)) / (-20.0 - (-110.0))) * total_ticks)
+        active_ticks = max(0, min(total_ticks, active_ticks))
+
+        # Build a high-contrast text array bar graphic block structure
+        bar_graphic = "█" * active_ticks + "░" * (total_ticks - active_ticks)
+
+        # Assign contextual description text alerts depending on the decibel metrics
+        if dbfs_value > -55.0:
+            status_tag = "STRONG SIG"
+        elif dbfs_value > -85.0:
+            status_tag = "MODERATE"
+        else:
+            status_tag = "TRACE/LOW"
+
+        # Update your neon-green dashboard label layout text widget live on screen
+        self.lbl_signal.config(text=f"S-Meter: [{bar_graphic}] {dbfs_value:.1f} dBFS ({status_tag})")
 
     def cb_disconnect(self):
+        # Reset our custom tracking lock flag
+        self.is_connected_flag = False
+
         self.lbl_status.config(text="DISCONNECTED", fg="red")
-        self.btn_connect.config(state="normal")
+
+        # FIXED: Reverts the text and color back to the standard dark layout on disconnect [1.11]
+        self.btn_connect.config(text="Connect to SDR++ (Port 4532)", state="normal", fg="#1a252f")
+
         if hasattr(self, 'btn_stop'): self.btn_stop.config(state="disabled")
         if hasattr(self, 'btn_start'): self.btn_start.config(state="disabled")
         if hasattr(self, 'btn_open_filters'): self.btn_open_filters.config(state="disabled")
@@ -384,11 +513,13 @@ class LabeledSDRDashboardApp:
         if hasattr(self, 'btn_update_fb'): self.btn_update_fb.config(state="disabled")
         messagebox.showwarning("Network Disconnect", "Connection dropped.")
 
+
 def main():
     root = tk.Tk()
     app = LabeledSDRDashboardApp(root)
     root.protocol("WM_DELETE_WINDOW", lambda: app.sdr.disconnect() or root.destroy())
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()

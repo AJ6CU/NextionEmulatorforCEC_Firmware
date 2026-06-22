@@ -2,16 +2,15 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import settingsui as baseui
-import settingsMachine as sm
 from cwSettings import cwSettings
 from settingsMachine import settingsMachine
 from settingsGeneral import settingsGeneral
 from settingsBackup import settingsBackup
 from settingsLogbook import settingsLogbook
-from settingsAbout import settingsAbout
 from tkinter import messagebox
 import globalvars as gv
 from settingsAbout import settingsAbout
+from settingsSDR import settingsSDR
 
 
 #
@@ -98,6 +97,9 @@ class settings(baseui.settingsUI):
 
     def SettingsLogbook_CB(self):
         self.settingsLogbookWindow = settingsLogbook(self.master, self.mainWindow)
+
+    def SettingsSDR_CB(self):
+        self.SettingsSDRWindow = settingsSDR(self.master, self.mainWindow)
 
     def settingsReboot_CB(self):
         if messagebox.askokcancel("Reboot?", "Do you really want to reboot?", parent=self):

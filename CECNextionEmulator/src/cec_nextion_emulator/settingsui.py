@@ -113,14 +113,15 @@ class settingsUI(ttk.Labelframe):
             style="Button1Raised.TButton", text='Logbook', width=15)
         self.logbook_Button.grid(column=0, ipady=25, padx=10, pady=10, row=3)
         self.logbook_Button.configure(command=self.SettingsLogbook_CB)
-        self.TBD_Button = ttk.Button(
+        self.SDR_Button = ttk.Button(
             self.settingsButtons_Frame,
-            name="tbd_button")
-        self.TBD_Button.configure(
+            name="sdr_button")
+        self.SDR_Button.configure(
             style="Button1Raised.TButton",
-            text='TBD',
+            text='SDR',
             width=15)
-        self.TBD_Button.grid(column=2, ipady=25, padx=10, pady=10, row=3)
+        self.SDR_Button.grid(column=2, ipady=25, padx=10, pady=10, row=3)
+        self.SDR_Button.configure(command=self.SettingsSDR_CB)
         self.settingsButtons_Frame.pack(
             anchor="center", expand=True, fill="both", side="top")
         self.settingsButtons_Frame.rowconfigure(3, weight=1)
@@ -169,6 +170,9 @@ class settingsUI(ttk.Labelframe):
         pass
 
     def SettingsLogbook_CB(self):
+        pass
+
+    def SettingsSDR_CB(self):
         pass
 
     def settingsClose_CB(self):

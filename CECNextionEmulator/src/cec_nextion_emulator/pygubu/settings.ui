@@ -163,9 +163,10 @@
               </object>
             </child>
             <child>
-              <object class="ttk.Button" id="TBD_Button" named="True">
+              <object class="ttk.Button" id="SDR_Button" named="True">
+                <property name="command" type="command" cbtype="simple">SettingsSDR_CB</property>
                 <property name="style">Button1Raised.TButton</property>
-                <property name="text" translatable="yes">TBD</property>
+                <property name="text" translatable="yes">SDR</property>
                 <property name="width">15</property>
                 <layout manager="grid">
                   <property name="column">2</property>
