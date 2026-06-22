@@ -18,7 +18,7 @@ class LabeledSDRDashboardApp:
     def __init__(self, root):
         self.root = root
         self.root.title("SDR++ Label-Based Master Control Deck")
-        self.root.geometry("600x640")
+        self.root.geometry("600x660")
         self.root.resizable(False, False)
 
         # Audio state memory cache vector tracking
@@ -69,19 +69,29 @@ class LabeledSDRDashboardApp:
                                        pady=8, bg="black", fg="white")
         self.mon_frame.pack(fill="x", padx=15, pady=5)
 
-        # FIXED: Set to bright neon-cyan with bold weight for crisp contrast against a black background
         self.lbl_freq = tk.Label(self.mon_frame, text="000.000000 MHz", font=("Courier", 22, "bold"), fg="#00f0ff",
                                  bg="black")
         self.lbl_freq.pack(anchor="w")
 
-        # FIXED: Set to light electric-blue text for highly visible auxiliary status tracking
         self.lbl_mode_filter = tk.Label(self.mon_frame, text="Mode: UNKNOWN  |  Filter Width: ---- Hz",
                                         font=("Arial", 12, "bold"), fg="#3498db", bg="black")
         self.lbl_mode_filter.pack(anchor="w", pady=2)
 
-        # NEW: High-contrast bright neon-green font indicator to track real-time DBFS RSSI signal scales
-        self.lbl_signal = tk.Label(self.mon_frame, text="Signal Strength: -120.0 dBFS (NO SIGNAL)", font=("Arial", 12, "bold"), fg="#2ecc71", bg="black")
+        # FIXED: Pre-seeded the label font to Courier to guarantee clean matrix alignment on app bootup
+        # FIXED: Synchronized the startup layout scale header to prevent size jumping on connect
+        # Row 2: Live Monitor Displays Board
+        self.lbl_signal = tk.Label(
+            self.mon_frame,
+            # FIXED: Expanded brackets layout placeholder to 22 segments to match your new full-scale bar
+            text="Scale: S1 S3 S5 S7 S9 +20 +40\nMeter: [░░░░░░░░░░░░░░░░░░░░░░] -120.0 dBFS (S0 SILENT)",
+            font=("Courier", 11, "bold"),
+            fg="#2ecc71",
+            bg="black",
+            justify="left",
+            anchor="w"
+        )
         self.lbl_signal.pack(anchor="w", pady=2)
+
 
         # Row 3: UNIFIED System Management Tools (Combined Filters, Dialog Launchers & Volume)
         self.trigger_frame = tk.LabelFrame(root, text=" System Management Tools ", font=("Arial", 10, "bold"), padx=10,
@@ -199,9 +209,11 @@ class LabeledSDRDashboardApp:
                                         command=self.action_display_dict, font=("Arial", 10))
         self.btn_print_dict.pack(side="right", fill="x", expand=True, padx=3)
 
+        # FIXED: Injected explicit vertical padding parameters (pady) to push
+        # the status layout indicator and button grid rows safely away from the bottom margin edge
         self.lbl_scan_indicator = tk.Label(root, text="Scanner State: IDLE", font=("Arial", 10, "italic"), fg="#95a5a6",
                                            padx=20)
-        self.lbl_scan_indicator.pack(anchor="w", pady=2)
+        self.lbl_scan_indicator.pack(anchor="w", pady=(5, 20))
 
     # =========================================================================
     #  Part 2: UI DIALOG MAKERS, BUTTON ACTIONS, AND EVENT HOOK CALLBACKS
@@ -467,33 +479,52 @@ class LabeledSDRDashboardApp:
         self.lbl_mode_filter.config(text=f"Mode: {ch_info['mode']}  |  Filter Width: {ch_info['filter_hz']} Hz",
                                     fg="#2ecc71")
 
-    # --- UPDATED: LIVE DYNAMIC S-METER PROGRESS INDICATOR WITH GRAPHICAL BARS ---
+    # --- FIXED: LIVE MONOSPACED NON-BOUNCING S-METER WITH LINE MATRIX ALIGNMENT ---
+    # --- FIXED: 22-CELL FULL-SCALE SYNCHRONIZED S-METER ---
     def cb_signal_handler(self, dbfs_value):
         """
-        Fires automatically every 200ms. Converts system decibel metrics
-        into a fluid, moving high-contrast graphic progress bar tracker row layout.
+        Fires automatically every 200ms. Translates raw decibel power metrics
+        into an expanded 22-cell progress bar to map directly under +20 and +40.
         """
-        # Map a scale from -110 dBFS (completely silent) up to -20 dBFS (maximum overload strength)
-        clamped_val = max(-110.0, min(-20.0, float(dbfs_value)))
+        # Map input thresholds cleanly across a full 22-character window footprint
+        # Range: -115.0 dBFS (S0 Noise Floor) up to -15.0 dBFS (+40dB Overload)
+        clamped_val = max(-115.0, min(-15.0, float(dbfs_value)))
 
-        # Calculate an integer loop range representing 14 incremental progress tiers
-        total_ticks = 14
-        active_ticks = int(((clamped_val - (-110.0)) / (-20.0 - (-110.0))) * total_ticks)
+        # FIXED: Boosted total ticks to 22 to match the character length of the scale header string
+        total_ticks = 22
+
+        # Recalibrated tracking conversion math to split the dBFS scale evenly across 22 cells
+        active_ticks = int(((clamped_val - (-115.0)) / (-15.0 - (-115.0))) * total_ticks)
         active_ticks = max(0, min(total_ticks, active_ticks))
 
-        # Build a high-contrast text array bar graphic block structure
+        # Compile the moving high-contrast graphic progress tracking bars
         bar_graphic = "█" * active_ticks + "░" * (total_ticks - active_ticks)
 
-        # Assign contextual description text alerts depending on the decibel metrics
-        if dbfs_value > -55.0:
-            status_tag = "STRONG SIG"
-        elif dbfs_value > -85.0:
-            status_tag = "MODERATE"
-        else:
-            status_tag = "TRACE/LOW"
+        # Clean, explicit character layout mapping grid row
+        # S1=Col0, S3=Col3, S5=Col6, S7=Col9, S9=Col12, +20=Col15, +40=Col19
+        scale_header = "S1 S3 S5 S7 S9 +20 +40"
 
-        # Update your neon-green dashboard label layout text widget live on screen
-        self.lbl_signal.config(text=f"S-Meter: [{bar_graphic}] {dbfs_value:.1f} dBFS ({status_tag})")
+        # Generate dynamic signal condition text tags based on real signal boundaries
+        if dbfs_value >= -57.0:
+            status_tag = f"S9 +{int(dbfs_value - (-57.0))}dB" if dbfs_value > -57.0 else "S9 STRONG"
+        elif dbfs_value >= -69.0:
+            status_tag = "S7-S8 MOD"
+        elif dbfs_value >= -87.0:
+            status_tag = "S4-S6 FAIR"
+        elif dbfs_value >= -105.0:
+            status_tag = "S1-S3 WEAK"
+        else:
+            status_tag = "S0 SILENT"
+
+        # Force the summary tag to fill a strict width of 14 characters to prevent wobbling
+        fixed_status_tag = f"{status_tag:<14}"
+
+        # Push the dual-row text layout update directly into your neon-green widget space
+        self.lbl_signal.config(
+            text=f"Scale: {scale_header}\n"
+                 f"Meter: [{bar_graphic}] {dbfs_value:6.1f} dBFS ({fixed_status_tag})",
+            font=("Courier", 11, "bold")
+        )
 
     def cb_disconnect(self):
         # Reset our custom tracking lock flag
