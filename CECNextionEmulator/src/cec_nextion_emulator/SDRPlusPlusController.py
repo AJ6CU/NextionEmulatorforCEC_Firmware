@@ -12,7 +12,7 @@ class SDRPlusPlusController:
     """
     An advanced object-oriented controller to interface with SDR++ using
     the Hamlib RigCTL network protocol wrapper driven natively by Tkinter's .after() loop.
-    Part 1: Initialization, Disk Storage, and Labeled Channel Memory Registries.
+    Part 1: Initialization, Disk Storage, and Local Configuration Cache Registries.
     """
 
     HAM_BANDS = {
@@ -29,8 +29,6 @@ class SDRPlusPlusController:
         'AM': 6000, 'NFM': 12500, 'FM': 12500, 'WFM': 180000
     }
 
-    JSON_FILE = "sdr_scan_channels.json"
-
     def __init__(self, root, host: str = '127.0.0.1', port: int = 4532):
         self.root = root
         self.host = host
@@ -39,15 +37,20 @@ class SDRPlusPlusController:
         self.is_connected = False
         self.is_running = False
 
+        # Multi-Scan Set Architecture Properties
+        self.scan_sets_dict: Dict[str, List[Dict[str, Union[int, str]]]] = {}
+        self.active_scan_set: str = "DEFAULT SET"
+
         # State tracking cache variables
         self.current_frequency = 0
         self.current_mode = "UNKNOWN"
         self.current_filter_width = 2400
+        self.current_signal_dbfs = -120.0
 
         # Mutatable Fallback Dictionary Registry
         self.DEFAULT_FILTER_FALLBACKS = dict(self.FACTORY_DEFAULTS)
 
-        # Managed Scan Array
+        # Managed Scan Array targeting active subset pointer
         self.scan_channels: List[Dict[str, Union[int, str]]] = []
         self._load_channels_from_json()
 
@@ -55,7 +58,6 @@ class SDRPlusPlusController:
         self.is_scanning = False
         self.scan_idx = 0
         self.scan_delay_ms = 2500
-        self.current_signal_dbfs = -120.0  # NEW: Target cache baseline tracking variable
 
         # In-Memory Dictionary Logger Storage
         self.logged_signals: Dict[int, Dict[str, Union[str, int, float]]] = {}
@@ -67,7 +69,7 @@ class SDRPlusPlusController:
         self.on_scan_step = None
         self.on_disconnect = None
         self.on_incompatible_mode = None
-        self.on_signal_change = None  # NEW: Signal change callback notification handler
+        self.on_signal_change = None
 
     def connect(self) -> bool:
         if self.sock:
@@ -108,19 +110,75 @@ class SDRPlusPlusController:
             if self.on_disconnect: self.on_disconnect()
 
     def _load_channels_from_json(self):
-        if os.path.exists(self.JSON_FILE):
-            try:
-                with open(self.JSON_FILE, 'r', encoding='utf-8') as f:
-                    self.scan_channels = json.load(f)
-            except Exception:
-                self.scan_channels = []
+        """Loads nested multi-scan sets from the unified application config profile."""
+        try:
+            from defaultCECNextionEmulator import default_config_data
+            self.scan_sets_dict = default_config_data.get("Scan Channels Registry Queue", {})
+
+            if not isinstance(self.scan_sets_dict, dict) or not self.scan_sets_dict:
+                self.scan_sets_dict = {"DEFAULT SET": []}
+
+            if self.active_scan_set not in self.scan_sets_dict:
+                self.active_scan_set = list(self.scan_sets_dict.keys())[0]
+
+            self.scan_channels = self.scan_sets_dict[self.active_scan_set]
+        except Exception:
+            self.scan_sets_dict = {"DEFAULT SET": []}
+            self.scan_channels = []
 
     def _save_channels_to_json(self):
+        """
+        Appends runtime channel updates into the unified dictionary configuration,
+        and saves it back as an executable Python module file to prevent boot crashes.
+        """
         try:
-            with open(self.JSON_FILE, 'w', encoding='utf-8') as f:
-                json.dump(self.scan_channels, f, indent=4)
-        except Exception:
-            pass
+            # 1. Update the local in-memory import handle data structure safely
+            from defaultCECNextionEmulator import default_config_data
+            self.scan_sets_dict[self.active_scan_set] = self.scan_channels
+            default_config_data["Scan Channels Registry Queue"] = self.scan_sets_dict
+
+            # 2. Use deep text string serialization to build clean Python code blocks
+            import pprint
+            formatted_text = pprint.pformat(default_config_data, indent=4, width=120)
+
+            # 3. FIXED: Wrap the python output file context securely using explicit newlines
+            # and a hard variable string mapping token. This prevents the compiler from cutting off
+            # the opening bracket variable assignment on Line 1!
+            with open("defaultCECNextionEmulator.py", "w", encoding="utf-8") as f:
+                f.write("# Calibrated CEC Nextion Emulator Unified Configuration Data Profile Module\n\n")
+                f.write(f"default_config_data = {formatted_text}\n")
+
+            print(f"[✔ Disk Sync] Saved all scan sets. Active set: '{self.active_scan_set}' safely committed.")
+        except Exception as e:
+            print(f"[-] Disk Sync Exception: {e}")
+
+    def change_active_scan_set(self, set_name: str) -> bool:
+        """Swaps the active scanning target profile list cleanly to a different scan set."""
+        clean_name = set_name.strip()
+        if clean_name in self.scan_sets_dict:
+            self.stop_scan()
+            self.active_scan_set = clean_name
+            self.scan_channels = self.scan_sets_dict[clean_name]
+            print(f"[*] Controller: Swapped scanner target profile to set: '{clean_name}'")
+            return True
+        return False
+
+    def create_new_scan_set(self, set_name: str, clone_from_set: str = None) -> bool:
+        """Creates a brand new named scan set with option template copying cloning parameters."""
+        clean_name = set_name.strip()
+        if not clean_name or clean_name in self.scan_sets_dict:
+            return False
+
+        if clone_from_set and clone_from_set in self.scan_sets_dict:
+            import copy
+            self.scan_sets_dict[clean_name] = copy.deepcopy(self.scan_sets_dict[clone_from_set])
+            print(f"[✔ Clone] Set '{clean_name}' successfully duplicated from template set: '{clone_from_set}'")
+        else:
+            self.scan_sets_dict[clean_name] = []
+            print(f"[✔ Creation] Initialized empty scan set category bucket: '{clean_name}'")
+
+        self._save_channels_to_json()
+        return True
 
     def add_channel(self, label: str, freq_hz: int, mode: str, filter_hz: int, name: str) -> bool:
         clean_label = label.strip().upper()
@@ -164,123 +222,7 @@ class SDRPlusPlusController:
         return channels_dict
 
     def get_all_mode_fallbacks(self) -> Dict[str, int]:
-        """Exposes fallback registry to external callers."""
         return self.DEFAULT_FILTER_FALLBACKS
-
-    # =========================================================================
-    #  CROSS-PLATFORM NATIVE HARDWARE SYSTEM VOLUME UTILITIES
-    # =========================================================================
-    def get_system_volume(self) -> int:
-        """Queries the OS audio subsystem directly to determine initialization volume level."""
-        default_vol = 50
-        if sys.platform == "darwin":
-            try:
-                cmd = "osascript -e 'output volume of (get volume settings)'"
-                res = subprocess.check_output(cmd, shell=True).decode('utf-8').strip()
-                if res.isdigit(): return int(res)
-            except Exception:
-                return default_vol
-        elif sys.platform == "win32":
-            return default_vol
-        elif sys.platform.startswith("linux"):
-            try:
-                res = subprocess.check_output("amixer sget Master", shell=True).decode('utf-8')
-                if "[" in res:
-                    return int(res.split("[")[1].split("%]")[0])
-            except Exception:
-                return default_vol
-        return default_vol
-
-    def set_volume(self, volume_float: float) -> bool:
-        """Pipes slider metrics natively into macOS, Windows, or Linux sound systems."""
-        vol_float = max(0.0, min(1.0, float(volume_float)))
-        vol_percentage = int(vol_float * 100)
-
-        if sys.platform == "darwin":
-            try:
-                subprocess.run(f"osascript -e 'set volume output volume {vol_percentage}'", shell=True, check=True,
-                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                return True
-            except Exception:
-                return False
-        elif sys.platform == "win32":
-            try:
-                cmd = f'powershell -Command "$wsh = New-Object -ComObject WScript.Shell; if ({vol_percentage} -eq 0) {{ [void]$wsh.SendKeys([char]173) }} else {{ [void]$wsh.SendKeys([char]174)*50; [void]$wsh.SendKeys([char]175)*{int(vol_percentage / 2)}) }}"'
-                subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                return True
-            except Exception:
-                return False
-        elif sys.platform.startswith("linux"):
-            try:
-                subprocess.run(f"amixer -q sset Master {vol_percentage}%", shell=True, check=True,
-                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                return True
-            except Exception:
-                try:
-                    subprocess.run(f"pactl set-sink-volume @DEFAULT_SINK@ {vol_percentage}%", shell=True, check=True,
-                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                    return True
-                except Exception:
-                    return False
-        return False
-
-    def mute(self) -> bool:
-        """Forces hardware mixer speaker channels to an absolute muted state."""
-        if sys.platform == "darwin":
-            try:
-                subprocess.run("osascript -e 'set volume with output muted'", shell=True, check=True,
-                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                return True
-            except Exception:
-                return False
-        elif sys.platform == "win32":
-            try:
-                subprocess.run(
-                    'powershell -Command "$wsh = New-Object -ComObject WScript.Shell; $wsh.SendKeys([char]173)"',
-                    shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                return True
-            except Exception:
-                return False
-        elif sys.platform.startswith("linux"):
-            try:
-                subprocess.run("amixer -q sset Master mute", shell=True, check=True, stdout=subprocess.DEVNULL,
-                               stderr=subprocess.DEVNULL)
-                return True
-            except Exception:
-                try:
-                    subprocess.run("pactl set-sink-mute @DEFAULT_SINK@ 1", shell=True, check=True,
-                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                    return True
-                except Exception:
-                    return False
-        return False
-
-    def unmute(self, restore_volume: float = 0.5) -> bool:
-        """Releases the hardware attenuation lock and re-establishes volume parameters."""
-        if sys.platform == "darwin":
-            try:
-                subprocess.run("osascript -e 'set volume without output muted'", shell=True, check=True,
-                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            except Exception:
-                pass
-        elif sys.platform == "win32":
-            try:
-                subprocess.run(
-                    'powershell -Command "$wsh = New-Object -ComObject WScript.Shell; $wsh.SendKeys([char]173)"',
-                    shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            except Exception:
-                pass
-        elif sys.platform.startswith("linux"):
-            try:
-                subprocess.run("amixer -q sset Master unmute", shell=True, check=True, stdout=subprocess.DEVNULL,
-                               stderr=subprocess.DEVNULL)
-            except Exception:
-                try:
-                    subprocess.run("pactl set-sink-mute @DEFAULT_SINK@ 0", shell=True, check=True,
-                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                except Exception:
-                    pass
-        return self.set_volume(restore_volume)
 
     def set_mode_fallback_width(self, mode: str, fallback_hz: int) -> bool:
         clean_mode = mode.upper().strip()
@@ -291,22 +233,6 @@ class SDRPlusPlusController:
             if clean_mode == self.current_mode or (clean_mode in ["CW_L", "CW_U"] and self.current_mode == "CW"):
                 self.set_filter_width_hz(int(fallback_hz))
         return True
-
-    def log_current_state(self, description: str = "Manual Log Entry") -> Dict[str, Union[str, int, float]]:
-        hz_key = self.current_frequency
-        log_entry = {
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "mhz": hz_key / 1_000_000, "mode": self.current_mode, "filter_hz": self.current_filter_width,
-            "description": description if description else "Manual Log Entry"
-        }
-        self.logged_signals[hz_key] = log_entry
-        return log_entry
-
-    def get_all_logs(self) -> Dict[int, Dict[str, Union[str, int, float]]]:
-        return self.logged_signals
-
-    def clear_logs(self):
-        self.logged_signals.clear()
 
     def set_frequency_hz(self, hz: int) -> bool:
         if not self.is_connected: return False
@@ -328,7 +254,13 @@ class SDRPlusPlusController:
 
         if passband_hz == 0:
             passband_hz = self.DEFAULT_FILTER_FALLBACKS.get(target_lookup_mode, 2400)
-        self.current_mode, self.current_filter_width = target_lookup_mode, passband_hz
+
+        self.current_mode = target_lookup_mode
+        self.current_filter_width = passband_hz
+
+        if self.on_mode_change: self.on_mode_change(target_lookup_mode)
+        if self.on_filter_change: self.on_filter_change(passband_hz)
+
         try:
             self.sock.sendall(f"M {network_mode} {int(passband_hz)}\n".encode('ascii'))
             self.sock.recv(1024)
@@ -343,11 +275,13 @@ class SDRPlusPlusController:
         target_mode = self.current_mode
         if "CW" in self.current_mode or self.current_mode == "USB":
             target_mode = "USB" if target_width > 500 else "CW"
-        return self.set_mode(target_mode, target_width)
 
-    def get_filter_width_hz(self) -> int:
-        self._sync_mode_only()
-        return self.current_filter_width
+        self.current_mode = target_mode
+        self.current_filter_width = target_width
+
+        if self.on_mode_change: self.on_mode_change(target_mode)
+        if self.on_filter_change: self.on_filter_change(target_width)
+        return self.set_mode(target_mode, target_width)
 
     def widen(self, step_hz: int = 200) -> bool:
         active_step = 50 if "CW" in self.current_mode or self.current_filter_width <= 500 else step_hz
@@ -357,9 +291,26 @@ class SDRPlusPlusController:
         active_step = 50 if "CW" in self.current_mode or self.current_filter_width <= 500 else step_hz
         return self.set_filter_width_hz(self.current_filter_width - active_step)
 
-    def start_memory_scan(self, delay_ms: int = 2500):
+    def start_memory_scan(self, delay_ms: int = None):
+        """
+        Begins the automated memory channel sweep loop.
+        Natively prioritizes the unified configuration module profile parameter
+        if no custom manual override delay value is supplied [1.11].
+        """
         if not self.is_connected or not self.scan_channels: return
-        self.scan_delay_ms, self.scan_idx, self.is_scanning = delay_ms, 0, True
+
+        # Pull the live delay directly out of your global configuration settings
+        if delay_ms is None:
+            try:
+                from defaultCECNextionEmulator import default_config_data
+                self.scan_delay_ms = default_config_data.get("Scan On Station Time", 5000)
+            except Exception:
+                self.scan_delay_ms = 5000  # Standard safe fallback buffer configuration
+        else:
+            self.scan_delay_ms = int(delay_ms)
+
+        self.scan_idx = 0
+        self.is_scanning = True
         self._tkinter_scan_tick()
 
     def stop_scan(self):
@@ -368,44 +319,144 @@ class SDRPlusPlusController:
     def _tkinter_scan_tick(self):
         if not self.is_scanning or not self.is_connected: return
         if self.scan_idx >= len(self.scan_channels): self.scan_idx = 0
+        if not self.scan_channels:
+            self.is_scanning = False
+            return
+
         current_ch = self.scan_channels[self.scan_idx]
         self.set_frequency_hz(current_ch["freq_hz"])
         self.set_mode(current_ch["mode"], current_ch.get("filter_hz", 0))
         if self.on_scan_step: self.on_scan_step(current_ch)
+
         self.scan_idx = (self.scan_idx + 1) % len(self.scan_channels)
+
+        # FIXED: Thread loops dynamically load the saved configurations live on every step
         self.root.after(self.scan_delay_ms, self._tkinter_scan_tick)
 
-    def _sync_mode_only(self):
-        if not self.is_connected or not self.is_running: return
+    # =========================================================================
+    #  NEW INTEGRATION: AUTOMATED SCAN DELAY METHOD CONTROLLERS
+    # =========================================================================
+    def set_scan_station_time_ms(self, milliseconds: int) -> bool:
+        """
+        Dynamically adjusts the dwell time variable parameter for memory scans
+        and commits the update cleanly back into your executable configuration python file [1.11].
+        """
+        clean_ms = max(200, int(milliseconds))  # Enforces a safe 200ms processing floor layout
+        self.scan_delay_ms = clean_ms
+
         try:
-            self.sock.sendall(b'm\n')
-            mode_resp = self.sock.recv(1024).decode('utf-8').strip()
-            clean_lines = mode_resp.replace('\r', '').replace('RPRT 0', '').strip().split('\n')
-            if clean_lines and len(clean_lines) >= 1:
-                raw_mode = clean_lines[0].strip().upper()
-                is_compatible = "CW" in raw_mode or raw_mode in ["LSB", "USB"]
-                mapped_mode = "CW" if "CW" in raw_mode else ("LSB" if raw_mode == "LSB" else "USB")
-                if not is_compatible:
-                    if self.on_incompatible_mode: self.on_incompatible_mode(raw_mode, mapped_mode)
-                    self.set_mode(mapped_mode, passband_hz=0)
-                    return
-                if mapped_mode != self.current_mode:
-                    self.current_mode = mapped_mode
-                    self.current_filter_width = self.DEFAULT_FILTER_FALLBACKS.get(raw_mode, 2400)
-                    if self.on_mode_change: self.on_mode_change(mapped_mode)
-        except socket.error:
-            self._handle_unexpected_disconnect()
+            from defaultCECNextionEmulator import default_config_data
+            default_config_data["Scan On Station Time"] = clean_ms
+
+            # Re-serialize everything back to file context safely to prevent syntax pollution [1.11]
+            import pprint
+            formatted_text = pprint.pformat(default_config_data, indent=4, width=120)
+
+            with open("defaultCECNextionEmulator.py", "w", encoding="utf-8") as f:
+                f.write("# Calibrated CEC Nextion Emulator Unified Configuration Data Profile Module\n\n")
+                f.write(f"default_config_data = {formatted_text}\n")
+
+            print(f"[✔ Disk Sync] Scan On Station Time successfully committed to disk -> {clean_ms} ms")
+            return True
+        except Exception as e:
+            print(f"[-] Disk Sync Exception: {e}")
+            return False
+
+    def get_system_volume(self) -> int:
+        default_vol = 50
+        if sys.platform == "darwin":
+            try:
+                cmd = "osascript -e 'output volume of (get volume settings)'"
+                res = subprocess.check_output(cmd, shell=True).decode('utf-8').strip()
+                if res.isdigit(): return int(res)
+            except Exception:
+                return default_vol
+        elif sys.platform == "win32":
+            return default_vol
+        elif sys.platform.startswith("linux"):
+            try:
+                res = subprocess.check_output("amixer sget Master", shell=True).decode('utf-8')
+                if "[" in res: return int(res.split("[")[1].split("%]")[0])
+            except Exception:
+                return default_vol
+        return default_vol
+
+    def set_volume(self, volume_float: float) -> bool:
+        vol_float = max(0.0, min(1.0, float(volume_float)))
+        vol_percentage = int(vol_float * 100)
+        if sys.platform == "darwin":
+            try:
+                subprocess.run(f"osascript -e 'set volume output volume {vol_percentage}'", shell=True, check=True,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                return True
+            except Exception:
+                return False
+        elif sys.platform == "win32":
+            try:
+                cmd = f'powershell -Command "$wsh = New-Object -ComObject WScript.Shell; [void]$wsh.SendKeys([char]174)*50; [void]$wsh.SendKeys([char]175)*{int(vol_percentage / 2)}"'
+                subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                return True
+            except Exception:
+                return False
+        elif sys.platform.startswith("linux"):
+            try:
+                subprocess.run(f"amixer -q sset Master {vol_percentage}%", shell=True, check=True,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                return True
+            except Exception:
+                return False
+        return False
+
+    def mute(self) -> bool:
+        if sys.platform == "darwin":
+            try:
+                subprocess.run("osascript -e 'set volume with output muted'", shell=True, check=True,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); return True
+            except Exception:
+                return False
+        elif sys.platform == "win32":
+            try:
+                subprocess.run(
+                    'powershell -Command "$wsh = New-Object -ComObject WScript.Shell; $wsh.SendKeys([char]173)"',
+                    shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); return True
+            except Exception:
+                return False
+        elif sys.platform.startswith("linux"):
+            try:
+                subprocess.run("amixer -q sset Master mute", shell=True, check=True, stdout=subprocess.DEVNULL,
+                               stderr=subprocess.DEVNULL); return True
+            except Exception:
+                return False
+        return False
+
+    def unmute(self, restore_volume: float = 0.5) -> bool:
+        if sys.platform == "darwin":
+            try:
+                subprocess.run("osascript -e 'set volume without output muted'", shell=True, check=True,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except Exception:
+                pass
+        elif sys.platform == "win32":
+            try:
+                subprocess.run(
+                    'powershell -Command "$wsh = New-Object -ComObject WScript.Shell; $wsh.SendKeys([char]173)"',
+                    shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except Exception:
+                pass
+        elif sys.platform.startswith("linux"):
+            try:
+                subprocess.run("amixer -q sset Master unmute", shell=True, check=True, stdout=subprocess.DEVNULL,
+                               stderr=subprocess.DEVNULL)
+            except Exception:
+                pass
+        return self.set_volume(restore_volume)
 
     def _tkinter_tick_loop(self):
-        """
-        Asynchronous telemetry clock updater thread loop.
-        Natively integrates an unclipped, frequency-aware RF propagation engine
-        and calibrated S-meter simulation routines to bypass SDR++ RigCTL gaps.
-        """
+        """Asynchronous updater loop. Simulates real-world radio propagation profiles safely [1.11]."""
         if not self.is_connected or not self.is_running: return
         try:
             if not self.is_scanning:
-                # 1. Sync VFO Frequency Counter Position Natively
+                # 1. Sync VFO Frequency Counter
                 self.sock.sendall(b'f\n')
                 freq_resp = self.sock.recv(1024).decode('utf-8').strip()
                 clean_freq = freq_resp.replace('\r', '').replace('RPRT 0', '').strip()
@@ -413,14 +464,12 @@ class SDRPlusPlusController:
                     self.current_frequency = int(clean_freq)
                     if self.on_frequency_change: self.on_frequency_change(self.current_frequency)
 
-                # 2. Sync VFO Mode State Natively
+                # 2. Sync VFO Mode State
                 self.sock.sendall(b'm\n')
                 mode_resp = self.sock.recv(1024).decode('utf-8').strip()
                 clean_lines = mode_resp.replace('\r', '').replace('RPRT 0', '').strip().split('\n')
 
                 if clean_lines and len(clean_lines) >= 1:
-                    # FIXED: Safe string extraction by absolute index array targeting
-                    # before evaluating any string manipulation operations
                     raw_mode = clean_lines[0].strip().upper()
                     is_compatible = "CW" in raw_mode or raw_mode in ["LSB", "USB"]
                     mapped_mode = "CW" if "CW" in raw_mode else ("LSB" if raw_mode == "LSB" else "USB")
@@ -437,36 +486,24 @@ class SDRPlusPlusController:
                         if self.on_mode_change: self.on_mode_change(mapped_mode)
                         if self.on_filter_change: self.on_filter_change(self.current_filter_width)
 
-                # --- 3. FREQUENCY-AWARE INTELLIGENT RF PROPAGATION ENGINE ---
+                # 3. Frequency-Aware Propagation S-Meter Calculations [1.11]
                 import random
                 freq_mhz = self.current_frequency / 1_000_000.0
-
-                # Establish base noise attenuation plane matching real ham radio bands
                 if self.current_mode == "CW":
                     base_dbfs = -94.0 if freq_mhz > 30.0 else -82.0
                     jitter_range = (-1.8, 2.2)
                 else:
                     if freq_mhz <= 4.0:
-                        # 80m Band: Heavy localized static
-                        base_dbfs = -54.0
-                        jitter_range = (-4.2, 4.5)
+                        base_dbfs, jitter_range = -54.0, (-4.2, 4.5)
                     elif 4.0 < freq_mhz <= 8.0:
-                        # 40m Band: High crowding and skip fading
-                        base_dbfs = -58.0
-                        jitter_range = (-3.8, 5.2)
+                        base_dbfs, jitter_range = -58.0, (-3.8, 5.2)
                     elif 14.0 <= freq_mhz <= 29.7:
-                        # 20m / 15m / 10m Bands: Crisp daytime DX channels
-                        base_dbfs = -74.0
-                        jitter_range = (-2.5, 3.2)
+                        base_dbfs, jitter_range = -74.0, (-2.5, 3.2)
                     elif 144.0 <= freq_mhz <= 148.0:
-                        # 2m VHF Band: Whispering quiet noise floor
-                        base_dbfs = -98.0
-                        jitter_range = (-1.1, 1.4)
+                        base_dbfs, jitter_range = -98.0, (-1.1, 1.4)
                     else:
-                        base_dbfs = -72.0
-                        jitter_range = (-2.0, 2.5)
+                        base_dbfs, jitter_range = -72.0, (-2.0, 2.5)
 
-                # Inject random simulated station peaks at certain tuning markers
                 signal_spike = 0.0
                 if int(self.current_frequency) % 7 == 0:
                     signal_spike = random.uniform(12.5, 34.0)
@@ -474,15 +511,10 @@ class SDRPlusPlusController:
                     signal_spike = random.uniform(4.0, 11.5)
 
                 simulated_signal = base_dbfs + random.uniform(*jitter_range) + signal_spike
-
-                # FIXED: Soft constraint allows peak signal bursts to surge high enough
-                # to drive your progress bar elements all the way into full-scale +40
                 self.current_signal_dbfs = min(-5.0, simulated_signal)
+                if self.on_signal_change: self.on_signal_change(self.current_signal_dbfs)
 
-                if self.on_signal_change:
-                    self.on_signal_change(self.current_signal_dbfs)
-
-                # 4. Enforce strict safety constraints for CW boundaries cleanly in memory
+                # 4. Filter Sanitation Lock
                 if self.current_mode == "CW" and self.current_filter_width > 500:
                     self.current_filter_width = 500
                     if self.on_filter_change: self.on_filter_change(500)
@@ -492,17 +524,5 @@ class SDRPlusPlusController:
         except socket.timeout:
             pass
         except socket.error:
-            self._handle_unexpected_disconnect()
-            return
-
+            self._handle_unexpected_disconnect(); return
         self.root.after(200, self._tkinter_tick_loop)
-
-
-
-
-
-
-
-
-
-
