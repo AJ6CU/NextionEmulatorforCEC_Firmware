@@ -54,8 +54,8 @@ class LabeledSDRDashboardApp:
         self.sdr.on_disconnect = self.cb_disconnect
 
         # Populate dynamic startup channels grid maps cache arrays
-        self.sdr.add_channel("WX1", 162550000, "FM", 15000, "NOAA Weather 1")
-        self.sdr.add_channel("HAM2", 145000000, "FM", 12500, "2m Hailing")
+        self.sdr.add_channel("WX1", 14032000, "CW", 15000, "NOAA Weather 1")
+        self.sdr.add_channel("HAM2", 3532000, "CW", 12500, "2m Hailing")
         self.sdr.add_channel("FT8", 7074000, "USB", 3000, "40m Ham Digital")
 
         # =========================================================================
@@ -306,7 +306,7 @@ class LabeledSDRDashboardApp:
         self.ent_scan_time.grid(row=0, column=1, sticky="w", padx=4, pady=8)
 
         # UNIFIED PATTERN: Read directly out of gv.config with an active fallback default
-        starting_delay = gv.config.get("Scan On Station Time", 5000)
+        starting_delay = gv.config.get_scan_station_time_ms()
         self.ent_scan_time.insert(0, str(starting_delay))
 
         self.btn_update_scan_time = tk.Button(self.timer_frame, text="⏱ Save Scan Station Delay",
@@ -569,6 +569,14 @@ class LabeledSDRDashboardApp:
         messagebox.showwarning("Network Disconnect", "Connection dropped.")
 
     def open_settings_dialog(self):
+        def save_and_force_apply():
+            for mode, widget in entry_widgets.items():
+                try:
+                    self.sdr.set_mode_fallback_width(mode, int(widget.get().strip()))
+                except ValueError:
+                    return
+            messagebox.showinfo("Success", "All baselines updated successfully.")
+            settings_win.destroy()
         """Spawns the global configuration baseline manager popup window panel."""
         settings_win = tk.Toplevel(self.root)
         settings_win.title("Global Bandwidth Presets Manager")
@@ -588,17 +596,11 @@ class LabeledSDRDashboardApp:
             ent.insert(0, str(active_fallbacks.get(mode_name, 2400)))
             entry_widgets[mode_name] = ent
 
-        def save_and_force_apply():
-            for mode, widget in entry_widgets.items():
-                try:
-                    self.sdr.set_mode_fallback_width(mode, int(widget.get().strip()))
-                except ValueError:
-                    return
-            messagebox.showinfo("Success", "All baselines updated successfully.")
-            settings_win.destroy()
 
         tk.Button(settings_win, text="Apply & Force-Overwrite All SDR++ Filters", command=save_and_force_apply,
                   bg="#2ecc71", font=("Arial", 10, "bold")).pack(fill="x", padx=20, pady=12)
+
+
 
     def action_update_fallback(self):
         """Public UI event callback method to update a specific mode's baseline width."""
@@ -714,6 +716,7 @@ class LabeledSDRDashboardApp:
         btn_frame.columnconfigure(1, weight=1)
         btn_frame.columnconfigure(2, weight=1)
         btn_frame.columnconfigure(3, weight=1)
+
 
 
 # =========================================================================

@@ -20,11 +20,9 @@ class ConfigurationManager:
         self.observers = {}
         # Targets: /home/username/.CECNextionEmulator.ini safely across Linux, Windows, and Mac
         self.configuration_file = os.path.expanduser(os.path.join("~", ".CECNextionEmulator.ini"))
-        print(self.configuration_file)
         self.config_data = {}
         self.lock = threading.Lock()  # Thread-safe wrapper preventing race conditions
         self.loadConfig()
-
 
     def loadConfig(self):
         """Loads configuration from disk, falling back to Python dictionary defaults if missing/corrupt."""
@@ -33,46 +31,67 @@ class ConfigurationManager:
                 with open(self.configuration_file, 'r', encoding='utf-8') as f:
                     self.config_data = json.load(f)
             except (json.JSONDecodeError, IOError) as e:
-                print(f"[-] Config parse error: {e}. Falling back to default dictionary parameters.")
+                print(f"[-] Config parse error: {e}. Falling back to baseline defaults.")
                 self.config_data = default_config_data.copy()
         else:
-            # First-time app launch: seed the file with your baseline default dictionary values
             print(f"[+] Creating fresh configuration profile at: {self.configuration_file}")
             self.config_data = default_config_data.copy()
+
+            # Guarantee native fallback keys exist immediately on fresh profile creation
+            if "Radio IP" not in self.config_data: self.config_data["Radio IP"] = "127.0.0.1"
+            if "Radio Port" not in self.config_data: self.config_data["Radio Port"] = 4532
+
             self.saveConfig()
 
-
     def saveConfig(self):
-        """Thread-safely serializes and flushes the dictionary data pool to disk via JSON formatting."""
+        """Thread-safely serializes and flushes data pool to disk via JSON formatting."""
         with self.lock:
             try:
-                # 'with open' context block guarantees file handle closes cleanly even if a crash happens
                 with open(self.configuration_file, 'w', encoding='utf-8') as config_file:
                     json.dump(self.config_data, config_file, indent=4, sort_keys=True)
             except IOError as e:
                 print(f"[-] Critical Error writing configuration profile to disk: {e}")
 
+    def register_observer(self, configParameter, observerMethod):
+        if self.observers.get(configParameter) is not None:
 
-    def get(self, key, fallback=None):
-        """
-        Safely fetches an item from the configuration memory array.
-        Returns the specified fallback if the requested key does not exist.
-        """
-        return self.config_data.get(key, fallback)
+            self.observers[configParameter].extend([observerMethod])
+        else:
+            self.observers[configParameter] = [observerMethod]
 
 
-    def set(self, key, value):
-        """
-        Updates an app profile configuration parameter and immediately
-        commits the update to disk cleanly.
-        """
-        self.config_data[key] = value
-        self.saveConfig()  # Automatically triggers disk synchronization on value change
+    def unregister_observer(self, configParameter, observerMethod):
+        if self.observers.get(configParameter) is not None:
+            if observerMethod in self.observers[configParameter]:
+                self.observers[configParameter].remove(observerMethod)
 
-        def distributeConfigData(self):
-            gv.NUMBER_DELIMITER = self.get_NUMBER_DELIMITER()
-            # print("delimiter number is ", gv.NUMBER_DELIMITER)
-            self.register_observer("NUMBER DELIMITER", gv.updateNUMBER_DELIMITER)
+
+    def _notify_observers(self, configParameter,value):
+        if configParameter in self.observers:
+            for observerMethod in self.observers[configParameter]:
+                observerMethod(value)
+    #
+    #
+    # def get(self, key, fallback=None):
+    #     """
+    #     Safely fetches an item from the configuration memory array.
+    #     Returns the specified fallback if the requested key does not exist.
+    #     """
+    #     return self.config_data.get(key, fallback)
+    #
+    #
+    # def set(self, key, value):
+    #     """
+    #     Updates an app profile configuration parameter and immediately
+    #     commits the update to disk cleanly.
+    #     """
+    #     self.config_data[key] = value
+    #     self.saveConfig()  # Automatically triggers disk synchronization on value change
+
+    def distributeConfigData(self):
+        gv.NUMBER_DELIMITER = self.get_NUMBER_DELIMITER()
+        # print("delimiter number is ", gv.NUMBER_DELIMITER)
+        self.register_observer("NUMBER DELIMITER", gv.updateNUMBER_DELIMITER)
 
 
     def writeDefaults(self):
@@ -353,6 +372,87 @@ class ConfigurationManager:
         self.config_data["Logbook Name"] = value
         self.saveConfig()
 
+    def get_sdr_server_ip(self) -> str:
+        """Fetches the target transceiver host network string address."""
+        return str(self.config_data.get("Radio IP", "127.0.0.1"))
+
+    def set_sdr_server_ip(self, ip_str: str):
+        """Sets target host network address and notifies observers."""
+        self.config_data["Radio IP"] = str(ip_str).strip()
+        self.saveConfig()
+        self._notify_observers("Radio IP", ip_str)
+
+    def get_sdr_tcp_port(self) -> int:
+        """Fetches target system communication network socket connector port."""
+        return int(self.config_data.get("Radio Port", 4532))
+
+    def set_sdr_tcp_port(self, port_val: int):
+        """Sets target transceiver communications loop connector port and notifies observers."""
+        self.config_data["Radio Port"] = int(port_val)
+        self.saveConfig()
+        self._notify_observers("Radio Port", port_val)
+
+    def get_scan_station_time_ms(self) -> int:
+        """Fetches memory tracking channel stepping loop duration delay window."""
+        return int(self.config_data.get("Scan On Station Time", 5000))
+
+    def set_scan_station_time_ms(self, milliseconds: int):
+        """Sets channel cycle loop timing threshold limits and notifies observers."""
+        self.config_data["Scan On Station Time"] = int(milliseconds)
+        self.saveConfig()
+        self._notify_observers("Scan On Station Time", milliseconds)
+
+    def get_last_active_frequency(self) -> int:
+        """Fetches the previous successful runtime operational base tracking frequency."""
+        return int(self.config_data.get("Last Active Frequency", 100100000))
+
+    def set_last_active_frequency(self, freq_hz: int):
+        """Saves current dial frequency parameter coordinates across sessions."""
+        self.config_data["Last Active Frequency"] = int(freq_hz)
+        self.saveConfig()
+        self._notify_observers("Last Active Frequency", freq_hz)
+
+    def get_scan_channels_registry(self) -> dict:
+        """Extracts the entire multi-bank scanner registry stack."""
+        data = self.config_data.get("Scan Channels Registry Queue", {})
+        return data if isinstance(data, dict) else {"DEFAULT SET": []}
+
+    def set_scan_channels_registry(self, registry_dict: dict):
+        """Updates and serializes all scanner channel banks to persistent storage."""
+        self.config_data["Scan Channels Registry Queue"] = dict(registry_dict)
+        self.saveConfig()
+        self._notify_observers("Scan Channels Registry Queue", registry_dict)
+
+    def get_sdr_filter_width_hz(self) -> int:
+        """Pulls stored bandwidth configuration specifications."""
+        return int(self.config_data.get("SDR Filter Width HZ", 120000))
+
+    def set_sdr_filter_width_hz(self, width_hz: int):
+        """Commits software intermediate-frequency bandwidth limits to memory."""
+        self.config_data["SDR Filter Width HZ"] = int(width_hz)
+        self.saveConfig()
+        self._notify_observers("SDR Filter Width HZ", width_hz)
+
+    def get_sdr_current_mode(self) -> str:
+        """Fetches current modulation footprint identifier selection tag."""
+        return str(self.config_data.get("SDR Current Mode", "WFM"))
+
+    def set_sdr_current_mode(self, mode_str: str):
+        """Updates internal modulation type selection mapping criteria profiles."""
+        self.config_data["SDR Current Mode"] = str(mode_str).strip()
+        self.saveConfig()
+        self._notify_observers("SDR Current Mode", mode_str)
+
+    def get_audio_gain_level(self) -> int:
+        """Pulls audio mixer output coefficient level bounds attributes."""
+        return int(self.config_data.get("Audio Gain Volume Level", 50))
+
+    def set_audio_gain_level(self, gain_val: int):
+        """Saves operational software volume level settings constraints."""
+        self.config_data["Audio Gain Volume Level"] = int(gain_val)
+        self.saveConfig()
+        self._notify_observers("Audio Gain Volume Level", gain_val)
+
     #
     #   following is a template on how add new parameters to configuration file
     #
@@ -367,30 +467,3 @@ class ConfigurationManager:
     # def set_Template(self, value):
     #     self.config_data["Template"] = value
     #     self.saveConfig()
-
-
-
-    def saveConfig(self):
-        config_file = open(self.configuration_file, 'w')
-        json.dump(self.config_data, config_file, indent=4, sort_keys=True)
-        config_file.close()
-
-
-    def register_observer(self, configParameter, observerMethod):
-        if self.observers.get(configParameter) is not None:
-
-            self.observers[configParameter].extend([observerMethod])
-        else:
-            self.observers[configParameter] = [observerMethod]
-
-
-    def unregister_observer(self, configParameter, observerMethod):
-        if self.observers.get(configParameter) is not None:
-            if observerMethod in self.observers[configParameter]:
-                self.observers[configParameter].remove(observerMethod)
-
-
-    def _notify_observers(self, configParameter,value):
-        if configParameter in self.observers:
-            for observerMethod in self.observers[configParameter]:
-                observerMethod(value)
