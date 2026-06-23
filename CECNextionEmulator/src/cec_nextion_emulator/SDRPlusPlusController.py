@@ -307,6 +307,7 @@ class SDRPlusPlusController:
         active_step = 50 if "CW" in self.current_mode or self.current_filter_width <= 500 else step_hz
         return self.set_filter_width_hz(self.current_filter_width - active_step)
 
+
     def start_memory_scan(self, delay_ms: int = None):
         """Begins scan loop, utilizing config file for delay."""
         if not self.is_connected or not self.scan_channels: return
