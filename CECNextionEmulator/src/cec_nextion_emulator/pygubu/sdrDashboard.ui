@@ -1,199 +1,579 @@
 <?xml version='1.0' encoding='utf-8'?>
 <interface version="1.5" author="PygubuDesigner 0.41.4">
   <project>
-    <settings />
+    <settings>
+      <setting id="name">sdrDashboard</setting>
+      <setting id="description">A small window that pops up when a sdr is connected</setting>
+      <setting id="template">widget</setting>
+      <setting id="main_widget">primaryFrame</setting>
+      <setting id="module_namespace" />
+      <setting id="module_name">sdrDashboard</setting>
+      <setting id="main_classname">sdrDashboard</setting>
+      <setting id="output_dir">..</setting>
+      <setting id="builder_namespace">custom_widgets</setting>
+      <setting id="output_dir2">..</setting>
+      <setting id="generate_code_onsave">False</setting>
+      <setting id="use_i18n">False</setting>
+      <setting id="all_ids_attributes">False</setting>
+      <setting id="import_tkvariables">False</setting>
+      <setting id="use_ttk_styledefinition_file">False</setting>
+      <setting id="use_window_centering_code">False</setting>
+      <setting id="ttk_style_definition_file">../mystyles.py</setting>
+    </settings>
     <customwidgets />
     <resources />
   </project>
-  <object class="ttk.Frame" id="main_frame">
-    <property name="height">650</property>
-    <property name="width">850</property>
-    <layout manager="pack">
-      <property name="expand">true</property>
-      <property name="fill">both</property>
-    </layout>
+  <object class="tk.Toplevel" id="toplevel1">
+    <property name="height">200</property>
+    <property name="width">200</property>
     <child>
-      <object class="ttk.Notebook" id="notebook">
+      <object class="ttk.Frame" id="primaryFrame" named="True">
+        <property name="height">650</property>
+        <property name="width">850</property>
         <layout manager="pack">
           <property name="expand">true</property>
           <property name="fill">both</property>
-          <property name="padx">10</property>
-          <property name="pady">10</property>
         </layout>
         <child>
-          <object class="ttk.Frame" id="tab1">
-            <property name="padding">15</property>
-            <layout manager="grid" />
+          <object class="ttk.Notebook" id="dashboard_Notebook" named="True">
+            <layout manager="pack">
+              <property name="expand">true</property>
+              <property name="fill">both</property>
+              <property name="padx">10</property>
+              <property name="pady">10</property>
+            </layout>
             <child>
-              <object class="ttk.Labelframe" id="lbl_frame_connection">
-                <property name="text" translatable="yes"> Hardware Interconnect Profiles </property>
-                <layout manager="grid">
-                  <property name="column">0</property>
-                  <property name="padx">10</property>
-                  <property name="pady">10</property>
-                  <property name="row">0</property>
-                </layout>
+              <object class="ttk.Notebook.Tab" id="hardware_Tab" named="True">
+                <property name="text" translatable="yes">Hardware	</property>
                 <child>
-                  <object class="ttk.Label" id="lbl_ip">
-                    <property name="text" translatable="yes">Radio IP Target Address:</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Entry" id="ent_radio_ip">
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Label" id="lbl_port">
-                    <property name="text" translatable="yes">TCP Socket Port:</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">1</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Entry" id="ent_radio_port">
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">1</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="btn_connect">
-                    <property name="text" translatable="yes">Establish SDR Connection Link</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="columnspan">2</property>
-                      <property name="pady">10</property>
-                      <property name="row">2</property>
-                    </layout>
+                  <object class="ttk.Frame" id="frame1" named="True">
+                    <property name="padding">15</property>
+                    <layout manager="pack" />
+                    <child>
+                      <object class="ttk.Labelframe" id="lbl_frame_connection">
+                        <property name="text" translatable="yes"> Hardware Interconnect Profiles </property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="padx">10</property>
+                          <property name="pady">10</property>
+                          <property name="row">0</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Label" id="lbl_ip">
+                            <property name="text" translatable="yes">Radio IP Target Address:</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Entry" id="entry_radio_ip" named="True">
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="lbl_port">
+                            <property name="text" translatable="yes">TCP Socket Port:</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">1</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Entry" id="entry_radio_port" named="True">
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">1</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="btn_connect">
+                            <property name="command" type="command" cbtype="simple">action_connect</property>
+                            <property name="text" translatable="yes">Establish SDR Connection Link</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="columnspan">2</property>
+                              <property name="pady">10</property>
+                              <property name="row">2</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Labelframe" id="lbl_frame_telemetry">
+                        <property name="text" translatable="yes"> Live Telemetry Tracker Panel </property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="padx">10</property>
+                          <property name="pady">10</property>
+                          <property name="row">1</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Label" id="lbl_live_freq">
+                            <property name="text" translatable="yes">Active VFO Frequency:</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label_val_freq" named="True">
+                            <property name="font">TkFixedFont</property>
+                            <property name="text" translatable="yes">000.0000 MHz</property>
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="lbl_live_mode">
+                            <property name="text" translatable="yes">Demodulation Mode:</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">1</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label_val_mode" named="True">
+                            <property name="text" translatable="yes">UNKNOWN</property>
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">1</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="lbl_smeter_txt">
+                            <property name="text" translatable="yes">Signal Strength (dBFS):</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">10</property>
+                              <property name="row">2</property>
+                              <property name="sticky">w</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Frame" id="smeter_container">
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">2</property>
+                              <property name="sticky">w</property>
+                            </layout>
+                            <child>
+                              <object class="ttk.Label" id="label_smeter_ticks" named="True">
+                                <property name="font">TkFixedFont</property>
+                                <property name="text" translatable="yes">S1 . S3 . S5 . S7 . S9 . +10 . +30</property>
+                                <layout manager="pack">
+                                  <property name="anchor">w</property>
+                                  <property name="side">top</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="ttk.Progressbar" id="smeter_Progressbar" named="True">
+                                <property name="length">210</property>
+                                <property name="maximum">100</property>
+                                <property name="mode">determinate</property>
+                                <layout manager="pack">
+                                  <property name="fill">x</property>
+                                  <property name="pady">4</property>
+                                  <property name="side">top</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="ttk.Label" id="label_smeter_val" named="True">
+                                <property name="font">TkFixedFont</property>
+                                <property name="text" translatable="yes">-00.0 dBFS</property>
+                                <layout manager="pack">
+                                  <property name="anchor">w</property>
+                                  <property name="pady">2</property>
+                                  <property name="side">top</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Labelframe" id="lbl_frame_volume">
+                        <property name="text" translatable="yes"> Receiver Audio Gain Control </property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="padx">10</property>
+                          <property name="pady">10</property>
+                          <property name="row">2</property>
+                          <property name="sticky">ew</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Label" id="lbl_volume_txt">
+                            <property name="text" translatable="yes">Audio Volume (0-100):</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">10</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Scale" id="volume_scale" named="True">
+                            <property name="from_">0</property>
+                            <property name="length">150</property>
+                            <property name="orient">horizontal</property>
+                            <property name="to">100</property>
+                            <bind sequence="&lt;B1-Motion&gt;" handler="action_on_volume_slider_move" add="True" />
+                            <bind sequence="&lt;ButtonRelease-1&gt;" handler="action_on_volume_slider_move" add="True" />
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="padx">5</property>
+                              <property name="pady">10</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label_volume_val" named="True">
+                            <property name="font">TkFixedFont</property>
+                            <property name="text" translatable="yes">50%</property>
+                            <layout manager="grid">
+                              <property name="column">2</property>
+                              <property name="padx">5</property>
+                              <property name="pady">10</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="button_mute_toggle" named="True">
+                            <property name="command" type="command" cbtype="simple">action_toggle_mute</property>
+                            <property name="text" translatable="yes">🔊 Mute Audio</property>
+                            <layout manager="grid">
+                              <property name="column">3</property>
+                              <property name="padx">10</property>
+                              <property name="pady">10</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
             </child>
             <child>
-              <object class="ttk.Labelframe" id="lbl_frame_telemetry">
-                <property name="text" translatable="yes"> Live Telemetry Tracker Panel </property>
-                <layout manager="grid">
-                  <property name="column">0</property>
-                  <property name="padx">10</property>
-                  <property name="pady">10</property>
-                  <property name="row">1</property>
-                </layout>
+              <object class="ttk.Notebook.Tab" id="Channel_Tab" named="True">
+                <property name="text" translatable="yes">Channel</property>
                 <child>
-                  <object class="ttk.Label" id="lbl_live_freq">
-                    <property name="text" translatable="yes">Active VFO Frequency:</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Label" id="lbl_val_freq">
-                    <property name="font">TkFixedFont</property>
-                    <property name="text" translatable="yes">000.0000 MHz</property>
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Label" id="lbl_live_mode">
-                    <property name="text" translatable="yes">Demodulation Mode:</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">1</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Label" id="lbl_val_mode">
-                    <property name="text" translatable="yes">UNKNOWN</property>
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">1</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Label" id="lbl_smeter_txt">
-                    <property name="text" translatable="yes">Signal Strength (dBFS):</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">10</property>
-                      <property name="row">2</property>
-                      <property name="sticky">w</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Frame" id="smeter_container">
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">2</property>
-                      <property name="sticky">w</property>
-                    </layout>
+                  <object class="ttk.Frame" id="frame2" named="True">
+                    <property name="padding">10</property>
+                    <layout manager="pack" />
                     <child>
-                      <object class="ttk.Label" id="lbl_smeter_ticks">
-                        <property name="font">TkFixedFont</property>
-                        <property name="text" translatable="yes">S1 . S3 . S5 . S7 . S9 . +10 . +30</property>
-                        <layout manager="pack">
-                          <property name="anchor">w</property>
-                          <property name="side">top</property>
+                      <object class="ttk.Frame" id="grid_wrapper">
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="padx">5</property>
+                          <property name="row">0</property>
+                          <property name="rowspan">8</property>
                         </layout>
+                        <child>
+                          <object class="ttk.Treeview" id="treeChannels" named="True">
+                            <property name="height">15</property>
+                            <property name="selectmode">browse</property>
+                            <property name="show">headings</property>
+                            <bind sequence="&lt;&lt;TreeviewSelect&gt;&gt;" handler="action_on_channel_row_click" add="True" />
+                            <layout manager="pack">
+                              <property name="expand">true</property>
+                              <property name="fill">both</property>
+                              <property name="side">left</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Scrollbar" id="treeScrollbar" named="True">
+                            <property name="orient">vertical</property>
+                            <layout manager="pack">
+                              <property name="fill">y</property>
+                              <property name="side">right</property>
+                            </layout>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Progressbar" id="smeter_bar">
-                        <property name="length">210</property>
-                        <property name="maximum">100</property>
-                        <property name="mode">determinate</property>
-                        <layout manager="pack">
-                          <property name="fill">x</property>
-                          <property name="pady">4</property>
-                          <property name="side">top</property>
-                        </layout>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="ttk.Label" id="lbl_smeter_val">
-                        <property name="font">TkFixedFont</property>
-                        <property name="text" translatable="yes">-00.0 dBFS</property>
-                        <layout manager="pack">
-                          <property name="anchor">w</property>
+                      <object class="ttk.Label" id="lbl_ch_name">
+                        <property name="text" translatable="yes">New Channel Label:</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="padx">5</property>
                           <property name="pady">2</property>
-                          <property name="side">top</property>
+                          <property name="row">0</property>
+                          <property name="sticky">w</property>
                         </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Entry" id="newChannel_Label" named="True">
+                        <layout manager="grid">
+                          <property name="column">2</property>
+                          <property name="padx">5</property>
+                          <property name="pady">2</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="lbl_ch_desc">
+                        <property name="text" translatable="yes">Custom Station Name:</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="padx">5</property>
+                          <property name="pady">2</property>
+                          <property name="row">1</property>
+                          <property name="sticky">w</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Entry" id="customStationName_Entry" named="True">
+                        <layout manager="grid">
+                          <property name="column">2</property>
+                          <property name="padx">5</property>
+                          <property name="pady">2</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="btn_add_channel">
+                        <property name="command" type="command" cbtype="simple">action_capture_live_vfo_to_channel</property>
+                        <property name="text" translatable="yes">💾 Capture Live VFO to Channel</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="columnspan">2</property>
+                          <property name="pady">5</property>
+                          <property name="row">2</property>
+                          <property name="sticky">ew</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Labelframe" id="lbl_frame_search">
+                        <property name="text" translatable="yes"> Dynamic Channel Lookup Search Engine </property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="columnspan">2</property>
+                          <property name="pady">5</property>
+                          <property name="row">3</property>
+                          <property name="sticky">ew</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Entry" id="channelLookup_Entry" named="True">
+                            <bind sequence="&lt;KeyRelease&gt;" handler="action_filter_search_grid" add="True" />
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">0</property>
+                              <property name="sticky">ew</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="btn_delete">
+                            <property name="command" type="command" cbtype="simple">action_del_ch</property>
+                            <property name="text" translatable="yes"> Erase Selected Channel</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">2</property>
+                              <property name="row">1</property>
+                              <property name="sticky">ew</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Labelframe" id="lbl_frame_bank_routing">
+                        <property name="text" translatable="yes"> Cross-Bank Assignment Matrix </property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="columnspan">2</property>
+                          <property name="pady">5</property>
+                          <property name="row">4</property>
+                          <property name="sticky">ew</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Button" id="btn_new_bank">
+                            <property name="command" type="command" cbtype="simple">action_create_brand_new_bank</property>
+                            <property name="text" translatable="yes">📋 Create Brand New Bank</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="columnspan">2</property>
+                              <property name="padx">4</property>
+                              <property name="pady">4</property>
+                              <property name="row">0</property>
+                              <property name="sticky">ew</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="lbl_src_bank">
+                            <property name="text" translatable="yes">Source Bank View:</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">2</property>
+                              <property name="row">1</property>
+                              <property name="sticky">w</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Combobox" id="sourceBank_Combobox" named="True">
+                            <bind sequence="&lt;&lt;ComboboxSelected&gt;&gt;" handler="action_on_set_dropdown_change" add="True" />
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="padx">5</property>
+                              <property name="pady">2</property>
+                              <property name="row">1</property>
+                              <property name="sticky">ew</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="lbl_tgt_bank">
+                            <property name="text" translatable="yes">Target Bank Copy:</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">2</property>
+                              <property name="row">2</property>
+                              <property name="sticky">w</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Combobox" id="targetBank_Combobox" named="True">
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="padx">5</property>
+                              <property name="pady">2</property>
+                              <property name="row">2</property>
+                              <property name="sticky">ew</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="btn_add_to_bank">
+                            <property name="command" type="command" cbtype="simple">action_copy_row_to_target_bank</property>
+                            <property name="text" translatable="yes">➕ Copy Row to Target Bank</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="columnspan">2</property>
+                              <property name="padx">4</property>
+                              <property name="pady">4</property>
+                              <property name="row">3</property>
+                              <property name="sticky">ew</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="btn_clone_bank">
+                            <property name="command" type="command" cbtype="simple">action_bulk_clone_source_to_target</property>
+                            <property name="text" translatable="yes">📋 Clone Source to Target Bank</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="columnspan">2</property>
+                              <property name="padx">4</property>
+                              <property name="pady">4</property>
+                              <property name="row">4</property>
+                              <property name="sticky">ew</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="btn_delete_bank">
+                            <property name="command" type="command" cbtype="simple">action_delete_source_bank_profile</property>
+                            <property name="text" translatable="yes">🗑️ Delete Current SOURCE Bank</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="columnspan">2</property>
+                              <property name="padx">4</property>
+                              <property name="pady">4</property>
+                              <property name="row">5</property>
+                              <property name="sticky">ew</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Labelframe" id="lbl_frame_scanner">
+                        <property name="text" translatable="yes"> Memory Scanning Engine </property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="columnspan">2</property>
+                          <property name="pady">10</property>
+                          <property name="row">6</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Button" id="btn_start_scan">
+                            <property name="command" type="command" cbtype="simple">action_start_scan</property>
+                            <property name="text" translatable="yes">▶ Start Scan Loop</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="btn_stop_scan">
+                            <property name="command" type="command" cbtype="simple">stop_scan</property>
+                            <property name="text" translatable="yes">⏹ Stop Scan Loop</property>
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -201,501 +581,183 @@
               </object>
             </child>
             <child>
-              <object class="ttk.Labelframe" id="lbl_frame_volume">
-                <property name="text" translatable="yes"> Receiver Audio Gain Control </property>
-                <layout manager="grid">
-                  <property name="column">0</property>
-                  <property name="padx">10</property>
-                  <property name="pady">10</property>
-                  <property name="row">2</property>
-                  <property name="sticky">ew</property>
-                </layout>
+              <object class="ttk.Notebook.Tab" id="bandmanagementTab" named="True">
+                <property name="text" translatable="yes">Band</property>
                 <child>
-                  <object class="ttk.Label" id="lbl_volume_txt">
-                    <property name="text" translatable="yes">Audio Volume (0-100):</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">10</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Scale" id="scale_volume">
-                    <property name="from_">0</property>
-                    <property name="length">150</property>
-                    <property name="orient">horizontal</property>
-                    <property name="to">100</property>
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">5</property>
-                      <property name="pady">10</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Label" id="lbl_volume_val">
-                    <property name="font">TkFixedFont</property>
-                    <property name="text" translatable="yes">50%</property>
-                    <layout manager="grid">
-                      <property name="column">2</property>
-                      <property name="padx">5</property>
-                      <property name="pady">10</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="btn_mute_toggle">
-                    <property name="text" translatable="yes">🔊 Mute Audio</property>
-                    <layout manager="grid">
-                      <property name="column">3</property>
-                      <property name="padx">10</property>
-                      <property name="pady">10</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="ttk.Frame" id="tab2">
-            <property name="padding">10</property>
-            <layout manager="grid" />
-            <child>
-              <object class="ttk.Frame" id="grid_wrapper">
-                <layout manager="grid">
-                  <property name="column">0</property>
-                  <property name="padx">5</property>
-                  <property name="row">0</property>
-                  <property name="rowspan">8</property>
-                </layout>
-                <child>
-                  <object class="ttk.Treeview" id="tree_channels">
-                    <property name="height">15</property>
-                    <property name="selectmode">browse</property>
-                    <property name="show">tree headings</property>
-                    <layout manager="pack">
-                      <property name="expand">true</property>
-                      <property name="fill">both</property>
-                      <property name="side">left</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Scrollbar" id="tree_scroll">
-                    <property name="orient">vertical</property>
-                    <layout manager="pack">
-                      <property name="fill">y</property>
-                      <property name="side">right</property>
-                    </layout>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="lbl_ch_name">
-                <property name="text" translatable="yes">New Channel Label:</property>
-                <layout manager="grid">
-                  <property name="column">1</property>
-                  <property name="padx">5</property>
-                  <property name="pady">2</property>
-                  <property name="row">0</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Entry" id="ent_label">
-                <layout manager="grid">
-                  <property name="column">2</property>
-                  <property name="padx">5</property>
-                  <property name="pady">2</property>
-                  <property name="row">0</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Label" id="lbl_ch_desc">
-                <property name="text" translatable="yes">Custom Station Name:</property>
-                <layout manager="grid">
-                  <property name="column">1</property>
-                  <property name="padx">5</property>
-                  <property name="pady">2</property>
-                  <property name="row">1</property>
-                  <property name="sticky">w</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Entry" id="ent_desc">
-                <layout manager="grid">
-                  <property name="column">2</property>
-                  <property name="padx">5</property>
-                  <property name="pady">2</property>
-                  <property name="row">1</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Button" id="btn_add_channel">
-                <property name="text" translatable="yes">💾 Capture Live VFO to Channel</property>
-                <layout manager="grid">
-                  <property name="column">1</property>
-                  <property name="columnspan">2</property>
-                  <property name="pady">5</property>
-                  <property name="row">2</property>
-                  <property name="sticky">ew</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Labelframe" id="lbl_frame_search">
-                <property name="text" translatable="yes"> Dynamic Channel Lookup Search Engine </property>
-                <layout manager="grid">
-                  <property name="column">1</property>
-                  <property name="columnspan">2</property>
-                  <property name="pady">5</property>
-                  <property name="row">3</property>
-                  <property name="sticky">ew</property>
-                </layout>
-                <child>
-                  <object class="ttk.Entry" id="ent_search">
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">0</property>
-                      <property name="sticky">ew</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="btn_delete">
-                    <property name="text" translatable="yes"> Erase Selected Channel</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">2</property>
-                      <property name="row">1</property>
-                      <property name="sticky">ew</property>
-                    </layout>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Labelframe" id="lbl_frame_bank_routing">
-                <property name="text" translatable="yes"> Cross-Bank Assignment Matrix </property>
-                <layout manager="grid">
-                  <property name="column">1</property>
-                  <property name="columnspan">2</property>
-                  <property name="pady">5</property>
-                  <property name="row">4</property>
-                  <property name="sticky">ew</property>
-                </layout>
-                <child>
-                  <object class="ttk.Button" id="btn_new_bank">
-                    <property name="text" translatable="yes">📋 Create Brand New Bank</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="columnspan">2</property>
-                      <property name="padx">4</property>
-                      <property name="pady">4</property>
-                      <property name="row">0</property>
-                      <property name="sticky">ew</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Label" id="lbl_src_bank">
-                    <property name="text" translatable="yes">Source Bank View:</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">2</property>
-                      <property name="row">1</property>
-                      <property name="sticky">w</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Combobox" id="combobox_sets">
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">5</property>
-                      <property name="pady">2</property>
-                      <property name="row">1</property>
-                      <property name="sticky">ew</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Label" id="lbl_tgt_bank">
-                    <property name="text" translatable="yes">Target Bank Copy:</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">2</property>
-                      <property name="row">2</property>
-                      <property name="sticky">w</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Combobox" id="combobox_target_sets">
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">5</property>
-                      <property name="pady">2</property>
-                      <property name="row">2</property>
-                      <property name="sticky">ew</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="btn_add_to_bank">
-                    <property name="text" translatable="yes">➕ Copy Row to Target Bank</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="columnspan">2</property>
-                      <property name="padx">4</property>
-                      <property name="pady">4</property>
-                      <property name="row">3</property>
-                      <property name="sticky">ew</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="btn_clone_bank">
-                    <property name="text" translatable="yes">📋 Clone Source to Target Bank</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="columnspan">2</property>
-                      <property name="padx">4</property>
-                      <property name="pady">4</property>
-                      <property name="row">4</property>
-                      <property name="sticky">ew</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="btn_delete_bank">
-                    <property name="text" translatable="yes">🗑️ Erase Current SOURCE Bank</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="columnspan">2</property>
-                      <property name="padx">4</property>
-                      <property name="pady">4</property>
-                      <property name="row">5</property>
-                      <property name="sticky">ew</property>
-                    </layout>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Labelframe" id="lbl_frame_scanner">
-                <property name="text" translatable="yes"> Memory Scanning Engine </property>
-                <layout manager="grid">
-                  <property name="column">1</property>
-                  <property name="columnspan">2</property>
-                  <property name="pady">10</property>
-                  <property name="row">6</property>
-                </layout>
-                <child>
-                  <object class="ttk.Button" id="btn_start_scan">
-                    <property name="text" translatable="yes">▶ Start Scan Loop</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="btn_stop_scan">
-                    <property name="text" translatable="yes">⏹ Stop Scan Loop</property>
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="ttk.Frame" id="tab3">
-            <property name="padding">15</property>
-            <layout manager="grid" />
-            <child>
-              <object class="ttk.Labelframe" id="lbl_frame_timers">
-                <property name="text" translatable="yes"> System Delays &amp; Calibration Tools </property>
-                <layout manager="grid">
-                  <property name="column">0</property>
-                  <property name="padx">10</property>
-                  <property name="pady">10</property>
-                  <property name="row">0</property>
-                </layout>
-                <child>
-                  <object class="ttk.Label" id="lbl_delay">
-                    <property name="text" translatable="yes">Scan Delay Period (ms):</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">10</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Entry" id="ent_scan_time">
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">5</property>
-                      <property name="pady">10</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Labelframe" id="lbl_frame_band_changer">
-                <property name="text" translatable="yes"> Ham Radio RF Band Changer Matrix </property>
-                <layout manager="grid">
-                  <property name="column">0</property>
-                  <property name="padx">10</property>
-                  <property name="pady">10</property>
-                  <property name="row">1</property>
-                </layout>
-                <child>
-                  <object class="ttk.Button" id="btn_band_80m">
-                    <property name="text" translatable="yes">80 Meters (3.5 MHz)</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="btn_band_40m">
-                    <property name="text" translatable="yes">40 Meters (7.0 MHz)</property>
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="btn_band_20m">
-                    <property name="text" translatable="yes">20 Meters (14.0 MHz)</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">1</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="btn_band_2m">
-                    <property name="text" translatable="yes">2 Meters (144.2 MHz)</property>
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">1</property>
-                    </layout>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Labelframe" id="lbl_frame_filter_tools">
-                <property name="text" translatable="yes"> IF Filter &amp; Bandwidth Management </property>
-                <layout manager="grid">
-                  <property name="column">0</property>
-                  <property name="padx">10</property>
-                  <property name="pady">10</property>
-                  <property name="row">2</property>
-                </layout>
-                <child>
-                  <object class="ttk.Button" id="btn_filter_widen">
-                    <property name="text" translatable="yes"> Widen Filter</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="btn_filter_narrow">
-                    <property name="text" translatable="yes"> Narrow Filter</property>
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="btn_filter_reset">
-                    <property name="text" translatable="yes"> Reset Filter</property>
-                    <layout manager="grid">
-                      <property name="column">2</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Label" id="lbl_force_bw">
-                    <property name="text" translatable="yes">Force BW (Hz):</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">1</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Entry" id="ent_force_bw">
-                    <layout manager="grid">
-                      <property name="column">1</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">1</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="ttk.Button" id="btn_force_bw">
-                    <property name="text" translatable="yes">Force Override</property>
-                    <layout manager="grid">
-                      <property name="column">2</property>
-                      <property name="padx">5</property>
-                      <property name="pady">5</property>
-                      <property name="row">1</property>
-                    </layout>
+                  <object class="ttk.Frame" id="frame3" named="True">
+                    <property name="padding">15</property>
+                    <layout manager="pack" />
+                    <child>
+                      <object class="ttk.Labelframe" id="lbl_frame_timers">
+                        <property name="text" translatable="yes"> System Delays &amp; Calibration Tools </property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="padx">10</property>
+                          <property name="pady">10</property>
+                          <property name="row">0</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Label" id="lbl_delay">
+                            <property name="text" translatable="yes">Scan Delay Period (ms):</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">10</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Entry" id="entry_scan_time" named="True">
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="padx">5</property>
+                              <property name="pady">10</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Labelframe" id="lbl_frame_band_changer">
+                        <property name="text" translatable="yes"> Ham Radio RF Band Changer Matrix </property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="padx">10</property>
+                          <property name="pady">10</property>
+                          <property name="row">1</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Button" id="btn_band_80m">
+                            <property name="command" type="command" cbtype="with_wid">action_quick_band</property>
+                            <property name="text" translatable="yes">80 Meters (3.5 MHz)</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="btn_band_40m">
+                            <property name="command" type="command" cbtype="with_wid">action_quick_band</property>
+                            <property name="text" translatable="yes">40 Meters (7.0 MHz)</property>
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="btn_band_20m">
+                            <property name="command" type="command" cbtype="with_wid">action_quick_band</property>
+                            <property name="text" translatable="yes">20 Meters (14.0 MHz)</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">1</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="btn_band_2m">
+                            <property name="command" type="command" cbtype="with_wid">action_quick_band</property>
+                            <property name="text" translatable="yes">2 Meters (144.2 MHz)</property>
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">1</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Labelframe" id="lbl_frame_filter_tools">
+                        <property name="text" translatable="yes"> IF Filter &amp; Bandwidth Management </property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="padx">10</property>
+                          <property name="pady">10</property>
+                          <property name="row">2</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Button" id="btn_filter_widen">
+                            <property name="command" type="command" cbtype="simple">action_filter_widen</property>
+                            <property name="text" translatable="yes"> Widen Filter</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="btn_filter_narrow">
+                            <property name="command" type="command" cbtype="simple">action_filter_narrow</property>
+                            <property name="text" translatable="yes"> Narrow Filter</property>
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="btn_filter_reset">
+                            <property name="command" type="command" cbtype="simple">action_filter_reset</property>
+                            <property name="text" translatable="yes"> Reset Filter</property>
+                            <layout manager="grid">
+                              <property name="column">2</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="lbl_force_bw">
+                            <property name="text" translatable="yes">Force BW (Hz):</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">1</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Entry" id="entry_force_bw" named="True">
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">1</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="btn_force_bw">
+                            <property name="command" type="command" cbtype="simple">action_master_force_bw</property>
+                            <property name="text" translatable="yes">Force Override</property>
+                            <layout manager="grid">
+                              <property name="column">2</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="row">1</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

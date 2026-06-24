@@ -66,8 +66,10 @@ class SDRPlusPlusController:
         self.logged_signals: Dict[int, Dict[str, Union[str, int, float]]] = {}
 
         # Public system event callbacks
-        self.on_frequency_change = None
-        self.on_mode_change = None
+        self.on_frequency_change_primary = None
+        self.on_frequency_change_secondary = None
+        self.on_mode_change_primary = None
+        self.on_mode_change_secondary = None
         self.on_filter_change = None
         self.on_scan_step = None
         self.on_disconnect = None
@@ -256,7 +258,8 @@ class SDRPlusPlusController:
         self.current_mode = target_lookup_mode
         self.current_filter_width = passband_hz
 
-        if self.on_mode_change: self.on_mode_change(target_lookup_mode)
+        if self.on_mode_change_primary: self.on_mode_change_primary(target_lookup_mode)
+        if self.on_mode_change_secondary: self.on_mode_change_secondary(target_lookup_mode)
         if self.on_filter_change: self.on_filter_change(passband_hz)
 
         try:
@@ -277,7 +280,8 @@ class SDRPlusPlusController:
         self.current_mode = target_mode
         self.current_filter_width = target_width
 
-        if self.on_mode_change: self.on_mode_change(target_mode)
+        if self.on_mode_change_primary: self.on_mode_change_primary(target_mode)
+        if self.on_mode_change_secondary: self.on_mode_change_secondary(target_mode)
         if self.on_filter_change: self.on_filter_change(target_width)
 
         # UNIFIED PATTERN: Save both configurations safely to disk on update
@@ -465,7 +469,10 @@ class SDRPlusPlusController:
                 clean_freq = freq_resp.replace('\r', '').replace('RPRT 0', '').strip()
                 if clean_freq.isdigit() and int(clean_freq) != self.current_frequency:
                     self.current_frequency = int(clean_freq)
-                    if self.on_frequency_change: self.on_frequency_change(self.current_frequency)
+                    if self.on_frequency_change_primary:
+                        self.on_frequency_change_primary(self.current_frequency)
+                    if self.on_frequency_change_secondary:
+                        self.on_frequency_change_secondary(self.current_frequency)
 
                 # 2. Sync VFO Mode State
                 self.sock.sendall(b'm\n')
@@ -486,7 +493,12 @@ class SDRPlusPlusController:
                     if mapped_mode != self.current_mode:
                         self.current_mode = mapped_mode
                         self.current_filter_width = self.DEFAULT_FILTER_FALLBACKS.get(mapped_mode, 2400)
-                        if self.on_mode_change: self.on_mode_change(mapped_mode)
+                        if self.on_mode_change_primary:
+                            self.on_mode_change_primary(mapped_mode)
+
+                        if self.on_mode_change_secondary:
+                            self.on_mode_change_secondary(mapped_mode)
+
                         if self.on_filter_change: self.on_filter_change(self.current_filter_width)
 
                 # 3. Frequency-Aware Propagation S-Meter Calculations [1.11]

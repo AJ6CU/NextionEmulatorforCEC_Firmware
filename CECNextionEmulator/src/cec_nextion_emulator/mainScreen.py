@@ -1299,8 +1299,8 @@ class mainScreen(baseui.mainScreenUI):
                 print("sdr connected")
                 self.theSDR.set_frequency_hz(int(self.theVFO_Object.getIntPrimaryVFO()))
                 self.theSDR.set_mode(self.primary_Mode_VAR.get().replace("CWL","CW").replace("CWU","CW"))
-                self.theSDR.on_frequency_change = self.sdr_frequency_change_callback
-                self.theSDR.on_mode_change = self.sdr_mode_change_callback
+                self.theSDR.on_frequency_change_primary = self.sdr_frequency_change_callback
+                self.theSDR.on_mode_change_primary = self.sdr_mode_change_callback
 
             else:
                 print("sdr not connected")

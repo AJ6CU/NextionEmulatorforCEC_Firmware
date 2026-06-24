@@ -18,6 +18,10 @@
         <child type="tab">
           <object class="ttk.Frame" id="tab1">
             <property name="padding">15</property>
+            <layout manager="notebook">
+              <property name="tab_id">tab1</property>
+              <property name="text">Connection Settings</property>
+            </layout>
             <child>
               <object class="ttk.Labelframe" id="lbl_frame_connection">
                 <property name="text"> Hardware Interconnect Profiles </property>
