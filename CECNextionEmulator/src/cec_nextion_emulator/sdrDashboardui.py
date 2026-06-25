@@ -8,6 +8,7 @@ UI source file: sdrDashboard.ui
 """
 import tkinter as tk
 import tkinter.ttk as ttk
+from pygubu.widgets.scrolledframe import ScrolledFrame
 
 
 def safe_i18n_translator(value):
@@ -141,33 +142,37 @@ class sdrDashboardUI(ttk.Frame):
         self.button_mute_toggle.pack(padx=10, side="left")
         self.button_mute_toggle.configure(command=self.action_toggle_mute)
         frame5.pack(anchor="center", expand=True, fill="x", pady=5, side="top")
-        self.liveTelemetry_Frame.grid(column=0, row=0)
-        self.bands_Frame = ttk.Frame(self, name="bands_frame")
+        self.liveTelemetry_Frame.pack(expand=True, fill="x", side="top")
+        scrolledframe1 = ScrolledFrame(self, scrolltype="both")
+        scrolledframe1.innerframe.configure(style="Normal.TFrame")
+        scrolledframe1.configure(usemousewheel=False)
+        self.band_all_Frame = ttk.Frame(
+            scrolledframe1.innerframe,
+            name="band_all_frame")
+        self.band_all_Frame.configure(
+            height=200, style="Normal.TFrame", width=200)
+        self.bands_Frame = ttk.Frame(self.band_all_Frame, name="bands_frame")
         self.bands_Frame.configure(
-            height=200, style="NormalOutline.TFrame", width=200)
+            height=200, style="Normal.TFrame", width=200)
         self.bandsToggle_Button = ttk.Button(
             self.bands_Frame, name="bandstoggle_button")
         self.bandsToggle_Button.configure(
             state="normal", style="Custom.Toolbutton", text='Bands')
-        self.bandsToggle_Button.pack(expand=True, fill="x", side="top")
+        self.bandsToggle_Button.pack(expand=False, side="left")
         self.bandsToggle_Button.configure(command=self.toggleBands_CB)
-        self.bands_Frame.grid(column=0, row=3, sticky="ew")
+        self.bands_Frame.pack(expand=True, fill="x")
         self.bandsAccordion_Frame = ttk.Frame(
-            self, name="bandsaccordion_frame")
+            self.band_all_Frame, name="bandsaccordion_frame")
         self.bandsAccordion_Frame.configure(padding=15, style="Normal.TFrame")
-        self.scanTimer_Labelframe = ttk.Labelframe(
-            self.bandsAccordion_Frame, name="scantimer_labelframe")
-        self.scanTimer_Labelframe.configure(
-            text=' System Delays & Calibration Tools ')
-        self.scanTimer_Labelframe.grid(column=0, padx=10, pady=10, row=0)
         self.quickHamBandSelect_Labelframe = ttk.Labelframe(
             self.bandsAccordion_Frame, name="quickhambandselect_labelframe")
         self.quickHamBandSelect_Labelframe.configure(
-            text=' Ham Radio RF Band Changer Matrix ')
+            style="Normal.TLabelframe", text=' Ham Radio Bands')
         self.ham_band_160m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
             name="ham_band_160m")
-        self.ham_band_160m.configure(text='160 Meters (1.8 MHz)')
+        self.ham_band_160m.configure(
+            style="Button3Raised.TButton", text='160M')
         self.ham_band_160m.grid(column=0, padx=5, pady=5, row=0)
         def ham_band_160m_cmd_(): self.action_quick_band("ham_band_160m")
 
@@ -175,7 +180,7 @@ class sdrDashboardUI(ttk.Frame):
         self.ham_band_80m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
             name="ham_band_80m")
-        self.ham_band_80m.configure(text='80 Meters (3.5 MHz)')
+        self.ham_band_80m.configure(style="Button3Raised.TButton", text='80M')
         self.ham_band_80m.grid(column=1, padx=5, pady=5, row=0)
         def ham_band_80m_cmd_(): self.action_quick_band("ham_band_80m")
 
@@ -183,15 +188,23 @@ class sdrDashboardUI(ttk.Frame):
         self.ham_band_40m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
             name="ham_band_40m")
-        self.ham_band_40m.configure(text='40 Meters (7.0 MHz)')
+        self.ham_band_40m.configure(style="Button3Raised.TButton", text='40M')
         self.ham_band_40m.grid(column=2, padx=5, pady=5, row=0)
         def ham_band_40m_cmd_(): self.action_quick_band("ham_band_40m")
 
         self.ham_band_40m.configure(command=ham_band_40m_cmd_)
+        self.ham_band_30m = ttk.Button(
+            self.quickHamBandSelect_Labelframe,
+            name="ham_band_30m")
+        self.ham_band_30m.configure(style="Button3Raised.TButton", text='30M')
+        self.ham_band_30m.grid(column=0, padx=5, pady=5, row=1)
+        def ham_band_30m_cmd_(): self.action_quick_band("ham_band_30m")
+
+        self.ham_band_30m.configure(command=ham_band_30m_cmd_)
         self.ham_band_20m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
             name="ham_band_20m")
-        self.ham_band_20m.configure(text='20 Meters (14.0 MHz)')
+        self.ham_band_20m.configure(style="Button3Raised.TButton", text='20M')
         self.ham_band_20m.grid(column=1, padx=5, pady=5, row=1)
         def ham_band_20m_cmd_(): self.action_quick_band("ham_band_20m")
 
@@ -199,7 +212,7 @@ class sdrDashboardUI(ttk.Frame):
         self.ham_band_17m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
             name="ham_band_17m")
-        self.ham_band_17m.configure(text='17 Meters (18.0 MHz)')
+        self.ham_band_17m.configure(style="Button3Raised.TButton", text='17M')
         self.ham_band_17m.grid(column=2, padx=5, pady=5, row=1)
         def ham_band_17m_cmd_(): self.action_quick_band("ham_band_17m")
 
@@ -207,7 +220,7 @@ class sdrDashboardUI(ttk.Frame):
         self.ham_band_15m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
             name="ham_band_15m")
-        self.ham_band_15m.configure(text='15 Meters (21.0 MHz)')
+        self.ham_band_15m.configure(style="Button3Raised.TButton", text='15M')
         self.ham_band_15m.grid(column=0, padx=5, pady=5, row=2)
         def ham_band_15m_cmd_(): self.action_quick_band("ham_band_15m")
 
@@ -215,7 +228,7 @@ class sdrDashboardUI(ttk.Frame):
         self.ham_band_12m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
             name="ham_band_12m")
-        self.ham_band_12m.configure(text='12 Meters (24.0 MHz)')
+        self.ham_band_12m.configure(style="Button3Raised.TButton", text='12M')
         self.ham_band_12m.grid(column=1, padx=5, pady=5, row=2)
         def ham_band_12m_cmd_(): self.action_quick_band("ham_band_12m")
 
@@ -223,47 +236,43 @@ class sdrDashboardUI(ttk.Frame):
         self.ham_band_10m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
             name="ham_band_10m")
-        self.ham_band_10m.configure(text='10 Meters (28.0 MHz)')
+        self.ham_band_10m.configure(style="Button3Raised.TButton", text='10m')
         self.ham_band_10m.grid(column=2, padx=5, pady=5, row=2)
         def ham_band_10m_cmd_(): self.action_quick_band("ham_band_10m")
 
         self.ham_band_10m.configure(command=ham_band_10m_cmd_)
-        self.ham_band_30m = ttk.Button(
-            self.quickHamBandSelect_Labelframe,
-            name="ham_band_30m")
-        self.ham_band_30m.configure(text='30 Meters (10.1 MHz)')
-        self.ham_band_30m.grid(column=0, padx=5, pady=5, row=1)
-        def ham_band_30m_cmd_(): self.action_quick_band("ham_band_30m")
-
-        self.ham_band_30m.configure(command=ham_band_30m_cmd_)
         self.quickHamBandSelect_Labelframe.grid(
             column=0, padx=10, pady=10, row=1)
         self.bandwidthManagement_Labelframe = ttk.Labelframe(
             self.bandsAccordion_Frame, name="bandwidthmanagement_labelframe")
         self.bandwidthManagement_Labelframe.configure(
-            text=' IF Filter & Bandwidth Management ')
+            style="Normal.TLabelframe", text=' IF Filter & Bandwidth Management ')
         self.widenFilter_Button = ttk.Button(
             self.bandwidthManagement_Labelframe,
             name="widenfilter_button")
-        self.widenFilter_Button.configure(text=' Widen Filter')
+        self.widenFilter_Button.configure(
+            style="Button3Raised.TButton", text=' Widen Filter')
         self.widenFilter_Button.grid(column=0, padx=5, pady=5, row=0)
         self.widenFilter_Button.configure(command=self.action_filter_widen)
         self.narrowFilter_Button = ttk.Button(
             self.bandwidthManagement_Labelframe,
             name="narrowfilter_button")
-        self.narrowFilter_Button.configure(text=' Narrow Filter')
+        self.narrowFilter_Button.configure(
+            style="Button3Raised.TButton", text=' Narrow Filter')
         self.narrowFilter_Button.grid(column=1, padx=5, pady=5, row=0)
         self.narrowFilter_Button.configure(command=self.action_filter_narrow)
         self.resetFilter_Button = ttk.Button(
             self.bandwidthManagement_Labelframe,
             name="resetfilter_button")
-        self.resetFilter_Button.configure(text=' Reset Filter')
+        self.resetFilter_Button.configure(
+            style="Button3Raised.TButton", text=' Reset Filter')
         self.resetFilter_Button.grid(column=2, padx=5, pady=5, row=0)
         self.resetFilter_Button.configure(command=self.action_filter_reset)
         self.forceFilterBandwidth_Label = ttk.Label(
             self.bandwidthManagement_Labelframe,
             name="forcefilterbandwidth_label")
-        self.forceFilterBandwidth_Label.configure(text='Force BW (Hz):')
+        self.forceFilterBandwidth_Label.configure(
+            style="Heading4.TLabel", text='Force BW (Hz):')
         self.forceFilterBandwidth_Label.grid(column=0, padx=5, pady=5, row=1)
         self.entry_force_bw = ttk.Entry(
             self.bandwidthManagement_Labelframe,
@@ -272,28 +281,37 @@ class sdrDashboardUI(ttk.Frame):
         self.forceFilterBandwidth_Button = ttk.Button(
             self.bandwidthManagement_Labelframe,
             name="forcefilterbandwidth_button")
-        self.forceFilterBandwidth_Button.configure(text='Force Override')
+        self.forceFilterBandwidth_Button.configure(
+            style="Button3Raised.TButton", text='Force Override')
         self.forceFilterBandwidth_Button.grid(column=2, padx=5, pady=5, row=1)
         self.forceFilterBandwidth_Button.configure(
             command=self.action_master_force_bw)
         self.bandwidthManagement_Labelframe.grid(
             column=0, padx=10, pady=10, row=2)
-        self.bandsAccordion_Frame.grid(row=4)
-        self.channels_Frame = ttk.Frame(self, name="channels_frame")
+        self.bandsAccordion_Frame.pack()
+        self.band_all_Frame.grid(column=0, row=1, sticky="ew")
+        self.channels_all = ttk.Frame(
+            scrolledframe1.innerframe,
+            name="channels_all")
+        self.channels_all.configure(
+            height=200, style="Normal.TFrame", width=200)
+        self.channels_Frame = ttk.Frame(
+            self.channels_all, name="channels_frame")
         self.channels_Frame.configure(
-            height=200, style="NormalOutline.TFrame", width=200)
+            height=200, style="Normal.TFrame", width=200)
         self.channelsToggle_Button = ttk.Button(
             self.channels_Frame, name="channelstoggle_button")
         self.channelsToggle_Button.configure(
             state="normal", style="Custom.Toolbutton", text='Channels')
-        self.channelsToggle_Button.pack(expand=True, fill="x", side="top")
+        self.channelsToggle_Button.pack(expand=False, side="left")
         self.channelsToggle_Button.configure(command=self.toggleChannels_CB)
-        self.channels_Frame.grid(column=0, row=5, sticky="ew")
+        self.channels_Frame.pack()
         self.channelsAccordion_Frame = ttk.Frame(
-            self, name="channelsaccordion_frame")
+            self.channels_all, name="channelsaccordion_frame")
         self.channelsAccordion_Frame.configure(
             padding=10, style="Normal.TFrame")
         grid_wrapper = ttk.Frame(self.channelsAccordion_Frame)
+        grid_wrapper.configure(style="Normal.TFrame")
         self.treeChannels = ttk.Treeview(grid_wrapper, name="treechannels")
         self.treeChannels.configure(
             height=15, selectmode="browse", show="headings")
@@ -307,15 +325,19 @@ class sdrDashboardUI(ttk.Frame):
         self.treeScrollbar.pack(fill="y", side="right")
         grid_wrapper.grid(column=0, padx=5, row=0, rowspan=8)
         lbl_ch_name = ttk.Label(self.channelsAccordion_Frame)
-        lbl_ch_name.configure(text='New Channel Label:')
-        lbl_ch_name.grid(column=1, padx=5, pady=2, row=0, sticky="w")
+        lbl_ch_name.configure(
+            style="Heading4.TLabel",
+            text='New Channel Label:')
+        lbl_ch_name.grid(column=1, padx=5, pady=2, row=0, sticky="e")
         self.newChannel_Label = ttk.Entry(
             self.channelsAccordion_Frame,
             name="newchannel_label")
         self.newChannel_Label.grid(column=2, padx=5, pady=2, row=0)
         lbl_ch_desc = ttk.Label(self.channelsAccordion_Frame)
-        lbl_ch_desc.configure(text='Custom Station Name:')
-        lbl_ch_desc.grid(column=1, padx=5, pady=2, row=1, sticky="w")
+        lbl_ch_desc.configure(
+            style="Heading4.TLabel",
+            text='Custom Station Name:')
+        lbl_ch_desc.grid(column=1, padx=5, pady=2, row=1, sticky="e")
         self.customStationName_Entry = ttk.Entry(
             self.channelsAccordion_Frame,
             name="customstationname_entry")
@@ -332,6 +354,7 @@ class sdrDashboardUI(ttk.Frame):
             command=self.action_capture_live_vfo_to_channel)
         lbl_frame_search = ttk.Labelframe(self.channelsAccordion_Frame)
         lbl_frame_search.configure(
+            style="Normal.TLabelframe",
             text=' Dynamic Channel Lookup Search Engine ')
         self.channelLookup_Entry = ttk.Entry(
             lbl_frame_search, name="channellookup_entry")
@@ -340,7 +363,9 @@ class sdrDashboardUI(ttk.Frame):
         self.channelLookup_Entry.bind(
             "<KeyRelease>", self.action_filter_search_grid, add="+")
         btn_delete = ttk.Button(lbl_frame_search)
-        btn_delete.configure(text=' Erase Selected Channel')
+        btn_delete.configure(
+            style="Button3Raised.TButton",
+            text=' Erase Selected Channel')
         btn_delete.grid(column=0, padx=5, pady=2, row=1, sticky="ew")
         btn_delete.configure(command=self.action_del_ch)
         lbl_frame_search.grid(
@@ -350,9 +375,13 @@ class sdrDashboardUI(ttk.Frame):
             row=3,
             sticky="ew")
         lbl_frame_bank_routing = ttk.Labelframe(self.channelsAccordion_Frame)
-        lbl_frame_bank_routing.configure(text=' Cross-Bank Assignment Matrix ')
+        lbl_frame_bank_routing.configure(
+            style="Normal.TLabelframe",
+            text=' Cross-Bank Assignment Matrix ')
         btn_new_bank = ttk.Button(lbl_frame_bank_routing)
-        btn_new_bank.configure(text='📋 Create Brand New Bank')
+        btn_new_bank.configure(
+            style="Button3Raised.TButton",
+            text='📋 Create Brand New Bank')
         btn_new_bank.grid(
             column=0,
             columnspan=2,
@@ -362,8 +391,10 @@ class sdrDashboardUI(ttk.Frame):
             sticky="ew")
         btn_new_bank.configure(command=self.action_create_brand_new_bank)
         lbl_src_bank = ttk.Label(lbl_frame_bank_routing)
-        lbl_src_bank.configure(text='Source Bank View:')
-        lbl_src_bank.grid(column=0, padx=5, pady=2, row=1, sticky="w")
+        lbl_src_bank.configure(
+            style="Heading4.TLabel",
+            text='Source Bank View:')
+        lbl_src_bank.grid(column=0, padx=5, pady=2, row=1, sticky="e")
         self.sourceBank_Combobox = ttk.Combobox(
             lbl_frame_bank_routing, name="sourcebank_combobox")
         self.sourceBank_Combobox.grid(
@@ -373,66 +404,60 @@ class sdrDashboardUI(ttk.Frame):
             self.action_on_set_dropdown_change,
             add="+")
         lbl_tgt_bank = ttk.Label(lbl_frame_bank_routing)
-        lbl_tgt_bank.configure(text='Target Bank Copy:')
-        lbl_tgt_bank.grid(column=0, padx=5, pady=2, row=2, sticky="w")
+        lbl_tgt_bank.configure(
+            style="Heading4.TLabel",
+            text='Target Bank Copy:')
+        lbl_tgt_bank.grid(column=0, padx=5, pady=2, row=2, sticky="e")
         self.targetBank_Combobox = ttk.Combobox(
             lbl_frame_bank_routing, name="targetbank_combobox")
         self.targetBank_Combobox.grid(
             column=1, padx=5, pady=2, row=2, sticky="ew")
-        btn_add_to_bank = ttk.Button(lbl_frame_bank_routing)
-        btn_add_to_bank.configure(text='➕ Copy Row to Target Bank')
-        btn_add_to_bank.grid(
-            column=0,
-            columnspan=2,
-            padx=4,
-            pady=4,
-            row=3,
-            sticky="ew")
+        self.channelControl_Frame = ttk.Frame(
+            lbl_frame_bank_routing, name="channelcontrol_frame")
+        self.channelControl_Frame.configure(
+            height=200, style="Normal.TFrame", width=200)
+        btn_add_to_bank = ttk.Button(self.channelControl_Frame)
+        btn_add_to_bank.configure(style="Button3Raised.TButton", text='Copy')
+        btn_add_to_bank.grid(column=0, padx="15 0", row=0)
         btn_add_to_bank.configure(command=self.action_copy_row_to_target_bank)
-        btn_clone_bank = ttk.Button(lbl_frame_bank_routing)
-        btn_clone_bank.configure(text='📋 Clone Source to Target Bank')
-        btn_clone_bank.grid(
-            column=0,
-            columnspan=2,
-            padx=4,
-            pady=4,
-            row=4,
-            sticky="ew")
+        btn_clone_bank = ttk.Button(self.channelControl_Frame)
+        btn_clone_bank.configure(style="Button3Raised.TButton", text='Clone')
+        btn_clone_bank.grid(column=1, padx="15 0", row=0)
         btn_clone_bank.configure(
             command=self.action_bulk_clone_source_to_target)
-        btn_delete_bank = ttk.Button(lbl_frame_bank_routing)
-        btn_delete_bank.configure(text='🗑️ Delete Current SOURCE Bank')
-        btn_delete_bank.grid(
-            column=0,
-            columnspan=2,
-            padx=4,
-            pady=4,
-            row=5,
-            sticky="ew")
+        btn_delete_bank = ttk.Button(self.channelControl_Frame)
+        btn_delete_bank.configure(style="Button3Raised.TButton", text='Delete')
+        btn_delete_bank.grid(column=2, padx="15 0", row=0)
         btn_delete_bank.configure(
             command=self.action_delete_source_bank_profile)
+        self.channelControl_Frame.grid(
+            column=0, columnspan=3, pady=10, row=3, sticky="ew")
         lbl_frame_bank_routing.grid(
             column=1, columnspan=2, pady=5, row=4, sticky="ew")
-        self.channelsAccordion_Frame.grid(row=6)
-        self.scan_Frame = ttk.Frame(self, name="scan_frame")
-        self.scan_Frame.configure(
-            height=200,
-            style="NormalOutline.TFrame",
-            width=200)
+        self.channelsAccordion_Frame.pack()
+        self.channels_all.grid(column=0, row=2, sticky="ew")
+        self.scan_all = ttk.Frame(scrolledframe1.innerframe, name="scan_all")
+        self.scan_all.configure(height=200, style="Normal.TFrame", width=200)
+        self.scan_Frame = ttk.Frame(self.scan_all, name="scan_frame")
+        self.scan_Frame.configure(height=200, style="Normal.TFrame", width=200)
         self.scanToggle_Button = ttk.Button(
             self.scan_Frame, name="scantoggle_button")
         self.scanToggle_Button.configure(
             state="normal", style="Custom.Toolbutton", text='Scan')
-        self.scanToggle_Button.pack(expand=True, fill="x", side="top")
+        self.scanToggle_Button.pack(expand=False, side="left")
         self.scanToggle_Button.configure(command=self.toggleScan_CB)
-        self.scan_Frame.grid(column=0, row=7, sticky="ew")
-        self.scanAccordion_Frame = ttk.Frame(self, name="scanaccordion_frame")
+        self.scan_Frame.pack(expand=True, fill="x", side="top")
+        self.scanAccordion_Frame = ttk.Frame(
+            self.scan_all, name="scanaccordion_frame")
         self.scanAccordion_Frame.configure(padding=10, style="Normal.TFrame")
         self.scanParameters_Labelframe = ttk.Labelframe(
             self.scanAccordion_Frame, name="scanparameters_labelframe")
-        self.scanParameters_Labelframe.configure(text='Scan Parameters')
+        self.scanParameters_Labelframe.configure(
+            style="Normal.TLabelframe", text='Scan Parameters')
         lbl_delay = ttk.Label(self.scanParameters_Labelframe)
-        lbl_delay.configure(text='Scan Delay Period (ms):')
+        lbl_delay.configure(
+            style="Heading4.TLabel",
+            text='Scan Delay Period (ms):')
         lbl_delay.grid(column=0, padx=5, pady=10, row=0)
         self.entry_scan_time = ttk.Entry(
             self.scanParameters_Labelframe,
@@ -441,7 +466,8 @@ class sdrDashboardUI(ttk.Frame):
         self.scanBankSelect_Label = ttk.Label(
             self.scanParameters_Labelframe,
             name="scanbankselect_label")
-        self.scanBankSelect_Label.configure(text='Source Bank View:')
+        self.scanBankSelect_Label.configure(
+            style="Heading4.TLabel", text='Source Bank View:')
         self.scanBankSelect_Label.grid(
             column=0, padx=5, pady=2, row=1, sticky="w")
         self.scanBankSelect_Combobox = ttk.Combobox(
@@ -456,22 +482,29 @@ class sdrDashboardUI(ttk.Frame):
             column=1, columnspan=2, pady=5, row=4, sticky="ew")
         self.scanControl_Labelframe = ttk.Labelframe(
             self.scanAccordion_Frame, name="scancontrol_labelframe")
-        self.scanControl_Labelframe.configure(text='Scan Control')
+        self.scanControl_Labelframe.configure(
+            style="Normal.TLabelframe", text='Scan Control')
         self.scanStart_Button = ttk.Button(
             self.scanControl_Labelframe,
             name="scanstart_button")
-        self.scanStart_Button.configure(text='▶ Start Scan Loop')
+        self.scanStart_Button.configure(
+            style="Button3Raised.TButton",
+            text='▶ Start Scan Loop')
         self.scanStart_Button.grid(column=0, padx=5, pady=5, row=0)
         self.scanStart_Button.configure(command=self.action_start_scan)
         self.scanStop_Button = ttk.Button(
             self.scanControl_Labelframe,
             name="scanstop_button")
-        self.scanStop_Button.configure(text='⏹ Stop Scan Loop')
+        self.scanStop_Button.configure(
+            style="Button3Raised.TButton",
+            text='⏹ Stop Scan Loop')
         self.scanStop_Button.grid(column=1, padx=5, pady=5, row=0)
         self.scanStop_Button.configure(command=self.stop_scan)
         self.scanControl_Labelframe.grid(
             column=1, columnspan=2, pady=10, row=6)
-        self.scanAccordion_Frame.grid(column=0, row=8)
+        self.scanAccordion_Frame.pack()
+        self.scan_all.grid(column=0, row=3, sticky="ew")
+        scrolledframe1.pack(expand=True, fill="both", side="top")
         self.connectionStatus_Frame = ttk.Labelframe(
             self, name="connectionstatus_frame")
         self.connectionStatus_Frame.configure(
@@ -506,11 +539,11 @@ class sdrDashboardUI(ttk.Frame):
             textvariable=self.linkStatus_VAR)
         self.linkStatus_Label.grid(column=1, row=2)
         btn_connect = ttk.Button(self.connectionStatus_Frame)
-        btn_connect.configure(style="Button3Sunken.TButton", text='Reconnect')
+        btn_connect.configure(style="Button3Raised.TButton", text='Reconnect')
         btn_connect.grid(column=2, columnspan=2, pady=5, row=2)
         btn_connect.configure(command=self.action_connect)
-        self.connectionStatus_Frame.grid(column=0, row=9, sticky="ew")
-        self.configure(height=600, style="Normal.TFrame", width=600)
+        self.connectionStatus_Frame.pack(expand=True, fill="x", side="top")
+        self.configure(height=800, style="Normal.TFrame", width=1200)
         # Layout for 'primaryFrame' skipped in custom widget template.
 
     def action_on_volume_slider_move(self, event=None):

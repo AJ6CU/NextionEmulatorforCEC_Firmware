@@ -94,6 +94,7 @@ def setup_ttk_styles(master=None):
     style.configure('GreenButton2b.TButton', font=fontList['Heading2b'], background='green', foreground='white',justify='center')
     style.configure('Button3.TButton',font=fontList['Heading3'],)
     style.configure('Button3Sunken.TButton', font=fontList['Heading3'],relief='sunken')
+    style.configure('Button3Raised.TButton', font=fontList['Heading3'], relief='raised')
  #   style.configure('DarkButton3.TButton',font=fontList['Heading3'], background='black', foreground='white', boarderwidth=5, relief='raised')
     style.configure('Button4.TButton',font=fontList['Heading4'])
     style.configure('Button3Blue.TButton',font=fontList['Heading3'], foreground='blue')
