@@ -108,7 +108,7 @@ class sdrDashboardUI(ttk.Frame):
             font="TkFixedFont",
             foreground="white",
             text='-00.0 dBFS')
-        self.label_smeter_val.pack(anchor="w", padx="75 0", pady=2, side="top")
+        self.label_smeter_val.pack(anchor="w", pady=2, side="top")
         frame8.pack(padx=10, side="left")
         frame9.pack(expand=True, fill="x", pady=5)
         frame5 = ttk.Frame(self.liveTelemetry_Frame)
@@ -242,7 +242,7 @@ class sdrDashboardUI(ttk.Frame):
 
         self.ham_band_10m.configure(command=ham_band_10m_cmd_)
         self.quickHamBandSelect_Labelframe.grid(
-            column=0, padx=10, pady=10, row=1)
+            column=0, padx=10, pady=10, row=1, sticky="ew")
         self.bandwidthManagement_Labelframe = ttk.Labelframe(
             self.bandsAccordion_Frame, name="bandwidthmanagement_labelframe")
         self.bandwidthManagement_Labelframe.configure(
@@ -287,8 +287,8 @@ class sdrDashboardUI(ttk.Frame):
         self.forceFilterBandwidth_Button.configure(
             command=self.action_master_force_bw)
         self.bandwidthManagement_Labelframe.grid(
-            column=0, padx=10, pady=10, row=2)
-        self.bandsAccordion_Frame.pack()
+            column=0, padx=10, pady=10, row=2, sticky="ew")
+        self.bandsAccordion_Frame.pack(expand=False)
         self.band_all_Frame.grid(column=0, row=1, sticky="ew")
         self.channels_all = ttk.Frame(
             scrolledframe1.innerframe,
@@ -303,9 +303,9 @@ class sdrDashboardUI(ttk.Frame):
             self.channels_Frame, name="channelstoggle_button")
         self.channelsToggle_Button.configure(
             state="normal", style="Custom.Toolbutton", text='Channels')
-        self.channelsToggle_Button.pack(expand=False, side="left")
+        self.channelsToggle_Button.pack(expand=True, fill="x", side="left")
         self.channelsToggle_Button.configure(command=self.toggleChannels_CB)
-        self.channels_Frame.pack()
+        self.channels_Frame.pack(expand=True, fill="x")
         self.channelsAccordion_Frame = ttk.Frame(
             self.channels_all, name="channelsaccordion_frame")
         self.channelsAccordion_Frame.configure(
@@ -323,35 +323,35 @@ class sdrDashboardUI(ttk.Frame):
         self.treeScrollbar = ttk.Scrollbar(grid_wrapper, name="treescrollbar")
         self.treeScrollbar.configure(orient="vertical")
         self.treeScrollbar.pack(fill="y", side="right")
-        grid_wrapper.grid(column=0, padx=5, row=0, rowspan=8)
-        lbl_ch_name = ttk.Label(self.channelsAccordion_Frame)
+        grid_wrapper.pack(expand=True, fill="x", side="top")
+        self.newChannelLive_Labelframe = ttk.Labelframe(
+            self.channelsAccordion_Frame, name="newchannellive_labelframe")
+        self.newChannelLive_Labelframe.configure(
+            height=200, style="Normal.TLabelframe", text='labelframe2', width=200)
+        lbl_ch_name = ttk.Label(self.newChannelLive_Labelframe)
         lbl_ch_name.configure(
             style="Heading4.TLabel",
             text='New Channel Label:')
-        lbl_ch_name.grid(column=1, padx=5, pady=2, row=0, sticky="e")
+        lbl_ch_name.pack()
         self.newChannel_Label = ttk.Entry(
-            self.channelsAccordion_Frame,
+            self.newChannelLive_Labelframe,
             name="newchannel_label")
-        self.newChannel_Label.grid(column=2, padx=5, pady=2, row=0)
-        lbl_ch_desc = ttk.Label(self.channelsAccordion_Frame)
+        self.newChannel_Label.pack()
+        lbl_ch_desc = ttk.Label(self.newChannelLive_Labelframe)
         lbl_ch_desc.configure(
             style="Heading4.TLabel",
             text='Custom Station Name:')
-        lbl_ch_desc.grid(column=1, padx=5, pady=2, row=1, sticky="e")
+        lbl_ch_desc.pack()
         self.customStationName_Entry = ttk.Entry(
-            self.channelsAccordion_Frame,
+            self.newChannelLive_Labelframe,
             name="customstationname_entry")
-        self.customStationName_Entry.grid(column=2, padx=5, pady=2, row=1)
-        btn_add_channel = ttk.Button(self.channelsAccordion_Frame)
+        self.customStationName_Entry.pack()
+        btn_add_channel = ttk.Button(self.newChannelLive_Labelframe)
         btn_add_channel.configure(text='💾 Capture Live VFO to Channel')
-        btn_add_channel.grid(
-            column=1,
-            columnspan=2,
-            pady=5,
-            row=2,
-            sticky="ew")
+        btn_add_channel.pack()
         btn_add_channel.configure(
             command=self.action_capture_live_vfo_to_channel)
+        self.newChannelLive_Labelframe.pack(expand=True, fill="x", side="top")
         lbl_frame_search = ttk.Labelframe(self.channelsAccordion_Frame)
         lbl_frame_search.configure(
             style="Normal.TLabelframe",
@@ -368,12 +368,7 @@ class sdrDashboardUI(ttk.Frame):
             text=' Erase Selected Channel')
         btn_delete.grid(column=0, padx=5, pady=2, row=1, sticky="ew")
         btn_delete.configure(command=self.action_del_ch)
-        lbl_frame_search.grid(
-            column=1,
-            columnspan=2,
-            pady=5,
-            row=3,
-            sticky="ew")
+        lbl_frame_search.pack(expand=True, fill="x", side="top")
         lbl_frame_bank_routing = ttk.Labelframe(self.channelsAccordion_Frame)
         lbl_frame_bank_routing.configure(
             style="Normal.TLabelframe",
@@ -432,9 +427,8 @@ class sdrDashboardUI(ttk.Frame):
             command=self.action_delete_source_bank_profile)
         self.channelControl_Frame.grid(
             column=0, columnspan=3, pady=10, row=3, sticky="ew")
-        lbl_frame_bank_routing.grid(
-            column=1, columnspan=2, pady=5, row=4, sticky="ew")
-        self.channelsAccordion_Frame.pack()
+        lbl_frame_bank_routing.pack(expand=True, fill="x", side="top")
+        self.channelsAccordion_Frame.pack(expand=True, fill="x")
         self.channels_all.grid(column=0, row=2, sticky="ew")
         self.scan_all = ttk.Frame(scrolledframe1.innerframe, name="scan_all")
         self.scan_all.configure(height=200, style="Normal.TFrame", width=200)

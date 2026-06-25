@@ -157,7 +157,6 @@
                         <property name="text" translatable="yes">-00.0 dBFS</property>
                         <layout manager="pack">
                           <property name="anchor">w</property>
-                          <property name="padx">75 0</property>
                           <property name="pady">2</property>
                           <property name="side">top</property>
                         </layout>

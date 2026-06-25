@@ -47,10 +47,10 @@ class sdrDashboard(baseui.sdrDashboardUI):
 
         # Setup column widths and text headers
         self.treeChannels.column('label', anchor='w')
-        self.treeChannels.column('label', width=110, minwidth=90, stretch=tk.YES)
-        self.treeChannels.column('frequency', width=120, minwidth=100, stretch=tk.YES)
-        self.treeChannels.column('mode', width=70, minwidth=60, stretch=tk.YES)
-        self.treeChannels.column('description', width=220, minwidth=150, stretch=tk.YES)
+        self.treeChannels.column('label', width=80, minwidth=80, stretch=tk.YES)
+        self.treeChannels.column('frequency', width=75, minwidth=75, stretch=tk.YES)
+        self.treeChannels.column('mode', width=40, minwidth=40, stretch=tk.YES)
+        self.treeChannels.column('description', width=125, minwidth=100, stretch=tk.YES)
 
         self.treeChannels.heading('label', text='Channel Label', anchor='w')
         self.treeChannels.heading('frequency', text='Frequency (MHz)', anchor='w')
@@ -127,7 +127,8 @@ class sdrDashboard(baseui.sdrDashboardUI):
             else:
                 s_unit = "+30dB"
             raw_dbfs = -120.0 + (float(dbfs_value) * 1.2)
-            self.label_smeter_ticks.config(text=f"S1 . S3 . S5 . S7 . S9 . +10 . +30  [{s_unit}]")
+            self.label_smeter_ticks.config(text=f"S1 . S3 . S5 . S7 . S9 . +10 . +30")
+            # self.label_smeter_ticks.config(text=f"S1 . S3 . S5 . S7 . S9 . +10 . +30  [{s_unit}]")
             self.label_smeter_val.config(text=f"Signal Strength Metrics: {raw_dbfs:.1f} dBFS")
 
         else:
