@@ -54,77 +54,73 @@ class sdrDashboardUI(ttk.Frame):
 
         super().__init__(master, **kw)
 
-        self.dashboard_Notebook = ttk.Notebook(self, name="dashboard_notebook")
+        self.liveTelemetry_Frame = ttk.Labelframe(
+            self, name="livetelemetry_frame")
+        self.liveTelemetry_Frame.configure(
+            style="Normal.TLabelframe",
+            text=' Live Telemetry Tracker Panel ')
         # First object created
-        on_first_object_cb(self.dashboard_Notebook)
+        on_first_object_cb(self.liveTelemetry_Frame)
 
-        self.frame1 = ttk.Frame(self.dashboard_Notebook, name="frame1")
-        self.frame1.configure(padding=15)
-        lbl_frame_connection = ttk.Labelframe(self.frame1)
-        lbl_frame_connection.configure(text=' Hardware Interconnect Profiles ')
-        lbl_ip = ttk.Label(lbl_frame_connection)
-        lbl_ip.configure(text='Radio IP Target Address:')
-        lbl_ip.grid(column=0, padx=5, pady=5, row=0)
-        self.entry_radio_ip = ttk.Entry(
-            lbl_frame_connection, name="entry_radio_ip")
-        self.entry_radio_ip.grid(column=1, padx=5, pady=5, row=0)
-        lbl_port = ttk.Label(lbl_frame_connection)
-        lbl_port.configure(text='TCP Socket Port:')
-        lbl_port.grid(column=0, padx=5, pady=5, row=1)
-        self.entry_radio_port = ttk.Entry(
-            lbl_frame_connection, name="entry_radio_port")
-        self.entry_radio_port.grid(column=1, padx=5, pady=5, row=1)
-        btn_connect = ttk.Button(lbl_frame_connection)
-        btn_connect.configure(text='Establish SDR Connection Link')
-        btn_connect.grid(column=0, columnspan=2, pady=10, row=2)
-        btn_connect.configure(command=self.action_connect)
-        lbl_frame_connection.grid(column=0, padx=10, pady=10, row=0)
-        lbl_frame_telemetry = ttk.Labelframe(self.frame1)
-        lbl_frame_telemetry.configure(text=' Live Telemetry Tracker Panel ')
-        lbl_live_freq = ttk.Label(lbl_frame_telemetry)
-        lbl_live_freq.configure(text='Active VFO Frequency:')
-        lbl_live_freq.grid(column=0, padx=5, pady=5, row=0)
-        self.label_val_freq = ttk.Label(
-            lbl_frame_telemetry, name="label_val_freq")
-        self.label_val_freq.configure(font="TkFixedFont", text='000.0000 MHz')
-        self.label_val_freq.grid(column=1, padx=5, pady=5, row=0)
-        lbl_live_mode = ttk.Label(lbl_frame_telemetry)
-        lbl_live_mode.configure(text='Demodulation Mode:')
-        lbl_live_mode.grid(column=0, padx=5, pady=5, row=1)
-        self.label_val_mode = ttk.Label(
-            lbl_frame_telemetry, name="label_val_mode")
-        self.label_val_mode.configure(text='UNKNOWN')
-        self.label_val_mode.grid(column=1, padx=5, pady=5, row=1)
-        lbl_smeter_txt = ttk.Label(lbl_frame_telemetry)
-        lbl_smeter_txt.configure(text='Signal Strength (dBFS):')
-        lbl_smeter_txt.grid(column=0, padx=5, pady=10, row=2, sticky="w")
-        smeter_container = ttk.Frame(lbl_frame_telemetry)
-        self.label_smeter_ticks = ttk.Label(
-            smeter_container, name="label_smeter_ticks")
-        self.label_smeter_ticks.configure(
+        frame7 = ttk.Frame(self.liveTelemetry_Frame)
+        frame7.configure(height=200, style="Normal.TFrame", width=200)
+        label1 = ttk.Label(frame7)
+        label1.configure(style="Heading4.TLabel", text='Active VFO Frequency:')
+        label1.pack(padx="42 10", side="left")
+        self.label_val_freq = ttk.Label(frame7, name="label_val_freq")
+        self.label_val_freq.configure(
             font="TkFixedFont",
+            style="Heading4.TLabel",
+            text='000.0000 MHz')
+        self.label_val_freq.pack(side="left")
+        label4 = ttk.Label(frame7)
+        label4.configure(style="Heading4.TLabel", text='Mode:')
+        label4.pack(padx="40 10", side="left")
+        self.label_val_mode = ttk.Label(frame7, name="label_val_mode")
+        self.label_val_mode.configure(style="Heading4.TLabel", text='UNKNOWN')
+        self.label_val_mode.pack(side="left")
+        frame7.pack(anchor="center", expand=True, fill="x", pady=5, side="top")
+        frame9 = ttk.Frame(self.liveTelemetry_Frame)
+        frame9.configure(height=200, style="Normal.TFrame", width=200)
+        label6 = ttk.Label(frame9)
+        label6.configure(
+            style="Heading4.TLabel",
+            text='Signal Strength (dBFS):')
+        label6.pack(anchor="center", padx="40 0", side="left")
+        frame8 = ttk.Frame(frame9)
+        frame8.configure(style="Normal.TFrame")
+        self.label_smeter_ticks = ttk.Label(frame8, name="label_smeter_ticks")
+        self.label_smeter_ticks.configure(
+            background="gray",
+            font="TkFixedFont",
+            foreground="white",
             text='S1 . S3 . S5 . S7 . S9 . +10 . +30')
         self.label_smeter_ticks.pack(anchor="w", side="top")
         self.smeter_Progressbar = ttk.Progressbar(
-            smeter_container, name="smeter_progressbar")
+            frame8, name="smeter_progressbar")
         self.smeter_Progressbar.configure(
             length=210, maximum=100, mode="determinate")
         self.smeter_Progressbar.pack(fill="x", pady=4, side="top")
-        self.label_smeter_val = ttk.Label(
-            smeter_container, name="label_smeter_val")
-        self.label_smeter_val.configure(font="TkFixedFont", text='-00.0 dBFS')
-        self.label_smeter_val.pack(anchor="w", pady=2, side="top")
-        smeter_container.grid(column=1, padx=5, pady=5, row=2, sticky="w")
-        lbl_frame_telemetry.grid(column=0, padx=10, pady=10, row=1)
-        lbl_frame_volume = ttk.Labelframe(self.frame1)
-        lbl_frame_volume.configure(text=' Receiver Audio Gain Control ')
-        lbl_volume_txt = ttk.Label(lbl_frame_volume)
-        lbl_volume_txt.configure(text='Audio Volume (0-100):')
-        lbl_volume_txt.grid(column=0, padx=5, pady=10, row=0)
-        self.volume_scale = ttk.Scale(lbl_frame_volume, name="volume_scale")
+        self.label_smeter_val = ttk.Label(frame8, name="label_smeter_val")
+        self.label_smeter_val.configure(
+            background="gray",
+            font="TkFixedFont",
+            foreground="white",
+            text='-00.0 dBFS')
+        self.label_smeter_val.pack(anchor="w", padx="75 0", pady=2, side="top")
+        frame8.pack(padx=10, side="left")
+        frame9.pack(expand=True, fill="x", pady=5)
+        frame5 = ttk.Frame(self.liveTelemetry_Frame)
+        frame5.configure(height=200, style="Normal.TFrame", width=200)
+        lbl_volume_txt = ttk.Label(frame5)
+        lbl_volume_txt.configure(
+            style="Heading4.TLabel",
+            text='Audio Volume (0-100):')
+        lbl_volume_txt.pack(padx="50 0", side="left")
+        self.volume_scale = ttk.Scale(frame5, name="volume_scale")
         self.volume_scale.configure(
             from_=0, length=150, orient="horizontal", to=100)
-        self.volume_scale.grid(column=1, padx=5, pady=10, row=0)
+        self.volume_scale.pack(padx=10, side="left")
         self.volume_scale.bind(
             "<B1-Motion>",
             self.action_on_volume_slider_move,
@@ -133,20 +129,171 @@ class sdrDashboardUI(ttk.Frame):
             "<ButtonRelease-1>",
             self.action_on_volume_slider_move,
             add="+")
-        self.label_volume_val = ttk.Label(
-            lbl_frame_volume, name="label_volume_val")
-        self.label_volume_val.configure(font="TkFixedFont", text='50%')
-        self.label_volume_val.grid(column=2, padx=5, pady=10, row=0)
-        self.button_mute_toggle = ttk.Button(
-            lbl_frame_volume, name="button_mute_toggle")
-        self.button_mute_toggle.configure(text='🔊 Mute Audio')
-        self.button_mute_toggle.grid(column=3, padx=10, pady=10, row=0)
+        self.label_volume_val = ttk.Label(frame5, name="label_volume_val")
+        self.label_volume_val.configure(
+            font="TkFixedFont",
+            style="Heading4.TLabel",
+            text='50%')
+        self.label_volume_val.pack(side="left")
+        self.button_mute_toggle = ttk.Button(frame5, name="button_mute_toggle")
+        self.button_mute_toggle.configure(
+            style="Button3Sunken.TButton", text='🔊 Mute Audio')
+        self.button_mute_toggle.pack(padx=10, side="left")
         self.button_mute_toggle.configure(command=self.action_toggle_mute)
-        lbl_frame_volume.grid(column=0, padx=10, pady=10, row=2, sticky="ew")
-        self.dashboard_Notebook.add(self.frame1, text='Hardware\t')
-        self.frame2 = ttk.Frame(self.dashboard_Notebook, name="frame2")
-        self.frame2.configure(padding=10)
-        grid_wrapper = ttk.Frame(self.frame2)
+        frame5.pack(anchor="center", expand=True, fill="x", pady=5, side="top")
+        self.liveTelemetry_Frame.grid(column=0, row=0)
+        self.bands_Frame = ttk.Frame(self, name="bands_frame")
+        self.bands_Frame.configure(
+            height=200, style="NormalOutline.TFrame", width=200)
+        self.bandsToggle_Button = ttk.Button(
+            self.bands_Frame, name="bandstoggle_button")
+        self.bandsToggle_Button.configure(
+            state="normal", style="Custom.Toolbutton", text='Bands')
+        self.bandsToggle_Button.pack(expand=True, fill="x", side="top")
+        self.bandsToggle_Button.configure(command=self.toggleBands_CB)
+        self.bands_Frame.grid(column=0, row=3, sticky="ew")
+        self.bandsAccordion_Frame = ttk.Frame(
+            self, name="bandsaccordion_frame")
+        self.bandsAccordion_Frame.configure(padding=15, style="Normal.TFrame")
+        self.scanTimer_Labelframe = ttk.Labelframe(
+            self.bandsAccordion_Frame, name="scantimer_labelframe")
+        self.scanTimer_Labelframe.configure(
+            text=' System Delays & Calibration Tools ')
+        self.scanTimer_Labelframe.grid(column=0, padx=10, pady=10, row=0)
+        self.quickHamBandSelect_Labelframe = ttk.Labelframe(
+            self.bandsAccordion_Frame, name="quickhambandselect_labelframe")
+        self.quickHamBandSelect_Labelframe.configure(
+            text=' Ham Radio RF Band Changer Matrix ')
+        self.ham_band_160m = ttk.Button(
+            self.quickHamBandSelect_Labelframe,
+            name="ham_band_160m")
+        self.ham_band_160m.configure(text='160 Meters (1.8 MHz)')
+        self.ham_band_160m.grid(column=0, padx=5, pady=5, row=0)
+        def ham_band_160m_cmd_(): self.action_quick_band("ham_band_160m")
+
+        self.ham_band_160m.configure(command=ham_band_160m_cmd_)
+        self.ham_band_80m = ttk.Button(
+            self.quickHamBandSelect_Labelframe,
+            name="ham_band_80m")
+        self.ham_band_80m.configure(text='80 Meters (3.5 MHz)')
+        self.ham_band_80m.grid(column=1, padx=5, pady=5, row=0)
+        def ham_band_80m_cmd_(): self.action_quick_band("ham_band_80m")
+
+        self.ham_band_80m.configure(command=ham_band_80m_cmd_)
+        self.ham_band_40m = ttk.Button(
+            self.quickHamBandSelect_Labelframe,
+            name="ham_band_40m")
+        self.ham_band_40m.configure(text='40 Meters (7.0 MHz)')
+        self.ham_band_40m.grid(column=2, padx=5, pady=5, row=0)
+        def ham_band_40m_cmd_(): self.action_quick_band("ham_band_40m")
+
+        self.ham_band_40m.configure(command=ham_band_40m_cmd_)
+        self.ham_band_20m = ttk.Button(
+            self.quickHamBandSelect_Labelframe,
+            name="ham_band_20m")
+        self.ham_band_20m.configure(text='20 Meters (14.0 MHz)')
+        self.ham_band_20m.grid(column=1, padx=5, pady=5, row=1)
+        def ham_band_20m_cmd_(): self.action_quick_band("ham_band_20m")
+
+        self.ham_band_20m.configure(command=ham_band_20m_cmd_)
+        self.ham_band_17m = ttk.Button(
+            self.quickHamBandSelect_Labelframe,
+            name="ham_band_17m")
+        self.ham_band_17m.configure(text='17 Meters (18.0 MHz)')
+        self.ham_band_17m.grid(column=2, padx=5, pady=5, row=1)
+        def ham_band_17m_cmd_(): self.action_quick_band("ham_band_17m")
+
+        self.ham_band_17m.configure(command=ham_band_17m_cmd_)
+        self.ham_band_15m = ttk.Button(
+            self.quickHamBandSelect_Labelframe,
+            name="ham_band_15m")
+        self.ham_band_15m.configure(text='15 Meters (21.0 MHz)')
+        self.ham_band_15m.grid(column=0, padx=5, pady=5, row=2)
+        def ham_band_15m_cmd_(): self.action_quick_band("ham_band_15m")
+
+        self.ham_band_15m.configure(command=ham_band_15m_cmd_)
+        self.ham_band_12m = ttk.Button(
+            self.quickHamBandSelect_Labelframe,
+            name="ham_band_12m")
+        self.ham_band_12m.configure(text='12 Meters (24.0 MHz)')
+        self.ham_band_12m.grid(column=1, padx=5, pady=5, row=2)
+        def ham_band_12m_cmd_(): self.action_quick_band("ham_band_12m")
+
+        self.ham_band_12m.configure(command=ham_band_12m_cmd_)
+        self.ham_band_10m = ttk.Button(
+            self.quickHamBandSelect_Labelframe,
+            name="ham_band_10m")
+        self.ham_band_10m.configure(text='10 Meters (28.0 MHz)')
+        self.ham_band_10m.grid(column=2, padx=5, pady=5, row=2)
+        def ham_band_10m_cmd_(): self.action_quick_band("ham_band_10m")
+
+        self.ham_band_10m.configure(command=ham_band_10m_cmd_)
+        self.ham_band_30m = ttk.Button(
+            self.quickHamBandSelect_Labelframe,
+            name="ham_band_30m")
+        self.ham_band_30m.configure(text='30 Meters (10.1 MHz)')
+        self.ham_band_30m.grid(column=0, padx=5, pady=5, row=1)
+        def ham_band_30m_cmd_(): self.action_quick_band("ham_band_30m")
+
+        self.ham_band_30m.configure(command=ham_band_30m_cmd_)
+        self.quickHamBandSelect_Labelframe.grid(
+            column=0, padx=10, pady=10, row=1)
+        self.bandwidthManagement_Labelframe = ttk.Labelframe(
+            self.bandsAccordion_Frame, name="bandwidthmanagement_labelframe")
+        self.bandwidthManagement_Labelframe.configure(
+            text=' IF Filter & Bandwidth Management ')
+        self.widenFilter_Button = ttk.Button(
+            self.bandwidthManagement_Labelframe,
+            name="widenfilter_button")
+        self.widenFilter_Button.configure(text=' Widen Filter')
+        self.widenFilter_Button.grid(column=0, padx=5, pady=5, row=0)
+        self.widenFilter_Button.configure(command=self.action_filter_widen)
+        self.narrowFilter_Button = ttk.Button(
+            self.bandwidthManagement_Labelframe,
+            name="narrowfilter_button")
+        self.narrowFilter_Button.configure(text=' Narrow Filter')
+        self.narrowFilter_Button.grid(column=1, padx=5, pady=5, row=0)
+        self.narrowFilter_Button.configure(command=self.action_filter_narrow)
+        self.resetFilter_Button = ttk.Button(
+            self.bandwidthManagement_Labelframe,
+            name="resetfilter_button")
+        self.resetFilter_Button.configure(text=' Reset Filter')
+        self.resetFilter_Button.grid(column=2, padx=5, pady=5, row=0)
+        self.resetFilter_Button.configure(command=self.action_filter_reset)
+        self.forceFilterBandwidth_Label = ttk.Label(
+            self.bandwidthManagement_Labelframe,
+            name="forcefilterbandwidth_label")
+        self.forceFilterBandwidth_Label.configure(text='Force BW (Hz):')
+        self.forceFilterBandwidth_Label.grid(column=0, padx=5, pady=5, row=1)
+        self.entry_force_bw = ttk.Entry(
+            self.bandwidthManagement_Labelframe,
+            name="entry_force_bw")
+        self.entry_force_bw.grid(column=1, padx=5, pady=5, row=1)
+        self.forceFilterBandwidth_Button = ttk.Button(
+            self.bandwidthManagement_Labelframe,
+            name="forcefilterbandwidth_button")
+        self.forceFilterBandwidth_Button.configure(text='Force Override')
+        self.forceFilterBandwidth_Button.grid(column=2, padx=5, pady=5, row=1)
+        self.forceFilterBandwidth_Button.configure(
+            command=self.action_master_force_bw)
+        self.bandwidthManagement_Labelframe.grid(
+            column=0, padx=10, pady=10, row=2)
+        self.bandsAccordion_Frame.grid(row=4)
+        self.channels_Frame = ttk.Frame(self, name="channels_frame")
+        self.channels_Frame.configure(
+            height=200, style="NormalOutline.TFrame", width=200)
+        self.channelsToggle_Button = ttk.Button(
+            self.channels_Frame, name="channelstoggle_button")
+        self.channelsToggle_Button.configure(
+            state="normal", style="Custom.Toolbutton", text='Channels')
+        self.channelsToggle_Button.pack(expand=True, fill="x", side="top")
+        self.channelsToggle_Button.configure(command=self.toggleChannels_CB)
+        self.channels_Frame.grid(column=0, row=5, sticky="ew")
+        self.channelsAccordion_Frame = ttk.Frame(
+            self, name="channelsaccordion_frame")
+        self.channelsAccordion_Frame.configure(
+            padding=10, style="Normal.TFrame")
+        grid_wrapper = ttk.Frame(self.channelsAccordion_Frame)
         self.treeChannels = ttk.Treeview(grid_wrapper, name="treechannels")
         self.treeChannels.configure(
             height=15, selectmode="browse", show="headings")
@@ -159,18 +306,21 @@ class sdrDashboardUI(ttk.Frame):
         self.treeScrollbar.configure(orient="vertical")
         self.treeScrollbar.pack(fill="y", side="right")
         grid_wrapper.grid(column=0, padx=5, row=0, rowspan=8)
-        lbl_ch_name = ttk.Label(self.frame2)
+        lbl_ch_name = ttk.Label(self.channelsAccordion_Frame)
         lbl_ch_name.configure(text='New Channel Label:')
         lbl_ch_name.grid(column=1, padx=5, pady=2, row=0, sticky="w")
-        self.newChannel_Label = ttk.Entry(self.frame2, name="newchannel_label")
+        self.newChannel_Label = ttk.Entry(
+            self.channelsAccordion_Frame,
+            name="newchannel_label")
         self.newChannel_Label.grid(column=2, padx=5, pady=2, row=0)
-        lbl_ch_desc = ttk.Label(self.frame2)
+        lbl_ch_desc = ttk.Label(self.channelsAccordion_Frame)
         lbl_ch_desc.configure(text='Custom Station Name:')
         lbl_ch_desc.grid(column=1, padx=5, pady=2, row=1, sticky="w")
         self.customStationName_Entry = ttk.Entry(
-            self.frame2, name="customstationname_entry")
+            self.channelsAccordion_Frame,
+            name="customstationname_entry")
         self.customStationName_Entry.grid(column=2, padx=5, pady=2, row=1)
-        btn_add_channel = ttk.Button(self.frame2)
+        btn_add_channel = ttk.Button(self.channelsAccordion_Frame)
         btn_add_channel.configure(text='💾 Capture Live VFO to Channel')
         btn_add_channel.grid(
             column=1,
@@ -180,7 +330,7 @@ class sdrDashboardUI(ttk.Frame):
             sticky="ew")
         btn_add_channel.configure(
             command=self.action_capture_live_vfo_to_channel)
-        lbl_frame_search = ttk.Labelframe(self.frame2)
+        lbl_frame_search = ttk.Labelframe(self.channelsAccordion_Frame)
         lbl_frame_search.configure(
             text=' Dynamic Channel Lookup Search Engine ')
         self.channelLookup_Entry = ttk.Entry(
@@ -199,7 +349,7 @@ class sdrDashboardUI(ttk.Frame):
             pady=5,
             row=3,
             sticky="ew")
-        lbl_frame_bank_routing = ttk.Labelframe(self.frame2)
+        lbl_frame_bank_routing = ttk.Labelframe(self.channelsAccordion_Frame)
         lbl_frame_bank_routing.configure(text=' Cross-Bank Assignment Matrix ')
         btn_new_bank = ttk.Button(lbl_frame_bank_routing)
         btn_new_bank.configure(text='📋 Create Brand New Bank')
@@ -263,96 +413,131 @@ class sdrDashboardUI(ttk.Frame):
             command=self.action_delete_source_bank_profile)
         lbl_frame_bank_routing.grid(
             column=1, columnspan=2, pady=5, row=4, sticky="ew")
-        lbl_frame_scanner = ttk.Labelframe(self.frame2)
-        lbl_frame_scanner.configure(text=' Memory Scanning Engine ')
-        btn_start_scan = ttk.Button(lbl_frame_scanner)
-        btn_start_scan.configure(text='▶ Start Scan Loop')
-        btn_start_scan.grid(column=0, padx=5, pady=5, row=0)
-        btn_start_scan.configure(command=self.action_start_scan)
-        btn_stop_scan = ttk.Button(lbl_frame_scanner)
-        btn_stop_scan.configure(text='⏹ Stop Scan Loop')
-        btn_stop_scan.grid(column=1, padx=5, pady=5, row=0)
-        btn_stop_scan.configure(command=self.stop_scan)
-        lbl_frame_scanner.grid(column=1, columnspan=2, pady=10, row=6)
-        self.dashboard_Notebook.add(self.frame2, text='Channel')
-        self.frame3 = ttk.Frame(self.dashboard_Notebook, name="frame3")
-        self.frame3.configure(padding=15)
-        lbl_frame_timers = ttk.Labelframe(self.frame3)
-        lbl_frame_timers.configure(text=' System Delays & Calibration Tools ')
-        lbl_delay = ttk.Label(lbl_frame_timers)
+        self.channelsAccordion_Frame.grid(row=6)
+        self.scan_Frame = ttk.Frame(self, name="scan_frame")
+        self.scan_Frame.configure(
+            height=200,
+            style="NormalOutline.TFrame",
+            width=200)
+        self.scanToggle_Button = ttk.Button(
+            self.scan_Frame, name="scantoggle_button")
+        self.scanToggle_Button.configure(
+            state="normal", style="Custom.Toolbutton", text='Scan')
+        self.scanToggle_Button.pack(expand=True, fill="x", side="top")
+        self.scanToggle_Button.configure(command=self.toggleScan_CB)
+        self.scan_Frame.grid(column=0, row=7, sticky="ew")
+        self.scanAccordion_Frame = ttk.Frame(self, name="scanaccordion_frame")
+        self.scanAccordion_Frame.configure(padding=10, style="Normal.TFrame")
+        self.scanParameters_Labelframe = ttk.Labelframe(
+            self.scanAccordion_Frame, name="scanparameters_labelframe")
+        self.scanParameters_Labelframe.configure(text='Scan Parameters')
+        lbl_delay = ttk.Label(self.scanParameters_Labelframe)
         lbl_delay.configure(text='Scan Delay Period (ms):')
         lbl_delay.grid(column=0, padx=5, pady=10, row=0)
         self.entry_scan_time = ttk.Entry(
-            lbl_frame_timers, name="entry_scan_time")
+            self.scanParameters_Labelframe,
+            name="entry_scan_time")
         self.entry_scan_time.grid(column=1, padx=5, pady=10, row=0)
-        lbl_frame_timers.grid(column=0, padx=10, pady=10, row=0)
-        lbl_frame_band_changer = ttk.Labelframe(self.frame3)
-        lbl_frame_band_changer.configure(
-            text=' Ham Radio RF Band Changer Matrix ')
-        btn_band_80m = ttk.Button(lbl_frame_band_changer)
-        btn_band_80m.configure(text='80 Meters (3.5 MHz)')
-        btn_band_80m.grid(column=0, padx=5, pady=5, row=0)
-        def btn_band_80m_cmd_(): self.action_quick_band("btn_band_80m")
-
-        btn_band_80m.configure(command=btn_band_80m_cmd_)
-        btn_band_40m = ttk.Button(lbl_frame_band_changer)
-        btn_band_40m.configure(text='40 Meters (7.0 MHz)')
-        btn_band_40m.grid(column=1, padx=5, pady=5, row=0)
-        def btn_band_40m_cmd_(): self.action_quick_band("btn_band_40m")
-
-        btn_band_40m.configure(command=btn_band_40m_cmd_)
-        btn_band_20m = ttk.Button(lbl_frame_band_changer)
-        btn_band_20m.configure(text='20 Meters (14.0 MHz)')
-        btn_band_20m.grid(column=0, padx=5, pady=5, row=1)
-        def btn_band_20m_cmd_(): self.action_quick_band("btn_band_20m")
-
-        btn_band_20m.configure(command=btn_band_20m_cmd_)
-        btn_band_2m = ttk.Button(lbl_frame_band_changer)
-        btn_band_2m.configure(text='2 Meters (144.2 MHz)')
-        btn_band_2m.grid(column=1, padx=5, pady=5, row=1)
-        def btn_band_2m_cmd_(): self.action_quick_band("btn_band_2m")
-
-        btn_band_2m.configure(command=btn_band_2m_cmd_)
-        lbl_frame_band_changer.grid(column=0, padx=10, pady=10, row=1)
-        lbl_frame_filter_tools = ttk.Labelframe(self.frame3)
-        lbl_frame_filter_tools.configure(
-            text=' IF Filter & Bandwidth Management ')
-        btn_filter_widen = ttk.Button(lbl_frame_filter_tools)
-        btn_filter_widen.configure(text=' Widen Filter')
-        btn_filter_widen.grid(column=0, padx=5, pady=5, row=0)
-        btn_filter_widen.configure(command=self.action_filter_widen)
-        btn_filter_narrow = ttk.Button(lbl_frame_filter_tools)
-        btn_filter_narrow.configure(text=' Narrow Filter')
-        btn_filter_narrow.grid(column=1, padx=5, pady=5, row=0)
-        btn_filter_narrow.configure(command=self.action_filter_narrow)
-        btn_filter_reset = ttk.Button(lbl_frame_filter_tools)
-        btn_filter_reset.configure(text=' Reset Filter')
-        btn_filter_reset.grid(column=2, padx=5, pady=5, row=0)
-        btn_filter_reset.configure(command=self.action_filter_reset)
-        lbl_force_bw = ttk.Label(lbl_frame_filter_tools)
-        lbl_force_bw.configure(text='Force BW (Hz):')
-        lbl_force_bw.grid(column=0, padx=5, pady=5, row=1)
-        self.entry_force_bw = ttk.Entry(
-            lbl_frame_filter_tools, name="entry_force_bw")
-        self.entry_force_bw.grid(column=1, padx=5, pady=5, row=1)
-        btn_force_bw = ttk.Button(lbl_frame_filter_tools)
-        btn_force_bw.configure(text='Force Override')
-        btn_force_bw.grid(column=2, padx=5, pady=5, row=1)
-        btn_force_bw.configure(command=self.action_master_force_bw)
-        lbl_frame_filter_tools.grid(column=0, padx=10, pady=10, row=2)
-        self.dashboard_Notebook.add(self.frame3, text='Band')
-        self.dashboard_Notebook.pack(
-            expand=True, fill="both", padx=10, pady=10)
-        self.configure(height=650, width=850)
+        self.scanBankSelect_Label = ttk.Label(
+            self.scanParameters_Labelframe,
+            name="scanbankselect_label")
+        self.scanBankSelect_Label.configure(text='Source Bank View:')
+        self.scanBankSelect_Label.grid(
+            column=0, padx=5, pady=2, row=1, sticky="w")
+        self.scanBankSelect_Combobox = ttk.Combobox(
+            self.scanParameters_Labelframe, name="scanbankselect_combobox")
+        self.scanBankSelect_Combobox.grid(
+            column=1, padx=5, pady=2, row=1, sticky="ew")
+        self.scanBankSelect_Combobox.bind(
+            "<<ComboboxSelected>>",
+            self.action_on_set_dropdown_change,
+            add="+")
+        self.scanParameters_Labelframe.grid(
+            column=1, columnspan=2, pady=5, row=4, sticky="ew")
+        self.scanControl_Labelframe = ttk.Labelframe(
+            self.scanAccordion_Frame, name="scancontrol_labelframe")
+        self.scanControl_Labelframe.configure(text='Scan Control')
+        self.scanStart_Button = ttk.Button(
+            self.scanControl_Labelframe,
+            name="scanstart_button")
+        self.scanStart_Button.configure(text='▶ Start Scan Loop')
+        self.scanStart_Button.grid(column=0, padx=5, pady=5, row=0)
+        self.scanStart_Button.configure(command=self.action_start_scan)
+        self.scanStop_Button = ttk.Button(
+            self.scanControl_Labelframe,
+            name="scanstop_button")
+        self.scanStop_Button.configure(text='⏹ Stop Scan Loop')
+        self.scanStop_Button.grid(column=1, padx=5, pady=5, row=0)
+        self.scanStop_Button.configure(command=self.stop_scan)
+        self.scanControl_Labelframe.grid(
+            column=1, columnspan=2, pady=10, row=6)
+        self.scanAccordion_Frame.grid(column=0, row=8)
+        self.connectionStatus_Frame = ttk.Labelframe(
+            self, name="connectionstatus_frame")
+        self.connectionStatus_Frame.configure(
+            style="Normal.TLabelframe", text='Status')
+        lbl_ip = ttk.Label(self.connectionStatus_Frame)
+        lbl_ip.configure(style="Heading4.TLabel", text='SDR IP Address:')
+        lbl_ip.grid(column=0, padx="20 10", pady=5, row=0)
+        self.entry_radio_ip = ttk.Entry(
+            self.connectionStatus_Frame,
+            name="entry_radio_ip")
+        self.entry_radio_ip.configure(width=14)
+        self.entry_radio_ip.grid(column=1, padx=5, pady=5, row=0)
+        lbl_port = ttk.Label(self.connectionStatus_Frame)
+        lbl_port.configure(style="Heading4.TLabel", text='TCP Socket Port:')
+        lbl_port.grid(column=2, padx="20 10", pady=5, row=0)
+        self.entry_radio_port = ttk.Entry(
+            self.connectionStatus_Frame,
+            name="entry_radio_port")
+        self.entry_radio_port.configure(width=8)
+        self.entry_radio_port.grid(column=3, padx=5, pady=5, row=0)
+        self.label2 = ttk.Label(self.connectionStatus_Frame, name="label2")
+        self.label2.configure(style="Heading4.TLabel", text='SDR Status:')
+        self.label2.grid(column=0, row=2, sticky="e")
+        self.linkStatus_Label = ttk.Label(
+            self.connectionStatus_Frame,
+            name="linkstatus_label")
+        self.linkStatus_VAR = tk.StringVar(value='Disconnected')
+        self.linkStatus_Label.configure(
+            style="RedLED3.TLabel",
+            takefocus=False,
+            text='Disconnected',
+            textvariable=self.linkStatus_VAR)
+        self.linkStatus_Label.grid(column=1, row=2)
+        btn_connect = ttk.Button(self.connectionStatus_Frame)
+        btn_connect.configure(style="Button3Sunken.TButton", text='Reconnect')
+        btn_connect.grid(column=2, columnspan=2, pady=5, row=2)
+        btn_connect.configure(command=self.action_connect)
+        self.connectionStatus_Frame.grid(column=0, row=9, sticky="ew")
+        self.configure(height=600, style="Normal.TFrame", width=600)
         # Layout for 'primaryFrame' skipped in custom widget template.
-
-    def action_connect(self):
-        pass
 
     def action_on_volume_slider_move(self, event=None):
         pass
 
     def action_toggle_mute(self):
+        pass
+
+    def toggleBands_CB(self):
+        pass
+
+    def action_quick_band(self, widget_id):
+        pass
+
+    def action_filter_widen(self):
+        pass
+
+    def action_filter_narrow(self):
+        pass
+
+    def action_filter_reset(self):
+        pass
+
+    def action_master_force_bw(self):
+        pass
+
+    def toggleChannels_CB(self):
         pass
 
     def action_on_channel_row_click(self, event=None):
@@ -382,25 +567,16 @@ class sdrDashboardUI(ttk.Frame):
     def action_delete_source_bank_profile(self):
         pass
 
+    def toggleScan_CB(self):
+        pass
+
     def action_start_scan(self):
         pass
 
     def stop_scan(self):
         pass
 
-    def action_quick_band(self, widget_id):
-        pass
-
-    def action_filter_widen(self):
-        pass
-
-    def action_filter_narrow(self):
-        pass
-
-    def action_filter_reset(self):
-        pass
-
-    def action_master_force_bw(self):
+    def action_connect(self):
         pass
 
 

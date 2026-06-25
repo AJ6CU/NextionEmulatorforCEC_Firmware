@@ -71,8 +71,11 @@ def setup_ttk_styles(master=None):
     style.configure('GreenLED.TLabel',font=fontList['Heading2'], background='green', foreground='white')
     style.configure('RedLED.TLabel',font=fontList['Heading2'], background='red', foreground='white')
     style.configure('VFO.TLabel',font=fontList['HeadingVFO'], background='gray', foreground='white')
+    style.configure('GreenLED3.TLabel',font=fontList['Heading3'], background='green', foreground='white')
+    style.configure('RedLED3.TLabel',font=fontList['Heading3'], background='red', foreground='white')
     style.configure('Heading3.TLabel',font=fontList['Heading3'])
-    style.configure('Heading4.TLabel',font=fontList['Heading4'])
+    style.configure('Heading3Black.TLabel',font=fontList['Heading3'],background='gray', foreground='black')
+    style.configure('Heading4.TLabel',font=fontList['Heading4'], background='gray', foreground='white')
     style.configure('Normal.TLabel',font=fontList['Normal'])
     style.configure('Symbol1.TLabel',font=fontList['Symbol1'])
     style.configure('Button1.TButton',font=fontList['Heading1'])
@@ -89,7 +92,8 @@ def setup_ttk_styles(master=None):
 
     style.configure('RedButton2b.TButton',font=fontList['Heading2b'], background='red', foreground='white')
     style.configure('GreenButton2b.TButton', font=fontList['Heading2b'], background='green', foreground='white',justify='center')
-    style.configure('Button3.TButton',font=fontList['Heading3'])
+    style.configure('Button3.TButton',font=fontList['Heading3'],)
+    style.configure('Button3Sunken.TButton', font=fontList['Heading3'],relief='sunken')
  #   style.configure('DarkButton3.TButton',font=fontList['Heading3'], background='black', foreground='white', boarderwidth=5, relief='raised')
     style.configure('Button4.TButton',font=fontList['Heading4'])
     style.configure('Button3Blue.TButton',font=fontList['Heading3'], foreground='blue')
@@ -101,6 +105,7 @@ def setup_ttk_styles(master=None):
     style.configure('RadioButton4.TRadiobutton',font=fontList['Heading4'])
     style.configure('RadioButtonNormal.TRadiobutton',font=fontList['Normal'])
     style.configure('RadioButtonEmphasis.TRadiobutton',font=fontList['Emphasis'])
+    style.configure('Custom.Toolbutton', font=fontList['Heading3'], background='gray', foreground='black')
     style.configure('Heading0.TMenubutton', font=fontList['Heading1Std'], anchor='center')
     style.configure('Heading1b.TMenubutton', font=fontList['Heading1b'], anchor='center')
     style.configure('Heading2b.TMenubutton',font=fontList['Heading2b'])
@@ -153,6 +158,9 @@ def setup_ttk_styles(master=None):
     style.configure('NormalOutline.TFrame', background='gray', bd=4, bordercolor='white' ,relief='groove')
     # style.configure('WarningOutline.TFrame', background='red', bd=4, bordercolor='white', relief='groove')
 
+    style.configure('Normal.TLabelframe', background='gray', bd=4, font=fontList['Heading2'])
+    style.configure('Normal.TLabelframe.Label', background='gray', bd=4, font=fontList['Heading3'])
+
     style.configure('Fixed.TNotebook')
     style.configure('Fixed.TNotebook.Tab',padding=[5,2])
     style.configure('Red.TSeparator', background='red', height=25)
@@ -171,5 +179,6 @@ def setup_ttk_styles(master=None):
                     foreground=[('disabled', 'gray'),('!disabled', 'blue')],
                     troughcolor=[('disabled', 'gray'), ('!disabled', 'black')],
                     background=[('disabled', 'gray'), ('!disabled', 'gray')])
+
 
 

@@ -9,6 +9,7 @@ UI source file: sdrDashboard.ui
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox
+from pygubu.widgets.accordionframe import AccordionFrame
 import pygubu
 import random
 
@@ -73,12 +74,28 @@ class sdrDashboard(baseui.sdrDashboardUI):
         self.volume_scale.set(self.pre_mute_volume)
         self.label_volume_val.config(text=f"{self.pre_mute_volume}%")
 
+        # Get persistent references to collapse and open buttons
+        self.btn_expand_icon = gv.get_image("expand_40x40.png")
+        self.btn_collapse_icon = gv.get_image("collapse_40x40.png")
+
+        # Set state for accordion panels
+        self.channelsAccordionState = False
+        self.bandsAccordionState = False
+        self.scanAccordionState = False
+
+        self.setAccordionState(self.channelsAccordion_Frame, self.channelsToggle_Button, self.channelsAccordionState)
+        self.setAccordionState(self.bandsAccordion_Frame, self.bandsToggle_Button, self.bandsAccordionState)
+        self.setAccordionState(self.scanAccordion_Frame, self.scanToggle_Button, self.scanAccordionState)
+
+
 
         self.refresh_listbox_view()
         self.update_smeter_loop()
         self.sourceBank_Combobox.set("DEFAULT SET")
 
         self.pack(expand=tk.YES, fill=tk.BOTH)
+
+
 
 
     def update_frequency_telemetry(self, freq_hz):
@@ -383,20 +400,40 @@ class sdrDashboard(baseui.sdrDashboardUI):
         if not self.sdr.is_connected: return
 
         match widget_id:
-            case 'btn_band_80m':
+            case 'ham_band_160m':
+                self.sdr.set_frequency_hz(1800000)
+                self.sdr.set_mode("LSB")
+
+            case 'ham_band_80m':
                 self.sdr.set_frequency_hz(3500000)
                 self.sdr.set_mode("LSB")
 
-            case 'btn_band_40m':
+            case 'ham_band_40m':
                 self.sdr.set_frequency_hz(7000000)
                 self.sdr.set_mode("LSB")
 
-            case 'btn_band_20m':
+            case 'ham_band_30m':
+                self.sdr.set_frequency_hz(10100000)
+                self.sdr.set_mode("LSB")
+
+            case 'ham_band_20m':
                 self.sdr.set_frequency_hz(14000000)
                 self.sdr.set_mode("USB")
 
-            case 'btn_band_2m':
-                self.sdr.set_frequency_hz(144200000)
+            case 'ham_band_17m':
+                self.sdr.set_frequency_hz(18000000)
+                self.sdr.set_mode("USB")
+
+            case 'ham_band_15m':
+                self.sdr.set_frequency_hz(21000000)
+                self.sdr.set_mode("USB")
+
+            case 'ham_band_12m':
+                self.sdr.set_frequency_hz(24000000)
+                self.sdr.set_mode("USB")
+
+            case 'ham_band_10m':
+                self.sdr.set_frequency_hz(28000000)
                 self.sdr.set_mode("USB")
 
 
@@ -427,6 +464,37 @@ class sdrDashboard(baseui.sdrDashboardUI):
             self.sdr.set_filter_width_hz(target_bw)
         except ValueError:
             messagebox.showwarning("Warning", "Forced bandwidth window must be an integer.")
+
+    def setAccordionState(self, content_frame, thebutton, frameState):
+        if frameState:
+            content_frame.grid()
+            thebutton.config(image=self.btn_expand_icon,compound="left")
+        else:
+            content_frame.grid_remove()
+            thebutton.config(image=self.btn_collapse_icon, compound="left")
+
+
+    def toggleScan_CB(self):
+        if self.scanAccordionState:
+            self.scanAccordionState = False
+
+        else:
+            self.scanAccordionState = True
+        self.setAccordionState(self.scanAccordion_Frame,self.scanToggle_Button,self.scanAccordionState)
+
+    def toggleBands_CB(self):
+        if self.bandsAccordionState:
+            self.bandsAccordionState = False
+        else:
+            self.bandsAccordionState = True
+        self.setAccordionState(self.bandsAccordion_Frame, self.bandsToggle_Button, self.bandsAccordionState)
+
+    def toggleChannels_CB(self):
+        if self.channelsAccordionState:
+            self.channelsAccordionState = False
+        else:
+            self.channelsAccordionState = True
+        self.setAccordionState(self.channelsAccordion_Frame,self.channelsToggle_Button, self.channelsAccordionState)
 
 
 class SDRDashboardPopup:

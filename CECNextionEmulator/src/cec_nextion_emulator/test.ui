@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.5" author="PygubuDesigner 0.41.4">
+  <project>
+    <settings>
+      <setting id="name">test</setting>
+      <setting id="description">nonsense</setting>
+      <setting id="template">codescript</setting>
+      <setting id="main_widget">accordionframe1</setting>
+      <setting id="module_namespace" />
+      <setting id="module_name">test</setting>
+      <setting id="main_classname">test</setting>
+      <setting id="output_dir" />
+      <setting id="builder_namespace">custom_widgets</setting>
+      <setting id="output_dir2" />
+      <setting id="generate_code_onsave">False</setting>
+      <setting id="use_i18n">False</setting>
+      <setting id="all_ids_attributes">False</setting>
+      <setting id="import_tkvariables">False</setting>
+      <setting id="use_ttk_styledefinition_file">False</setting>
+      <setting id="use_window_centering_code">False</setting>
+      <setting id="ttk_style_definition_file" />
+    </settings>
+    <customwidgets />
+    <resources />
+  </project>
+  <object class="pygubu.widgets.AccordionFrame" id="accordionframe1">
+    <layout manager="pack">
+      <property name="side">top</property>
+    </layout>
+    <child>
+      <object class="pygubu.widgets.AccordionFrameGroup" id="accordionframegroup1">
+        <property name="label" translatable="yes">accordionframegroup1</property>
+      </object>
+    </child>
+    <child>
+      <object class="pygubu.widgets.AccordionFrameGroup" id="accordionframegroup2">
+        <property name="label" translatable="yes">accordionframegroup2</property>
+      </object>
+    </child>
+    <child>
+      <object class="pygubu.widgets.AccordionFrameGroup" id="accordionframegroup3">
+        <property name="label" translatable="yes">accordionframegroup3</property>
+      </object>
+    </child>
+  </object>
+  <object class="pygubu.widgets.AccordionFrame" id="accordionframe2">
+    <layout manager="pack">
+      <property name="side">top</property>
+    </layout>
+  </object>
+  <object class="pygubu.widgets.AccordionFrame" id="accordionframe3">
+    <layout manager="pack">
+      <property name="side">top</property>
+    </layout>
+  </object>
+</interface>
