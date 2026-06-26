@@ -272,44 +272,36 @@ class SDRPlusPlusController:
 
     def set_filter_width_hz(self, passband_hz: int) -> bool:
         if not self.is_connected or self.current_mode == "UNKNOWN": return False
-        target_width = max(50, passband_hz)
-        target_mode = self.current_mode
-        if "CW" in self.current_mode or self.current_mode == "USB":
-            target_mode = "USB" if target_width > 500 else "CW"
+        if self.current_mode == "LSB" or self.current_mode == "USB":
+            target_width = max(500, passband_hz)
+        elif self.current_mode == "CW":
+            target_width = max(50, passband_hz)
 
-        self.current_mode = target_mode
         self.current_filter_width = target_width
 
-        if self.on_mode_change_primary: self.on_mode_change_primary(target_mode)
-        if self.on_mode_change_secondary: self.on_mode_change_secondary(target_mode)
         if self.on_filter_change: self.on_filter_change(target_width)
 
         # UNIFIED PATTERN: Save both configurations safely to disk on update
         try:
             gv.config.set_sdr_filter_width_hz(target_width)
-            gv.config.set_sdr_current_mode(target_mode)
         except Exception as e:
             print(f"[-] Config Save Error inside set_filter_width_hz: {e}")
 
-        return self.set_mode(target_mode, target_width)
+        return self.set_mode(self.current_mode, target_width)
+
 
     def get_filter_width_hz(self) -> int:
         """Fetches the filter width from config, falling back to the local variable or 120000 Hz."""
-        try:
-            # Fall back to the active tracking instance variable if the key doesn't exist yet
-            default_fallback = getattr(self, 'current_filter_width', 120000)
-            return int(gv.config.get_sdr_filter_width_hz())
-        except Exception as e:
-            print(f"[-] Error retrieving filter width: {e}")
-            return 120000
+        return self.current_filter_width
 
-    def widen(self, step_hz: int = 200) -> bool:
-        active_step = 50 if "CW" in self.current_mode or self.current_filter_width <= 500 else step_hz
-        return self.set_filter_width_hz(self.current_filter_width + active_step)
 
-    def narrow(self, step_hz: int = 200) -> bool:
-        active_step = 50 if "CW" in self.current_mode or self.current_filter_width <= 500 else step_hz
-        return self.set_filter_width_hz(self.current_filter_width - active_step)
+    # def widen(self, step_hz: int = 200) -> bool:
+    #     active_step = 50 if "CW" in self.current_mode or self.current_filter_width <= 500 else step_hz
+    #     return self.set_filter_width_hz(self.current_filter_width + active_step)
+    #
+    # def narrow(self, step_hz: int = 200) -> bool:
+    #     active_step = 50 if "CW" in self.current_mode or self.current_filter_width <= 500 else step_hz
+    #     return self.set_filter_width_hz(self.current_filter_width - active_step)
 
 
     def start_memory_scan(self, delay_ms: int = None):

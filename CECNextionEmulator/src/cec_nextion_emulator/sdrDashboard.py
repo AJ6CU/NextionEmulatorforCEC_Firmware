@@ -47,7 +47,7 @@ class sdrDashboard(baseui.sdrDashboardUI):
 
         # Setup column widths and text headers
         self.treeChannels.column('label', anchor='w')
-        self.treeChannels.column('label', width=80, minwidth=80, stretch=tk.YES)
+        self.treeChannels.column('label', width=90, minwidth=90, stretch=tk.YES)
         self.treeChannels.column('frequency', width=75, minwidth=75, stretch=tk.YES)
         self.treeChannels.column('mode', width=40, minwidth=40, stretch=tk.YES)
         self.treeChannels.column('description', width=125, minwidth=100, stretch=tk.YES)
@@ -69,8 +69,8 @@ class sdrDashboard(baseui.sdrDashboardUI):
 
         # Seed initialization field parameters
         self.entry_scan_time.insert(0, str(gv.config.get_scan_station_time_ms()))
-        self.entry_radio_ip.insert(0, str(gv.config.get_sdr_server_ip()))
-        self.entry_radio_port.insert(0, str(gv.config.get_sdr_tcp_port()))
+        self.sdrIPAddress_VAR.set(str(gv.config.get_sdr_server_ip()))
+        self.sdrPortNumber_VAR.set(str(gv.config.get_sdr_tcp_port()))
         self.volume_scale.set(self.pre_mute_volume)
         self.label_volume_val.config(text=f"{self.pre_mute_volume}%")
 
@@ -80,18 +80,37 @@ class sdrDashboard(baseui.sdrDashboardUI):
 
         # Set state for accordion panels
         self.channelsAccordionState = False
-        self.bandsAccordionState = False
+        self.bandsAccordionState = True
         self.scanAccordionState = False
 
-        self.setAccordionState(self.channelsAccordion_Frame, self.channelsToggle_Button, self.channelsAccordionState)
+
         self.setAccordionState(self.bandsAccordion_Frame, self.bandsToggle_Button, self.bandsAccordionState)
         self.setAccordionState(self.scanAccordion_Frame, self.scanToggle_Button, self.scanAccordionState)
+        self.setAccordionState(self.channelsAccordion_Frame, self.channelsToggle_Button, self.channelsAccordionState)
 
-
-
+        if self.sdr.current_mode == "CW":
+            self.sdr.set_filter_width_hz('500')       # Forces filters to start at same spot
+        else:
+            self.sdr.set_filter_width_hz('2400')
+        self.action_filter_reset()
         self.refresh_listbox_view()
         self.update_smeter_loop()
         self.sourceBank_Combobox.set("DEFAULT SET")
+
+        if self.sdr.connect():
+            self.linkStatus_Label.configure(
+                style="GreenLED.TLabel",
+                takefocus=False)
+            self.linkStatus_VAR.set('Connected')
+            self.reconnect_Button.state(['disabled'])
+        else:
+            self.linkStatus_Label.configure(
+                style="RedLED.TLabel",
+                takefocus=False)
+            self.linkStatus_VAR.set('Disconnected')
+            self.reconnect_Button.state(['normal'])
+
+
 
         self.pack(expand=tk.YES, fill=tk.BOTH)
 
@@ -107,6 +126,7 @@ class sdrDashboard(baseui.sdrDashboardUI):
 
     def update_filter_telemetry(self, filter_hz):
         self.current_live_filter_hz = int(filter_hz)
+        self.currentFilterWidth_VAR.set(str(filter_hz))
 
     def update_smeter_loop(self):
         if self.sdr.is_connected:
@@ -151,10 +171,13 @@ class sdrDashboard(baseui.sdrDashboardUI):
         banks_list = list(self.sdr.scan_sets_dict.keys())
         self.sourceBank_Combobox['values'] = banks_list
         self.targetBank_Combobox['values'] = banks_list
+        self.scanBankSelect_Combobox['values'] = banks_list
 
     def action_connect(self):
-        gv.config.set_sdr_server_ip(self.entry_radio_ip.get().strip())
-        gv.config.set_sdr_tcp_port(int(self.entry_radio_port.get().strip()))
+        gv.config.set_sdr_server_ip(self.sdrIPAddress_VAR.get().strip())
+        gv.config.set_sdr_tcp_port(int(self.sdrPortNumber_VAR.get().strip()))
+        # gv.config.set_sdr_server_ip(self.entry_radio_ip.get().strip())
+        # gv.config.set_sdr_tcp_port(int(self.entry_radio_port.get().strip()))
         if self.sdr.connect():
             messagebox.showinfo("Success", "Successfully attached socket link to SDR++ server.")
         else:
@@ -437,19 +460,45 @@ class sdrDashboard(baseui.sdrDashboardUI):
                 self.sdr.set_frequency_hz(28000000)
                 self.sdr.set_mode("USB")
 
+    def action_quick_mode(self, widget_id):
+        if not self.sdr.is_connected: return
+
+        match widget_id:
+            case "modeLSB_Button":
+                self.sdr.set_mode("LSB")
+
+            case "modeUSB_Button":
+                self.sdr.set_mode("USB")
+
+            case "modeCWL_Button":
+                self.sdr.set_mode("CW")
+
+            case "modeCWU_Button":
+                self.sdr.set_mode("CW")
 
 
 
     def action_filter_widen(self):
         if not self.sdr.is_connected: return
         current_bw = self.sdr.get_filter_width_hz()
-        new_bw = current_bw + 500 if current_bw < 20000 else current_bw + 5000
+        if current_bw <= 500:
+            new_bw = current_bw + 50
+        elif current_bw <= 20000:
+            new_bw = current_bw + 500
+        else:
+            new_bw = current_bw + 5000
         self.sdr.set_filter_width_hz(min(250000, new_bw))
 
     def action_filter_narrow(self):
         if not self.sdr.is_connected: return
         current_bw = self.sdr.get_filter_width_hz()
-        new_bw = current_bw - 500 if current_bw <= 20000 else current_bw - 5000
+        if current_bw <= 500:
+            new_bw = current_bw - 50
+        elif current_bw <= 20000:
+            new_bw = current_bw - 500
+        else:
+            new_bw = current_bw - 5000
+
         self.sdr.set_filter_width_hz(max(50, new_bw))
 
     def action_filter_reset(self):
@@ -467,12 +516,23 @@ class sdrDashboard(baseui.sdrDashboardUI):
             messagebox.showwarning("Warning", "Forced bandwidth window must be an integer.")
 
     def setAccordionState(self, content_frame, thebutton, frameState):
+        parent_frame = content_frame.master
         if frameState:
-            content_frame.grid()
+            # content_frame.grid()
             thebutton.config(image=self.btn_expand_icon,compound="left")
+
+            # Dynamically fetch the current row index
+            content_frame.hidden=False
+            # parent_frame.rowconfigure(row_num, weight=1)
         else:
-            content_frame.grid_remove()
+            # CRITICAL: Get row index BEFORE hiding the frame
+            # row_num = content_frame.grid_info().get("row", 1)
+            content_frame.hidden=True
+            # content_frame.grid_remove()
             thebutton.config(image=self.btn_collapse_icon, compound="left")
+            # Collapse the correct row index
+            # parent_frame.rowconfigure(row_num, weight=0, minsize=0, pad=0)
+
 
 
     def toggleScan_CB(self):
@@ -503,6 +563,7 @@ class SDRDashboardPopup:
         # 1. Create a dedicated popup window layer bound to the main app
         self.popup = tk.Toplevel(parent_window)
         self.popup.title("SDR++ Memory Matrix Console")
+        self.popup.geometry("575x800")
 
         # 2. Force modal focus (Stops user from clicking back to the main app until closed)
         self.popup.transient(parent_window)
