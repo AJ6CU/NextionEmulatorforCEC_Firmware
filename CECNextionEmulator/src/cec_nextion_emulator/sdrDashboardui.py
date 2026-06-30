@@ -285,7 +285,7 @@ class sdrDashboardUI(ttk.Frame):
         def modeCWU_Button_cmd_(): self.action_quick_mode("modeCWU_Button")
 
         self.modeCWU_Button.configure(command=modeCWU_Button_cmd_)
-        self.modeChange_Labelframe.pack(anchor="w", padx=10)
+        self.modeChange_Labelframe.pack(anchor="w", padx=10, pady="10 0")
         self.modeChange_Labelframe.grid_anchor("w")
         self.bandwidthManagement_Labelframe = ttk.Labelframe(
             self.bandsAccordion_Frame, name="bandwidthmanagement_labelframe")
@@ -311,39 +311,23 @@ class sdrDashboardUI(ttk.Frame):
         self.resetFilter_Button.configure(command=self.action_filter_reset)
         self.filterWidth_Label = ttk.Label(frame1, name="filterwidth_label")
         self.filterWidth_Label.configure(
-            style="Heading4.TLabel", text='Filter:')
+            style="Heading3b.TLabel", text='Filter:')
         self.filterWidth_Label.pack(padx=20, pady=5, side="left")
         self.currentFilterWidth_Label = ttk.Label(
             frame1, name="currentfilterwidth_label")
         self.currentFilterWidth_VAR = tk.StringVar()
         self.currentFilterWidth_Label.configure(
-            style="Heading4.TLabel",
-            textvariable=self.currentFilterWidth_VAR)
+            style="Heading3b.TLabel",
+            textvariable=self.currentFilterWidth_VAR,
+            width=5)
         self.currentFilterWidth_Label.pack(side="left")
         self.filterWidthHZ_Label = ttk.Label(
             frame1, name="filterwidthhz_label")
-        self.filterWidthHZ_Label.configure(style="Heading4.TLabel", text='HZ')
+        self.filterWidthHZ_Label.configure(style="Heading3b.TLabel", text='HZ')
         self.filterWidthHZ_Label.pack(padx=5, pady=5, side="left")
         frame1.grid(column=0, row=0, sticky="ew")
-        frame2 = ttk.Frame(self.bandwidthManagement_Labelframe)
-        frame2.configure(height=200, style="Normal.TFrame", width=200)
-        self.forceFilterBandwidth_Label = ttk.Label(
-            frame2, name="forcefilterbandwidth_label")
-        self.forceFilterBandwidth_Label.configure(
-            style="Heading4.TLabel", text='Force BW (Hz):')
-        self.forceFilterBandwidth_Label.pack(padx="30 0", pady=5, side="left")
-        self.entry_force_bw = ttk.Entry(frame2, name="entry_force_bw")
-        self.entry_force_bw.configure(width=6)
-        self.entry_force_bw.pack(padx=5, pady=5, side="left")
-        self.forceFilterBandwidth_Button = ttk.Button(
-            frame2, name="forcefilterbandwidth_button")
-        self.forceFilterBandwidth_Button.configure(
-            style="Button3Raised.TButton", text='Force Override')
-        self.forceFilterBandwidth_Button.pack(padx=30, pady=5, side="left")
-        self.forceFilterBandwidth_Button.configure(
-            command=self.action_master_force_bw)
-        frame2.grid(column=0, pady=10, row=2, sticky="ew")
-        self.bandwidthManagement_Labelframe.pack(anchor="w", padx=10)
+        self.bandwidthManagement_Labelframe.pack(
+            anchor="w", padx=10, pady="10 0")
         self.bandwidthManagement_Labelframe.grid_anchor("w")
         self.bandsAccordion_Frame.grid(column=0, row=1)
         self.band_all_Frame.pack(
@@ -700,9 +684,6 @@ class sdrDashboardUI(ttk.Frame):
         pass
 
     def action_filter_reset(self):
-        pass
-
-    def action_master_force_bw(self):
         pass
 
     def toggleChannels_CB(self):

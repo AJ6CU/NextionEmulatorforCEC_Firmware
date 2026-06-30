@@ -119,6 +119,10 @@ class sdrDashboard(baseui.sdrDashboardUI):
 
     def update_mode_telemetry(self, mode_str):
         self.label_val_mode.config(text=str(mode_str).upper())
+        if mode_str.lower() == 'cw':
+            self.showModeButtonPressed("modeCWU_Button")
+        else:
+            self.showModeButtonPressed("mode"+mode_str+"_Button")
 
     def update_filter_telemetry(self, filter_hz):
         self.current_live_filter_hz = int(filter_hz)
@@ -486,22 +490,51 @@ class sdrDashboard(baseui.sdrDashboardUI):
             case 'ham_band_10m':
                 self.sdr.set_frequency_hz(28000000)
                 self.sdr.set_mode("USB")
+    def showModeButtonPressed(self, widget_id):
+        #
+        #   Unpress all the buttons
+        #
+        self.modeLSB_Button.configure(style='Button3Raised.TButton')
+        self.modeUSB_Button.configure(style='Button3Raised.TButton')
+        self.modeCWL_Button.configure(style='Button3Raised.TButton')
+        self.modeCWU_Button.configure(style='Button3Raised.TButton')
+        #
+        #   Show button pressed
+        #
+        getattr(self, widget_id).configure(style='Button3Pressed.TButton')
 
     def action_quick_mode(self, widget_id):
         if not self.sdr.is_connected: return
 
+        self.showModeButtonPressed(widget_id)
+
+        #
+        #   Unpress all the buttons
+        #
+        # self.modeLSB_Button.configure(style='Button3Raised.TButton')
+        # self.modeUSB_Button.configure(style='Button3Raised.TButton')
+        # self.modeCWL_Button.configure(style='Button3Raised.TButton')
+        # self.modeCWU_Button.configure(style='Button3Raised.TButton')
+
+
+        getattr(self, widget_id).configure(style='Button3Pressed.TButton')
+
         match widget_id:
             case "modeLSB_Button":
                 self.sdr.set_mode("LSB")
+                # self.modeLSB_Button.configure(style='Button3Pressed.TButton')
 
             case "modeUSB_Button":
                 self.sdr.set_mode("USB")
+                # self.modeUSB_Button.configure(style='Button3Pressed.TButton')
 
             case "modeCWL_Button":
                 self.sdr.set_mode("CW")
+                # self.modeCWL_Button.configure(style='Button3Pressed.TButton')
 
             case "modeCWU_Button":
                 self.sdr.set_mode("CW")
+                # self.modeCWU_Button.configure(style='Button3Pressed.TButton')
 
 
 
@@ -519,14 +552,6 @@ class sdrDashboard(baseui.sdrDashboardUI):
         mode = self.sdr.current_mode
         fallbacks = self.sdr.get_all_mode_fallbacks()
         self.sdr.set_filter_width_hz(fallbacks.get(mode, 120000))
-
-    def action_master_force_bw(self):
-        if not self.sdr.is_connected: return
-        try:
-            target_bw = int(self.entry_force_bw.get().strip())
-            self.sdr.set_filter_width_hz(target_bw)
-        except ValueError:
-            messagebox.showwarning("Warning", "Forced bandwidth window must be an integer.")
 
     def setAccordionState(self, content_frame, thebutton, frameState):
         parent_frame = content_frame.master

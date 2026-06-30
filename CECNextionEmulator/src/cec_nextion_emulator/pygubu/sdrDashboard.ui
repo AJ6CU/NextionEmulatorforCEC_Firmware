@@ -422,6 +422,7 @@
                         <layout manager="pack">
                           <property name="anchor">w</property>
                           <property name="padx">10</property>
+                          <property name="pady">10 0</property>
                         </layout>
                         <containerlayout manager="grid">
                           <property name="anchor">w</property>
@@ -487,6 +488,7 @@
                         <layout manager="pack">
                           <property name="anchor">w</property>
                           <property name="padx">10</property>
+                          <property name="pady">10 0</property>
                         </layout>
                         <containerlayout manager="grid">
                           <property name="anchor">w</property>
@@ -539,7 +541,7 @@
                             </child>
                             <child>
                               <object class="ttk.Label" id="filterWidth_Label" named="True">
-                                <property name="style">Heading4.TLabel</property>
+                                <property name="style">Heading3b.TLabel</property>
                                 <property name="text" translatable="yes">Filter:</property>
                                 <layout manager="pack">
                                   <property name="padx">20</property>
@@ -550,8 +552,9 @@
                             </child>
                             <child>
                               <object class="ttk.Label" id="currentFilterWidth_Label" named="True">
-                                <property name="style">Heading4.TLabel</property>
+                                <property name="style">Heading3b.TLabel</property>
                                 <property name="textvariable">string:currentFilterWidth_VAR</property>
+                                <property name="width">5</property>
                                 <layout manager="pack">
                                   <property name="side">left</property>
                                 </layout>
@@ -559,56 +562,10 @@
                             </child>
                             <child>
                               <object class="ttk.Label" id="filterWidthHZ_Label" named="True">
-                                <property name="style">Heading4.TLabel</property>
+                                <property name="style">Heading3b.TLabel</property>
                                 <property name="text" translatable="yes">HZ</property>
                                 <layout manager="pack">
                                   <property name="padx">5</property>
-                                  <property name="pady">5</property>
-                                  <property name="side">left</property>
-                                </layout>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Frame" id="frame2">
-                            <property name="height">200</property>
-                            <property name="style">Normal.TFrame</property>
-                            <property name="width">200</property>
-                            <layout manager="grid">
-                              <property name="column">0</property>
-                              <property name="pady">10</property>
-                              <property name="row">2</property>
-                              <property name="sticky">ew</property>
-                            </layout>
-                            <child>
-                              <object class="ttk.Label" id="forceFilterBandwidth_Label" named="True">
-                                <property name="style">Heading4.TLabel</property>
-                                <property name="text" translatable="yes">Force BW (Hz):</property>
-                                <layout manager="pack">
-                                  <property name="padx">30 0</property>
-                                  <property name="pady">5</property>
-                                  <property name="side">left</property>
-                                </layout>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="ttk.Entry" id="entry_force_bw" named="True">
-                                <property name="width">6</property>
-                                <layout manager="pack">
-                                  <property name="padx">5</property>
-                                  <property name="pady">5</property>
-                                  <property name="side">left</property>
-                                </layout>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="ttk.Button" id="forceFilterBandwidth_Button" named="True">
-                                <property name="command" type="command" cbtype="simple">action_master_force_bw</property>
-                                <property name="style">Button3Raised.TButton</property>
-                                <property name="text" translatable="yes">Force Override</property>
-                                <layout manager="pack">
-                                  <property name="padx">30</property>
                                   <property name="pady">5</property>
                                   <property name="side">left</property>
                                 </layout>
