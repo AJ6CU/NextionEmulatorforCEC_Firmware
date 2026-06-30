@@ -88,10 +88,6 @@ class sdrDashboard(baseui.sdrDashboardUI):
         self.setAccordionState(self.scanAccordion_Frame, self.scanToggle_Button, self.scanAccordionState)
         self.setAccordionState(self.channelsAccordion_Frame, self.channelsToggle_Button, self.channelsAccordionState)
 
-        # if self.sdr.current_mode == "CW":
-        #     self.sdr.set_filter_width_hz('500')       # Forces filters to start at same spot
-        # else:
-        #     self.sdr.set_filter_width_hz('2400')
         self.action_filter_reset()
         self.refresh_listbox_view()
         self.update_smeter_loop()
