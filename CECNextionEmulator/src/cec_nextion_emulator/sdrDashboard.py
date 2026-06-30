@@ -99,6 +99,12 @@ class sdrDashboard(baseui.sdrDashboardUI):
                 takefocus=False)
             self.linkStatus_VAR.set('Connected')
             self.reconnect_Button.state(['disabled'])
+            
+            # --- ADD THIS LINE TO FIRE TELEMETRY ON STARTUP ---
+            if hasattr(self.sdr, 'current_mode') and self.sdr.current_mode:
+                self.update_mode_telemetry(self.sdr.current_mode)
+            else:
+                self.update_mode_telemetry("USB")  # Safe hardware default if empty
         else:
             self.linkStatus_Label.configure(
                 style="RedLED.TLabel",
@@ -118,6 +124,7 @@ class sdrDashboard(baseui.sdrDashboardUI):
         self.label_val_freq.config(text=f"{(float(freq_hz) / 1000000):.4f} MHz")
 
     def update_mode_telemetry(self, mode_str):
+        print("update_mode_telemetry", mode_str)
         self.label_val_mode.config(text=str(mode_str).upper())
         if mode_str.lower() == 'cw':
             self.showModeButtonPressed("modeCWU_Button")
