@@ -452,7 +452,10 @@ class theVFO(baseui.theVFOUI):
 
 
     #   ****Start Callbacks****
-
+    def stop_CB(self):
+        print("please implement the stop function")
+        if self.mainWindow.theSDR is not None:
+            self.mainWindow.theSDR.startSDR()
 
     #
     #   When the tuning_Multiplier is clicked, it cycles through the digits in the VFO to allow them to be

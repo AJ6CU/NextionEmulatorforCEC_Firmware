@@ -16,14 +16,6 @@ class SDRPlusPlusController:
     Part 1: Initialization, Disk Storage, and Local Configuration Cache Registries.
     """
 
-    # HAM_BANDS = {
-    #     '80m': (3500000, 'LSB', 2700),
-    #     '40m': (7074000, 'USB', 3000),
-    #     '20m': (14200000, 'USB', 2400),
-    #     '15m': (21074000, 'USB', 3000),
-    #     '10m': (28400000, 'USB', 2400),
-    #     '2m': (145000000, 'FM', 12500)
-    # }
 
     FACTORY_DEFAULTS = {
         'USB': 2400, 'LSB': 2400, 'CW': 500, 'CW_L': 500, 'CW_U': 500,
@@ -32,8 +24,7 @@ class SDRPlusPlusController:
 
     def __init__(self, root):
         self.root = root
-        # self.host = gv.config.get("SDR Server IP", '127.0.0.1')
-        # self.port = int(gv.config.get("SDR TCP Port", 4532))
+
         self.host = gv.config.get_sdr_server_ip()
         self.port = gv.config.get_sdr_tcp_port()
         self.sock = None
@@ -129,6 +120,26 @@ class SDRPlusPlusController:
             self.is_connected = False
             self.stop_scan()
             if self.on_disconnect: self.on_disconnect()
+
+    def stopSDR(self) -> bool:
+        print("[+] Stopping SDR")
+        if not self.is_connected: return False
+        self.stop_scan()        # Stop any active scan
+        try:
+            self.sock.sendall("\\stop\n".encode('ascii'))
+            return True
+        except socket.error:
+            self._handle_unexpected_disconnect()
+            return False
+
+    def startSDR(self) -> bool:
+        if not self.is_connected: return False
+        try:
+            self.sock.sendall("\\start\n".encode('ascii'))
+            return True
+        except socket.error:
+            self._handle_unexpected_disconnect()
+            return False
 
     def _load_channels_from_json(self):
         """Loads nested multi-scan sets from the unified application config profile."""

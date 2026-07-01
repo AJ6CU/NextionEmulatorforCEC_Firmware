@@ -194,10 +194,14 @@ class mainScreenUI(ttk.Frame):
         self.speaker_Button_Tooltip.configure(
             padx=8,
             relief="raised",
-            text='Click to toggle between speaker output and mute',
+            text='Click to toggle between speaker output and SDR (if available otherwise Mute). Double clicking will reopen the SDR Dashboard.',
             wraplength=300)
         self.speaker_Button.grid(column=6, row=0, sticky="ns")
         self.speaker_Button.configure(command=self.speaker_CB)
+        self.speaker_Button.bind(
+            "<Double-Button-1>",
+            self.relaunch_SDRPanel_CB,
+            add="")
         self.menuBar_Frame.pack(anchor="n", expand=True, fill="x", side="top")
         frame2 = ttk.Frame(self)
         frame2.configure(
@@ -759,6 +763,9 @@ class mainScreenUI(ttk.Frame):
         pass
 
     def speaker_CB(self):
+        pass
+
+    def relaunch_SDRPanel_CB(self, event=None):
         pass
 
     def channels_CB(self):

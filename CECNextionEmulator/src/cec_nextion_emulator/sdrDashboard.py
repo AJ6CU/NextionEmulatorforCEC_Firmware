@@ -89,7 +89,6 @@ class sdrDashboard(baseui.sdrDashboardUI):
         self.setAccordionState(self.scanAccordion_Frame, self.scanToggle_Button, self.scanAccordionState)
         self.setAccordionState(self.channelsAccordion_Frame, self.channelsToggle_Button, self.channelsAccordionState)
 
-        self.action_filter_reset()
         self.refresh_listbox_view()
         self.update_smeter_loop()
         self.sourceBank_Combobox.set("DEFAULT SET")
@@ -112,11 +111,10 @@ class sdrDashboard(baseui.sdrDashboardUI):
                 takefocus=False)
             self.linkStatus_VAR.set('Disconnected')
             self.reconnect_Button.configure(state='normal')
-            # self.reconnect_Button.state(['normal'])
-
-
 
         self.pack(expand=tk.YES, fill=tk.BOTH)
+        self.sdr.startSDR()
+
 
 
 
@@ -205,6 +203,8 @@ class sdrDashboard(baseui.sdrDashboardUI):
             messagebox.showinfo("Success", "Successfully attached socket link to SDR++ server.")
         else:
             messagebox.showerror("Error", "SDR++ Connection refused. Verify target host profiles.")
+
+
 
     def action_on_volume_slider_move(self, event=None):
         try:
@@ -577,11 +577,11 @@ class sdrDashboard(baseui.sdrDashboardUI):
         if not self.sdr.is_connected: return
         self.sdr.narrow()
 
-    def action_filter_reset(self):
-        if not self.sdr.is_connected: return
-        mode = self.sdr.current_mode
-        fallbacks = self.sdr.get_all_mode_fallbacks()
-        self.sdr.set_filter_width_hz(fallbacks.get(mode, 120000))
+    # def action_filter_reset(self):
+    #     if not self.sdr.is_connected: return
+    #     mode = self.sdr.current_mode
+    #     fallbacks = self.sdr.get_all_mode_fallbacks()
+    #     self.sdr.set_filter_width_hz(fallbacks.get(mode, 120000))
 
     def setAccordionState(self, content_frame, thebutton, frameState):
         parent_frame = content_frame.master
@@ -651,11 +651,14 @@ class SDRDashboardPopup:
         """Ensures scanning timer engines freeze quietly when the window disappears."""
         try:
             self.app.sdr.stop_scan()  # Halt active backgrounds
+            self.app.sdr.disconnect()
         except Exception:
             pass
         self.popup.destroy()  # Close window container safely
 
 
 def launch_sdr_popup(parent):
+
     """The master trigger hook called by your primary application driver."""
     return SDRDashboardPopup(parent)
+

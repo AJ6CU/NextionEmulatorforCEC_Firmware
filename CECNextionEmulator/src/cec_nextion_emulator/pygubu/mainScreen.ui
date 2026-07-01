@@ -236,6 +236,7 @@ SPEAKER
 </property>
             <property name="textvariable">string:speaker_VAR</property>
             <property name="width">12</property>
+            <bind sequence="&lt;Double-Button-1&gt;" handler="relaunch_SDRPanel_CB" add="" />
             <layout manager="grid">
               <property name="column">6</property>
               <property name="row">0</property>
@@ -245,7 +246,7 @@ SPEAKER
               <object class="pygubu.widgets.Tooltip" id="speaker_Button_Tooltip" named="True">
                 <property name="padx">8</property>
                 <property name="relief">raised</property>
-                <property name="text" translatable="yes">Click to toggle between speaker output and mute</property>
+                <property name="text" translatable="yes">Click to toggle between speaker output and SDR (if available otherwise Mute). Double clicking will reopen the SDR Dashboard.</property>
                 <property name="wraplength">300</property>
               </object>
             </child>

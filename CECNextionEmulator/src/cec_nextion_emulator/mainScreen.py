@@ -253,7 +253,8 @@ class mainScreen(baseui.mainScreenUI):
         print("[*] Process Monitor: No running instance detected. Preparing fresh launch...")
         launch_cmd = []
         if os_type == "darwin":  # macOS
-            launch_cmd = ["/Applications/SDR++.app/Contents/MacOS/sdrpp", "--autostart"]
+            launch_cmd = ["/Applications/SDR++.app/Contents/MacOS/sdrpp"]
+            # launch_cmd = ["/Applications/SDR++.app/Contents/MacOS/sdrpp", "--autostart"]
         elif os_type == "windows":
             launch_cmd = [r"C:\SDRPlusPlus\sdrpp.exe", "--autostart"]
         elif os_type == "linux":
@@ -993,11 +994,22 @@ class mainScreen(baseui.mainScreenUI):
         value = self.extractValue(buffer, 10, len(buffer) - 3)
         if value == "1":  #going into transmit mode
             self.theVFO_Object.setTXButtonState()
+            #
+            #   Stop SDR if it exists
+            #
+            if self.theSDR is not None:
+                self.theSDR.stopSDR()
+
             if gv.config.get_PWR_SWR_Switch() == "True":            # If PWR/SWR Switch is off display nothing
                 self.SWR_PWR_Frame.grid()
 
         else:
             self.theVFO_Object.setRXButtonState()
+            #
+            #   Start SDR if it exists
+            #
+            if self.theSDR is not None:
+                self.theSDR.startSDR()
             #
             #   the self.master.state('normal') is a little magic that is needed on macos to make sure the
             #   frame really disappears. Only need to schedule this if PWR/SWR switch is on.
@@ -1287,6 +1299,7 @@ class mainScreen(baseui.mainScreenUI):
             self.speaker_Button.configure(style='Button2b.TButton', state="normal")
             self.speaker_VAR.set("\nSPEAKER\n")
             if self.theSDR != None:
+                self.theSDR.stopSDR()
                 self.theSDR.disconnect()
                 del self.theSDR
         else:
@@ -1297,6 +1310,7 @@ class mainScreen(baseui.mainScreenUI):
             self.theSDR = self.theSDRWindow.get_app()
             if self.theSDR.connect():
                 print("sdr connected")
+                self.theSDR.startSDR()
                 self.theSDR.set_frequency_hz(int(self.theVFO_Object.getIntPrimaryVFO()))
                 self.theSDR.set_mode(self.primary_Mode_VAR.get().replace("CWL","CW").replace("CWU","CW"))
                 self.theSDR.on_frequency_change_primary = self.sdr_frequency_change_callback
@@ -1304,6 +1318,21 @@ class mainScreen(baseui.mainScreenUI):
 
             else:
                 print("sdr not connected")
+
+    def relaunch_SDRPanel_CB(self, event=None):
+        if self.speaker_Button_On and self.speaker_VAR.get() == "\nSDR\n" and self.theSDRWindow is None:
+            self.theSDRWindow = launch_sdr_popup(self)
+            if self.theSDR.connect():
+                print("sdr connected")
+                self.theSDR.startSDR()
+                self.theSDR.set_frequency_hz(int(self.theVFO_Object.getIntPrimaryVFO()))
+                self.theSDR.set_mode(self.primary_Mode_VAR.get().replace("CWL","CW").replace("CWU","CW"))
+                self.theSDR.on_frequency_change_primary = self.sdr_frequency_change_callback
+                self.theSDR.on_mode_change_primary = self.sdr_mode_change_callback
+
+            else:
+                print("sdr not connected")
+
 
 
 
