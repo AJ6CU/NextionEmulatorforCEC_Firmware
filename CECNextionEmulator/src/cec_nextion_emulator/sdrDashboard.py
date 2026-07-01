@@ -63,6 +63,7 @@ class sdrDashboard(baseui.sdrDashboardUI):
         # Telemetry & State variables
         self.sdr.on_frequency_change_secondary = self.update_frequency_telemetry
         self.sdr.on_mode_change_secondary = self.update_mode_telemetry
+        self.currentBand = None
         self.sdr.on_filter_change = self.update_filter_telemetry
         self.is_muted = False
         self.pre_mute_volume = gv.config.get_audio_gain_level()
@@ -99,7 +100,7 @@ class sdrDashboard(baseui.sdrDashboardUI):
                 takefocus=False)
             self.linkStatus_VAR.set('Connected')
             self.reconnect_Button.state(['disabled'])
-            
+
             # --- ADD THIS LINE TO FIRE TELEMETRY ON STARTUP ---
             if hasattr(self.sdr, 'current_mode') and self.sdr.current_mode:
                 self.update_mode_telemetry(self.sdr.current_mode)
@@ -122,6 +123,13 @@ class sdrDashboard(baseui.sdrDashboardUI):
     def update_frequency_telemetry(self, freq_hz):
         self.current_live_vfo_hz = int(freq_hz)
         self.label_val_freq.config(text=f"{(float(freq_hz) / 1000000):.4f} MHz")
+        band = self.findBand(freq_hz)
+        if band == None and self.currentBand == None:
+            return
+        elif band != self.currentBand:
+            self.showFreqButtonPressed(band)
+            self.currentBand = band
+
 
     def update_mode_telemetry(self, mode_str):
         print("update_mode_telemetry", mode_str)
@@ -458,43 +466,71 @@ class sdrDashboard(baseui.sdrDashboardUI):
     def stop_scan(self):
         self.sdr.stop_scan()
 
+    def findBand(self,freq):
+        for key in gv.bandStart:
+            if gv.bandStart[key] <= freq <= gv.bandEnd[key]:
+                return key
+        return None
+
+
+    def showFreqButtonPressed(self, widget_id):
+        #
+        #   Unpress all the buttons
+        #
+        self.Band160m.configure(style='Button3Raised.TButton')
+        self.Band80m.configure(style='Button3Raised.TButton')
+        self.Band40m.configure(style='Button3Raised.TButton')
+        self.Band30m.configure(style='Button3Raised.TButton')
+        self.Band20m.configure(style='Button3Raised.TButton')
+        self.Band17m.configure(style='Button3Raised.TButton')
+        self.Band15m.configure(style='Button3Raised.TButton')
+        self.Band12m.configure(style='Button3Raised.TButton')
+        self.Band10m.configure(style='Button3Raised.TButton')
+        #
+        #   Show button pressed
+        #
+        if widget_id != None:
+            getattr(self, widget_id).configure(style='Button3Pressed.TButton')
+
     def action_quick_band(self, widget_id):
         if not self.sdr.is_connected: return
 
+        self.showFreqButtonPressed(widget_id)
+
         match widget_id:
-            case 'ham_band_160m':
+            case 'Band160m':
                 self.sdr.set_frequency_hz(1800000)
                 self.sdr.set_mode("LSB")
 
-            case 'ham_band_80m':
+            case 'Band80m':
                 self.sdr.set_frequency_hz(3500000)
                 self.sdr.set_mode("LSB")
 
-            case 'ham_band_40m':
+            case 'Band40m':
                 self.sdr.set_frequency_hz(7000000)
                 self.sdr.set_mode("LSB")
 
-            case 'ham_band_30m':
+            case 'Band30m':
                 self.sdr.set_frequency_hz(10100000)
                 self.sdr.set_mode("LSB")
 
-            case 'ham_band_20m':
+            case 'Band20m':
                 self.sdr.set_frequency_hz(14000000)
                 self.sdr.set_mode("USB")
 
-            case 'ham_band_17m':
+            case 'Band17m':
                 self.sdr.set_frequency_hz(18000000)
                 self.sdr.set_mode("USB")
 
-            case 'ham_band_15m':
+            case 'Band15m':
                 self.sdr.set_frequency_hz(21000000)
                 self.sdr.set_mode("USB")
 
-            case 'ham_band_12m':
+            case 'Band12m':
                 self.sdr.set_frequency_hz(24000000)
                 self.sdr.set_mode("USB")
 
-            case 'ham_band_10m':
+            case 'Band10m':
                 self.sdr.set_frequency_hz(28000000)
                 self.sdr.set_mode("USB")
     def showModeButtonPressed(self, widget_id):
@@ -515,34 +551,20 @@ class sdrDashboard(baseui.sdrDashboardUI):
 
         self.showModeButtonPressed(widget_id)
 
-        #
-        #   Unpress all the buttons
-        #
-        # self.modeLSB_Button.configure(style='Button3Raised.TButton')
-        # self.modeUSB_Button.configure(style='Button3Raised.TButton')
-        # self.modeCWL_Button.configure(style='Button3Raised.TButton')
-        # self.modeCWU_Button.configure(style='Button3Raised.TButton')
-
-
         getattr(self, widget_id).configure(style='Button3Pressed.TButton')
 
         match widget_id:
             case "modeLSB_Button":
                 self.sdr.set_mode("LSB")
-                # self.modeLSB_Button.configure(style='Button3Pressed.TButton')
 
             case "modeUSB_Button":
                 self.sdr.set_mode("USB")
-                # self.modeUSB_Button.configure(style='Button3Pressed.TButton')
 
             case "modeCWL_Button":
                 self.sdr.set_mode("CW")
-                # self.modeCWL_Button.configure(style='Button3Pressed.TButton')
 
             case "modeCWU_Button":
                 self.sdr.set_mode("CW")
-                # self.modeCWU_Button.configure(style='Button3Pressed.TButton')
-
 
 
     def action_filter_widen(self):

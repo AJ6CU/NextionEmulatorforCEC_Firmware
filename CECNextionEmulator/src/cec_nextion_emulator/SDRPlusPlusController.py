@@ -16,14 +16,14 @@ class SDRPlusPlusController:
     Part 1: Initialization, Disk Storage, and Local Configuration Cache Registries.
     """
 
-    HAM_BANDS = {
-        '80m': (3500000, 'LSB', 2700),
-        '40m': (7074000, 'USB', 3000),
-        '20m': (14200000, 'USB', 2400),
-        '15m': (21074000, 'USB', 3000),
-        '10m': (28400000, 'USB', 2400),
-        '2m': (145000000, 'FM', 12500)
-    }
+    # HAM_BANDS = {
+    #     '80m': (3500000, 'LSB', 2700),
+    #     '40m': (7074000, 'USB', 3000),
+    #     '20m': (14200000, 'USB', 2400),
+    #     '15m': (21074000, 'USB', 3000),
+    #     '10m': (28400000, 'USB', 2400),
+    #     '2m': (145000000, 'FM', 12500)
+    # }
 
     FACTORY_DEFAULTS = {
         'USB': 2400, 'LSB': 2400, 'CW': 500, 'CW_L': 500, 'CW_U': 500,

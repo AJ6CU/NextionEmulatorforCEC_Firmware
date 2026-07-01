@@ -169,79 +169,78 @@ class sdrDashboardUI(ttk.Frame):
             self.bandsAccordion_Frame, name="quickhambandselect_labelframe")
         self.quickHamBandSelect_Labelframe.configure(
             style="Normal.TLabelframe", text=' Ham Radio Bands')
-        self.ham_band_160m = ttk.Button(
+        self.Band160m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
-            name="ham_band_160m")
-        self.ham_band_160m.configure(
-            style="Button3Raised.TButton", text='160M')
-        self.ham_band_160m.grid(column=0, padx=5, pady=5, row=0)
-        def ham_band_160m_cmd_(): self.action_quick_band("ham_band_160m")
+            name="band160m")
+        self.Band160m.configure(style="Button3Raised.TButton", text='160M')
+        self.Band160m.grid(column=0, padx=5, pady=5, row=0)
+        def Band160m_cmd_(): self.action_quick_band("Band160m")
 
-        self.ham_band_160m.configure(command=ham_band_160m_cmd_)
-        self.ham_band_80m = ttk.Button(
+        self.Band160m.configure(command=Band160m_cmd_)
+        self.Band80m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
-            name="ham_band_80m")
-        self.ham_band_80m.configure(style="Button3Raised.TButton", text='80M')
-        self.ham_band_80m.grid(column=1, padx=5, pady=5, row=0)
-        def ham_band_80m_cmd_(): self.action_quick_band("ham_band_80m")
+            name="band80m")
+        self.Band80m.configure(style="Button3Raised.TButton", text='80M')
+        self.Band80m.grid(column=1, padx=5, pady=5, row=0)
+        def Band80m_cmd_(): self.action_quick_band("Band80m")
 
-        self.ham_band_80m.configure(command=ham_band_80m_cmd_)
-        self.ham_band_40m = ttk.Button(
+        self.Band80m.configure(command=Band80m_cmd_)
+        self.Band40m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
-            name="ham_band_40m")
-        self.ham_band_40m.configure(style="Button3Raised.TButton", text='40M')
-        self.ham_band_40m.grid(column=2, padx=5, pady=5, row=0)
-        def ham_band_40m_cmd_(): self.action_quick_band("ham_band_40m")
+            name="band40m")
+        self.Band40m.configure(style="Button3Raised.TButton", text='40M')
+        self.Band40m.grid(column=2, padx=5, pady=5, row=0)
+        def Band40m_cmd_(): self.action_quick_band("Band40m")
 
-        self.ham_band_40m.configure(command=ham_band_40m_cmd_)
-        self.ham_band_30m = ttk.Button(
+        self.Band40m.configure(command=Band40m_cmd_)
+        self.Band30m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
-            name="ham_band_30m")
-        self.ham_band_30m.configure(style="Button3Raised.TButton", text='30M')
-        self.ham_band_30m.grid(column=0, padx=5, pady=5, row=1)
-        def ham_band_30m_cmd_(): self.action_quick_band("ham_band_30m")
+            name="band30m")
+        self.Band30m.configure(style="Button3Raised.TButton", text='30M')
+        self.Band30m.grid(column=0, padx=5, pady=5, row=1)
+        def Band30m_cmd_(): self.action_quick_band("Band30m")
 
-        self.ham_band_30m.configure(command=ham_band_30m_cmd_)
-        self.ham_band_20m = ttk.Button(
+        self.Band30m.configure(command=Band30m_cmd_)
+        self.Band20m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
-            name="ham_band_20m")
-        self.ham_band_20m.configure(style="Button3Raised.TButton", text='20M')
-        self.ham_band_20m.grid(column=1, padx=5, pady=5, row=1)
-        def ham_band_20m_cmd_(): self.action_quick_band("ham_band_20m")
+            name="band20m")
+        self.Band20m.configure(style="Button3Raised.TButton", text='20M')
+        self.Band20m.grid(column=1, padx=5, pady=5, row=1)
+        def Band20m_cmd_(): self.action_quick_band("Band20m")
 
-        self.ham_band_20m.configure(command=ham_band_20m_cmd_)
-        self.ham_band_17m = ttk.Button(
+        self.Band20m.configure(command=Band20m_cmd_)
+        self.Band17m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
-            name="ham_band_17m")
-        self.ham_band_17m.configure(style="Button3Raised.TButton", text='17M')
-        self.ham_band_17m.grid(column=2, padx=5, pady=5, row=1)
-        def ham_band_17m_cmd_(): self.action_quick_band("ham_band_17m")
+            name="band17m")
+        self.Band17m.configure(style="Button3Raised.TButton", text='17M')
+        self.Band17m.grid(column=2, padx=5, pady=5, row=1)
+        def Band17m_cmd_(): self.action_quick_band("Band17m")
 
-        self.ham_band_17m.configure(command=ham_band_17m_cmd_)
-        self.ham_band_15m = ttk.Button(
+        self.Band17m.configure(command=Band17m_cmd_)
+        self.Band15m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
-            name="ham_band_15m")
-        self.ham_band_15m.configure(style="Button3Raised.TButton", text='15M')
-        self.ham_band_15m.grid(column=0, padx=5, pady=5, row=2)
-        def ham_band_15m_cmd_(): self.action_quick_band("ham_band_15m")
+            name="band15m")
+        self.Band15m.configure(style="Button3Raised.TButton", text='15M')
+        self.Band15m.grid(column=0, padx=5, pady=5, row=2)
+        def Band15m_cmd_(): self.action_quick_band("Band15m")
 
-        self.ham_band_15m.configure(command=ham_band_15m_cmd_)
-        self.ham_band_12m = ttk.Button(
+        self.Band15m.configure(command=Band15m_cmd_)
+        self.Band12m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
-            name="ham_band_12m")
-        self.ham_band_12m.configure(style="Button3Raised.TButton", text='12M')
-        self.ham_band_12m.grid(column=1, padx=5, pady=5, row=2)
-        def ham_band_12m_cmd_(): self.action_quick_band("ham_band_12m")
+            name="band12m")
+        self.Band12m.configure(style="Button3Raised.TButton", text='12M')
+        self.Band12m.grid(column=1, padx=5, pady=5, row=2)
+        def Band12m_cmd_(): self.action_quick_band("Band12m")
 
-        self.ham_band_12m.configure(command=ham_band_12m_cmd_)
-        self.ham_band_10m = ttk.Button(
+        self.Band12m.configure(command=Band12m_cmd_)
+        self.Band10m = ttk.Button(
             self.quickHamBandSelect_Labelframe,
-            name="ham_band_10m")
-        self.ham_band_10m.configure(style="Button3Raised.TButton", text='10m')
-        self.ham_band_10m.grid(column=2, padx=5, pady=5, row=2)
-        def ham_band_10m_cmd_(): self.action_quick_band("ham_band_10m")
+            name="band10m")
+        self.Band10m.configure(style="Button3Raised.TButton", text='10m')
+        self.Band10m.grid(column=2, padx=5, pady=5, row=2)
+        def Band10m_cmd_(): self.action_quick_band("Band10m")
 
-        self.ham_band_10m.configure(command=ham_band_10m_cmd_)
+        self.Band10m.configure(command=Band10m_cmd_)
         self.quickHamBandSelect_Labelframe.pack(
             anchor="w", padx=10, side="top")
         self.quickHamBandSelect_Labelframe.grid_anchor("w")

@@ -297,7 +297,7 @@
                           <property name="anchor">w</property>
                         </containerlayout>
                         <child>
-                          <object class="ttk.Button" id="ham_band_160m" named="True">
+                          <object class="ttk.Button" id="Band160m" named="True">
                             <property name="command" type="command" cbtype="with_wid">action_quick_band</property>
                             <property name="style">Button3Raised.TButton</property>
                             <property name="text" translatable="yes">160M</property>
@@ -310,7 +310,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Button" id="ham_band_80m" named="True">
+                          <object class="ttk.Button" id="Band80m" named="True">
                             <property name="command" type="command" cbtype="with_wid">action_quick_band</property>
                             <property name="style">Button3Raised.TButton</property>
                             <property name="text" translatable="yes">80M</property>
@@ -323,7 +323,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Button" id="ham_band_40m" named="True">
+                          <object class="ttk.Button" id="Band40m" named="True">
                             <property name="command" type="command" cbtype="with_wid">action_quick_band</property>
                             <property name="style">Button3Raised.TButton</property>
                             <property name="text" translatable="yes">40M</property>
@@ -336,7 +336,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Button" id="ham_band_30m" named="True">
+                          <object class="ttk.Button" id="Band30m" named="True">
                             <property name="command" type="command" cbtype="with_wid">action_quick_band</property>
                             <property name="style">Button3Raised.TButton</property>
                             <property name="text" translatable="yes">30M</property>
@@ -349,7 +349,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Button" id="ham_band_20m" named="True">
+                          <object class="ttk.Button" id="Band20m" named="True">
                             <property name="command" type="command" cbtype="with_wid">action_quick_band</property>
                             <property name="style">Button3Raised.TButton</property>
                             <property name="text" translatable="yes">20M</property>
@@ -362,7 +362,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Button" id="ham_band_17m" named="True">
+                          <object class="ttk.Button" id="Band17m" named="True">
                             <property name="command" type="command" cbtype="with_wid">action_quick_band</property>
                             <property name="style">Button3Raised.TButton</property>
                             <property name="text" translatable="yes">17M</property>
@@ -375,7 +375,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Button" id="ham_band_15m" named="True">
+                          <object class="ttk.Button" id="Band15m" named="True">
                             <property name="command" type="command" cbtype="with_wid">action_quick_band</property>
                             <property name="style">Button3Raised.TButton</property>
                             <property name="text" translatable="yes">15M</property>
@@ -388,7 +388,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Button" id="ham_band_12m" named="True">
+                          <object class="ttk.Button" id="Band12m" named="True">
                             <property name="command" type="command" cbtype="with_wid">action_quick_band</property>
                             <property name="style">Button3Raised.TButton</property>
                             <property name="text" translatable="yes">12M</property>
@@ -401,7 +401,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Button" id="ham_band_10m" named="True">
+                          <object class="ttk.Button" id="Band10m" named="True">
                             <property name="command" type="command" cbtype="with_wid">action_quick_band</property>
                             <property name="style">Button3Raised.TButton</property>
                             <property name="text" translatable="yes">10m</property>
